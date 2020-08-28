@@ -1,0 +1,112 @@
+<?xml version="1.0"?>
+
+<model-hints>
+	<model name="it.eng.allerte.model.RubricaCanale">
+		<field name="ID_CANALE" type="long" />
+		<field name="NOME" type="String" />
+		<field name="ICONA" type="String" />
+		<field name="REGEX" type="String" />
+	</model>
+	<model name="it.eng.allerte.model.RubricaContatto">
+		<field name="ID_CONTATTO" type="long" />
+		<field name="FK_NOMINATIVO" type="long" />
+		<field name="FK_CANALE" type="long" />
+		<field name="CONTATTO" type="String">
+			<hint name="max-length">128</hint>
+		</field>
+		<field name="ALLERTAMENTO" type="boolean" />
+		<field name="FK_UTENTE_CREAZIONE" type="long" />
+		<field name="DATA_CREAZIONE" type="Date" />
+		<field name="FK_UTENTE_MODIFICA" type="long" />
+		<field name="DATA_MODIFICA" type="Date" />
+		<field name="DATA_FINE_VALIDITA" type="Date" />
+		<field name="MODIFICA_MINORE" type="boolean" />
+	</model>
+	<model name="it.eng.allerte.model.RubricaGruppo">
+		<field name="ID_GRUPPO" type="long" />
+		<field name="NOME" type="String">
+			<hint name="max-length">512</hint>
+		</field>
+		<field name="FK_SITO_PROPRIETARIO" type="long" />
+		<field name="NOTE" type="String">
+			<hint name="max-length">2048</hint>
+		</field>
+		<field name="FK_UTENTE_CREAZIONE" type="long" />
+		<field name="DATA_CREAZIONE" type="Date" />
+		<field name="FK_UTENTE_MODIFICA" type="long" />
+		<field name="DATA_MODIFICA" type="Date" />
+		<field name="DISABLED" type="boolean" />
+	</model>
+	<model name="it.eng.allerte.model.RubricaGruppoGruppi">
+		<field name="FK_GRUPPO_PADRE" type="long" />
+		<field name="FK_GRUPPO_FIGLIO" type="long" />
+	</model>
+	<model name="it.eng.allerte.model.RubricaGruppoNominativi">
+		<field name="FK_GRUPPO" type="long" />
+		<field name="FK_NOMINATIVO" type="long" />
+		<field name="FK_RUOLO" type="long" />
+		<field name="SPECIFICA_RUOLO" type="String" />
+	</model>
+	<model name="it.eng.allerte.model.RubricaLog">
+		<field name="ID_LOG" type="long" />
+		<field name="FK_SITO_PROPRIETARIO" type="long" />
+		<field name="TABELLA" type="String" />
+		<field name="TIPO_OPERAZIONE" type="String" />
+		<field name="ID_OGGETTO" type="String" />
+		<field name="NUOVA_DESCRIZIONE" type="String">
+			<hint name="max-length">5000</hint>
+		</field>
+		<field name="FK_UTENTE_MODIFICA" type="long" />
+		<field name="DATA_MODIFICA" type="Date" />
+	</model>
+	<model name="it.eng.allerte.model.RubricaNominativo">
+		<field name="ID_NOMINATIVO" type="long" />
+		<field name="COGNOME" type="String">
+			<hint name="max-length">128</hint>
+		</field>
+		<field name="NOME" type="String">
+			<hint name="max-length">128</hint>
+		</field>
+		<field name="INDIRIZZO" type="String">
+			<hint name="max-length">256</hint>
+		</field>
+		<field name="FK_SITO_PROPRIETARIO" type="long" />
+		<field name="FK_UTENTE_PORTALE" type="long" />
+		<field name="FK_UTENTE_CREAZIONE" type="long" />
+		<field name="DATA_CREAZIONE" type="Date" />
+		<field name="FK_UTENTE_MODIFICA" type="long" />
+		<field name="DATA_MODIFICA" type="Date" />
+		<field name="DISABLED" type="boolean" />
+		<field name="MODIFICA_MINORE" type="boolean" />
+	</model>
+	<model name="it.eng.allerte.model.RubricaPermessi">
+		<field name="ID_PERMESSO" type="String" />
+		<field name="NOME_PERMESSO" type="String" />
+	</model>
+	<model name="it.eng.allerte.model.RubricaRuolo">
+		<field name="ID_RUOLO" type="long" />
+		<field name="DESCRIZIONE" type="String">
+			<hint name="max-length">256</hint>
+		</field>
+		<field name="FK_RUOLO_LIFERAY" type="long" />
+	</model>
+	<model name="it.eng.allerte.model.RubricaRuoloPermessi">
+		<field name="FK_ID_RUOLO" type="long" />
+		<field name="FK_ID_PERMESSO" type="String" />
+	</model>
+	<model name="it.eng.allerte.model.RubricaRuoloRubrica">
+		<field name="ID_RUOLO" type="long" />
+		<field name="DESCRIZIONE" type="String" />
+	</model>
+	<model name="it.eng.allerte.model.RubricaSito">
+		<field name="ID_SITO" type="long" />
+		<field name="NOME" type="String">
+			<hint name="max-length">128</hint>
+		</field>
+		<field name="FK_LIFERAY_SITE" type="long" />
+	</model>
+	<model name="it.eng.allerte.model.RubricaUtenteSito">
+		<field name="ID_UTENTE" type="long" />
+		<field name="ID_SITO" type="long" />
+	</model>
+</model-hints>

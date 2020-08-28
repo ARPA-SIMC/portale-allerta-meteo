@@ -1,0 +1,55 @@
+
+repositories {
+	mavenCentral()
+	maven{url "http://jasperreports.sourceforge.net/maven2/"}
+    maven{url "http://jaspersoft.artifactoryonline.com/jaspersoft/third-party-ce-artifacts/"}
+}
+configurations {
+    jasperreports {
+        transitive = true
+    }
+}
+
+dependencies {
+
+	compileOnly group: "com.liferay.portal", name: "com.liferay.portal.kernel"
+	compileOnly group: "org.osgi", name: "org.osgi.service.component.annotations"
+	compileOnly group: "javax.portlet", name: "portlet-api"
+	compileOnly group: "javax.servlet", name: "javax.servlet-api"
+	
+	compileOnly group: 'org.apache.poi', name: 'poi', version: '3.17'
+		
+	compileOnly group: 'javax.mail', name: 'mail', version: '1.4.7'
+	
+	compileOnly group: 'net.sf.jasperreports', name: 'jasperreports', version: '6.6.0'
+	compileOnly group: 'net.sf.jasperreports', name: 'jasperreports-fonts', version: '6.0.0'
+	
+	compileOnly group: 'org.facebook4j', name: 'facebook4j-core', version: '2.4.13'
+	
+	/* JasperReport 
+	compile group: 'tomcat', name: 'jasper-compiler-jdt', version: '5.5.23'
+	compile group: 'net.sf.jasperreports', name: 'jasperreports', version: '5.6.1'
+	compile group: 'net.sf.jasperreports', name: 'jasperreports-fonts', version: '4.0.0'
+	compile group: 'org.olap4j', name: 'olap4j', version: '0.9.7.309-JS-3'
+	compile group: 'commons-digester', name: 'commons-digester', version: '2.1'
+	compile group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.0.1'
+	compile group: 'com.lowagie', name: 'itext', version: '2.1.7.js2'
+	compile group: 'org.apache.poi', name: 'poi', version: '3.7'
+	compile group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.15'	
+	compile group: 'org.apache.pdfbox', name: 'fontbox', version: '2.0.15'
+	*/
+	
+	
+	compileOnly project(":modules:allerta-base")
+	compileOnly project(":modules:allerta-libs")
+	compileOnly project(":modules:allerta-allertaer:allerta-allertaer-api")
+	compileOnly project(":modules:allerta-bollettino:allerta-bollettino-api")	
+	
+	compileOnly project(":modules:allerta-parer:allerta-parer-api")
+	
+	compileOnly project(":modules:allerta-rubrica:allerta-rubrica-api")
+	compileOnly project(":modules:allerta-rubrica:allerta-rubrica-service")
+	
+
+	
+}

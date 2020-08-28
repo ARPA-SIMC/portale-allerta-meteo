@@ -1,0 +1,13 @@
+dependencies {
+	compileOnly group: "com.liferay", name: "com.liferay.petra.lang"
+	compileOnly group: "com.liferay", name: "com.liferay.petra.string"
+	compileOnly group: "com.liferay.portal", name: "com.liferay.portal.kernel"
+	compileOnly group: "org.osgi", name: "org.osgi.annotation.versioning", version: "1.0.0"
+	compileOnly group: "org.osgi", name: "org.osgi.core"
+	compileOnly group: "org.osgi", name: "org.osgi.service.component.annotations"
+	
+	compileOnly 'biz.aQute.bnd:biz.aQute.bnd.annotation:4.2.0'
+	compileOnly group: 'javax.mail', name: 'mail', version: '1.4.7'
+	compileOnly project(":modules:allerta-rubrica:allerta-rubrica-api")
+	
+}

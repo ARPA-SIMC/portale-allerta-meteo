@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+
+<model-hints>
+	<model name="it.eng.allerta.messages.services.model.Auth">
+		<field name="key" type="String" />
+		<field name="value" type="String" />
+	</model>
+	<model name="it.eng.allerta.messages.services.model.CounterSms">
+		<field name="counterId" type="long" />
+		<field name="date" type="Date" />
+		<field name="numerosms" type="int" />
+		<field name="nodo" type="String" />
+	</model>
+	<model name="it.eng.allerta.messages.services.model.Nodo">
+		<field name="Id" type="long" />
+		<field name="ip" type="String" />
+		<field name="porta" type="int" />
+		<field name="nodoConnesso" type="String" />
+		<field name="dataConnessione" type="Date" />
+	</model>
+	<model name="it.eng.allerta.messages.services.model.Parametro">
+		<field name="Id" type="long" />
+		<field name="ip" type="String" />
+		<field name="porta" type="int" />
+		<field name="username" type="String" />
+		<field name="password" type="String" />
+		<field name="mittente" type="String" />
+		<field name="nodo" type="String" />
+		<field name="dataConnessione" type="Date" />
+	</model>
+	<model name="it.eng.allerta.messages.services.model.SmsSchedulerContext">
+		<field name="varId" type="String" />
+		<field name="value" type="String" />
+	</model>
+</model-hints>

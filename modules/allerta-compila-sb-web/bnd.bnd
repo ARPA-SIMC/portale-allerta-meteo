@@ -1,0 +1,4 @@
+Bundle-Name: allerta-compila-sb-web
+Bundle-SymbolicName: it.eng.allerta.compila
+Bundle-Version: 1.0.0
+Export-Package: it.eng.allerta.compila.constants

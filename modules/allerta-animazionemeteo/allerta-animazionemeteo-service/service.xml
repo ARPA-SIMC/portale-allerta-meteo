@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE service-builder PUBLIC "-//Liferay//DTD Service Builder 6.2.0//EN" "http://www.liferay.com/dtd/liferay-service-builder_6_2_0.dtd">
+<service-builder package-path="it.eng.animaeteo">
+	<author>UTENTE</author>
+	<namespace>animeteo</namespace>
+	<entity name="AnimeteoImg" local-service="true" remote-service="true">
+		<!-- PK fields -->
+		<column name="id" type="long" primary="true"></column>
+		<!-- Other fields -->
+		<column name="name" type="String"></column>
+		<column name="type" type="String"></column>
+		<column name="inserted" type="Date"></column>
+		<column name="data" type="String"></column>
+		<!-- Order -->
+		<order by="asc">
+			<order-column name="id"></order-column>
+		</order>
+		<!-- Finder methods -->
+		<finder name="ImageData" return-type="Collection">
+			<finder-column name="type"></finder-column>
+		</finder>
+	</entity>
+	<entity name="AnimeteoSmallImg" local-service="true"
+		remote-service="true">
+		<!-- PK fields -->
+		<column name="id" type="long" primary="true"></column>
+		<!-- Other fields -->
+		<column name="name" type="String"></column>
+		<column name="type" type="String"></column>
+		<column name="inserted" type="Date"></column>
+		<column name="data" type="String"></column>
+		<!-- Order -->
+		<order by="asc">
+			<order-column name="id"></order-column>
+		</order>
+		<!-- Finder methods -->
+		<finder name="ImageData" return-type="Collection">
+			<finder-column name="type"></finder-column>
+		</finder>
+	</entity>
+</service-builder>

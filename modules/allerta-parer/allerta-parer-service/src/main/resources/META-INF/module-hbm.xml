@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false" default-lazy="false">
+	<import class="it.eng.parer.model.ComponentiInvio" />
+	<import class="it.eng.parer.model.DatiSpecificiInvio" />
+	<import class="it.eng.parer.model.DocumentiCollegati" />
+	<import class="it.eng.parer.model.Parametri" />
+	<class name="it.eng.parer.model.impl.ComponentiInvioImpl" table="parer_ComponentiInvio">
+		<composite-id class="it.eng.parer.service.persistence.ComponentiInvioPK" name="primaryKey">
+			<key-property name="ID_INVIO" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+			<key-property name="ID_COMPONENTE" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		</composite-id>
+		<property name="ORDINE_PRESENTAZIONE" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="TIPO_COMPONENTE" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="TIPO_SUPPORTO_COMPONENTE" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="NOME_COMPONENTE" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="FORMATO_FILE_VERSATO" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="HASH_VERSATO" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="URN_VERSATO" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="ID_COMPONENTE_VERSATO" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+	</class>
+	<class name="it.eng.parer.model.impl.DatiSpecificiInvioImpl" table="parer_DatiSpecificiInvio">
+		<id name="ID_INVIO" type="long">
+			<generator class="assigned" />
+		</id>
+		<property name="AMBIENTE" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="VERSIONE" type="com.liferay.portal.dao.orm.hibernate.DoubleType" />
+		<property name="VERSATORE_ENTE" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="VERSATORE_USER_ID" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="VERSATORE_STRUTTURA" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="CHIAVE_NUMERO" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="CHIAVE_ANNO" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="CHIAVE_TIPO_REGISTRO" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="TIPOLOGIA_UNITA_DOCUMENTARIA" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="TIPO_CONSERVAZIONE" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="FORZA_ACCETTAZIONE" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="FORZA_CONSERVAZIONE" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="FORZA_COLLEGAMENTO" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="OGGETTO_UNITA_DOCUMENTARIA" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="DATA_UNITA_DOCUMENTARIA" type="org.hibernate.type.TimestampType" />
+		<property name="VERSIONE_DATI_SPECIFICI" type="com.liferay.portal.dao.orm.hibernate.DoubleType" />
+		<property name="IDENTIFICATIVO_DATO_SPECIFICO" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="DATA_GENERAZIONE" type="org.hibernate.type.TimestampType" />
+		<property name="NUM_SMS_GENERATI" type="com.liferay.portal.dao.orm.hibernate.IntegerType" />
+		<property name="NUM_SMS_INVIATI" type="com.liferay.portal.dao.orm.hibernate.IntegerType" />
+		<property name="NUM_NOTIFICHE_RICEZIONE" type="com.liferay.portal.dao.orm.hibernate.IntegerType" />
+		<property name="DENOMINAZIONE_APPLICATIVO" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="OGGETTO_MAIL" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="TESTO_MAIL" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="COMPILATORE_ARPAE" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="COMPILATORE_PROTEZIONE_CIVILE" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="DATA_INIZIO_VALIDITA" type="org.hibernate.type.TimestampType" />
+		<property name="DATA_FINE_VALIDITA" type="org.hibernate.type.TimestampType" />
+		<property name="APPROVATORE_ARPAE" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="DATA_FIRMA_ARPAE" type="org.hibernate.type.TimestampType" />
+		<property name="APPROVATORE_PROTEZIONE_CIVILE" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="DATA_FIRMA_PROTEZIONE_CIVILE" type="org.hibernate.type.TimestampType" />
+		<property name="INVIO_RESPONSABILE_TERRITORIO" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="ID_DOCUMENTO_PRINCIPALE" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="TIPO_DOCUMENTO" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="TIPO_STRUTTURA" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="DENOMINAZIONE_SENSORE_RILEVAMENTO" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="REGOLA_ALLARME_ID" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="REGOLA_ALLARME_NOME" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="REGOLA_ALLARME_DESCRIZIONE" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="ESITO_INVIO" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="userId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="companyId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="groupId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="data_invio" type="org.hibernate.type.TimestampType" />
+		<property name="data_risposta" type="org.hibernate.type.TimestampType" />
+		<property name="CODICE_ESITO" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="CODICE_ERRORE" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="MESG_ERRORE" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="CODICE_TIPO_INVIO" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+	</class>
+	<class name="it.eng.parer.model.impl.DocumentiCollegatiImpl" table="parer_DocumentiCollegati">
+		<composite-id class="it.eng.parer.service.persistence.DocumentiCollegatiPK" name="primaryKey">
+			<key-property name="DOC_COLLEGATO_NUMERO" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+			<key-property name="DOC_COLLEGATO_ANNO" type="com.liferay.portal.dao.orm.hibernate.IntegerType" />
+			<key-property name="DOC_COLLEGATO_TIPO_REGISTRO" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+			<key-property name="ID_INVIO" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		</composite-id>
+		<property name="DESCRIZIONE_COLLEGAMENTO" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+	</class>
+	<class name="it.eng.parer.model.impl.ParametriImpl" table="parer_Parametri">
+		<id name="chiave" type="java.lang.String">
+			<generator class="assigned" />
+		</id>
+		<property name="valore" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+	</class>
+</hibernate-mapping>

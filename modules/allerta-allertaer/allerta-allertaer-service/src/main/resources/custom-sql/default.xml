@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+<custom-sql>
+	<sql
+		id="it.eng.allerter.service.persistence.AllertaFinder.getAllertasOrdered">
+		
+		 <![CDATA[
+		 	SELECT * FROM allerter_allerta where stato = 0
+		 ]]>
+		
+	</sql>
+	
+</custom-sql>

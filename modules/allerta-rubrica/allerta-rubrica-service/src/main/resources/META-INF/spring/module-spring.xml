@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+
+<beans
+	default-destroy-method="destroy"
+	default-init-method="afterPropertiesSet"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
+>
+	<bean class="it.eng.allerte.service.impl.RubricaCanaleLocalServiceImpl" id="it.eng.allerte.service.RubricaCanaleLocalService" />
+	<bean class="it.eng.allerte.service.impl.RubricaCanaleServiceImpl" id="it.eng.allerte.service.RubricaCanaleService" />
+	<bean class="it.eng.allerte.service.persistence.impl.RubricaCanalePersistenceImpl" id="it.eng.allerte.service.persistence.RubricaCanalePersistence" parent="basePersistence" />
+	<bean class="it.eng.allerte.service.impl.RubricaContattoLocalServiceImpl" id="it.eng.allerte.service.RubricaContattoLocalService" />
+	<bean class="it.eng.allerte.service.impl.RubricaContattoServiceImpl" id="it.eng.allerte.service.RubricaContattoService" />
+	<bean class="it.eng.allerte.service.persistence.impl.RubricaContattoPersistenceImpl" id="it.eng.allerte.service.persistence.RubricaContattoPersistence" parent="basePersistence" />
+	<bean class="it.eng.allerte.service.persistence.impl.RubricaContattoFinderImpl" id="it.eng.allerte.service.persistence.RubricaContattoFinder" parent="basePersistence" />
+	<bean class="it.eng.allerte.service.impl.RubricaGruppoLocalServiceImpl" id="it.eng.allerte.service.RubricaGruppoLocalService" />
+	<bean class="it.eng.allerte.service.impl.RubricaGruppoServiceImpl" id="it.eng.allerte.service.RubricaGruppoService" />
+	<bean class="it.eng.allerte.service.persistence.impl.RubricaGruppoPersistenceImpl" id="it.eng.allerte.service.persistence.RubricaGruppoPersistence" parent="basePersistence" />
+	<bean class="it.eng.allerte.service.persistence.impl.RubricaGruppoFinderImpl" id="it.eng.allerte.service.persistence.RubricaGruppoFinder" parent="basePersistence" />
+	<bean class="it.eng.allerte.service.impl.RubricaGruppoGruppiLocalServiceImpl" id="it.eng.allerte.service.RubricaGruppoGruppiLocalService" />
+	<bean class="it.eng.allerte.service.impl.RubricaGruppoGruppiServiceImpl" id="it.eng.allerte.service.RubricaGruppoGruppiService" />
+	<bean class="it.eng.allerte.service.persistence.impl.RubricaGruppoGruppiPersistenceImpl" id="it.eng.allerte.service.persistence.RubricaGruppoGruppiPersistence" parent="basePersistence" />
+	<bean class="it.eng.allerte.service.persistence.impl.RubricaGruppoGruppiFinderImpl" id="it.eng.allerte.service.persistence.RubricaGruppoGruppiFinder" parent="basePersistence" />
+	<bean class="it.eng.allerte.service.impl.RubricaGruppoNominativiLocalServiceImpl" id="it.eng.allerte.service.RubricaGruppoNominativiLocalService" />
+	<bean class="it.eng.allerte.service.impl.RubricaGruppoNominativiServiceImpl" id="it.eng.allerte.service.RubricaGruppoNominativiService" />
+	<bean class="it.eng.allerte.service.persistence.impl.RubricaGruppoNominativiPersistenceImpl" id="it.eng.allerte.service.persistence.RubricaGruppoNominativiPersistence" parent="basePersistence" />
+	<bean class="it.eng.allerte.service.persistence.impl.RubricaGruppoNominativiFinderImpl" id="it.eng.allerte.service.persistence.RubricaGruppoNominativiFinder" parent="basePersistence" />
+	<bean class="it.eng.allerte.service.impl.RubricaLogLocalServiceImpl" id="it.eng.allerte.service.RubricaLogLocalService" />
+	<bean class="it.eng.allerte.service.impl.RubricaLogServiceImpl" id="it.eng.allerte.service.RubricaLogService" />
+	<bean class="it.eng.allerte.service.persistence.impl.RubricaLogPersistenceImpl" id="it.eng.allerte.service.persistence.RubricaLogPersistence" parent="basePersistence" />
+	<bean class="it.eng.allerte.service.persistence.impl.RubricaLogFinderImpl" id="it.eng.allerte.service.persistence.RubricaLogFinder" parent="basePersistence" />
+	<bean class="it.eng.allerte.service.impl.RubricaNominativoLocalServiceImpl" id="it.eng.allerte.service.RubricaNominativoLocalService" />
+	<bean class="it.eng.allerte.service.impl.RubricaNominativoServiceImpl" id="it.eng.allerte.service.RubricaNominativoService" />
+	<bean class="it.eng.allerte.service.persistence.impl.RubricaNominativoPersistenceImpl" id="it.eng.allerte.service.persistence.RubricaNominativoPersistence" parent="basePersistence" />
+	<bean class="it.eng.allerte.service.persistence.impl.RubricaNominativoFinderImpl" id="it.eng.allerte.service.persistence.RubricaNominativoFinder" parent="basePersistence" />
+	<bean class="it.eng.allerte.service.impl.RubricaPermessiServiceImpl" id="it.eng.allerte.service.RubricaPermessiService" />
+	<bean class="it.eng.allerte.service.persistence.impl.RubricaPermessiPersistenceImpl" id="it.eng.allerte.service.persistence.RubricaPermessiPersistence" parent="basePersistence" />
+	<bean class="it.eng.allerte.service.impl.RubricaRuoloLocalServiceImpl" id="it.eng.allerte.service.RubricaRuoloLocalService" />
+	<bean class="it.eng.allerte.service.impl.RubricaRuoloServiceImpl" id="it.eng.allerte.service.RubricaRuoloService" />
+	<bean class="it.eng.allerte.service.persistence.impl.RubricaRuoloPersistenceImpl" id="it.eng.allerte.service.persistence.RubricaRuoloPersistence" parent="basePersistence" />
+	<bean class="it.eng.allerte.service.impl.RubricaRuoloPermessiLocalServiceImpl" id="it.eng.allerte.service.RubricaRuoloPermessiLocalService" />
+	<bean class="it.eng.allerte.service.impl.RubricaRuoloPermessiServiceImpl" id="it.eng.allerte.service.RubricaRuoloPermessiService" />
+	<bean class="it.eng.allerte.service.persistence.impl.RubricaRuoloPermessiPersistenceImpl" id="it.eng.allerte.service.persistence.RubricaRuoloPermessiPersistence" parent="basePersistence" />
+	<bean class="it.eng.allerte.service.impl.RubricaRuoloRubricaLocalServiceImpl" id="it.eng.allerte.service.RubricaRuoloRubricaLocalService" />
+	<bean class="it.eng.allerte.service.impl.RubricaRuoloRubricaServiceImpl" id="it.eng.allerte.service.RubricaRuoloRubricaService" />
+	<bean class="it.eng.allerte.service.persistence.impl.RubricaRuoloRubricaPersistenceImpl" id="it.eng.allerte.service.persistence.RubricaRuoloRubricaPersistence" parent="basePersistence" />
+	<bean class="it.eng.allerte.service.impl.RubricaSitoLocalServiceImpl" id="it.eng.allerte.service.RubricaSitoLocalService" />
+	<bean class="it.eng.allerte.service.impl.RubricaSitoServiceImpl" id="it.eng.allerte.service.RubricaSitoService" />
+	<bean class="it.eng.allerte.service.persistence.impl.RubricaSitoPersistenceImpl" id="it.eng.allerte.service.persistence.RubricaSitoPersistence" parent="basePersistence" />
+	<bean class="it.eng.allerte.service.impl.RubricaUtenteSitoLocalServiceImpl" id="it.eng.allerte.service.RubricaUtenteSitoLocalService" />
+	<bean class="it.eng.allerte.service.impl.RubricaUtenteSitoServiceImpl" id="it.eng.allerte.service.RubricaUtenteSitoService" />
+	<bean class="it.eng.allerte.service.persistence.impl.RubricaUtenteSitoPersistenceImpl" id="it.eng.allerte.service.persistence.RubricaUtenteSitoPersistence" parent="basePersistence" />
+</beans>

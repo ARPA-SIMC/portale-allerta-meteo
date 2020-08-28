@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false" default-lazy="false">
+	<import class="it.eng.allerta.messages.services.model.Auth" />
+	<import class="it.eng.allerta.messages.services.model.CounterSms" />
+	<import class="it.eng.allerta.messages.services.model.Nodo" />
+	<import class="it.eng.allerta.messages.services.model.Parametro" />
+	<import class="it.eng.allerta.messages.services.model.SmsSchedulerContext" />
+	<class name="it.eng.allerta.messages.services.model.impl.AuthImpl" table="smsService_Auth">
+		<id column="key_" name="key" type="java.lang.String">
+			<generator class="assigned" />
+		</id>
+		<property name="value" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+	</class>
+	<class name="it.eng.allerta.messages.services.model.impl.CounterSmsImpl" table="smsService_CounterSms">
+		<id name="counterId" type="long">
+			<generator class="increment" />
+		</id>
+		<property column="date_" name="date" type="org.hibernate.type.TimestampType" />
+		<property name="numerosms" type="com.liferay.portal.dao.orm.hibernate.IntegerType" />
+		<property name="nodo" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+	</class>
+	<class name="it.eng.allerta.messages.services.model.impl.NodoImpl" table="smsService_Nodo">
+		<id name="Id" type="long">
+			<generator class="assigned" />
+		</id>
+		<property name="ip" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="porta" type="com.liferay.portal.dao.orm.hibernate.IntegerType" />
+		<property name="nodoConnesso" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="dataConnessione" type="org.hibernate.type.TimestampType" />
+	</class>
+	<class name="it.eng.allerta.messages.services.model.impl.ParametroImpl" table="smsService_Parametro">
+		<id name="Id" type="long">
+			<generator class="increment" />
+		</id>
+		<property name="ip" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="porta" type="com.liferay.portal.dao.orm.hibernate.IntegerType" />
+		<property name="username" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property column="password_" name="password" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="mittente" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="nodo" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="dataConnessione" type="org.hibernate.type.TimestampType" />
+	</class>
+	<class name="it.eng.allerta.messages.services.model.impl.SmsSchedulerContextImpl" table="smsService_SmsSchedulerContext">
+		<id name="varId" type="java.lang.String">
+			<generator class="assigned" />
+		</id>
+		<property name="value" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+	</class>
+</hibernate-mapping>

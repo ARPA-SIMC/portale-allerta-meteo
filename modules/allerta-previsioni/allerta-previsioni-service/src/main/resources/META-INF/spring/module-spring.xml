@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+
+<beans
+	default-destroy-method="destroy"
+	default-init-method="afterPropertiesSet"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
+>
+	<bean class="it.eng.previsioni.meteo.service.impl.BollettinoLocalServiceImpl" id="it.eng.previsioni.meteo.service.BollettinoLocalService" />
+	<bean class="it.eng.previsioni.meteo.service.impl.BollettinoServiceImpl" id="it.eng.previsioni.meteo.service.BollettinoService" />
+	<bean class="it.eng.previsioni.meteo.service.persistence.impl.BollettinoPersistenceImpl" id="it.eng.previsioni.meteo.service.persistence.BollettinoPersistence" parent="basePersistence" />
+	<bean class="it.eng.previsioni.meteo.service.impl.ImgLocalServiceImpl" id="it.eng.previsioni.meteo.service.ImgLocalService" />
+	<bean class="it.eng.previsioni.meteo.service.impl.ImgServiceImpl" id="it.eng.previsioni.meteo.service.ImgService" />
+	<bean class="it.eng.previsioni.meteo.service.persistence.impl.ImgPersistenceImpl" id="it.eng.previsioni.meteo.service.persistence.ImgPersistence" parent="basePersistence" />
+	<bean class="it.eng.previsioni.meteo.service.impl.StoricoLocalServiceImpl" id="it.eng.previsioni.meteo.service.StoricoLocalService" />
+	<bean class="it.eng.previsioni.meteo.service.persistence.impl.StoricoPersistenceImpl" id="it.eng.previsioni.meteo.service.persistence.StoricoPersistence" parent="basePersistence" />
+</beans>

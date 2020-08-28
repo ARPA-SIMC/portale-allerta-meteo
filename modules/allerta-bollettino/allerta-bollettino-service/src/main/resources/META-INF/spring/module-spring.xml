@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+
+<beans
+	default-destroy-method="destroy"
+	default-init-method="afterPropertiesSet"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
+>
+	<bean class="it.eng.bollettino.service.impl.AllarmeLocalServiceImpl" id="it.eng.bollettino.service.AllarmeLocalService" />
+	<bean class="it.eng.bollettino.service.impl.AllarmeServiceImpl" id="it.eng.bollettino.service.AllarmeService" />
+	<bean class="it.eng.bollettino.service.persistence.impl.AllarmePersistenceImpl" id="it.eng.bollettino.service.persistence.AllarmePersistence" parent="basePersistence" />
+	<bean class="it.eng.bollettino.service.impl.AttivazioneFiumeLocalServiceImpl" id="it.eng.bollettino.service.AttivazioneFiumeLocalService" />
+	<bean class="it.eng.bollettino.service.impl.AttivazioneFiumeServiceImpl" id="it.eng.bollettino.service.AttivazioneFiumeService" />
+	<bean class="it.eng.bollettino.service.persistence.impl.AttivazioneFiumePersistenceImpl" id="it.eng.bollettino.service.persistence.AttivazioneFiumePersistence" parent="basePersistence" />
+	<bean class="it.eng.bollettino.service.impl.BacinoLocalServiceImpl" id="it.eng.bollettino.service.BacinoLocalService" />
+	<bean class="it.eng.bollettino.service.impl.BacinoServiceImpl" id="it.eng.bollettino.service.BacinoService" />
+	<bean class="it.eng.bollettino.service.persistence.impl.BacinoPersistenceImpl" id="it.eng.bollettino.service.persistence.BacinoPersistence" parent="basePersistence" />
+	<bean class="it.eng.bollettino.service.impl.BollettinoLocalServiceImpl" id="it.eng.bollettino.service.BollettinoLocalService" />
+	<bean class="it.eng.bollettino.service.impl.BollettinoServiceImpl" id="it.eng.bollettino.service.BollettinoService" />
+	<bean class="it.eng.bollettino.service.persistence.impl.BollettinoPersistenceImpl" id="it.eng.bollettino.service.persistence.BollettinoPersistence" parent="basePersistence" />
+	<bean class="it.eng.bollettino.service.persistence.impl.BollettinoFinderImpl" id="it.eng.bollettino.service.persistence.BollettinoFinder" parent="basePersistence" />
+	<bean class="it.eng.bollettino.service.impl.BollettinoBacinoLocalServiceImpl" id="it.eng.bollettino.service.BollettinoBacinoLocalService" />
+	<bean class="it.eng.bollettino.service.impl.BollettinoBacinoServiceImpl" id="it.eng.bollettino.service.BollettinoBacinoService" />
+	<bean class="it.eng.bollettino.service.persistence.impl.BollettinoBacinoPersistenceImpl" id="it.eng.bollettino.service.persistence.BollettinoBacinoPersistence" parent="basePersistence" />
+	<bean class="it.eng.bollettino.service.impl.BollettinoIconaLocalServiceImpl" id="it.eng.bollettino.service.BollettinoIconaLocalService" />
+	<bean class="it.eng.bollettino.service.impl.BollettinoIconaServiceImpl" id="it.eng.bollettino.service.BollettinoIconaService" />
+	<bean class="it.eng.bollettino.service.persistence.impl.BollettinoIconaPersistenceImpl" id="it.eng.bollettino.service.persistence.BollettinoIconaPersistence" parent="basePersistence" />
+	<bean class="it.eng.bollettino.service.impl.BollettinoParametroLocalServiceImpl" id="it.eng.bollettino.service.BollettinoParametroLocalService" />
+	<bean class="it.eng.bollettino.service.impl.BollettinoParametroServiceImpl" id="it.eng.bollettino.service.BollettinoParametroService" />
+	<bean class="it.eng.bollettino.service.persistence.impl.BollettinoParametroPersistenceImpl" id="it.eng.bollettino.service.persistence.BollettinoParametroPersistence" parent="basePersistence" />
+	<bean class="it.eng.bollettino.service.impl.BollettinoSensoreLocalServiceImpl" id="it.eng.bollettino.service.BollettinoSensoreLocalService" />
+	<bean class="it.eng.bollettino.service.impl.BollettinoSensoreServiceImpl" id="it.eng.bollettino.service.BollettinoSensoreService" />
+	<bean class="it.eng.bollettino.service.persistence.impl.BollettinoSensorePersistenceImpl" id="it.eng.bollettino.service.persistence.BollettinoSensorePersistence" parent="basePersistence" />
+	<bean class="it.eng.bollettino.service.impl.IconaLocalServiceImpl" id="it.eng.bollettino.service.IconaLocalService" />
+	<bean class="it.eng.bollettino.service.impl.IconaServiceImpl" id="it.eng.bollettino.service.IconaService" />
+	<bean class="it.eng.bollettino.service.persistence.impl.IconaPersistenceImpl" id="it.eng.bollettino.service.persistence.IconaPersistence" parent="basePersistence" />
+	<bean class="it.eng.bollettino.service.impl.IdrometroLocalServiceImpl" id="it.eng.bollettino.service.IdrometroLocalService" />
+	<bean class="it.eng.bollettino.service.impl.IdrometroServiceImpl" id="it.eng.bollettino.service.IdrometroService" />
+	<bean class="it.eng.bollettino.service.persistence.impl.IdrometroPersistenceImpl" id="it.eng.bollettino.service.persistence.IdrometroPersistence" parent="basePersistence" />
+	<bean class="it.eng.bollettino.service.impl.PluviometroLocalServiceImpl" id="it.eng.bollettino.service.PluviometroLocalService" />
+	<bean class="it.eng.bollettino.service.impl.PluviometroServiceImpl" id="it.eng.bollettino.service.PluviometroService" />
+	<bean class="it.eng.bollettino.service.persistence.impl.PluviometroPersistenceImpl" id="it.eng.bollettino.service.persistence.PluviometroPersistence" parent="basePersistence" />
+	<bean class="it.eng.bollettino.service.impl.RegolaAllarmeLocalServiceImpl" id="it.eng.bollettino.service.RegolaAllarmeLocalService" />
+	<bean class="it.eng.bollettino.service.impl.RegolaAllarmeServiceImpl" id="it.eng.bollettino.service.RegolaAllarmeService" />
+	<bean class="it.eng.bollettino.service.persistence.impl.RegolaAllarmePersistenceImpl" id="it.eng.bollettino.service.persistence.RegolaAllarmePersistence" parent="basePersistence" />
+	<bean class="it.eng.bollettino.service.impl.RegolaAllarmeComuneLocalServiceImpl" id="it.eng.bollettino.service.RegolaAllarmeComuneLocalService" />
+	<bean class="it.eng.bollettino.service.impl.RegolaAllarmeComuneServiceImpl" id="it.eng.bollettino.service.RegolaAllarmeComuneService" />
+	<bean class="it.eng.bollettino.service.persistence.impl.RegolaAllarmeComunePersistenceImpl" id="it.eng.bollettino.service.persistence.RegolaAllarmeComunePersistence" parent="basePersistence" />
+	<bean class="it.eng.bollettino.service.impl.RegolaAllarmeCondizioneLocalServiceImpl" id="it.eng.bollettino.service.RegolaAllarmeCondizioneLocalService" />
+	<bean class="it.eng.bollettino.service.impl.RegolaAllarmeCondizioneServiceImpl" id="it.eng.bollettino.service.RegolaAllarmeCondizioneService" />
+	<bean class="it.eng.bollettino.service.persistence.impl.RegolaAllarmeCondizionePersistenceImpl" id="it.eng.bollettino.service.persistence.RegolaAllarmeCondizionePersistence" parent="basePersistence" />
+	<bean class="it.eng.bollettino.service.impl.StazioneLocalServiceImpl" id="it.eng.bollettino.service.StazioneLocalService" />
+	<bean class="it.eng.bollettino.service.impl.StazioneServiceImpl" id="it.eng.bollettino.service.StazioneService" />
+	<bean class="it.eng.bollettino.service.persistence.impl.StazionePersistenceImpl" id="it.eng.bollettino.service.persistence.StazionePersistence" parent="basePersistence" />
+	<bean class="it.eng.bollettino.service.impl.StazioneVariabileLocalServiceImpl" id="it.eng.bollettino.service.StazioneVariabileLocalService" />
+	<bean class="it.eng.bollettino.service.impl.StazioneVariabileServiceImpl" id="it.eng.bollettino.service.StazioneVariabileService" />
+	<bean class="it.eng.bollettino.service.persistence.impl.StazioneVariabilePersistenceImpl" id="it.eng.bollettino.service.persistence.StazioneVariabilePersistence" parent="basePersistence" />
+	<bean class="it.eng.bollettino.service.impl.ValoreSensoreLocalServiceImpl" id="it.eng.bollettino.service.ValoreSensoreLocalService" />
+	<bean class="it.eng.bollettino.service.impl.ValoreSensoreServiceImpl" id="it.eng.bollettino.service.ValoreSensoreService" />
+	<bean class="it.eng.bollettino.service.persistence.impl.ValoreSensorePersistenceImpl" id="it.eng.bollettino.service.persistence.ValoreSensorePersistence" parent="basePersistence" />
+	<bean class="it.eng.bollettino.service.impl.VariabileLocalServiceImpl" id="it.eng.bollettino.service.VariabileLocalService" />
+	<bean class="it.eng.bollettino.service.impl.VariabileServiceImpl" id="it.eng.bollettino.service.VariabileService" />
+	<bean class="it.eng.bollettino.service.persistence.impl.VariabilePersistenceImpl" id="it.eng.bollettino.service.persistence.VariabilePersistence" parent="basePersistence" />
+</beans>

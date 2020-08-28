@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+<custom-sql>
+
+	<sql id="it.eng.allerte.service.persistence.DatiSpecificiInvioFinderImpl.getInvioByEsitoInvio">
+    <![CDATA[
+			select
+		id_invio,			
+		ambiente,			
+		versione,			
+		versatore_ente,			
+		versatore_user_id,			
+		versatore_struttura,			
+		chiave_numero,			
+		chiave_anno,			
+		chiave_tipo_registro,			
+		tipologia_unita_documentaria,			
+		tipo_conservazione,		
+		forza_accettazione,			
+		forza_conservazione,			
+		forza_collegamento,			
+		oggetto_unita_documentaria,			
+		data_unita_documentaria,		
+		versione_dati_specifici,			
+		identificativo_dato_specifico,			
+		data_generazione,			
+		num_sms_generati,			
+		num_sms_inviati,			
+		num_notifiche_ricezione,			
+		denominazione_applicativo,			
+		oggetto_mail,			
+		testo_mail,			
+		compilatore_arpae,			
+		compilatore_protezione_civile,			
+		data_inizio_validita,			
+		data_fine_validita,			
+		approvatore_arpae,			
+		data_firma_arpae,			
+		approvatore_protezione_civile,			
+		data_firma_protezione_civile,			
+		invio_responsabile_territorio,			
+		id_documento_principale,			
+		tipo_documento,			
+		tipo_struttura,			
+		denominazione_sensore_rilevamento,			
+		regola_allarme_id,			
+		regola_allarme_nome,			
+		regola_allarme_descrizione,			
+		esito_invio,			
+		userid,			
+		companyid,			
+		groupid,			
+		data_invio,			
+		data_risposta,			
+		codice_esito,			
+		codice_errore,			
+		mesg_errore,			
+		codice_tipo_invio
+		from parer_datispecificiinvio
+		where upper(esito_invio) = upper (?)
+	]]>
+	</sql>
+
+
+</custom-sql>

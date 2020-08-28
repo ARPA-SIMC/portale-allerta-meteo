@@ -1,0 +1,21 @@
+dependencies {
+	compileOnly group: "com.liferay.portal", name: "com.liferay.portal.kernel"
+	compileOnly group: "com.liferay.portal", name: "com.liferay.util.taglib"
+	compileOnly group: "javax.portlet", name: "portlet-api"
+	compileOnly group: "javax.servlet", name: "javax.servlet-api"
+	compileOnly group: "jstl", name: "jstl"
+	compileOnly group: "org.osgi", name: "org.osgi.service.component.annotations"
+	
+	compileOnly group: 'javax.mail', name: 'mail', version: '1.4.7'
+	
+	
+	compile group: "biz.aQute.bnd", name: "biz.aQute.bndlib", version: "3.1.0"
+   	compileOnly group: "com.liferay", name: "com.liferay.portal.configuration.metatype.api", version: "2.0.0"
+  
+	compileOnly project(":modules:allerta-base")
+	compileOnly project(":modules:allerta-legacy")
+	compileOnly project(":modules:allerta-allertaer:allerta-allertaer-api")
+	compileOnly project(":modules:allerta-bollettino:allerta-bollettino-api")
+	compileOnly project(":modules:allerta-rubrica:allerta-rubrica-api")
+	
+}

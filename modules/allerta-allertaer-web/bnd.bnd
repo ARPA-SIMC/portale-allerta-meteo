@@ -1,0 +1,5 @@
+Bundle-Name: allerta-allertaer-web
+Bundle-SymbolicName: it.eng.allerta.allertaer.portlet
+Bundle-Version: 1.0.0
+-metatype: *
+

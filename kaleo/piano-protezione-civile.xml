@@ -1,0 +1,215 @@
+<?xml version="1.0"?>
+<workflow-definition
+	xmlns="urn:liferay.com:liferay-workflow_6.2.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:liferay.com:liferay-workflow_6.2.0 http://www.liferay.com/dtd/liferay-workflow-definition_6_2_0.xsd">
+	<name>Piani di protezione civile Comunali</name>
+	<description>wf di approvazione piano di protezione civile del comune</description>
+	<version>35</version>
+	<state>
+		<name>created</name>
+		<metadata><![CDATA[{"xy":[6,30],"transitions":{"Determine Review":{"bendpoints":[]}}}]]></metadata>
+		<initial>true</initial>
+		<transitions>
+			<transition>
+				<name>Determine Review</name>
+				<target>review-or-approve</target>
+				<default>true</default>
+			</transition>
+		</transitions>
+	</state>
+	<condition>
+		<name>review-or-approve</name>
+        <metadata><![CDATA[{"xy":[6,150],"transitions":{"review":{"bendpoints":[]}}}]]></metadata>
+		<script>
+			<![CDATA[
+
+				import com.liferay.portal.service.RoleLocalServiceUtil;
+                import com.liferay.portal.kernel.util.GetterUtil;
+				import com.liferay.portal.kernel.model.Role;
+				import com.liferay.portal.kernel.workflow.WorkflowConstants;
+				
+				try{
+					long userid = GetterUtil.getLong((String)workflowContext.get(WorkflowConstants.CONTEXT_USER_ID));
+
+					long companyid = GetterUtil.getLong((String)workflowContext.get(WorkflowConstants.CONTEXT_COMPANY_ID));
+
+					String[] roles={"Administrator","SINDACO","DELEGATO SINDACO"};
+						if (RoleLocalServiceUtil.hasUserRoles(userid, companyid, roles, true)){print("approvato");
+							returnValue = "automaticapprove";
+						}
+						else{
+							returnValue = "review";
+						}
+					} catch (Exception e) {
+					e.printStackTrace();
+					}
+            ]]>
+		</script>
+		<script-language>groovy</script-language>
+		<transitions>
+            <transition>
+                <name>automaticapprove</name>
+                <target>automaticapprove</target>
+                <default>false</default>
+            </transition>
+            <transition>
+                <name>review</name>
+                <target>review</target>
+                <default>false</default>
+            </transition>
+		</transitions>
+	</condition>
+	<task>
+		<name>automaticapprove</name>
+		<metadata><![CDATA[{"xy":[59,370],"transitions":{"approved":{"bendpoints":[]}}}]]></metadata>
+		<assignments>
+			<user>
+				<screen-name>admin</screen-name>
+			</user>
+		</assignments>
+		<task-timers>
+			<task-timer>
+				<name>automaticapprove</name>
+				<delay>
+					<duration>1</duration>
+					<scale>second</scale>
+				</delay>
+				<timer-actions>
+					<timer-notification>
+						<name>Inserito nuovo documento</name>
+						<template>Un nuovo documento dal comune è stato inserito da ${userName}</template>
+						<template-language>freemarker</template-language>
+						<notification-type>email</notification-type>
+						<recipients>
+							<address>admin.allertameteoer@regione.emilia-romagna.it</address>
+						</recipients>
+					</timer-notification>
+					<timer-action>
+						<name>approve</name>
+						<description>approving</description>
+						<script>
+							<![CDATA[
+									import com.liferay.portal.kernel.workflow.WorkflowStatusManagerUtil;
+						            import com.liferay.portal.kernel.workflow.WorkflowConstants;
+						            WorkflowStatusManagerUtil.updateStatus(WorkflowConstants.getLabelStatus("approved"), workflowContext);
+							]]>
+						</script>
+						<script-language>groovy</script-language>
+						
+					</timer-action>
+				</timer-actions>
+			</task-timer>
+		</task-timers>
+		<transitions>
+			<transition>
+				<name>approved</name>
+				<target>approved</target>
+				<default>true</default>
+			</transition>
+		</transitions>
+	</task>
+	<task>
+		<name>update</name>
+		<metadata>
+			<![CDATA[{"transitions":{"resubmit":{"bendpoints":[[303,140]]}},"xy":[328,199]}]]>
+		</metadata>
+		<actions>
+			<action>
+				<name>reject</name>
+				<script>
+					<![CDATA[
+					    import com.liferay.portal.kernel.workflow.WorkflowStatusManagerUtil;
+						import com.liferay.portal.kernel.workflow.WorkflowConstants;
+						WorkflowStatusManagerUtil.updateStatus(WorkflowConstants.getLabelStatus("denied"), workflowContext);
+						WorkflowStatusManagerUtil.updateStatus(WorkflowConstants.getLabelStatus("pending"), workflowContext);
+					]]>
+				</script>
+				<script-language>groovy</script-language>
+				<execution-type>onAssignment</execution-type>
+			</action>
+			<notification>
+				<name>Creator Modification Notification</name>
+				<template>Il documento è stato respinto.</template>
+				<template-language>text</template-language>
+				<notification-type>email</notification-type>
+				<notification-type>user-notification</notification-type>
+				<execution-type>onAssignment</execution-type>
+			</notification>
+		</actions>
+		<assignments>
+			<user/>
+		</assignments>
+		<transitions>
+			<transition>
+				<name>resubmit</name>
+				<target>review</target>
+			</transition>
+		</transitions>
+	</task>
+	<task>
+		<name>review</name>
+		<metadata><![CDATA[{"xy":[170,30],"transitions":{"reject":{"bendpoints":[]}}}]]></metadata>
+		<actions>
+			<notification>
+				<name>Approvazione piano di protezione civile comunale</name>
+				<template>Un nuovo documento richiede la tua supervisione</template>
+				<template-language>text</template-language>
+				<notification-type>email</notification-type>
+				<notification-type>user-notification</notification-type>
+				<execution-type>onAssignment</execution-type>
+			</notification>
+			<notification>
+				<name>Notifica di revisione completata</name>
+				<template>La revisione del documento da te sottomesso è stata completata ${taskComments}.</template>
+				<template-language>freemarker</template-language>
+				<notification-type>email</notification-type>
+				<recipients>
+					<user/>
+				</recipients>
+				<execution-type>onExit</execution-type>
+			</notification>
+		</actions>
+		<assignments>
+			<roles>
+				<role>
+					<role-type>site</role-type>
+					<name>SINDACO SITE</name>
+				</role>
+				<role>
+					<role-type>site</role-type>
+					<name>DELEGATO SINDACO SITE</name>
+				</role>
+			</roles>
+		</assignments>
+		<transitions>
+			<transition>
+				<name>approve</name>
+				<target>approved</target>
+			</transition>
+			<transition>
+				<name>reject</name>
+				<target>update</target>
+				<default>false</default>
+			</transition>
+		</transitions>
+	</task>
+	<state>
+		<name>approved</name>
+		<metadata><![CDATA[{"xy":[382,45]}]]></metadata>
+		<actions>
+			<action>
+				<name>approve</name>
+				<description/>
+				<script>
+					<![CDATA[	
+					import com.liferay.portal.kernel.workflow.WorkflowConstants;
+					import com.liferay.portal.kernel.workflow.WorkflowStatusManagerUtil;
+					WorkflowStatusManagerUtil.updateStatus(WorkflowConstants.STATUS_APPROVED, workflowContext);
+				]]>
+				</script>
+				<script-language>groovy</script-language>
+				<execution-type>onEntry</execution-type>
+			</action>
+		</actions>
+	</state>
+</workflow-definition>

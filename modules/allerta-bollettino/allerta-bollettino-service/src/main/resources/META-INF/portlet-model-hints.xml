@@ -1,0 +1,213 @@
+<?xml version="1.0"?>
+
+<model-hints>
+	<model name="it.eng.bollettino.model.Allarme">
+		<field name="uuid" type="String" />
+		<field name="allarmeId" type="long" />
+		<field name="groupId" type="long" />
+		<field name="companyId" type="long" />
+		<field name="userId" type="long" />
+		<field name="userName" type="String" />
+		<field name="createDate" type="Date" />
+		<field name="modifiedDate" type="Date" />
+		<field name="stato" type="int" />
+		<field name="idApprovatore" type="long" />
+		<field name="dataApprovazione" type="Date" />
+		<field name="idRegola" type="long" />
+		<field name="colore" type="int" />
+		<field name="dataInizio" type="Date" />
+		<field name="dataFine" type="Date" />
+	</model>
+	<model name="it.eng.bollettino.model.AttivazioneFiume">
+		<field name="fiumeId" type="String" />
+		<field name="attivo" type="boolean" />
+	</model>
+	<model name="it.eng.bollettino.model.Bacino">
+		<field name="uuid" type="String" />
+		<field name="id" type="String" />
+		<field name="nome" type="String" />
+		<field name="progressivo" type="int" />
+	</model>
+	<model name="it.eng.bollettino.model.Bollettino">
+		<field name="uuid" type="String" />
+		<field name="bollettinoId" type="long" />
+		<field name="groupId" type="long" />
+		<field name="companyId" type="long" />
+		<field name="userId" type="long" />
+		<field name="userName" type="String" />
+		<field name="createDate" type="Date" />
+		<field name="modifiedDate" type="Date" />
+		<field name="stato" type="int" />
+		<field name="idApprovatore" type="long" />
+		<field name="dataApprovazione" type="Date" />
+		<field name="numero" type="String" />
+		<field name="progressivo" type="int" />
+		<field name="anno" type="int" />
+		<field name="dataEmissione" type="Date" />
+		<field name="dataInizio" type="Date" />
+		<field name="dataFine" type="Date" />
+		<field name="noteMeteo" type="String">
+			<hint name="max-length">5000</hint>
+		</field>
+		<field name="stringaMeteo" type="String">
+			<hint name="max-length">5000</hint>
+		</field>
+		<field name="link" type="String">
+			<hint name="max-length">256</hint>
+		</field>
+		<field name="ultimo" type="boolean" />
+		<field name="hash" type="String" />
+	</model>
+	<model name="it.eng.bollettino.model.BollettinoBacino">
+		<field name="uuid" type="String" />
+		<field name="id" type="long" />
+		<field name="idBollettino" type="long" />
+		<field name="progressivo" type="int" />
+		<field name="idBacino" type="String" />
+		<field name="nomeBacino" type="String" />
+		<field name="oreOsservazione" type="String" />
+		<field name="note" type="String">
+			<hint name="max-length">5000</hint>
+		</field>
+	</model>
+	<model name="it.eng.bollettino.model.BollettinoIcona">
+		<field name="uuid" type="String" />
+		<field name="id" type="long" />
+		<field name="idBollettino" type="long" />
+		<field name="idIcona" type="long" />
+		<field name="x" type="double" />
+		<field name="y" type="double" />
+	</model>
+	<model name="it.eng.bollettino.model.BollettinoParametro">
+		<field name="parametroId" type="String" />
+		<field name="valore" type="String">
+			<hint name="max-length">5000</hint>
+		</field>
+	</model>
+	<model name="it.eng.bollettino.model.BollettinoSensore">
+		<field name="uuid" type="String" />
+		<field name="id" type="long" />
+		<field name="idBollettino" type="long" />
+		<field name="idStazione" type="long" />
+		<field name="idBollettinoBacino" type="long" />
+		<field name="progressivo" type="int" />
+		<field name="nomeStazione" type="String" />
+		<field name="oreOsservazione" type="String" />
+		<field name="osservazione" type="double" />
+		<field name="tendenza" type="int" />
+		<field name="colmoPrevisto" type="String" />
+		<field name="oraPrevista" type="String" />
+		<field name="soglia1" type="double" />
+		<field name="soglia2" type="double" />
+		<field name="soglia3" type="double" />
+		<field name="giornoPrevisto" type="String" />
+		<field name="osservato" type="boolean" />
+	</model>
+	<model name="it.eng.bollettino.model.Icona">
+		<field name="uuid" type="String" />
+		<field name="id" type="long" />
+		<field name="path" type="String" />
+		<field name="descrizione" type="String" />
+	</model>
+	<model name="it.eng.bollettino.model.Idrometro">
+		<field name="stazioneId" type="String" />
+		<field name="nomeBacino" type="String" />
+		<field name="nomeSottobacino" type="String" />
+		<field name="nomeRubrica" type="String" />
+		<field name="sogliaSpike" type="double" />
+	</model>
+	<model name="it.eng.bollettino.model.Pluviometro">
+		<field name="stazioneId" type="String" />
+		<field name="nomeGruppo" type="String" />
+		<field name="nomeRubrica" type="String" />
+	</model>
+	<model name="it.eng.bollettino.model.RegolaAllarme">
+		<field name="uuid" type="String" />
+		<field name="id" type="long" />
+		<field name="nome" type="String" />
+		<field name="espressione" type="String">
+			<hint name="max-length">1024</hint>
+		</field>
+		<field name="descrizione" type="String" />
+		<field name="colore" type="int" />
+		<field name="attivo" type="boolean" />
+	</model>
+	<model name="it.eng.bollettino.model.RegolaAllarmeComune">
+		<field name="uuid" type="String" />
+		<field name="id" type="long" />
+		<field name="idRegola" type="long" />
+		<field name="idComune" type="long" />
+	</model>
+	<model name="it.eng.bollettino.model.RegolaAllarmeCondizione">
+		<field name="uuid" type="String" />
+		<field name="id" type="long" />
+		<field name="idRegola" type="long" />
+		<field name="lettera" type="String" />
+		<field name="idVariabile" type="String" />
+		<field name="idStazione" type="String" />
+		<field name="idStazioneVariabile" type="long" />
+		<field name="soglia" type="int" />
+		<field name="valoreSoglia" type="double" />
+	</model>
+	<model name="it.eng.bollettino.model.Stazione">
+		<field name="uuid" type="String" />
+		<field name="id" type="String" />
+		<field name="ident" type="String" />
+		<field name="name" type="String" />
+		<field name="lon" type="long" />
+		<field name="lat" type="long" />
+		<field name="height" type="double" />
+		<field name="idBasin" type="String" />
+		<field name="idSubbasin" type="String" />
+		<field name="idCountry" type="String" />
+		<field name="idProvince" type="String" />
+		<field name="idRegion" type="String" />
+		<field name="idMunicipality" type="String" />
+		<field name="idMacroarea" type="String" />
+		<field name="nameBasin" type="String" />
+		<field name="nameSubbasin" type="String" />
+		<field name="nameCountry" type="String" />
+		<field name="nameProvince" type="String" />
+		<field name="nameRegion" type="String" />
+		<field name="nameMunicipality" type="String" />
+		<field name="nameMacroarea" type="String" />
+		<field name="network" type="String" />
+		<field name="attivo" type="boolean" />
+		<field name="incluso" type="boolean" />
+		<field name="progressivo" type="int" />
+	</model>
+	<model name="it.eng.bollettino.model.StazioneVariabile">
+		<field name="uuid" type="String" />
+		<field name="id" type="long" />
+		<field name="idStazione" type="String" />
+		<field name="idVariabile" type="String" />
+		<field name="dataUltimoValore" type="Date" />
+		<field name="soglia1" type="double" />
+		<field name="soglia2" type="double" />
+		<field name="soglia3" type="double" />
+	</model>
+	<model name="it.eng.bollettino.model.ValoreSensore">
+		<field name="uuid" type="String" />
+		<field name="id" type="long" />
+		<field name="value" type="double" />
+		<field name="datetime" type="Date" />
+		<field name="idVariabile" type="String" />
+		<field name="idStazione" type="String" />
+	</model>
+	<model name="it.eng.bollettino.model.Variabile">
+		<field name="uuid" type="String" />
+		<field name="id" type="String" />
+		<field name="description_it" type="String">
+			<hint name="max-length">5000</hint>
+		</field>
+		<field name="level_t1" type="int" />
+		<field name="level_t2" type="int" />
+		<field name="level_v1" type="int" />
+		<field name="level_v2" type="int" />
+		<field name="trange_p1" type="int" />
+		<field name="trange_p2" type="int" />
+		<field name="trange_pind" type="int" />
+		<field name="unit" type="String" />
+		<field name="bcode" type="String" />
+	</model>
+</model-hints>

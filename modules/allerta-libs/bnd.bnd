@@ -1,0 +1,42 @@
+Bundle-Name: allerta-libs
+Bundle-SymbolicName: it.eng.allerta.libs
+Bundle-Version: 1.0.0
+
+Export-Package: \
+	org.apache.http.*,\
+	org.apache.poi.*,\
+	net.sf.jasperreports.*
+
+-exportcontents: *
+
+Import-Package:\
+	!org.apache.avalon.*,\
+	!org.apache.log.*,\
+	\
+	!antlr,\
+	!antlr.*,\
+	!bsh,\
+	!bsh.*,\
+	!com.apple.*,\
+	!com.ibm.*,\
+	!com.lowagie.*,\
+	!com.sun.*,\
+	!groovyjarjarasm.*,\
+	!javax.jmdns,\
+	!javax.jmdns.*,\
+	!junit.framework,\
+	!junit.framework.*,\
+	!junit.textui,\
+	!junit.textui.*,\
+	!jxl,\
+	!jxl.*,\
+	!mondrian.*,\
+	!net.sourceforge.*,\
+	!org.apache.batik.*,\
+	!org.apache.commons.javaflow.*,\
+	!org.apache.poi.generator.*,\
+	!org.codehaus.*,\
+	!org.eclipse.*,\
+	!org.krysalis.*,\
+	!org.mozilla.*,\	
+	*

@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+
+<beans
+	default-destroy-method="destroy"
+	default-init-method="afterPropertiesSet"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
+>
+	<bean class="it.eng.allerter.service.impl.AllertaLocalServiceImpl" id="it.eng.allerter.service.AllertaLocalService" />
+	<bean class="it.eng.allerter.service.impl.AllertaServiceImpl" id="it.eng.allerter.service.AllertaService" />
+	<bean class="it.eng.allerter.service.persistence.impl.AllertaPersistenceImpl" id="it.eng.allerter.service.persistence.AllertaPersistence" parent="basePersistence" />
+	<bean class="it.eng.allerter.service.persistence.impl.AllertaFinderImpl" id="it.eng.allerter.service.persistence.AllertaFinder" parent="basePersistence" />
+	<bean class="it.eng.allerter.service.impl.AllertaParametroLocalServiceImpl" id="it.eng.allerter.service.AllertaParametroLocalService" />
+	<bean class="it.eng.allerter.service.impl.AllertaParametroServiceImpl" id="it.eng.allerter.service.AllertaParametroService" />
+	<bean class="it.eng.allerter.service.persistence.impl.AllertaParametroPersistenceImpl" id="it.eng.allerter.service.persistence.AllertaParametroPersistence" parent="basePersistence" />
+	<bean class="it.eng.allerter.service.impl.AllertaStatoLocalServiceImpl" id="it.eng.allerter.service.AllertaStatoLocalService" />
+	<bean class="it.eng.allerter.service.impl.AllertaStatoServiceImpl" id="it.eng.allerter.service.AllertaStatoService" />
+	<bean class="it.eng.allerter.service.persistence.impl.AllertaStatoPersistenceImpl" id="it.eng.allerter.service.persistence.AllertaStatoPersistence" parent="basePersistence" />
+	<bean class="it.eng.allerter.service.impl.AreaLocalServiceImpl" id="it.eng.allerter.service.AreaLocalService" />
+	<bean class="it.eng.allerter.service.impl.AreaServiceImpl" id="it.eng.allerter.service.AreaService" />
+	<bean class="it.eng.allerter.service.persistence.impl.AreaPersistenceImpl" id="it.eng.allerter.service.persistence.AreaPersistence" parent="basePersistence" />
+	<bean class="it.eng.allerter.service.impl.EmailLocalServiceImpl" id="it.eng.allerter.service.EmailLocalService" />
+	<bean class="it.eng.allerter.service.impl.EmailServiceImpl" id="it.eng.allerter.service.EmailService" />
+	<bean class="it.eng.allerter.service.persistence.impl.EmailPersistenceImpl" id="it.eng.allerter.service.persistence.EmailPersistence" parent="basePersistence" />
+	<bean class="it.eng.allerter.service.impl.FeedLocalServiceImpl" id="it.eng.allerter.service.FeedLocalService" />
+	<bean class="it.eng.allerter.service.impl.FeedServiceImpl" id="it.eng.allerter.service.FeedService" />
+	<bean class="it.eng.allerter.service.persistence.impl.FeedPersistenceImpl" id="it.eng.allerter.service.persistence.FeedPersistence" parent="basePersistence" />
+	<bean class="it.eng.allerter.service.impl.GeografiaLocalServiceImpl" id="it.eng.allerter.service.GeografiaLocalService" />
+	<bean class="it.eng.allerter.service.impl.GeografiaServiceImpl" id="it.eng.allerter.service.GeografiaService" />
+	<bean class="it.eng.allerter.service.persistence.impl.GeografiaPersistenceImpl" id="it.eng.allerter.service.persistence.GeografiaPersistence" parent="basePersistence" />
+	<bean class="it.eng.allerter.service.impl.LogInternoLocalServiceImpl" id="it.eng.allerter.service.LogInternoLocalService" />
+	<bean class="it.eng.allerter.service.impl.LogInternoServiceImpl" id="it.eng.allerter.service.LogInternoService" />
+	<bean class="it.eng.allerter.service.persistence.impl.LogInternoPersistenceImpl" id="it.eng.allerter.service.persistence.LogInternoPersistence" parent="basePersistence" />
+	<bean class="it.eng.allerter.service.impl.SMSLocalServiceImpl" id="it.eng.allerter.service.SMSLocalService" />
+	<bean class="it.eng.allerter.service.impl.SMSServiceImpl" id="it.eng.allerter.service.SMSService" />
+	<bean class="it.eng.allerter.service.persistence.impl.SMSPersistenceImpl" id="it.eng.allerter.service.persistence.SMSPersistence" parent="basePersistence" />
+	<bean class="it.eng.allerter.service.persistence.impl.SMSFinderImpl" id="it.eng.allerter.service.persistence.SMSFinder" parent="basePersistence" />
+	<bean class="it.eng.allerter.service.impl.StatoAllertamentoLocalServiceImpl" id="it.eng.allerter.service.StatoAllertamentoLocalService" />
+	<bean class="it.eng.allerter.service.impl.StatoAllertamentoServiceImpl" id="it.eng.allerter.service.StatoAllertamentoService" />
+	<bean class="it.eng.allerter.service.persistence.impl.StatoAllertamentoPersistenceImpl" id="it.eng.allerter.service.persistence.StatoAllertamentoPersistence" parent="basePersistence" />
+	<bean class="it.eng.allerter.service.impl.TipoEventoLocalServiceImpl" id="it.eng.allerter.service.TipoEventoLocalService" />
+	<bean class="it.eng.allerter.service.impl.TipoEventoServiceImpl" id="it.eng.allerter.service.TipoEventoService" />
+	<bean class="it.eng.allerter.service.persistence.impl.TipoEventoPersistenceImpl" id="it.eng.allerter.service.persistence.TipoEventoPersistence" parent="basePersistence" />
+</beans>

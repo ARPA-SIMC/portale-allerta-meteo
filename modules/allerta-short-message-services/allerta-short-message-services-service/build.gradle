@@ -1,0 +1,37 @@
+dependencies {
+	compileOnly group: 'javax.mail', name: 'mail', version: '1.4.1'
+	// https://mvnrepository.com/artifact/org.apache.httpcomponents/httpcore
+	compileOnly group: 'org.apache.httpcomponents', name: 'httpcore', version: '4.4.13'
+	compileOnly group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.3.4'
+	compileOnly group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.3.1'
+
+	compileOnly group: "biz.aQute.bnd", name: "biz.aQute.bndlib"
+	compileOnly group: "com.liferay", name: "com.liferay.portal.spring.extender"
+	compileOnly group: "com.liferay.portal", name: "com.liferay.portal.kernel"
+	compileOnly group: "com.liferay", name: "com.liferay.portal.spring.extender", version: "2.0.0"
+	compileOnly group: "com.liferay", name: "com.liferay.petra.string"
+	
+	compileOnly group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.0.1'
+	compileInclude group: 'com.google.code.gson', name: 'gson', version: '2.7'
+	compileInclude group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
+	
+	// https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api
+	compileOnly group: 'javax.servlet', name: 'javax.servlet-api', version: '3.0.1'
+	
+	
+	compileOnly 'com.liferay:com.liferay.portal.upgrade.api:2.0.0'
+	compileOnly group: "com.liferay", name: "com.liferay.portal.dao.orm.custom.sql", version: "1.0.6"
+	
+	compileOnly project(":modules:allerta-base")
+	compileOnly project(":modules:allerta-short-message-services:allerta-short-message-services-api")
+	compileOnly project(":modules:allerta-allertaer:allerta-allertaer-api")
+	compileOnly project(":modules:allerta-allertaer:allerta-allertaer-service")
+	
+	compileOnly 'org.osgi:org.osgi.core'
+}
+
+buildService {
+	apiDir = "../allerta-short-message-services-api/src/main/java"
+}
+
+group = "it.eng.allerta.messages.services"

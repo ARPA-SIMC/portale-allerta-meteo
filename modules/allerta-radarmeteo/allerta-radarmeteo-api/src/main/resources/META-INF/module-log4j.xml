@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+	
+	<appender name="RadarCronAppender" class="org.apache.log4j.RollingFileAppender">
+   
+    	<param name="file" value="${catalina.home}/logs/cron/radar_meteo/info.log" />
+    	<param name="MaxFileSize" value="10MB" />
+    	<param name="MaxBackupIndex" value="5" />
+      		<layout class="org.apache.log4j.PatternLayout">
+            	<param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} %-5p %m%n" />
+        	</layout>
+	</appender>
+	
+	<appender name="RadarWebAppender" class="org.apache.log4j.RollingFileAppender">
+   
+    	<param name="file" value="${catalina.home}/logs/web/radar_meteo/info.log" />
+    	<param name="MaxFileSize" value="10MB" />
+    	<param name="MaxBackupIndex" value="5" />
+      		<layout class="org.apache.log4j.PatternLayout">
+            	<param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} %-5p %m%n" />
+        	</layout>
+	</appender>
+
+    <category name="it.eng.radarMeteo.cron" >
+        <priority value="INFO" />
+        <appender-ref ref="RadarCronAppender" />
+    </category>
+    
+    <category name="it.eng.radarMeteo.bean" >
+        <priority value="INFO" />
+        <appender-ref ref="RadarWebAppender" />
+    </category>
+</log4j:configuration>

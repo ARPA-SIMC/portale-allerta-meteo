@@ -1,0 +1,18 @@
+.groupsWrapper{
+  padding: 0 1rem;
+  height: 100%;
+}
+
+.subGroups,
+.nominatives {
+  border-radius: 4px;
+  box-shadow: inset 0px 0px 5px 0px rgba(0,0,0,0.2);
+  padding: .5rem;
+  list-style: none;
+  border: 1px solid rgba(0,0,0,0.25);
+  margin: 0;
+}
+
+.subGroups{
+  margin-bottom: 1rem;
+}

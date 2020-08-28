@@ -1,0 +1,5 @@
+Bundle-Name: allerta-previsioni-service
+Bundle-SymbolicName: it.eng.allerta.previsioni.service
+Bundle-Version: 1.0.0
+Liferay-Require-SchemaVersion: 1.0.2
+Liferay-Service: true

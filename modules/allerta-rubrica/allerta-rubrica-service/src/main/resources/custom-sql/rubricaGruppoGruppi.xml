@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+<custom-sql>
+
+	<sql id="it.eng.allerte.service.persistence.impl.RubricaGruppoGruppiFinderImpl.getAntenati">
+    <![CDATA[
+	select rgg.FK_GRUPPO_PADRE
+	from  rubrica_rubricaGruppoGruppi rgg, rubrica_rubricaGruppo rg
+	where rgg.FK_GRUPPO_FIGLIO = ?
+	and rg.id_gruppo = rgg.fk_gruppo_figlio
+	and not rg.disabled
+	]]>
+	</sql>
+	
+	<sql id="it.eng.allerte.service.persistence.impl.RubricaGruppoGruppiFinderImpl.getGruppiFigli">
+    <![CDATA[
+	select rgg.FK_GRUPPO_PADRE, rgg.FK_GRUPPO_FIGLIO
+	from  rubrica_rubricaGruppoGruppi rgg, rubrica_rubricaGruppo rg 
+	where rgg.FK_GRUPPO_PADRE = ? 
+		  and rg.id_gruppo = rgg.fk_gruppo_figlio 
+		  and not rg.disabled
+	]]>
+	</sql>
+	
+	<sql id="it.eng.allerte.service.persistence.impl.RubricaGruppoGruppiFinderImpl.getGruppiPadriPerFiglio">
+    <![CDATA[
+	select rgg.FK_GRUPPO_PADRE, rg.nome, rgg.FK_GRUPPO_FIGLIO
+	from  rubrica_rubricaGruppoGruppi rgg, rubrica_rubricaGruppo rg 
+	where rgg.FK_GRUPPO_FIGLIO= ?
+		  and rg.id_gruppo = rgg.fk_gruppo_padre 
+		  and not rg.disabled
+	]]>
+	</sql>
+	
+	<sql id="it.eng.allerte.service.persistence.impl.RubricaGruppoGruppiFinderImpl.deleteGruppoPadreFiglio">
+    <![CDATA[
+	delete from rubrica_rubricaGruppoGruppi where FK_GRUPPO_PADRE = ? or FK_GRUPPO_FIGLIO = ?
+	]]>
+	</sql>
+
+	<sql id="it.eng.allerte.service.persistence.impl.RubricaGruppoGruppiFinderImpl.deleteGruppoSottoGruppo">
+    <![CDATA[
+	delete from rubrica_rubricaGruppoGruppi where FK_GRUPPO_PADRE = ? and FK_GRUPPO_FIGLIO = ?
+	]]>
+	</sql>
+
+</custom-sql>

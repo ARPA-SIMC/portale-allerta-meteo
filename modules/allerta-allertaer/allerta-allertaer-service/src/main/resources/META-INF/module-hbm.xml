@@ -1,0 +1,197 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false" default-lazy="false">
+	<import class="it.eng.allerter.model.Allerta" />
+	<import class="it.eng.allerter.model.AllertaParametro" />
+	<import class="it.eng.allerter.model.AllertaStato" />
+	<import class="it.eng.allerter.model.Area" />
+	<import class="it.eng.allerter.model.Email" />
+	<import class="it.eng.allerter.model.Feed" />
+	<import class="it.eng.allerter.model.Geografia" />
+	<import class="it.eng.allerter.model.LogInterno" />
+	<import class="it.eng.allerter.model.SMS" />
+	<import class="it.eng.allerter.model.StatoAllertamento" />
+	<import class="it.eng.allerter.model.TipoEvento" />
+	<class name="it.eng.allerter.model.impl.AllertaImpl" table="ALLERTER_Allerta">
+		<id name="allertaId" type="long">
+			<generator class="assigned" />
+		</id>
+		<property column="uuid_" name="uuid" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="groupId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="companyId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="userId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="userName" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="creatorName" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="createDate" type="org.hibernate.type.TimestampType" />
+		<property name="modifiedDate" type="org.hibernate.type.TimestampType" />
+		<property name="stato" type="com.liferay.portal.dao.orm.hibernate.IntegerType" />
+		<property name="numero" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="progressivo" type="com.liferay.portal.dao.orm.hibernate.IntegerType" />
+		<property name="anno" type="com.liferay.portal.dao.orm.hibernate.IntegerType" />
+		<property name="dataEmissione" type="org.hibernate.type.TimestampType" />
+		<property name="dataInizio" type="org.hibernate.type.TimestampType" />
+		<property name="dataFine" type="org.hibernate.type.TimestampType" />
+		<property name="descrizioneMeteo" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="tendenza" type="com.liferay.portal.dao.orm.hibernate.IntegerType" />
+		<property name="note" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="riferimenti" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="utenteFirmaArpaId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="dataFirmaArpa" type="org.hibernate.type.TimestampType" />
+		<property name="utenteFirmaProtId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="dataFirmaProt" type="org.hibernate.type.TimestampType" />
+		<property name="parentId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="sintesi" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="link" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="titolo" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="tipoAllerta" type="com.liferay.portal.dao.orm.hibernate.BooleanType" />
+		<property name="hash" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+	</class>
+	<class name="it.eng.allerter.model.impl.AllertaParametroImpl" table="ALLERTER_AllertaParametro">
+		<id name="parametroId" type="java.lang.String">
+			<generator class="assigned" />
+		</id>
+		<property name="valore" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+	</class>
+	<class name="it.eng.allerter.model.impl.AllertaStatoImpl" table="ALLERTER_AllertaStato">
+		<id name="allertaStatoId" type="long">
+			<generator class="assigned" />
+		</id>
+		<property column="uuid_" name="uuid" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="groupId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="companyId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="userId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="userName" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="createDate" type="org.hibernate.type.TimestampType" />
+		<property name="modifiedDate" type="org.hibernate.type.TimestampType" />
+		<property name="nome" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="dataInizio" type="org.hibernate.type.TimestampType" />
+		<property name="dataFine" type="org.hibernate.type.TimestampType" />
+		<property name="parentId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="allertaId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="statoId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="eventoId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="areaId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+	</class>
+	<class name="it.eng.allerter.model.impl.AreaImpl" table="ALLERTER_Area">
+		<id name="areaId" type="long">
+			<generator class="assigned" />
+		</id>
+		<property column="uuid_" name="uuid" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="groupId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="companyId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="userId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="userName" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="createDate" type="org.hibernate.type.TimestampType" />
+		<property name="modifiedDate" type="org.hibernate.type.TimestampType" />
+		<property name="nome" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="tipoArea" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="costiero" type="com.liferay.portal.dao.orm.hibernate.BooleanType" />
+		<property name="dataInizio" type="org.hibernate.type.TimestampType" />
+		<property name="dataFine" type="org.hibernate.type.TimestampType" />
+		<property name="parentId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+	</class>
+	<class name="it.eng.allerter.model.impl.EmailImpl" table="ALLERTER_Email">
+		<id column="id_" name="id" type="long">
+			<generator class="assigned" />
+		</id>
+		<property name="tipo" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="sottotipo" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="param" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="destinatario" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="indirizzo" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="nomeDestinatario" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="stato" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="dataInvio" type="org.hibernate.type.TimestampType" />
+		<property name="testo" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="oggetto" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+	</class>
+	<class name="it.eng.allerter.model.impl.FeedImpl" table="ALLERTER_Feed">
+		<id name="feedId" type="java.lang.String">
+			<generator class="assigned" />
+		</id>
+		<property name="titolo" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="link" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="autore" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="query" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+	</class>
+	<class name="it.eng.allerter.model.impl.GeografiaImpl" table="ALLERTER_Geografia">
+		<composite-id class="it.eng.allerter.service.persistence.GeografiaPK" name="primaryKey">
+			<key-property name="geografiaId" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+			<key-property name="tipo" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+			<key-property name="area" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+			<key-property name="complessita" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		</composite-id>
+		<property name="geometria" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+	</class>
+	<class name="it.eng.allerter.model.impl.LogInternoImpl" table="ALLERTER_LogInterno">
+		<id name="logId" type="long">
+			<generator class="assigned" />
+		</id>
+		<property name="timestamp" type="org.hibernate.type.TimestampType" />
+		<property name="thread" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="cosa" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="dettaglio" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="utente" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="risultato" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="eccezione" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+	</class>
+	<class name="it.eng.allerter.model.impl.SMSImpl" table="ALLERTER_SMS">
+		<id column="id_" name="id" type="long">
+			<generator class="assigned" />
+		</id>
+		<property name="tipo" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="sottotipo" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="param" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="testo" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="destinatario" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="numeroDa" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="numero" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="nomeDestinatario" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="stato" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="dataInvio" type="org.hibernate.type.TimestampType" />
+		<property name="dataAck" type="org.hibernate.type.TimestampType" />
+		<property name="dataRicevuta" type="org.hibernate.type.TimestampType" />
+		<property name="tentativi" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="prossimoInvio" type="org.hibernate.type.TimestampType" />
+		<property name="codiceErrore" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="descrizioneErrore" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="timestamp" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+	</class>
+	<class name="it.eng.allerter.model.impl.StatoAllertamentoImpl" table="ALLERTER_StatoAllertamento">
+		<id name="statoId" type="long">
+			<generator class="increment" />
+		</id>
+		<property column="uuid_" name="uuid" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="groupId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="companyId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="userId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="userName" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="createDate" type="org.hibernate.type.TimestampType" />
+		<property name="modifiedDate" type="org.hibernate.type.TimestampType" />
+		<property name="nome" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="dataInizio" type="org.hibernate.type.TimestampType" />
+		<property name="dataFine" type="org.hibernate.type.TimestampType" />
+		<property name="parentId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+	</class>
+	<class name="it.eng.allerter.model.impl.TipoEventoImpl" table="ALLERTER_TipoEvento">
+		<id name="eventoId" type="long">
+			<generator class="increment" />
+		</id>
+		<property column="uuid_" name="uuid" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="groupId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="companyId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="userId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="userName" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="createDate" type="org.hibernate.type.TimestampType" />
+		<property name="modifiedDate" type="org.hibernate.type.TimestampType" />
+		<property name="nome" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="indice" type="com.liferay.portal.dao.orm.hibernate.IntegerType" />
+		<property name="tabella" type="com.liferay.portal.dao.orm.hibernate.IntegerType" />
+		<property name="split" type="com.liferay.portal.dao.orm.hibernate.BooleanType" />
+		<property name="costiero" type="com.liferay.portal.dao.orm.hibernate.BooleanType" />
+		<property name="dataInizio" type="org.hibernate.type.TimestampType" />
+		<property name="dataFine" type="org.hibernate.type.TimestampType" />
+		<property name="parentId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+	</class>
+</hibernate-mapping>

@@ -1,0 +1,211 @@
+body {
+  font: 12px sans-serif;
+  margin-top: 0px; padding-top:0
+}
+
+footer {
+	display: none !important;
+}
+
+h1 {margin: 0; /*border-bottom: 3px solid steelblue;*/
+    font-family: 'Yanone Kaffeesatz', sans-serif;
+    font-size: 26px; color: #008000;
+    font-weight: normal; text-align:center;
+  }
+/*h1 small { color: #FF0000; vertical-align: 4px}*/
+
+table#infoMinime {font-family: arial, verdana, sans-serif; font-size: 14px; border-collapse: collapse; width: 100%}
+.cellaDX {text-align: right; width: 50%}
+.ultDato {color: steelblue; font-weight: bold}
+.ultOre, .ultGiorno {color: green; font-weight: bold}
+
+
+h2 {margin: 4px 0}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke-width: 1px;
+
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.x.axis path {
+  /*display: none;*/
+}
+
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 2.5px;
+}
+
+.lineDeflusso {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 3px;
+}
+
+.lineP {
+  fill: none;
+  stroke: red;
+  stroke-width: 1.5px;
+}
+
+.overlay {
+  fill:none;
+  pointer-events: all;
+}
+
+/*.theTheFlusso {
+  fill:#4682B4;
+  pointer-events: all;
+  fill-opacity:.9;
+}*/
+
+.focus circle.standard {
+  fill: none;
+  stroke: steelblue;
+}
+
+.focusCum circle.cumulata {
+  fill: none;
+  stroke: red;
+}
+
+.focusRectData {
+	fill: #35B53A;
+	/*opacity: .6;*/
+}
+
+.focusRectVal {
+	fill: #008CFF;
+	/*opacity: .6;*/
+}
+
+.focusRectCum {
+	fill: red;
+	opacity: .6;
+}
+
+.focusLineVal {
+    stroke: #008CFF;
+	stroke-dasharray: 3 3;
+    opacity: 0.7;
+}
+
+.focusDataVal {
+    stroke: #35B53A;
+	/*stroke-dasharray: 5 1;
+    opacity: 0.7;*/
+}
+
+.grid .tick {
+    stroke: lightgrey;
+
+    opacity: 0.7;
+}
+
+.grid2 .tick {
+    stroke: #D6D6D6;
+	stroke-dasharray: 3 3;
+    opacity: 0.7;
+}
+
+.grid3 .tick {
+    stroke: #464646;
+    /*opacity: 0.7;*/
+}
+
+.grid4 .tick {
+    stroke: #9D9D9D;
+    /*opacity: 0.7;*/
+    /*stroke-dasharray: 3 3;*/
+}
+
+.grid path {
+      stroke-width: 0;
+}
+.theVal {fill: white;}
+
+.bar {fill: steelblue; stroke: lightgrey; opacity: 0.7;}
+
+.area {/*non funziona, messo in <style>*/
+  fill: url(#grad-sezione);
+  stroke-width: 5px;
+}
+#anag div {float: left; padding: 0 5px 0 2px; border-left:1px solid black; }
+
+.threshold_0 {stroke-width: 2; stroke: #FFFF00; opacity: .8}
+.threshold_1 {stroke-width: 2; stroke: #FF6600; opacity: .8}
+.threshold_2 {stroke-width: 2; stroke: #FF0000; opacity: .8}
+
+.lineaGrigia {stroke: #AAA; stroke-width:2}
+.lineaNera {stroke: #000; stroke-width:2}
+
+hr{clear: both; border: none}
+
+#opt {margin: 0; list-style-type: none; padding: 0; position: absolute;top: 650px}
+#opt li {float: left; border: 1px solid #C6CED5; margin: 0 4px}
+
+#opt a {background: #F97F2D; font-size: 15px; color: #FFF; font-weight: bold; text-decoration:none; padding: 0 4px; }
+#opt a:hover { background: #F00}
+
+.timeUTC {color: #FFF; background-color: #F1C40F; font-size: small}
+.timeSOL {color: #FFF; background-color: #008200; font-size: small}
+.timeLOC {color: #FFF; background-color: #0070CA; font-size: small}
+
+
+.progressBar {background:url('../images/progressBar.png'); width:0; height: 6px; cursor: pointer}
+/*.progressBar {background:green; height: 6px; width:0; cursor: pointer}*/
+.progressBarCont {/*background: steelblue;*/ background: #FFF; height: 6px; width:100%; cursor: pointer}
+.timeType {vertical-align: 2px; font-size: 12px}
+.timeType::before {content: '['}
+.timeType::after {content: ']'}
+.x {fill: #35B53A; stroke:#000; stroke-width: .1}
+.y {fill: #4682B4; stroke:#000; stroke-width: .1}
+
+.ultimoDato {color: white; background: #7DA7CA; border: 1px solid #C6CED5; font-size: 18px; padding: 0 5px; vertical-align: 6px}
+
+#container {position: relative}
+.theTheFlusso {position: absolute; top: 0;}
+
+#frm_dexter, #anag {width: 100%; display:none; height: 0; position: absolute; top: 0; left: 0; background:url('../images/sfondino70perc.png'); padding: 20px; margin-right: -80px}
+#frm_dexter a.close, #anag a.close {display: block; width: 20px; height: 20px; background: url('../images/close.png'); position: absolute; top: 0; right: 0; margin-right: 40px; cursor: pointer }
+#frm_dexter a.close span, #anag a.close span {display: none}
+#anag {color: #FFF; font-size:16px; overflow: auto;}
+#anag h2 {font-size: 24px;}
+#anag ul li span {font-weight: bold; color: #9BFFFF}
+#anag ul li.titolo {font-size: 20px; font-weight: bold; color:#9DFF9D; list-style-type:none; margin-left: -20px; margin-bottom: 4px}
+
+#anag ul  {float: left; width:40%}
+
+#infoMinime, .anag, .anagrafica, .dwnlData{display:none}
+
+
+svg.progresso {
+  display: block;
+  margin: 0 auto;
+}
+
+#loader
+{ fill: #0088cc }
+
+#border
+{ fill: #00517a }
+
+#miniMap {
+    height: 150px;
+    width: 300px;
+    /*margin: 0 5%;*/
+    /*border-radius: 6px;*/
+  }
+
+input[type='email'] {color:red}
+input[type='email']:valid {color:green}
+
+#frm_dexter p {background: #FFF; margin: 10px; padding: 5px; border: 1px grey dotted}
+
+#anag .list9 a {text-decoration: none; color:#FFF; }
+#anag .list9 a:hover {color: green; cursor: pointer}

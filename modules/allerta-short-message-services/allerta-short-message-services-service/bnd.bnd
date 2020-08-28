@@ -1,0 +1,29 @@
+Bundle-Name: allerta-short-message-services-service
+Bundle-SymbolicName: it.eng.allerta.messages.services.service
+Bundle-Version: 1.0.0
+Bundle-Activator: it.eng.allerter.activator.AllertaSMSBundleActivatorService
+Export-Package:\
+	it.eng.allerta.messages.services,\
+	it.eng.allerta.messages.services.service.impl,\
+	it.eng.allerta.messages.services.model.impl,\
+	it.eng.allerta.messages.services.action,\
+	it.eng.allerta.messages.services.bean,\
+	it.eng.allerta.messages.services.scheduler,\
+	it.eng.allerta.messages.services.servletWS
+Liferay-Require-SchemaVersion: 1.0.0
+Liferay-Service: true
+Import-Package:\
+	it.eng.allerter.bean,\
+	it.eng.allerter.exception,\
+	it.eng.allerter.model,\
+	it.eng.allerter.service,\
+	it.eng.allerter.service.persistence,\
+	it.eng.allertaer.service.util,\
+	it.eng.allerter.model.impl,\
+	it.eng.allerter.service.base,\
+	it.eng.allerter.service.http,\
+	it.eng.allerter.service.impl,\
+	it.eng.allerter.service.persistence.impl,\
+	it.eng.allerter.upgrade,\
+	javax.net.ssl,\
+	*

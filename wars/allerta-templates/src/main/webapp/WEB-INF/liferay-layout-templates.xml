@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<!DOCTYPE layout-templates PUBLIC "-//Liferay//DTD Layout Templates 7.2.0//EN" "http://www.liferay.com/dtd/liferay-layout-templates_7_2_0.dtd">
+
+<layout-templates>
+	<custom>
+	
+		<layout-template id="allerta-template-home" name="Home">
+			<template-path>/allerta-template-home.ftl</template-path>
+			<thumbnail-path>/allerta-templates.png</thumbnail-path>
+		</layout-template>
+		
+		<layout-template id="allerta-template-aggiornamenti" name="Aggiornamenti">
+			<template-path>/allerta-template-aggiornamenti.ftl</template-path>
+			<thumbnail-path>/allerta-templates.png</thumbnail-path>
+		</layout-template>
+		
+		<layout-template id="allerta-template-monitoraggio-eventi" name="Monitoraggio Eventi">
+			<template-path>/allerta-template-monitoraggio-eventi.ftl</template-path>
+			<thumbnail-path>/allerta-templates.png</thumbnail-path>
+		</layout-template>
+		
+		<layout-template id="allerta-template-allertebollettini" name="Allerte Bollettini">
+			<template-path>/allerta-template-allertebollettini.ftl</template-path>
+			<thumbnail-path>/allerta-templates.png</thumbnail-path>
+		</layout-template>
+		
+		<layout-template id="allerta-template-reportpostevento" name="Report Post Evento">
+			<template-path>/allerta-template-reportpostevento.ftl</template-path>
+			<thumbnail-path>/allerta-templates.png</thumbnail-path>
+		</layout-template>	
+		
+		<layout-template id="allerta-template-meteomont" name="Meteomont">
+			<template-path>/allerta-template-meteomont.ftl</template-path>
+			<thumbnail-path>/allerta-templates.png</thumbnail-path>
+		</layout-template>	
+		
+		<layout-template id="allerta-template-aggiornamenti-comune" name="News Comune">
+			<template-path>/allerta-template-aggiornamenti-comune.ftl</template-path>
+			<thumbnail-path>/allerta-templates.png</thumbnail-path>
+		</layout-template>			
+		
+		<layout-template id="allerta-template-generic" name="Allerta Generico">
+			<template-path>/allerta-template-generic.ftl</template-path>
+			<thumbnail-path>/allerta-templates.png</thumbnail-path>
+		</layout-template>		
+	
+		<layout-template id="allerta-template-previsionidati" name="Previsioni Dati Comune">
+			<template-path>/allerta-template-previsionidati.ftl</template-path>
+			<thumbnail-path>/allerta-templates.png</thumbnail-path>
+		</layout-template>	
+		
+		<layout-template id="allerta-template-cartografia-mappe" name="Mappe Cartografia">
+			<template-path>/allerta-template-cartografia-mappe.ftl</template-path>
+			<thumbnail-path>/allerta-templates.png</thumbnail-path>
+		</layout-template>			
+		
+		<layout-template id="allerta-template-dati-osservati" name="Dati Osservati">
+			<template-path>/allerta-template-datiosservati.ftl</template-path>
+			<thumbnail-path>/allerta-templates.png</thumbnail-path>
+		</layout-template>		
+		
+		<layout-template id="allerta-template-comunicazioni" name="Comunicazioni">
+			<template-path>/allerta-template-comunicazioni.ftl</template-path>
+			<thumbnail-path>/allerta-templates.png</thumbnail-path>
+		</layout-template>	
+					
+	</custom>
+</layout-templates>

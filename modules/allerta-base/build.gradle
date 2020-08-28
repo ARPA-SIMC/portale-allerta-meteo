@@ -1,0 +1,20 @@
+dependencies {
+	compileOnly group: "com.liferay.portal", name: "com.liferay.portal.kernel"
+	compileOnly group: "org.osgi", name: "osgi.cmpn"
+	
+	compileOnly group: 'com.liferay', name: 'com.liferay.osgi.util'
+	compileOnly 'org.osgi:org.osgi.framework:1.9.0'
+	compileOnly 'org.osgi:org.osgi.util.tracker:1.5.2'
+	
+	
+   	compileOnly group: "javax.portlet", name: "portlet-api"
+	compileOnly group: "javax.servlet", name: "javax.servlet-api"
+	
+	compile group: "biz.aQute.bnd", name: "biz.aQute.bndlib", version: "3.1.0"
+   	compileOnly group: "com.liferay", name: "com.liferay.portal.configuration.metatype.api", version: "2.0.0"
+  
+  	compileOnly 'com.liferay:com.liferay.configuration.admin.api:2.0.0'
+  	
+  	compileOnly group: "com.liferay", name: "com.liferay.blogs.api"
+  
+}

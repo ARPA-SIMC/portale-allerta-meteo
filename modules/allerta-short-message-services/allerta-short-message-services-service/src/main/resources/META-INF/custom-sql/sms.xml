@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+<custom-sql>
+	<sql id="it.eng.allerta.messages.services.service.persistence.impl.ParametroFinderImpl.resetSMSFaseTwo">
+    <![CDATA[
+			UPDATE allerter_sms SET stato=1 WHERE stato=2
+            ]]>
+	</sql>
+		<sql id="it.eng.allerta.messages.services.service.persistence.impl.ParametroFinderImpl.resetSMSFaseThree">
+    <![CDATA[
+			UPDATE allerter_sms SET stato=3 WHERE stato=6
+            ]]>
+	</sql>
+	<sql id="it.eng.allerta.messages.services.service.persistence.impl.ParametroFinderImpl.fetchSmsStatoTre">
+    <![CDATA[
+			SELECT id_ FROM allerter_sms WHERE stato=3 and datainvio > ? and timestamp NOT LIKE '%:%'
+            ]]>
+	</sql>
+</custom-sql>

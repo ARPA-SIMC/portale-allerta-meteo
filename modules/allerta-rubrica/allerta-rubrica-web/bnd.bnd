@@ -1,0 +1,14 @@
+Bundle-Name: allerta-rubrica-web
+Bundle-SymbolicName: it.eng.rubrica
+Bundle-Version: 1.0.0
+Export-Package: it.eng.rubrica.constants
+
+
+Import-Package: \
+!com.sun.*,\
+!junit.framework.*,\
+!org.junit.*,\
+!org.apache.*,\
+!org.bouncycastle.*,\
+!org.etsi.*,\
+*

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE service-builder PUBLIC "-//Liferay//DTD Service Builder 6.2.0//EN" "http://www.liferay.com/dtd/liferay-service-builder_6_2_0.dtd">
+<service-builder package-path="it.eng.animazione.image">
+	<author>UTENTE</author>
+	<namespace>img_animazioni</namespace>
+	<entity name="PioggiaCumulativa" local-service="true"
+		remote-service="false">
+		<!-- PK fields -->
+		<column name="id" type="long" primary="true"></column>
+		<!-- Other fields -->
+		<column name="nome" type="String"></column>
+		<column name="cumulazione" type="String" ></column>
+		<column name="inzioCumulazione" type="Date"></column>
+		<column name="fineCumulazione" type="Date"></column>
+		<column name="imgData" type="String"></column>
+		<!-- Order -->
+		<order by="desc">
+			<order-column name="id"></order-column>
+		</order>
+		<!-- Finder methods -->
+		<finder name="Cumulazione" return-type="Collection">
+			<finder-column name="cumulazione"/>
+		</finder>
+	</entity>
+	<entity name="altezzaOnda" local-service="true"
+		remote-service="false">
+		<!-- PK fields -->
+		<column name="id" type="long" primary="true"></column>
+		<!-- Other fields -->
+		<column name="im" type="String"></column>
+		<column name="text_LOC" type="String" ></column>
+		<column name="ts_UTC" db-name="timestamp"  type="long"></column>
+		<column name="imgData" type="String"></column>
+		<!-- Order -->
+		<order by="desc">
+			<order-column name="id"></order-column>
+		</order>
+		<!-- Finder methods -->
+	</entity>
+	<entity name="Parametro" local-service="true" remote-service="false">
+		<column name="key" type="String" primary="true" ></column>
+		<column name="value" type="String"></column>
+	</entity>
+</service-builder>

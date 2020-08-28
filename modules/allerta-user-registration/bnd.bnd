@@ -1,0 +1,6 @@
+Bundle-Name: allerta-user-registration
+Bundle-SymbolicName: allerta.user.registration
+Bundle-Version: 1.0.0
+Export-Package: \
+	it.eng.allerta.user.registration.service,\
+	it.eng.allerta.user.registration.workflow

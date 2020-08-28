@@ -1,0 +1,15 @@
+Bundle-Name: allerta-allertaer-service
+Bundle-SymbolicName: it.eng.allertaer.service
+Bundle-Version: 1.0.0
+Bundle-Activator: it.eng.allerter.activator.AllertaBundleActivatorService
+Liferay-Require-SchemaVersion: 1.0.5
+Liferay-Service: true
+-dsannotations-options: inherit
+Export-Package:\
+	it.eng.allerter.upgrade,\
+	it.eng.allerter.service.persistence.impl,\
+	it.eng.allerter.service.impl,\
+	it.eng.allerter.service.http,\
+	it.eng.allerter.service.base,\
+	it.eng.allerter.model.impl,\
+	it.eng.allertaer.service.util

@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.6.0.final utlizzo versione della libreria JasperReports6.6.0  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="SMS" pageWidth="4000" pageHeight="595" orientation="Landscape" whenNoDataType="NoPages" columnWidth="3960" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isIgnorePagination="true" uuid="c946c046-f138-4a80-99d9-26c8780d760b">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="683"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="TIPO" class="java.lang.String"/>
+	<parameter name="SOTTOTIPO" class="java.lang.String"/>
+	<parameter name="DESTINATARIO" class="java.lang.String">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<parameter name="NUMERO" class="java.lang.String">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<parameter name="STATO" class="java.lang.Long">
+		<defaultValueExpression><![CDATA[new Long(-1)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DATADA" class="java.lang.String">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DATAA" class="java.lang.String">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select * from allerter_sms where
+($P{TIPO} is null or $P{TIPO}::character varying = '' or $P{TIPO}::character varying = tipo)
+AND ($P{SOTTOTIPO} is null or $P{SOTTOTIPO}::character varying = '' or $P{SOTTOTIPO}::character varying = sottotipo)
+AND ($P{DESTINATARIO} is null or $P{DESTINATARIO}::character varying = '' or upper(nomedestinatario) like '%' || upper($P{DESTINATARIO}) || '%')
+AND ($P{NUMERO} is null or $P{NUMERO}::character varying = '' or upper(numero) like '%' || upper($P{NUMERO}) || '%')
+AND ($P{STATO} is null or $P{STATO} = -1 or $P{STATO}::bigint = stato)
+AND ($P{DATADA} is null or $P{DATADA}::character varying = '' or datainvio >= $P{DATADA}::timestamp without time zone)
+AND ($P{DATAA} is null or $P{DATAA}::character varying = '' or datainvio <= $P{DATAA}::timestamp without time zone)
+order by nomedestinatario,datainvio]]>
+	</queryString>
+	<field name="id_" class="java.lang.Long">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="tipo" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="sottotipo" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="testo" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="destinatario" class="java.lang.Long">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="numeroda" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="numero" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="nomedestinatario" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="stato" class="java.lang.Long">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="datainvio" class="java.sql.Timestamp">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="dataack" class="java.sql.Timestamp">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="dataricevuta" class="java.sql.Timestamp">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="codiceerrore" class="java.lang.String"/>
+	<field name="descrizioneerrore" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="20" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="101" height="20" uuid="279fd0a9-0e37-4070-a717-d474f779015b"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Tipo]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="101" y="0" width="187" height="20" uuid="586a2d0b-bb34-4439-8111-cd6c73e0ccc6"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Sottotipo]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="288" y="0" width="121" height="20" uuid="9f8288b5-11cf-4120-9be5-fefca73e278f"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Mittente]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="409" y="0" width="446" height="20" uuid="4579fbd3-0019-4411-aa2d-a5c15b598a73"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Destinatario]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="855" y="0" width="129" height="20" uuid="b448ca38-8876-4510-b9c2-072fc5e1e3ee"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Numero]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="984" y="0" width="163" height="20" uuid="c03c5a72-b65e-4b97-ad3f-319fecbd8836"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Stato]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1147" y="0" width="101" height="20" uuid="357f6349-95e4-499f-a6bd-21ddf505f4cc"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Generato]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1248" y="0" width="101" height="20" uuid="13d49ca7-e52d-4c97-ada6-5f2ad3344eca"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Spedito]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1349" y="0" width="101" height="20" uuid="4a8508d0-cc8a-46a6-88d1-818c3193d8d7"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Consegnato]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1450" y="0" width="1010" height="20" uuid="9be34980-5d4e-401f-a9e9-483519b68b35"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Testo]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="2460" y="0" width="101" height="20" uuid="9370b491-f6f6-4d16-ad42-3d3b86d96935"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Codice errore]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="2561" y="0" width="1010" height="20" uuid="21616083-acd8-45bf-abb4-633f524c0af2"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Descrizione]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="101" height="20" uuid="2ac97d9c-1e6b-4ad5-8519-46045b5188d1"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{tipo}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="101" y="0" width="187" height="20" uuid="5754e4e0-9311-42e2-abf2-36aff888ec3f"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{sottotipo}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="288" y="0" width="121" height="20" uuid="3248fbfc-c28d-42a4-a555-d3a0a79eb6c0"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{numeroda}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="409" y="0" width="446" height="20" uuid="5c406417-d3bf-44cc-80ad-2ab3e29b02d8"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{nomedestinatario}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="855" y="0" width="129" height="20" uuid="e3fe62cc-80b2-4645-9932-f668decf2bc4"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{numero}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="984" y="0" width="163" height="20" uuid="168e471c-5dee-4c71-89fe-71a240edb6da"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy HH:mm" isBlankWhenNull="true">
+				<reportElement x="1147" y="0" width="101" height="20" uuid="cc19ff76-74f9-4a5d-92c0-5331cf94f58a"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{datainvio}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy HH:mm" isBlankWhenNull="true">
+				<reportElement x="1248" y="0" width="101" height="20" uuid="ef2a87e5-0cf7-4069-9194-70ec6e140225"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{dataack}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy HH:mm" isBlankWhenNull="true">
+				<reportElement x="1349" y="0" width="101" height="20" uuid="6f989fa0-17b0-4b16-9c27-950d5a31a127"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{dataricevuta}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="1450" y="0" width="1010" height="20" uuid="fe232dc2-2363-43dd-a126-f08dbd71122d"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{testo}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy HH:mm" isBlankWhenNull="true">
+				<reportElement x="2460" y="0" width="101" height="20" uuid="21c43d20-bd5e-4287-9083-d61b6b167254"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{codiceerrore}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy HH:mm" isBlankWhenNull="true">
+				<reportElement x="2561" y="0" width="1010" height="20" uuid="4df4dcd5-6df1-47e7-b900-9b15f128ec31"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{descrizioneerrore}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

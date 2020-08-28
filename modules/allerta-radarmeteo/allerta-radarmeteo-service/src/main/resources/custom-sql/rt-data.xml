@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+<custom-sql>
+	<sql
+		id="it.eng.radarMeteo.service.persistence.impl.ImgFinderImpl.getMostOld">
+    <![CDATA[
+select * from rt_portlet_img  where timestamp in (select min(timestamp) from rt_portlet_img) 
+            ]]>
+	</sql>
+
+	<sql
+		id="it.eng.radarMeteo.service.persistence.impl.ImgFinderImpl.getLastRadar">
+    <![CDATA[
+select * from rt_portlet_img  where timestamp in (select max(timestamp) from rt_portlet_img) 
+            ]]>
+	</sql>
+</custom-sql>

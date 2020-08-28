@@ -1,0 +1,27 @@
+dependencies {
+	compileOnly group: "com.liferay.portal", name: "com.liferay.portal.kernel"
+	compileOnly group: "javax.portlet", name: "portlet-api"
+	compileOnly group: "javax.servlet", name: "javax.servlet-api"
+	compileOnly group: "org.osgi", name: "org.osgi.annotation.versioning", version: "1.0.0"
+	compileOnly group: "org.osgi", name: "org.osgi.core"
+	compileOnly group: "org.osgi", name: "org.osgi.service.component.annotations"
+	
+	compileOnly project(":modules:allerta-bollettino:allerta-bollettino-api")
+	
+	compileOnly 'biz.aQute.bnd:biz.aQute.bnd.annotation:4.2.0'
+	compileOnly group: "com.liferay", name: "com.liferay.portal.spring.extender", version: "2.0.0"
+	compileOnly group: "com.liferay", name: "com.liferay.petra.string"
+	
+	compileOnly 'com.liferay:com.liferay.portal.upgrade.api:2.0.0'
+	
+	compileOnly project(":modules:allerta-allertaer:allerta-allertaer-api")
+	compileOnly project(":modules:allerta-base")
+	
+}
+
+buildService {
+	apiDir = "../allerta-bollettino-api/src/main/java"
+	databaseNameMaxLength=50
+}
+
+group = "allerta.bollettino"

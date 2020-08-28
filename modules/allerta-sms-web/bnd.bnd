@@ -1,0 +1,20 @@
+Bundle-Name: allerta-sms-web
+Bundle-SymbolicName: it.eng.sms.portlet
+Bundle-Version: 1.0.0
+
+Export-Package:\
+	it.eng.sms.bean
+
+Import-Package: \
+    !org.apache.log,\
+	!com.liferay.portal.freemarker,\
+	!org.apache.avalon.framework.*,\
+	!com.sun.org.apache.xalan.internal.res,\
+	!com.sun.org.apache.xml.internal.utils,\
+	!com.sun.org.apache.xpath.*,\
+	!javax.microedition.*,\
+	!javax.xml.namespace,\
+	!javax.xml.parsers,\
+	!org.w3c.dom.*,\
+	!org.xml.*,\
+	*

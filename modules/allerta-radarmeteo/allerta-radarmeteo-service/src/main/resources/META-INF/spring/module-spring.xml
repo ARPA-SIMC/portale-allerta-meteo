@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<beans
+	default-destroy-method="destroy"
+	default-init-method="afterPropertiesSet"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
+>
+	<bean class="it.eng.radarMeteo.service.impl.Comuni_bacini_wsLocalServiceImpl" id="it.eng.radarMeteo.service.Comuni_bacini_wsLocalService" />
+	<bean class="it.eng.radarMeteo.service.impl.Comuni_bacini_wsServiceImpl" id="it.eng.radarMeteo.service.Comuni_bacini_wsService" />
+	<bean class="it.eng.radarMeteo.service.persistence.impl.Comuni_bacini_wsPersistenceImpl" id="it.eng.radarMeteo.service.persistence.Comuni_bacini_wsPersistence" parent="basePersistence" />
+	<bean class="it.eng.radarMeteo.service.impl.Comuni_wsLocalServiceImpl" id="it.eng.radarMeteo.service.Comuni_wsLocalService" />
+	<bean class="it.eng.radarMeteo.service.impl.Comuni_wsServiceImpl" id="it.eng.radarMeteo.service.Comuni_wsService" />
+	<bean class="it.eng.radarMeteo.service.persistence.impl.Comuni_wsPersistenceImpl" id="it.eng.radarMeteo.service.persistence.Comuni_wsPersistence" parent="basePersistence" />
+	<bean class="it.eng.radarMeteo.service.persistence.impl.Comuni_wsFinderImpl" id="it.eng.radarMeteo.service.persistence.Comuni_wsFinder" parent="basePersistence" />
+	<bean class="it.eng.radarMeteo.service.impl.ImgLocalServiceImpl" id="it.eng.radarMeteo.service.ImgLocalService" />
+	<bean class="it.eng.radarMeteo.service.impl.ImgServiceImpl" id="it.eng.radarMeteo.service.ImgService" />
+	<bean class="it.eng.radarMeteo.service.persistence.impl.ImgPersistenceImpl" id="it.eng.radarMeteo.service.persistence.ImgPersistence" parent="basePersistence" />
+	<bean class="it.eng.radarMeteo.service.persistence.impl.ImgFinderImpl" id="it.eng.radarMeteo.service.persistence.ImgFinder" parent="basePersistence" />
+	<bean class="it.eng.radarMeteo.service.impl.JsonLocalServiceImpl" id="it.eng.radarMeteo.service.JsonLocalService" />
+	<bean class="it.eng.radarMeteo.service.impl.JsonServiceImpl" id="it.eng.radarMeteo.service.JsonService" />
+	<bean class="it.eng.radarMeteo.service.persistence.impl.JsonPersistenceImpl" id="it.eng.radarMeteo.service.persistence.JsonPersistence" parent="basePersistence" />
+	<bean class="it.eng.radarMeteo.service.persistence.impl.JsonFinderImpl" id="it.eng.radarMeteo.service.persistence.JsonFinder" parent="basePersistence" />
+</beans>

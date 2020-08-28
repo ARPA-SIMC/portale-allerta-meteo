@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<!DOCTYPE service-builder PUBLIC "-//Liferay//DTD Service Builder 7.0.0//EN" "http://www.liferay.com/dtd/liferay-service-builder_7_0_0.dtd">
+
+<service-builder package-path="it.eng.allerta.messages.services">
+	<author>Giorgianni_F</author>
+	<namespace>smsService</namespace>
+	<entity name="Parametro" local-service="true" remote-service="true">
+		<!-- PK fields -->
+		<column name="Id" type="long" primary="true" id-type="increment"></column>
+		<!-- Other fields -->
+		<column name="ip" type="String"></column>
+		<column name="porta" type="int"></column>
+		<column name="username" type="String"></column>
+		<column name="password" type="String"></column>
+		<column name="mittente" type="String"></column>
+		<column name="nodo" type="String"></column>
+		<column name="dataConnessione" type="Date"></column>
+		<!-- Order -->
+		<!-- <order by="asc"> <order-column name="field1" /> </order> -->
+		<!-- Finder methods -->
+		<finder name="nodo" return-type="Collection">
+			<finder-column name="nodo"></finder-column>
+		</finder>
+	</entity>
+	<entity name="Nodo" local-service="true" remote-service="true">
+		<!-- PK fields -->
+		<column name="Id" type="long" primary="true"></column>
+		<!-- Other fields -->
+		<column name="ip" type="String"></column>
+		<column name="porta" type="int"></column>
+		<column name="nodoConnesso" type="String"></column>
+		<column name="dataConnessione" type="Date"></column>
+		<!-- Order -->
+		<order by="asc">
+			<order-column name="Id"></order-column>
+		</order>
+		<!-- Finder methods -->
+		<finder name="nodoConnesso" return-type="Nodo">
+			<finder-column name="nodoConnesso"></finder-column>
+		</finder>
+		<finder name="ip" return-type="Nodo">
+			<finder-column name="ip"></finder-column>
+		</finder>
+	</entity>
+	<entity name="CounterSms" local-service="true" remote-service="true">
+		<column name="counterId" type="long" primary="true" id-type="increment"></column>
+		<column name="date" type="Date"></column>
+		<column name="numerosms" type="int"></column>
+		<column name="nodo" type="String"></column>
+		<order by="asc">
+			<order-column name="date"></order-column>
+		</order>
+		<finder name="data" return-type="Counter" db-index="true">
+			<finder-column name="date"></finder-column>
+		</finder>
+		<finder name="dataGreather" return-type="Collection">
+			<finder-column name="date" comparator="&gt;"></finder-column>
+		</finder>
+		<finder name="dataAndNodo" return-type="Collection">
+			<finder-column name="date"></finder-column>
+			<finder-column name="nodo"></finder-column>
+		</finder>
+	</entity>
+    <entity name="Auth" local-service="true" remote-service="false">
+        <column name="key" type="String" primary="true"></column>
+        <column name="value" type="String"></column>
+    </entity>
+    <entity name="SmsSchedulerContext" local-service="true" remote-service="true" cache-enabled="false">
+		<!-- PK fields -->
+		<column name="varId" type="String" primary="true" />
+		<!-- Other fields -->
+		<column name="value" type="String" />
+	</entity>
+</service-builder>

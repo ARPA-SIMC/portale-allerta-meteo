@@ -1,0 +1,5 @@
+Bundle-Name: allerta-messaggio-sindaco-web
+Bundle-SymbolicName: it.eng.allerta.messaggio.sindaco
+Bundle-Version: 1.0.0
+
+-metatype: *

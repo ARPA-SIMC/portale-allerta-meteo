@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE service-builder PUBLIC "-//Liferay//DTD Service Builder 6.2.0//EN" "http://www.liferay.com/dtd/liferay-service-builder_6_2_0.dtd">
+<service-builder package-path="it.eng.radarMeteo">
+	<author>Francesco</author>
+	<namespace>rt_portlet</namespace>
+
+	<entity name="Json" local-service="true" remote-service="true" table="rt_portlet_json">
+
+		<!-- PK fields -->
+
+		<column name="id" type="long" primary="true" id-type="increment"></column>
+
+		<!-- Audit fields -->
+		<column name="type" type="String"></column>
+		<column name="inserted" type="long"></column>
+		<column name="data" type="String"></column>
+
+		<!-- Order -->
+		<order by="desc">
+			<order-column name="id"></order-column>
+		</order>
+
+		<!-- Finder methods -->
+		<finder name="type" return-type="Collection">
+			<finder-column name="type" />
+		</finder>
+
+	</entity>
+
+	<entity name="Img" local-service="true" remote-service="true" table="rt_portlet_img">
+
+		<!-- PK fields -->
+		<column name="id" type="long" primary="true" />
+
+		<!-- Other fields -->
+		<column name="coord" type="String" />
+		<column name="palette" type="String" />
+		<column name="timestamp" type="long" />
+		<column name="data" type="String" />
+
+		<!-- Order -->
+		<order by="desc">
+			<order-column name="id" />
+		</order>
+
+		<!-- Finder methods -->
+		<finder name="timeStamp" return-type="Collection">
+			<finder-column name="timestamp" />
+		</finder>
+	</entity>
+
+	<entity name="Comuni_ws" local-service="true" remote-service="true"
+		cache-enabled="true" table="rt_portlet_comuni_ws">
+		<column name="idIstat" type="String" primary="true"
+			convert-null="true"></column>
+		<column name="comune" type="String"></column>
+		<column name="provincia" type="String"></column>
+		<column name="sottozona" type="String"></column>
+		<column name="zonaallerta" type="String"></column>
+		<finder name="Sottozona" return-type="Collection">
+			<finder-column name="sottozona" />
+		</finder>
+		<finder name="Zonaallerta" return-type="Collection">
+			<finder-column name="zonaallerta" />
+		</finder>
+	</entity>
+	<entity name="Comuni_bacini_ws" local-service="true"
+		cache-enabled="true" table="rt_portlet_comuni_bacini_ws">
+		<column name="idBacini" type="int" primary="true"
+			convert-null="true"></column>
+		<column name="comune" type="String"></column>
+		<column name="provincia" type="String"></column>
+		<column name="bacino" type="String"></column>
+		
+		<finder name="Bacino" return-type="Collection">
+			<finder-column name="bacino" />
+		</finder>
+	</entity>
+</service-builder>

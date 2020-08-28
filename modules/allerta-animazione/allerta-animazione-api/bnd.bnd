@@ -1,0 +1,10 @@
+Bundle-Name: allerta-animazione-api
+Bundle-SymbolicName: it.eng.animazione.api
+Bundle-Version: 1.0.0
+Export-Package: \
+	it.eng.animazione.image.exception,\
+	it.eng.animazione.image.model,\
+	it.eng.animazione.image.service,\
+	it.eng.animazione.image.service.persistence
+-check: EXPORTS
+-includeresource: META-INF/service.xml=../allerta-animazione-service/service.xml

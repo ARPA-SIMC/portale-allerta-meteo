@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+
+<model-hints>
+	<model name="it.eng.radarMeteo.model.Comuni_bacini_ws">
+		<field name="idBacini" type="int" />
+		<field name="comune" type="String" />
+		<field name="provincia" type="String">
+			<hint name="max-length">2</hint>
+		</field>
+		<field name="bacino" type="String" />
+	</model>
+	<model name="it.eng.radarMeteo.model.Comuni_ws">
+		<field name="idIstat" type="String">
+			<hint name="max-length">10</hint>
+		</field>
+		<field name="comune" type="String">
+			<hint name="max-length">50</hint>
+		</field>
+		<field name="provincia" type="String">
+			<hint name="max-length">2</hint>
+		</field>
+		<field name="sottozona" type="String">
+			<hint name="max-length">2</hint>
+		</field>
+		<field name="zonaallerta" type="String">
+			<hint name="max-length">1</hint>
+		</field>
+	</model>
+	<model name="it.eng.radarMeteo.model.Img">
+		<field name="id" type="long" />
+		<field name="coord" type="String" />
+		<field name="palette" type="String" />
+		<field name="timestamp" type="long" />
+		<field name="data" type="String">
+			<hint name="max-length">5000</hint>
+		</field>
+	</model>
+	<model name="it.eng.radarMeteo.model.Json">
+		<field name="id" type="long" />
+		<field name="type" type="String" />
+		<field name="inserted" type="long" />
+		<field name="data" type="String">
+			<hint name="max-length">5000</hint>
+		</field>
+	</model>
+</model-hints>

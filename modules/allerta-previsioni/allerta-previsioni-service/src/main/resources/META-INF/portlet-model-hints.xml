@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+
+<model-hints>
+	<model name="it.eng.previsioni.meteo.model.Bollettino">
+		<field name="id" type="long" />
+		<field name="tipo" type="String" />
+		<field name="timestamp" type="long" />
+		<field name="emissione" type="String" />
+		<field name="validita" type="String" />
+		<field name="xml_content" type="String">
+			<hint name="max-length">5000</hint>
+		</field>
+		<field name="json" type="String">
+			<hint name="max-length">5000</hint>
+		</field>
+	</model>
+	<model name="it.eng.previsioni.meteo.model.Img">
+		<field name="id" type="long" />
+		<field name="daypart" type="String" />
+		<field name="day" type="String" />
+		<field name="provincia" type="String" />
+		<field name="inserted" type="Date" />
+		<field name="data" type="String">
+			<hint name="max-length">5000</hint>
+		</field>
+	</model>
+	<model name="it.eng.previsioni.meteo.model.Storico">
+		<field name="id" type="long" />
+		<field name="idZona" type="int" />
+		<field name="nome" type="String" />
+		<field name="sigla" type="String" />
+		<field name="tipo" type="String" />
+		<field name="xml" type="String">
+			<hint name="max-length">5000</hint>
+		</field>
+	</model>
+</model-hints>

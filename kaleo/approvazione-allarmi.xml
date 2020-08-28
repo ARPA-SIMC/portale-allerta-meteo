@@ -1,0 +1,153 @@
+<?xml version="1.0"?>
+<workflow-definition
+	xmlns="urn:liferay.com:liferay-workflow_6.2.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:liferay.com:liferay-workflow_6.2.0 http://www.liferay.com/dtd/liferay-workflow-definition_6_2_0.xsd">
+	<name>WF Approvazione Allarme</name>
+	<description>wf di approvazione dei allarmi</description>
+	<version>7</version>
+	<state>
+		<name>created</name>
+		<metadata><![CDATA[{"xy":[36,51],"transitions":{"review":{"bendpoints":[]}}}]]></metadata>
+		<initial>true</initial>
+		<transitions>
+			<transition>
+				<name>review</name>
+				<target>review</target>
+			</transition>
+		</transitions>
+	</state>
+	<task>
+		<name>update</name>
+		<metadata>
+			<![CDATA[{"transitions":{"resubmit":{"bendpoints":[[303,140]]}},"xy":[328,199]}]]>
+		</metadata>
+		<actions>
+			<action>
+				<name>reject</name>
+				<script>
+					<![CDATA[
+					    import com.liferay.portal.kernel.workflow.WorkflowStatusManagerUtil;
+						import com.liferay.portal.kernel.workflow.WorkflowConstants;
+						WorkflowStatusManagerUtil.updateStatus(WorkflowConstants.getLabelStatus("denied"), workflowContext);
+						WorkflowStatusManagerUtil.updateStatus(WorkflowConstants.getLabelStatus("pending"), workflowContext);
+					]]>
+				</script>
+				<script-language>groovy</script-language>
+				<execution-type>onAssignment</execution-type>
+			</action>
+			<notification>
+				<name>Rigetto del Allarme</name>
+				<template>Il tuo Allarme è stato respinto</template>
+				<template-language>text</template-language>
+				<notification-type>user-notification</notification-type>
+				<execution-type>onAssignment</execution-type>
+			</notification>
+		</actions>
+		<assignments>
+			<user/>
+		</assignments>
+		<transitions>
+			<transition>
+				<name>resubmit</name>
+				<target>review</target>
+			</transition>
+		</transitions>
+	</task>
+	<task>
+		<name>review</name>
+		<metadata><![CDATA[{"xy":[170,60],"transitions":{"reject":{"bendpoints":[]}}}]]></metadata>
+		<actions>
+			<notification>
+				<name>Approvazione di un Allarme</name>
+				<template>Un nuovo Allarme richiede la tua approvazione</template>
+				<template-language>text</template-language>
+				<notification-type>user-notification</notification-type>
+				<execution-type>onAssignment</execution-type>
+			</notification>
+		</actions>
+		<assignments>
+			<roles>
+				<role>
+					<role-type>regular</role-type>
+					<name>Administrator</name>
+				</role>
+				<role>
+					<role-type>regular</role-type>
+					<name>Approvatore_Arpae</name>
+				</role>
+			</roles>
+		</assignments>
+		<task-timers>
+			<task-timer>
+				<name>automaticclose</name>
+				<delay>
+					<duration>2</duration>
+					<scale>second</scale>
+				</delay>
+				<timer-actions>
+					<timer-notification>
+						<name>Approvato nuovo allarme</name>
+						<template>Un Nuovo Allarme E' Stato Approvato in maniera automatica</template>
+						<template-language>text</template-language>
+						<notification-type>email</notification-type>
+						<recipients>
+							<address>valeriano.fabris@mailinator.com</address>
+						</recipients>
+					</timer-notification>
+					<timer-action>
+						<name>approve</name>
+						<description>approving</description>
+						<script>
+							<![CDATA[
+    						import com.liferay.portal.kernel.workflow.WorkflowStatusManagerUtil;
+    						import com.liferay.portal.kernel.workflow.WorkflowConstants;
+    						WorkflowStatusManagerUtil.updateStatus(WorkflowConstants.getLabelStatus("approved"), workflowContext);
+    					]]>
+						</script>
+						<script-language>groovy</script-language>
+					</timer-action>
+					<!-- Altrimenti nn va 
+					<reassignments>
+						<user>
+							<email-address>valeriano.fabris@mailinator.com</email-address>
+						</user>
+					</reassignments>
+					 -->
+				</timer-actions>
+			</task-timer>
+		</task-timers>
+		<transitions>
+			<transition>
+				<name>approve</name>
+				<target>approved</target>
+			</transition>
+			<transition>
+				<name>reject</name>
+				<target>update</target>
+				<default>false</default>
+			</transition>
+		</transitions>
+	</task>
+	<state>
+		<name>approved</name>
+		<metadata>
+			<![CDATA[
+				{"xy":[380,51]}
+			]]>
+		</metadata>
+		<actions>
+			<action>
+				<name>approve</name>
+				<script>
+					<![CDATA[
+						import com.liferay.portal.kernel.workflow.WorkflowStatusManagerUtil;
+						import com.liferay.portal.kernel.workflow.WorkflowConstants;
+						WorkflowStatusManagerUtil.updateStatus(WorkflowConstants.getLabelStatus("approved"), workflowContext);
+					]]>
+				</script>
+				<script-language>groovy</script-language>
+				<execution-type>onEntry</execution-type>
+			</action>
+		</actions>
+	</state>
+</workflow-definition>

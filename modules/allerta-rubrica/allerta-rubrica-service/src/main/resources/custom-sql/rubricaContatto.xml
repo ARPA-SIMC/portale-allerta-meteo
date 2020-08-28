@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+<custom-sql>
+
+	<sql id="it.eng.allerte.service.persistence.impl.RubricaContattoFinderImpl.deleteByNominativo">
+    <![CDATA[
+	delete from  rubrica_rubricaContatto where FK_NOMINATIVO = ?
+	]]>
+	</sql>
+	
+	<sql id="it.eng.allerte.service.persistence.impl.RubricaContattoFinderImpl.loadByNominativo">
+    <![CDATA[
+	select ID_CONTATTO, FK_NOMINATIVO, FK_CANALE, CONTATTO, ALLERTAMENTO, FK_UTENTE_CREAZIONE,
+	DATA_CREAZIONE, FK_UTENTE_MODIFICA, DATA_MODIFICA, DATA_FINE_VALIDITA
+	from  rubrica_rubricaContatto 
+	where FK_NOMINATIVO = ?
+	and DATA_FINE_VALIDITA is null
+	and ALLERTAMENTO
+	]]>
+	</sql>
+
+
+</custom-sql>

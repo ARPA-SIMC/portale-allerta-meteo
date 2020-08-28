@@ -1,0 +1,1 @@
+create index IX_30EEC50D on img_animazioni_PioggiaCumulativa (cumulazione[$COLUMN_LENGTH:75$]);

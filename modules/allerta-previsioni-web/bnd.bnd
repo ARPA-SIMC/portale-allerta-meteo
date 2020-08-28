@@ -1,0 +1,5 @@
+Bundle-Name: allerta-previsioni-web
+Bundle-SymbolicName: it.eng.allerta.previsioni
+Bundle-Version: 1.0.0
+Export-Package: it.eng.allerta.previsioni.constants
+Web-ContextPath: /allerta-previsioni

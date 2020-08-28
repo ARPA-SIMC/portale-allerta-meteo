@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<beans
+	default-destroy-method="destroy"
+	default-init-method="afterPropertiesSet"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
+>
+	<bean class="it.eng.allerta.messages.services.service.impl.AuthLocalServiceImpl" id="it.eng.allerta.messages.services.service.AuthLocalService" />
+	<bean class="it.eng.allerta.messages.services.service.persistence.impl.AuthPersistenceImpl" id="it.eng.allerta.messages.services.service.persistence.AuthPersistence" parent="basePersistence" />
+	<bean class="it.eng.allerta.messages.services.service.impl.CounterSmsLocalServiceImpl" id="it.eng.allerta.messages.services.service.CounterSmsLocalService" />
+	<bean class="it.eng.allerta.messages.services.service.impl.CounterSmsServiceImpl" id="it.eng.allerta.messages.services.service.CounterSmsService" />
+	<bean class="it.eng.allerta.messages.services.service.persistence.impl.CounterSmsPersistenceImpl" id="it.eng.allerta.messages.services.service.persistence.CounterSmsPersistence" parent="basePersistence" />
+	<bean class="it.eng.allerta.messages.services.service.impl.NodoLocalServiceImpl" id="it.eng.allerta.messages.services.service.NodoLocalService" />
+	<bean class="it.eng.allerta.messages.services.service.impl.NodoServiceImpl" id="it.eng.allerta.messages.services.service.NodoService" />
+	<bean class="it.eng.allerta.messages.services.service.persistence.impl.NodoPersistenceImpl" id="it.eng.allerta.messages.services.service.persistence.NodoPersistence" parent="basePersistence" />
+	<bean class="it.eng.allerta.messages.services.service.impl.ParametroLocalServiceImpl" id="it.eng.allerta.messages.services.service.ParametroLocalService" />
+	<bean class="it.eng.allerta.messages.services.service.impl.ParametroServiceImpl" id="it.eng.allerta.messages.services.service.ParametroService" />
+	<bean class="it.eng.allerta.messages.services.service.persistence.impl.ParametroPersistenceImpl" id="it.eng.allerta.messages.services.service.persistence.ParametroPersistence" parent="basePersistence" />
+	<bean class="it.eng.allerta.messages.services.service.persistence.impl.ParametroFinderImpl" id="it.eng.allerta.messages.services.service.persistence.ParametroFinder" parent="basePersistence" />
+	<bean class="it.eng.allerta.messages.services.service.impl.SmsSchedulerContextLocalServiceImpl" id="it.eng.allerta.messages.services.service.SmsSchedulerContextLocalService" />
+	<bean class="it.eng.allerta.messages.services.service.impl.SmsSchedulerContextServiceImpl" id="it.eng.allerta.messages.services.service.SmsSchedulerContextService" />
+	<bean class="it.eng.allerta.messages.services.service.persistence.impl.SmsSchedulerContextPersistenceImpl" id="it.eng.allerta.messages.services.service.persistence.SmsSchedulerContextPersistence" parent="basePersistence" />
+</beans>

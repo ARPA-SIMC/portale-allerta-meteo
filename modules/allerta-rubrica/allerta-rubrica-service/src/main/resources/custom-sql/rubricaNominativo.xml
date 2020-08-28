@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+<custom-sql>
+
+	<sql id="it.eng.allerte.service.persistence.impl.RubricaNominativoFinderImpl.getNominativiByName">
+    <![CDATA[
+		select distinct rn.ID_NOMINATIVO, rn.COGNOME, rn.NOME, rn.INDIRIZZO,rn.FK_SITO_PROPRIETARIO, rn.FK_UTENTE_PORTALE, 
+		rn.FK_UTENTE_CREAZIONE, rn.DATA_CREAZIONE, rn.FK_UTENTE_MODIFICA, rn.DATA_MODIFICA, rn.DISABLED
+		from rubrica_rubricanominativo rn left join rubrica_rubricacontatto rc on rc.fk_nominativo = rn.id_nominativo
+		where (upper(rn.cognome) like upper(?)	or upper(rn.nome) like upper(?) or upper(rc.contatto) like upper(?))
+		       and not rn.disabled
+	    order by rn.cognome, rn.nome     
+	]]>
+	</sql>
+
+</custom-sql>

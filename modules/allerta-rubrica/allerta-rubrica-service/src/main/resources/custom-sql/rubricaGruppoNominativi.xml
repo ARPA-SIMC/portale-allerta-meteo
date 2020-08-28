@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+<custom-sql>
+
+	<sql id="it.eng.allerte.service.persistence.impl.RubricaGruppoNominativiFinderImpl.deleteByNominativo">
+    <![CDATA[
+	delete from  rubrica_rubricaGruppoNominativi where FK_NOMINATIVO = ?
+	]]>
+	</sql>
+	
+	<sql id="it.eng.allerte.service.persistence.impl.RubricaGruppoNominativiFinderImpl.deleteByGruppo">
+    <![CDATA[
+	delete from  rubrica_rubricaGruppoNominativi where FK_GRUPPO = ?
+	]]>
+	</sql>
+	
+	<sql id="it.eng.allerte.service.persistence.impl.RubricaGruppoNominativiFinderImpl.deleteNominativoDaGruppo">
+    <![CDATA[
+	delete from  rubrica_rubricaGruppoNominativi where FK_GRUPPO = ? and FK_NOMINATIVO = ?
+	]]>
+	</sql>
+	
+	<sql id="it.eng.allerte.service.persistence.impl.RubricaGruppoNominativiFinderImpl.loadByIdRuolo">
+    <![CDATA[
+	select FK_GRUPPO, FK_NOMINATIVO from  rubrica_rubricaGruppoNominativi where FK_RUOLO = ?
+	]]>
+	</sql>
+	
+	<sql id="it.eng.allerte.service.persistence.impl.RubricaGruppoNominativiFinderImpl.loadNominativiGruppo">
+    <![CDATA[
+	 select gn.FK_GRUPPO, gn.FK_NOMINATIVO, gn.FK_RUOLO, gn.SPECIFICA_RUOLO 
+	 from  rubrica_rubricaGruppoNominativi gn, rubrica_rubricaNominativo n
+	 where gn.FK_GRUPPO = ? 
+	 	   and gn.fk_nominativo = n.id_nominativo 
+	 	   and not n.disabled and n.fk_sito_Proprietario = ?  
+	]]>
+	</sql>
+	
+	<sql id="it.eng.allerte.service.persistence.impl.RubricaGruppoNominativiFinderImpl.laodRuoliByNominativo">
+    <![CDATA[
+	select rgn.FK_GRUPPO, rgn.FK_NOMINATIVO, rgn.FK_RUOLO, rgn.SPECIFICA_RUOLO 
+	from  rubrica_rubricaGruppoNominativi rgn, rubrica_rubricaNominativo rn 
+	where rgn.FK_NOMINATIVO = ?
+		  and rgn.FK_NOMINATIVO = rn.ID_NOMINATIVO
+		  and not rn.disabled
+	]]>
+	</sql>
+
+
+</custom-sql>

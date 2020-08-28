@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE service-builder PUBLIC "-//Liferay//DTD Service Builder 6.2.0//EN" "http://www.liferay.com/dtd/liferay-service-builder_6_2_0.dtd">
+<service-builder package-path="it.eng.allerte">
+	<author>Pratola_L</author>
+	<namespace>rubrica</namespace>
+   
+    <entity name="RubricaSito" local-service="true" cache-enabled="false">
+        <column name="ID_SITO" type="long" primary="true" id-type="increment"></column>
+        <column name="NOME" type="String" primary="false"></column>
+        <column name="FK_LIFERAY_SITE" type="long" primary="false"></column>
+        <finder name="LiferaySite" return-type="Collection">
+			<finder-column name="FK_LIFERAY_SITE" />
+		</finder>
+    </entity>
+    
+    <entity name="RubricaUtenteSito" local-service="true" cache-enabled="false">
+        <column name="ID_UTENTE" type="long" primary="true" id-type="increment"></column>
+        <column name="ID_SITO" type="long"></column>
+    </entity>
+   
+    <entity name="RubricaNominativo" local-service="true" cache-enabled="false">
+    	<column name="ID_NOMINATIVO" type="long" primary="true"></column>
+    	<column name="COGNOME" type="String"></column>
+    	<column name="NOME" type="String"></column>
+    	<column name="INDIRIZZO" type="String"></column>
+    	<column name="FK_SITO_PROPRIETARIO" type="long"></column>
+    	<column name="FK_UTENTE_PORTALE" type="long"></column>
+    	<column name="FK_UTENTE_CREAZIONE" type="long"></column>
+    	<column name="DATA_CREAZIONE" type="Date"></column>
+    	<column name="FK_UTENTE_MODIFICA" type="long"></column>
+    	<column name="DATA_MODIFICA" type="Date"></column>
+       	<column name="DISABLED" type="boolean"></column>
+       	<column name="MODIFICA_MINORE" type="boolean"></column>
+		<finder name="NominativoPerSitoProprietario" return-type="RubricaNominativo">
+			<finder-column name="ID_NOMINATIVO" />
+			<finder-column name="FK_SITO_PROPRIETARIO" />
+		</finder>
+		<finder name="UtentePortale" return-type="Collection">
+			<finder-column name="FK_UTENTE_PORTALE" />
+		</finder>
+		<finder name="UtenteCreazione" return-type="Collection">
+			<finder-column name="FK_UTENTE_CREAZIONE" />
+		</finder>
+		<finder name="UtenteModifica" return-type="Collection">
+			<finder-column name="FK_UTENTE_MODIFICA" />
+		</finder>
+		<finder name="NominativoPerGruppoByNomeCognome" return-type="Collection">
+			<finder-column name="COGNOME" />
+			<finder-column name="NOME" />
+			<finder-column name="FK_SITO_PROPRIETARIO" />
+		</finder>
+    </entity>
+   
+    <entity name="RubricaRuolo" local-service="true" cache-enabled="false">
+        <column name="ID_RUOLO" type="long" primary="true"></column>
+        <column name="DESCRIZIONE" type="String"></column>
+        <column name="FK_RUOLO_LIFERAY" type="long" primary="false"></column>
+        <finder name="RubricaRuoloByRuoloLiferay" return-type="RubricaRuolo">
+			<finder-column name="FK_RUOLO_LIFERAY" />
+		</finder>
+    </entity>
+   
+    <entity name="RubricaCanale" local-service="true" cache-enabled="false">
+        <column name="ID_CANALE" type="long" primary="true"></column>
+        <column name="NOME" type="String"></column>
+        <column name="ICONA" type="String"></column>
+        <column name="REGEX" type="String"></column>
+    </entity>
+    
+    <entity name="RubricaContatto" local-service="true" cache-enabled="false">
+        <column name="ID_CONTATTO" type="long" primary="true"></column>
+        <column name="FK_NOMINATIVO" type="long"></column>
+        <column name="FK_CANALE" type="long"></column>
+        <column name="CONTATTO" type="String"></column>
+        <column name="ALLERTAMENTO" type="boolean"></column>
+        <column name="FK_UTENTE_CREAZIONE" type="long"></column>
+        <column name="DATA_CREAZIONE" type="Date"></column>
+        <column name="FK_UTENTE_MODIFICA" type="long"></column>
+        <column name="DATA_MODIFICA" type="Date"></column>
+        <column name="DATA_FINE_VALIDITA" type="Date"></column>
+        <column name="MODIFICA_MINORE" type="boolean"></column>
+		<finder name="UtenteCreazioneContatto" return-type="Collection">
+			<finder-column name="FK_UTENTE_CREAZIONE" />
+		</finder>
+		<finder name="UtenteModificaContatto" return-type="Collection">
+			<finder-column name="FK_UTENTE_MODIFICA" />
+		</finder>
+		 <finder name="ContattoCanale" return-type="Collection">
+			<finder-column name="FK_CANALE" />
+		 </finder>
+		 <finder name="ContattoNominativo" return-type="Collection">
+			<finder-column name="FK_NOMINATIVO" />
+		</finder>
+		<finder name="DataCreazioneContatto" return-type="Collection">
+			<finder-column name="DATA_CREAZIONE" />
+		</finder>
+		<finder name="DataModificaContatto" return-type="Collection">
+			<finder-column name="DATA_MODIFICA" />
+		</finder>
+    </entity>
+    
+    <entity name="RubricaGruppo" local-service="true" cache-enabled="false">
+        <column name="ID_GRUPPO" type="long" primary="true"></column>
+        <column name="NOME" type="String"></column>
+        <column name="FK_SITO_PROPRIETARIO" type="long"></column>
+        <column name="NOTE" type="String"></column>
+        <column name="FK_UTENTE_CREAZIONE" type="long"></column>
+        <column name="DATA_CREAZIONE" type="Date"></column>
+        <column name="FK_UTENTE_MODIFICA" type="long"></column>
+        <column name="DATA_MODIFICA" type="Date"></column>
+        <column name="DISABLED" type="boolean"></column>
+        <finder name="RubricaGruppoSitoProprietario" return-type="RubricaGruppo">
+        	<finder-column name="ID_GRUPPO" />
+			<finder-column name="FK_SITO_PROPRIETARIO" />
+		</finder>
+		<finder name="RubricaGruppoForOwnerAndName" return-type="RubricaGruppo">
+			<finder-column name="FK_SITO_PROPRIETARIO" />
+			<finder-column name="NOME" />
+			<finder-column name="DISABLED"/>
+		</finder>
+    </entity>
+    
+    <entity name="RubricaGruppoGruppi" local-service="true" cache-enabled="false">
+        <column name="FK_GRUPPO_PADRE" type="long" primary="true"></column>
+        <column name="FK_GRUPPO_FIGLIO" type="long" primary="true"></column>
+        <finder name="RubricaGruppoGruppoByPadre" return-type="Collection">
+			<finder-column name="FK_GRUPPO_PADRE" />
+		</finder>
+		<finder name="RubricaGruppoGruppoByFiglio" return-type="Collection">
+			<finder-column name="FK_GRUPPO_FIGLIO" />
+		</finder>
+        
+    </entity>
+    
+    <entity name="RubricaGruppoNominativi" local-service="true" cache-enabled="false">
+        <column name="FK_GRUPPO" type="long" primary="true"></column>
+        <column name="FK_NOMINATIVO" type="long" primary="true"></column>
+        <column name="FK_RUOLO" type="long" primary="false"></column>
+        <column name="SPECIFICA_RUOLO" type="String"></column>
+        <finder name="RubricaGruppoRuoloByNominativo" return-type="Collection">
+			<finder-column name="FK_NOMINATIVO" />
+		</finder>
+		<finder name="RubricaGruppoRuoloByGruppo" return-type="Collection">
+			<finder-column name="FK_GRUPPO" />
+		</finder>
+    </entity>
+    
+    <entity name="RubricaLog" local-service="true" cache-enabled="false">
+        <column name="ID_LOG" type="long" primary="true"></column>
+        <column name="FK_SITO_PROPRIETARIO" type="long"></column>
+        <column name="TABELLA" type="String"></column>
+        <column name="TIPO_OPERAZIONE" type="String"></column>
+        <column name="ID_OGGETTO" type="String"></column>
+        <column name="NUOVA_DESCRIZIONE" type="String"></column>
+        <column name="FK_UTENTE_MODIFICA" type="long"></column>
+        <column name="DATA_MODIFICA" type="Date"></column>
+		<finder name="RubricaLogUtenteModifica" return-type="Collection">
+			<finder-column name="FK_UTENTE_MODIFICA" />
+		</finder>
+		<finder name="RubricaLogDataModifica" return-type="Collection">
+			<finder-column name="DATA_MODIFICA" />
+			<finder-column name="FK_SITO_PROPRIETARIO"></finder-column>
+		</finder>
+		<finder name="RubricaLogTabella" return-type="Collection">
+			<finder-column name="TABELLA" />
+			<finder-column name="FK_SITO_PROPRIETARIO"></finder-column>
+		</finder>
+		<finder name="RubricaLogIdOggetto" return-type="Collection">
+			<finder-column name="ID_OGGETTO" />
+			<finder-column name="FK_SITO_PROPRIETARIO"></finder-column>
+		</finder>
+		<finder name="RubricaLogBySitoProprietario" return-type="Collection">
+			<finder-column name="FK_SITO_PROPRIETARIO"></finder-column>
+		</finder>
+    </entity>
+    <entity name="RubricaPermessi" local-service="false" cache-enabled="false" >
+        <column name="ID_PERMESSO" type="String" primary="true"></column>
+        <column name="NOME_PERMESSO" type="String"></column>
+    </entity>
+    <entity name="RubricaRuoloPermessi" local-service="true" cache-enabled="false">
+        <column name="FK_ID_RUOLO" type="long" primary="true"></column>
+        <column name="FK_ID_PERMESSO" type="String" primary="true"></column>
+        <finder name="RubricaPermessiByRuolo" return-type="Collection">
+			<finder-column name="FK_ID_RUOLO"></finder-column>
+		</finder>
+    </entity>
+    <entity name="RubricaRuoloRubrica" local-service="true" cache-enabled="false">
+        <column name="ID_RUOLO" type="long" primary="true"></column>
+        <column name="DESCRIZIONE" type="String"></column>
+    </entity>
+</service-builder>

@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+
+<model-hints>
+	<model name="it.eng.parer.model.ComponentiInvio">
+		<field name="ID_INVIO" type="long" />
+		<field name="ID_COMPONENTE" type="long" />
+		<field name="ORDINE_PRESENTAZIONE" type="long" />
+		<field name="TIPO_COMPONENTE" type="String" />
+		<field name="TIPO_SUPPORTO_COMPONENTE" type="String" />
+		<field name="NOME_COMPONENTE" type="String">
+			<hint name="max-length">128</hint>
+		</field>
+		<field name="FORMATO_FILE_VERSATO" type="String" />
+		<field name="HASH_VERSATO" type="String" />
+		<field name="URN_VERSATO" type="String">
+			<hint name="max-length">128</hint>
+		</field>
+		<field name="ID_COMPONENTE_VERSATO" type="long" />
+	</model>
+	<model name="it.eng.parer.model.DatiSpecificiInvio">
+		<field name="ID_INVIO" type="long" />
+		<field name="AMBIENTE" type="String" />
+		<field name="VERSIONE" type="double" />
+		<field name="VERSATORE_ENTE" type="String" />
+		<field name="VERSATORE_USER_ID" type="String" />
+		<field name="VERSATORE_STRUTTURA" type="String" />
+		<field name="CHIAVE_NUMERO" type="String" />
+		<field name="CHIAVE_ANNO" type="long" />
+		<field name="CHIAVE_TIPO_REGISTRO" type="String" />
+		<field name="TIPOLOGIA_UNITA_DOCUMENTARIA" type="String" />
+		<field name="TIPO_CONSERVAZIONE" type="String" />
+		<field name="FORZA_ACCETTAZIONE" type="String" />
+		<field name="FORZA_CONSERVAZIONE" type="String" />
+		<field name="FORZA_COLLEGAMENTO" type="String" />
+		<field name="OGGETTO_UNITA_DOCUMENTARIA" type="String">
+			<hint name="max-length">1024</hint>
+		</field>
+		<field name="DATA_UNITA_DOCUMENTARIA" type="Date" />
+		<field name="VERSIONE_DATI_SPECIFICI" type="double" />
+		<field name="IDENTIFICATIVO_DATO_SPECIFICO" type="String" />
+		<field name="DATA_GENERAZIONE" type="Date" />
+		<field name="NUM_SMS_GENERATI" type="int" />
+		<field name="NUM_SMS_INVIATI" type="int" />
+		<field name="NUM_NOTIFICHE_RICEZIONE" type="int" />
+		<field name="DENOMINAZIONE_APPLICATIVO" type="String" />
+		<field name="OGGETTO_MAIL" type="String">
+			<hint name="max-length">256</hint>
+		</field>
+		<field name="TESTO_MAIL" type="String">
+			<hint name="max-length">5000</hint>
+		</field>
+		<field name="COMPILATORE_ARPAE" type="String" />
+		<field name="COMPILATORE_PROTEZIONE_CIVILE" type="String" />
+		<field name="DATA_INIZIO_VALIDITA" type="Date" />
+		<field name="DATA_FINE_VALIDITA" type="Date" />
+		<field name="APPROVATORE_ARPAE" type="String" />
+		<field name="DATA_FIRMA_ARPAE" type="Date" />
+		<field name="APPROVATORE_PROTEZIONE_CIVILE" type="String" />
+		<field name="DATA_FIRMA_PROTEZIONE_CIVILE" type="Date" />
+		<field name="INVIO_RESPONSABILE_TERRITORIO" type="String" />
+		<field name="ID_DOCUMENTO_PRINCIPALE" type="long" />
+		<field name="TIPO_DOCUMENTO" type="String" />
+		<field name="TIPO_STRUTTURA" type="String" />
+		<field name="DENOMINAZIONE_SENSORE_RILEVAMENTO" type="String" />
+		<field name="REGOLA_ALLARME_ID" type="String" />
+		<field name="REGOLA_ALLARME_NOME" type="String" />
+		<field name="REGOLA_ALLARME_DESCRIZIONE" type="String" />
+		<field name="ESITO_INVIO" type="String" />
+		<field name="userId" type="long" />
+		<field name="companyId" type="long" />
+		<field name="groupId" type="long" />
+		<field name="data_invio" type="Date" />
+		<field name="data_risposta" type="Date" />
+		<field name="CODICE_ESITO" type="String" />
+		<field name="CODICE_ERRORE" type="String" />
+		<field name="MESG_ERRORE" type="String">
+			<hint name="max-length">2048</hint>
+		</field>
+		<field name="CODICE_TIPO_INVIO" type="String" />
+	</model>
+	<model name="it.eng.parer.model.DocumentiCollegati">
+		<field name="DOC_COLLEGATO_NUMERO" type="String" />
+		<field name="DOC_COLLEGATO_ANNO" type="int" />
+		<field name="DOC_COLLEGATO_TIPO_REGISTRO" type="String" />
+		<field name="DESCRIZIONE_COLLEGAMENTO" type="String">
+			<hint name="max-length">5000</hint>
+		</field>
+		<field name="ID_INVIO" type="long" />
+	</model>
+	<model name="it.eng.parer.model.Parametri">
+		<field name="chiave" type="String" />
+		<field name="valore" type="String" />
+	</model>
+</model-hints>

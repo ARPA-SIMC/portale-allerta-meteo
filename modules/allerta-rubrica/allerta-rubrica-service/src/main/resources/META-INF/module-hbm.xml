@@ -1,0 +1,134 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false" default-lazy="false">
+	<import class="it.eng.allerte.model.RubricaCanale" />
+	<import class="it.eng.allerte.model.RubricaContatto" />
+	<import class="it.eng.allerte.model.RubricaGruppo" />
+	<import class="it.eng.allerte.model.RubricaGruppoGruppi" />
+	<import class="it.eng.allerte.model.RubricaGruppoNominativi" />
+	<import class="it.eng.allerte.model.RubricaLog" />
+	<import class="it.eng.allerte.model.RubricaNominativo" />
+	<import class="it.eng.allerte.model.RubricaPermessi" />
+	<import class="it.eng.allerte.model.RubricaRuolo" />
+	<import class="it.eng.allerte.model.RubricaRuoloPermessi" />
+	<import class="it.eng.allerte.model.RubricaRuoloRubrica" />
+	<import class="it.eng.allerte.model.RubricaSito" />
+	<import class="it.eng.allerte.model.RubricaUtenteSito" />
+	<class name="it.eng.allerte.model.impl.RubricaCanaleImpl" table="rubrica_RubricaCanale">
+		<id name="ID_CANALE" type="long">
+			<generator class="assigned" />
+		</id>
+		<property name="NOME" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="ICONA" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="REGEX" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+	</class>
+	<class name="it.eng.allerte.model.impl.RubricaContattoImpl" table="rubrica_RubricaContatto">
+		<id name="ID_CONTATTO" type="long">
+			<generator class="assigned" />
+		</id>
+		<property name="FK_NOMINATIVO" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="FK_CANALE" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="CONTATTO" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="ALLERTAMENTO" type="com.liferay.portal.dao.orm.hibernate.BooleanType" />
+		<property name="FK_UTENTE_CREAZIONE" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="DATA_CREAZIONE" type="org.hibernate.type.TimestampType" />
+		<property name="FK_UTENTE_MODIFICA" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="DATA_MODIFICA" type="org.hibernate.type.TimestampType" />
+		<property name="DATA_FINE_VALIDITA" type="org.hibernate.type.TimestampType" />
+		<property name="MODIFICA_MINORE" type="com.liferay.portal.dao.orm.hibernate.BooleanType" />
+	</class>
+	<class name="it.eng.allerte.model.impl.RubricaGruppoImpl" table="rubrica_RubricaGruppo">
+		<id name="ID_GRUPPO" type="long">
+			<generator class="assigned" />
+		</id>
+		<property name="NOME" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="FK_SITO_PROPRIETARIO" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="NOTE" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="FK_UTENTE_CREAZIONE" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="DATA_CREAZIONE" type="org.hibernate.type.TimestampType" />
+		<property name="FK_UTENTE_MODIFICA" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="DATA_MODIFICA" type="org.hibernate.type.TimestampType" />
+		<property name="DISABLED" type="com.liferay.portal.dao.orm.hibernate.BooleanType" />
+	</class>
+	<class name="it.eng.allerte.model.impl.RubricaGruppoGruppiImpl" table="rubrica_RubricaGruppoGruppi">
+		<composite-id class="it.eng.allerte.service.persistence.RubricaGruppoGruppiPK" name="primaryKey">
+			<key-property name="FK_GRUPPO_PADRE" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+			<key-property name="FK_GRUPPO_FIGLIO" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		</composite-id>
+	</class>
+	<class name="it.eng.allerte.model.impl.RubricaGruppoNominativiImpl" table="rubrica_RubricaGruppoNominativi">
+		<composite-id class="it.eng.allerte.service.persistence.RubricaGruppoNominativiPK" name="primaryKey">
+			<key-property name="FK_GRUPPO" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+			<key-property name="FK_NOMINATIVO" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		</composite-id>
+		<property name="FK_RUOLO" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="SPECIFICA_RUOLO" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+	</class>
+	<class name="it.eng.allerte.model.impl.RubricaLogImpl" table="rubrica_RubricaLog">
+		<id name="ID_LOG" type="long">
+			<generator class="assigned" />
+		</id>
+		<property name="FK_SITO_PROPRIETARIO" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="TABELLA" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="TIPO_OPERAZIONE" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="ID_OGGETTO" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="NUOVA_DESCRIZIONE" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="FK_UTENTE_MODIFICA" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="DATA_MODIFICA" type="org.hibernate.type.TimestampType" />
+	</class>
+	<class name="it.eng.allerte.model.impl.RubricaNominativoImpl" table="rubrica_RubricaNominativo">
+		<id name="ID_NOMINATIVO" type="long">
+			<generator class="assigned" />
+		</id>
+		<property name="COGNOME" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="NOME" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="INDIRIZZO" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="FK_SITO_PROPRIETARIO" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="FK_UTENTE_PORTALE" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="FK_UTENTE_CREAZIONE" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="DATA_CREAZIONE" type="org.hibernate.type.TimestampType" />
+		<property name="FK_UTENTE_MODIFICA" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="DATA_MODIFICA" type="org.hibernate.type.TimestampType" />
+		<property name="DISABLED" type="com.liferay.portal.dao.orm.hibernate.BooleanType" />
+		<property name="MODIFICA_MINORE" type="com.liferay.portal.dao.orm.hibernate.BooleanType" />
+	</class>
+	<class name="it.eng.allerte.model.impl.RubricaPermessiImpl" table="rubrica_RubricaPermessi">
+		<id name="ID_PERMESSO" type="java.lang.String">
+			<generator class="assigned" />
+		</id>
+		<property name="NOME_PERMESSO" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+	</class>
+	<class name="it.eng.allerte.model.impl.RubricaRuoloImpl" table="rubrica_RubricaRuolo">
+		<id name="ID_RUOLO" type="long">
+			<generator class="assigned" />
+		</id>
+		<property name="DESCRIZIONE" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="FK_RUOLO_LIFERAY" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+	</class>
+	<class name="it.eng.allerte.model.impl.RubricaRuoloPermessiImpl" table="rubrica_RubricaRuoloPermessi">
+		<composite-id class="it.eng.allerte.service.persistence.RubricaRuoloPermessiPK" name="primaryKey">
+			<key-property name="FK_ID_RUOLO" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+			<key-property name="FK_ID_PERMESSO" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		</composite-id>
+	</class>
+	<class name="it.eng.allerte.model.impl.RubricaRuoloRubricaImpl" table="rubrica_RubricaRuoloRubrica">
+		<id name="ID_RUOLO" type="long">
+			<generator class="assigned" />
+		</id>
+		<property name="DESCRIZIONE" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+	</class>
+	<class name="it.eng.allerte.model.impl.RubricaSitoImpl" table="rubrica_RubricaSito">
+		<id name="ID_SITO" type="long">
+			<generator class="increment" />
+		</id>
+		<property name="NOME" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="FK_LIFERAY_SITE" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+	</class>
+	<class name="it.eng.allerte.model.impl.RubricaUtenteSitoImpl" table="rubrica_RubricaUtenteSito">
+		<id name="ID_UTENTE" type="long">
+			<generator class="increment" />
+		</id>
+		<property name="ID_SITO" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+	</class>
+</hibernate-mapping>

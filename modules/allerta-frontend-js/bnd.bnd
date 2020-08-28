@@ -1,0 +1,6 @@
+Bundle-Name: allerta-frontend-js
+Bundle-SymbolicName: it.eng.allerta.frontend.js
+Bundle-Version: 1.0.0
+Web-ContextPath: /allerta-frontend-js
+Liferay-JS-Config: /META-INF/resources/config.js
+

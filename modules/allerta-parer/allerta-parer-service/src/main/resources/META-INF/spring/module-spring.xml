@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+
+<beans
+	default-destroy-method="destroy"
+	default-init-method="afterPropertiesSet"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
+>
+	<bean class="it.eng.parer.service.impl.ComponentiInvioLocalServiceImpl" id="it.eng.parer.service.ComponentiInvioLocalService" />
+	<bean class="it.eng.parer.service.impl.ComponentiInvioServiceImpl" id="it.eng.parer.service.ComponentiInvioService" />
+	<bean class="it.eng.parer.service.persistence.impl.ComponentiInvioPersistenceImpl" id="it.eng.parer.service.persistence.ComponentiInvioPersistence" parent="basePersistence" />
+	<bean class="it.eng.parer.service.impl.DatiSpecificiInvioLocalServiceImpl" id="it.eng.parer.service.DatiSpecificiInvioLocalService" />
+	<bean class="it.eng.parer.service.impl.DatiSpecificiInvioServiceImpl" id="it.eng.parer.service.DatiSpecificiInvioService" />
+	<bean class="it.eng.parer.service.persistence.impl.DatiSpecificiInvioPersistenceImpl" id="it.eng.parer.service.persistence.DatiSpecificiInvioPersistence" parent="basePersistence" />
+	<bean class="it.eng.parer.service.impl.DocumentiCollegatiLocalServiceImpl" id="it.eng.parer.service.DocumentiCollegatiLocalService" />
+	<bean class="it.eng.parer.service.impl.DocumentiCollegatiServiceImpl" id="it.eng.parer.service.DocumentiCollegatiService" />
+	<bean class="it.eng.parer.service.persistence.impl.DocumentiCollegatiPersistenceImpl" id="it.eng.parer.service.persistence.DocumentiCollegatiPersistence" parent="basePersistence" />
+	<bean class="it.eng.parer.service.impl.ParametriLocalServiceImpl" id="it.eng.parer.service.ParametriLocalService" />
+	<bean class="it.eng.parer.service.persistence.impl.ParametriPersistenceImpl" id="it.eng.parer.service.persistence.ParametriPersistence" parent="basePersistence" />
+</beans>

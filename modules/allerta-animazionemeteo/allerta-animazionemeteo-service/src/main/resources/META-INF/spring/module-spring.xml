@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<beans
+	default-destroy-method="destroy"
+	default-init-method="afterPropertiesSet"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
+>
+	<bean class="it.eng.animaeteo.service.impl.AnimeteoImgLocalServiceImpl" id="it.eng.animaeteo.service.AnimeteoImgLocalService" />
+	<bean class="it.eng.animaeteo.service.impl.AnimeteoImgServiceImpl" id="it.eng.animaeteo.service.AnimeteoImgService" />
+	<bean class="it.eng.animaeteo.service.persistence.impl.AnimeteoImgPersistenceImpl" id="it.eng.animaeteo.service.persistence.AnimeteoImgPersistence" parent="basePersistence" />
+	<bean class="it.eng.animaeteo.service.impl.AnimeteoSmallImgLocalServiceImpl" id="it.eng.animaeteo.service.AnimeteoSmallImgLocalService" />
+	<bean class="it.eng.animaeteo.service.impl.AnimeteoSmallImgServiceImpl" id="it.eng.animaeteo.service.AnimeteoSmallImgService" />
+	<bean class="it.eng.animaeteo.service.persistence.impl.AnimeteoSmallImgPersistenceImpl" id="it.eng.animaeteo.service.persistence.AnimeteoSmallImgPersistence" parent="basePersistence" />
+</beans>

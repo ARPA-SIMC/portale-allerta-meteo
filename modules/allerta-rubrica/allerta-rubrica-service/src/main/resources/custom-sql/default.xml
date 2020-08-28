@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+<custom-sql>
+	<sql file="custom-sql/rubricaContatto.xml" />
+	<sql file="custom-sql/rubricaGruppoNominativi.xml" />
+	<sql file="custom-sql/rubricaGruppoGruppi.xml" />
+	<sql file="custom-sql/rubricaGruppo.xml" />
+	<sql file="custom-sql/rubricaNominativo.xml" />
+	<sql file="custom-sql/rubricaLog.xml" />
+</custom-sql>

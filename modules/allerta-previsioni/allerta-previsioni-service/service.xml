@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<!DOCTYPE service-builder PUBLIC "-//Liferay//DTD Service Builder 7.0.0//EN" "http://www.liferay.com/dtd/liferay-service-builder_7_0_0.dtd">
+
+<service-builder package-path="it.eng.previsioni.meteo">
+
+	<namespace>prev_meteo</namespace>
+
+	<entity name="Bollettino" local-service="true" remote-service="true">
+		<!-- PK fields -->
+		<column name="id" type="long" primary="true"></column>
+		<column name="tipo" type="String"></column>
+		<column name="timestamp" type="long"></column>
+		<column name="emissione" type="String"></column>
+		<column name="validita" type="String"></column>
+		<column name="xml_content" type="String"></column>
+		<column name="json" type="String"></column>
+		<!-- Order -->
+		<order by="asc">
+			<order-column name="id"></order-column>
+		</order>
+		<!-- Finder methods -->
+		<finder name="tipo" return-type="Bollettino">
+			<finder-column name="tipo"></finder-column>
+		</finder>
+	</entity>
+	
+	<entity name="Img" local-service="true" remote-service="true">
+		<!-- PK fields -->
+		<column name="id" type="long" primary="true"></column>
+		<!-- Other fields -->
+		<column name="daypart" type="String"></column>
+		<column name="day" type="String"></column>
+		<column name="provincia" type="String"></column>
+		<column name="inserted" type="Date"></column>
+		<column name="data" type="String"></column>
+		<!-- Order -->
+		<order by="asc">
+			<order-column name="id"></order-column>
+		</order>
+		<!-- Finder methods -->
+		<finder name="day" return-type="Collection">
+			<finder-column name="day"></finder-column>
+		</finder>
+		<finder name="Day_Province" return-type="Collection">
+			<finder-column name="day"></finder-column>
+			<finder-column name="provincia"></finder-column>
+		</finder>
+		<finder name="Part_Day_Province" return-type="Img">
+			<finder-column name="daypart"></finder-column>
+			<finder-column name="day"></finder-column>
+			<finder-column name="provincia"></finder-column>
+		</finder>
+	</entity>
+	
+	<entity name="Storico" local-service="true" remote-service="false">
+		<!-- PK fields -->
+		<column name="id" type="long" primary="true"></column>
+		<!-- Other fields -->
+		<column name="idZona" type="int"></column>
+		<column name="nome" type="String"></column>
+		<column name="sigla" type="String"></column>
+		<column name="tipo" type="String"></column>
+		<column name="xml" type="String"></column>
+		<!-- Order -->
+		<order by="asc">
+			<order-column name="id"></order-column>
+		</order>
+		<!-- Finder methods -->
+		<finder name="Sigla" return-type="Collection">
+			<finder-column name="sigla"></finder-column>
+		</finder>
+	</entity>
+</service-builder>

@@ -1,0 +1,108 @@
+<?xml version="1.0"?>
+<workflow-definition
+	xmlns="urn:liferay.com:liferay-workflow_6.2.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:liferay.com:liferay-workflow_6.2.0 http://www.liferay.com/dtd/liferay-workflow-definition_6_2_0.xsd">
+	<name>Approvazione Utente Weballerte</name>
+	<description>approvazione utente per weballerte</description>
+	<version>42</version>
+	<state>
+		<name>richiesta registrazione</name>
+		<metadata><![CDATA[{"xy":[20,230],"transitions":{"review":{"bendpoints":[]}}}]]></metadata>
+		<initial>true</initial>
+		<transitions>
+			<transition>
+				<name>review</name>
+				<target>review</target>
+				<default>true</default>
+			</transition>
+		</transitions>
+	</state>
+	<task>
+		<name>review</name>
+		<metadata><![CDATA[{"xy":[230,70],"transitions":{"rigetta richiesta":{"bendpoints":[]}}}]]></metadata>
+		<actions>
+			<notification>
+				<name>Richiesta di registrazione</name>
+				<template>Nuova richiesta di abilitazione al portale</template>
+				<template-language>text</template-language>
+				<notification-type>email</notification-type>
+				<notification-type>user-notification</notification-type>
+				<execution-type>onAssignment</execution-type>
+			</notification>
+		</actions>
+		<assignments>
+			<scripted-assignment>
+				<script>
+					<![CDATA[					
+					import com.liferay.registry.RegistryUtil;
+					import it.eng.allerta.user.registration.workflow.AllertaUserWorkflow;
+					import com.liferay.registry.ServiceTracker;
+
+					def registry = RegistryUtil.getRegistry();
+					
+					ServiceTracker<AllertaUserWorkflow, Object> serviceTracker =
+						registry.trackServices(AllertaUserWorkflow.class);
+
+					serviceTracker.open();
+					
+					user = serviceTracker.getService().userAssignmentAction(workflowContext);
+					roles = serviceTracker.getService().getRoles(workflowContext);
+					
+					serviceTracker.close();
+										
+						]]>
+				</script>
+				<script-language>groovy</script-language>
+			</scripted-assignment>
+		</assignments>
+		<transitions>
+			<transition>
+				<name>abilita utente</name>
+				<target>enable</target>
+				<default>true</default>
+			</transition>
+			<transition>
+				<name>rigetta richiesta</name>
+				<target>delete</target>
+				<default>false</default>
+			</transition>
+		</transitions>
+	</task>
+	<state>
+		<name>enable</name>
+		<metadata><![CDATA[{"xy":[380,240]}]]></metadata><actions><action><name>enable</name><script>
+			<![CDATA[					
+					import com.liferay.registry.RegistryUtil;
+					import it.eng.allerta.user.registration.workflow.AllertaUserWorkflow;
+					import com.liferay.registry.ServiceTracker;
+
+					def registry = RegistryUtil.getRegistry();
+					
+					ServiceTracker<AllertaUserWorkflow, Object> serviceTracker =
+						registry.trackServices(AllertaUserWorkflow.class);
+
+					serviceTracker.open();
+					
+					serviceTracker.getService().enableUser(workflowContext);
+					
+					serviceTracker.close();
+					
+					
+					]]></script><script-language>groovy</script-language><execution-type>onEntry</execution-type></action></actions></state><state><name>delete</name><metadata><![CDATA[{"xy":[560,90]}]]></metadata><actions><action><name>delete</name><script>
+			<![CDATA[			
+					import com.liferay.registry.RegistryUtil;
+					import it.eng.allerta.user.registration.workflow.AllertaUserWorkflow;
+					import com.liferay.registry.ServiceTracker;
+
+					def registry = RegistryUtil.getRegistry();
+					
+					ServiceTracker<AllertaUserWorkflow, Object> serviceTracker =
+						registry.trackServices(AllertaUserWorkflow.class);
+
+					serviceTracker.open();
+					
+					serviceTracker.getService().disableUser(workflowContext);
+					
+					serviceTracker.close();			
+					
+					]]></script><script-language>groovy</script-language><execution-type>onEntry</execution-type></action></actions></state></workflow-definition>

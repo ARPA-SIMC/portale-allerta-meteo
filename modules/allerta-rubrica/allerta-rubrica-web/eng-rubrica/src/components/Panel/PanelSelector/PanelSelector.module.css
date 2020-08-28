@@ -1,0 +1,50 @@
+.panelSelector {
+  width: 200px;
+  min-height: calc(34px + 1rem);
+  position: relative;
+  z-index: 5;
+}
+  
+.selectorOptions {
+  background: white;
+  border: 1px solid rgba(0,0,0,.075);
+  border-radius: 3px;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.075);
+  list-style: none;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  margin: 0;
+  overflow: hidden;
+  padding: .5rem 0;
+  position: absolute;
+  transition: height .3s ease;
+  width: 100%;
+  z-index: 10;
+}
+
+.selectorItem {
+  color: rgba(30,30,30,1);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: .5rem 1.0rem;
+  transition: background .25s ease, color .25s ease;
+}
+
+.closed {
+  height: calc(34px + 1rem);
+}
+  
+.opened {
+  height: calc(calc(34px * 4) + 2rem) !important;
+}
+
+.opened.admin {
+  height: calc(calc(34px * 4) + 2rem) !important;
+}
+
+.opened .selectorItem:hover {
+  background: linear-gradient(135deg, rgba(32,124,229,1) 0%, rgba(73,155,234,1) 100%);
+  color: rgba(230,230,230,1);
+}

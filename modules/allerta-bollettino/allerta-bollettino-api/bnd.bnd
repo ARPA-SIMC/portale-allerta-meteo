@@ -1,0 +1,11 @@
+Bundle-Name: allerta-bollettino-api
+Bundle-SymbolicName: allerta.bollettino.api
+Bundle-Version: 1.0.0
+Export-Package: \
+	it.eng.bollettino.exception,\
+	it.eng.bollettino.model,\
+	it.eng.bollettino.service,\
+	it.eng.bollettino.service.persistence,\
+	it.eng.bollettino.cron
+-check: EXPORTS
+-includeresource: META-INF/service.xml=../allerta-bollettino-service/service.xml

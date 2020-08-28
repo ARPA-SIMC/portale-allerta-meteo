@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+
+<model-hints>
+	<model name="it.eng.animazione.image.model.altezzaOnda">
+		<field name="id" type="long" />
+		<field name="im" type="String" />
+		<field name="text_LOC" type="String" />
+		<field name="ts_UTC" type="long" />
+		<field name="imgData" type="String">
+			<hint name="max-length">5000</hint>
+		</field>
+	</model>
+	<model name="it.eng.animazione.image.model.Parametro">
+		<field name="key" type="String" />
+		<field name="value" type="String" />
+	</model>
+	<model name="it.eng.animazione.image.model.PioggiaCumulativa">
+		<field name="id" type="long" />
+		<field name="nome" type="String">
+			<hint name="max-length">300</hint>
+		</field>
+		<field name="cumulazione" type="String" />
+		<field name="inzioCumulazione" type="Date" />
+		<field name="fineCumulazione" type="Date" />
+		<field name="imgData" type="String">
+			<hint name="max-length">5000</hint>
+		</field>
+	</model>
+</model-hints>

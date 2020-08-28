@@ -1,0 +1,4 @@
+Bundle-Name: allerta-comune-web
+Bundle-SymbolicName: allerta.comune.web
+Bundle-Version: 1.0.0
+Export-Package: allerta.comune.web.constants

@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+
+<model-hints>
+	<model name="it.eng.animaeteo.model.AnimeteoImg">
+		<field name="id" type="long" />
+		<field name="name" type="String" />
+		<field name="type" type="String" />
+		<field name="inserted" type="Date" />
+		<field name="data" type="String">
+			<hint name="max-length">5000</hint>
+		</field>
+	</model>
+	<model name="it.eng.animaeteo.model.AnimeteoSmallImg">
+		<field name="id" type="long" />
+		<field name="name" type="String" />
+		<field name="type" type="String" />
+		<field name="inserted" type="Date" />
+		<field name="data" type="String">
+			<hint name="max-length">5000</hint>
+		</field>
+	</model>
+</model-hints>

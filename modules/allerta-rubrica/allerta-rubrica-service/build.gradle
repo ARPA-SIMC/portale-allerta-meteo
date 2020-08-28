@@ -1,0 +1,42 @@
+dependencies {
+	compileOnly group: "com.liferay", name: "com.liferay.petra.lang"
+	compileOnly group: "com.liferay", name: "com.liferay.petra.string"
+	compileOnly group: "com.liferay", name: "com.liferay.portal.aop.api"
+	
+	compileOnly group: "com.liferay.portal", name: "com.liferay.portal.kernel"
+	
+
+	compileOnly group: "org.osgi", name: "org.osgi.core"
+	compileOnly group: "org.osgi", name: "org.osgi.service.component.annotations"
+
+	compileOnly project(":modules:allerta-rubrica:allerta-rubrica-api")
+	
+	compileOnly 'biz.aQute.bnd:biz.aQute.bnd.annotation:4.2.0'
+	compileOnly group: "com.liferay", name: "com.liferay.portal.spring.extender", version: "2.0.0"
+	compileOnly group: "com.liferay", name: "com.liferay.petra.string"
+	
+	compileOnly 'com.liferay:com.liferay.portal.dao.orm.custom.sql.api'
+	
+	compileInclude group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.0.1'
+	compileInclude group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.0.1'
+	compileInclude group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.0.1'
+	compileInclude group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
+	compileInclude group: 'commons-codec', name: 'commons-codec', version: '1.4' 
+	compileInclude group: 'org.apache.commons', name: 'commons-collections4', version: '4.0'
+	//compileInclude group: 'commons-logging', name: 'commons-logging', version: '1.1.1'
+	
+	//compileOnly group: "javax.servlet", name: "javax.servlet-api" 
+	//compileInclude group: 'org.apache.poi', name: 'poi', version: '3.17'
+	//compileInclude group: 'org.apache.poi', name: 'poi-ooxml', version: '3.17'
+	//compileInclude group: 'org.apache.poi', name: 'poi-ooxml-schemas', version: '3.17'
+	//compileInclude group: 'org.apache.xmlbeans', name: 'xmlbeans', version: '2.6.0'
+	
+	compileOnly project(":modules:allerta-base")	
+}
+
+buildService {
+	apiDir = "../allerta-rubrica-api/src/main/java"
+	databaseNameMaxLength=50
+}
+
+group = "it.eng.rubrica"

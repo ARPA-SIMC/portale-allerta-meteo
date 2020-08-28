@@ -1,0 +1,13 @@
+Bundle-Name: allerta-rubrica-api
+Bundle-SymbolicName: it.eng.rubrica.api
+Bundle-Version: 1.0.0
+Export-Package: \
+	it.eng.allerte.custom.jsonRubrica,\
+	it.eng.allerte.custom.interfaces,\
+	it.eng.allerte.custom.util,\
+	it.eng.allerte.exception,\
+	it.eng.allerte.model,\
+	it.eng.allerte.service,\
+	it.eng.allerte.service.persistence
+-check: EXPORTS
+-includeresource: META-INF/service.xml=../allerta-rubrica-service/service.xml

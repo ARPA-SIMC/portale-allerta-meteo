@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+<custom-sql>
+
+	<sql id="it.eng.allerte.service.persistence.impl.RubricaGruppoFinderImpl.aggiornaTuttoGruppo">
+    <![CDATA[
+	update rubrica_rubricacontatto rc set data_modifica = now() where
+	rc.id_contatto in (
+	select distinct id_contatto from rubrica_rubricacontatto rc2 join
+	rubrica_rubricagrupponominativi rn on rn.fk_nominativo = rc2.fk_nominativo
+	where rn.fk_gruppo = ?
+	)
+	]]>
+	</sql>
+
+	<sql id="it.eng.allerte.service.persistence.impl.RubricaGruppoFinderImpl.getGruppiByName">
+    <![CDATA[
+	select distinct rg.ID_GRUPPO, rg.NOME, rg.FK_SITO_PROPRIETARIO, rg.NOTE, rg.FK_UTENTE_CREAZIONE, rg.DATA_CREAZIONE, rg.FK_UTENTE_MODIFICA, rg.DATA_MODIFICA, rg.DISABLED
+	from  rubrica_rubricaGruppo rg
+	where rg.fk_sito_proprietario = ? 
+	and not rg.disabled  
+	and upper(nome) like upper (?)
+	order by rg.nome
+	]]>
+	</sql>
+	
+	<sql id="it.eng.allerte.service.persistence.impl.RubricaGruppoFinderImpl.getGruppoForOwnerAndName">
+    <![CDATA[
+	select rg.ID_GRUPPO, rg.NOME, rg.FK_SITO_PROPRIETARIO, rg.NOTE, rg.FK_UTENTE_CREAZIONE, rg.DATA_CREAZIONE, rg.FK_UTENTE_MODIFICA, rg.DATA_MODIFICA, rg.DISABLED
+	from  rubrica_rubricaGruppo rg
+	where rg.fk_sito_proprietario = ? 
+	and not rg.disabled  
+	and upper(nome) = upper (?)
+	]]>
+	</sql>
+	
+	<sql id="it.eng.allerte.service.persistence.impl.RubricaGruppoFinderImpl.getAllRubrica">
+    <![CDATA[
+	select rg.nome as gruppo, rn.cognome,rn.nome, rr.descrizione as ruolo, rgn.specifica_ruolo, rn.indirizzo, rca.nome as tipo_contatto, rc.contatto from
+	rubrica_rubricagruppo rg join rubrica_rubricagrupponominativi rgn on rgn.fk_gruppo = rg.id_gruppo
+	join rubrica_rubricanominativo rn on rn.id_nominativo = rgn.fk_nominativo
+	join rubrica_rubricacontatto rc on rc.fk_nominativo = rn.id_nominativo
+	left join rubrica_rubricaruolo rr on rr.id_ruolo=rgn.fk_ruolo
+	left join rubrica_rubricacanale rca on rca.id_canale = rc.fk_canale
+	where not rn.disabled and not rg.disabled and rc.data_fine_validita is null
+	order by rg.nome,rn.cognome,rn.nome,rca.nome,rc.contatto
+	]]>
+	</sql>
+	
+	<sql id="it.eng.allerte.service.persistence.impl.RubricaGruppoFinderImpl.getGroup">
+	<![CDATA[
+	with recursive grafo_gruppi (gruppo,cognome,nome,ruolo,specifica_ruolo,indirizzo,tipo_contatto,contatto,nomegruppo,nomeruolo,datagruppo,datacontatto)
+    as (	
+    select rg.id_gruppo as gruppo,rn.cognome,rn.nome,rgn.fk_ruolo,rgn.specifica_ruolo,rn.indirizzo,rca.nome as tipo_contatto,rc.contatto,rg.nome as nomegruppo,rr.descrizione as nomeruolo,
+    coalesce(rg.data_modifica,rg.data_creazione) as datagruppo, coalesce(rc.data_modifica,rc.data_creazione) as datacontatto
+    from rubrica_rubricagruppo rg 
+    left join rubrica_rubricagrupponominativi rgn on rgn.fk_gruppo=rg.id_gruppo
+    left join rubrica_rubricanominativo rn on rn.id_nominativo = rgn.fk_nominativo and not rn.disabled
+    left join rubrica_rubricacontatto rc on rc.fk_nominativo = rn.id_nominativo
+    left join rubrica_rubricaruolo rr on rr.id_ruolo=rgn.fk_ruolo
+    left join rubrica_rubricacanale rca on rca.id_canale = rc.fk_canale
+    where id_gruppo = ? and not (rg.disabled=true)  and rc.data_fine_validita is null
+        UNION
+    select rg.id_gruppo as gruppo,rn.cognome,rn.nome,rgn.fk_ruolo,rgn.specifica_ruolo,rn.indirizzo,rca.nome as tipo_contatto,rc.contatto,rg.nome as nomegruppo,rr.descrizione as nomeruolo,
+    coalesce(rg.data_modifica,rg.data_creazione) as datagruppo, coalesce(rc.data_modifica,rc.data_creazione) as datacontatto
+    from grafo_gruppi gg 
+    left join rubrica_rubricagruppogruppi rgg on rgg.fk_gruppo_padre = gg.gruppo
+    left join rubrica_rubricagruppo rg on rg.id_gruppo = rgg.fk_gruppo_figlio and not rg.disabled
+    left join rubrica_rubricagrupponominativi rgn on rgn.fk_gruppo=rg.id_gruppo
+    left join rubrica_rubricanominativo rn on rn.id_nominativo = rgn.fk_nominativo and not rn.disabled
+    left join rubrica_rubricacontatto rc on rc.fk_nominativo = rn.id_nominativo and rc.data_fine_validita is null
+    left join rubrica_rubricaruolo rr on rr.id_ruolo=rgn.fk_ruolo
+    left join rubrica_rubricacanale rca on rca.id_canale = rc.fk_canale
+    )
+    select * from grafo_gruppi where contatto is not null order by gruppo,cognome,nome,tipo_contatto,contatto
+    ]]>
+	</sql>
+
+</custom-sql>

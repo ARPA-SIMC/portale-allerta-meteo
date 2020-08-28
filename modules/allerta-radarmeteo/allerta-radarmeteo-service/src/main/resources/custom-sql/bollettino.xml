@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+<custom-sql>
+	<sql
+		id="it.eng.radarMeteo.service.persistence.impl.JsonFinderImpl.findRecentValueByVar">
+    <![CDATA[
+	select  idstazione, value, staz.lat, staz.lon
+	from
+	(
+	select idstazione, value, datetime,
+	       MAX( datetime) over (partition by idstazione) max_my_date
+	from   bollettino_valoresensore where idvariabile = ?
+	) as maxDate
+	inner join bollettino_stazione staz on staz.id_= maxDate.idstazione
+	where datetime = max_my_date
+            ]]>
+	</sql>
+	<sql
+		id="it.eng.radarMeteo.service.persistence.impl.JsonFinderImpl.findValuesByVarDate">
+    <![CDATA[
+    SELECT  staz.id_, vs.value, staz.lat, staz.lon, staz.name, stazvar.soglia1, stazvar.soglia2, stazvar.soglia3, staz.progressivo
+    FROM bollettino_stazionevariabile stazvar
+    INNER JOIN bollettino_stazione staz
+    ON stazvar.idstazione = staz.id_
+    left join bollettino_valoresensore vs on vs.idstazione = staz.id_ and vs.datetime = ? and vs.idvariabile = ?
+    WHERE stazvar.idvariabile = ? 
+    AND attivo = 't' AND stazvar.dataultimovalore >= (CURRENT_DATE - 4)
+            ]]>
+	</sql>
+	<sql
+		id="it.eng.radarMeteo.service.persistence.impl.JsonFinderImpl.findValuesByElenco">
+	<![CDATA[
+	SELECT staz.id_, vs.value, staz.lat, staz.lon, staz.name, staz.progressivo, view_s.idvariabile,
+	CASE 
+		WHEN valueadd.value ISNULL THEN vs.value
+		ELSE vs.value + valueadd.value END valuePlus
+	FROM 
+	view_staz_sensore_30m view_s
+	JOIN bollettino_stazione staz
+	ON view_s.idstazione=staz.id_
+	LEFT JOIN bollettino_valoresensore vs
+	ON vs.idvariabile = ? AND view_s.idstazione = vs.idstazione AND vs.datetime = ?
+	LEFT OUTER JOIN
+	(SELECT value, idvariabile, idstazione, datetime FROM bollettino_valoresensore) valueadd 
+		ON valueadd.idvariabile = vs.idvariabile 
+		AND valueadd.idstazione=vs.idstazione 
+		AND valueadd.datetime=(vs.datetime - INTERVAL '30 min')
+	]]>
+	</sql>
+	<sql
+		id="it.eng.radarMeteo.service.persistence.impl.JsonFinderImpl.findLastThreeDays">
+    <![CDATA[
+	select DISTINCT ON (datetime) datetime, value
+	from  bollettino_valoresensore 
+	where idstazione = ? and idvariabile=? and datetime BETWEEN ? AND ?
+	ORDER BY datetime ASC
+            ]]>
+	</sql>
+
+	<sql
+		id="it.eng.radarMeteo.service.persistence.impl.JsonFinderImpl.getInfoSensore">
+    <![CDATA[
+	select  name,description_it, height, namebasin, namesubbasin, soglia1,soglia2,soglia3, var.unit
+	from  bollettino_stazione staz
+	inner join bollettino_stazionevariabile stazvar on staz.id_= stazvar.idstazione
+	inner join bollettino_variabile var on var.id_ = stazvar.idvariabile
+	where staz.id_= ? and  stazvar.idvariabile = ?
+            ]]>
+	</sql>
+	<sql id="it.eng.radarMeteo.service.persistence.impl.JsonFinderImpl.getAllStations">
+    <![CDATA[
+	select id_, name, namemunicipality, height, lat, lon, attivo
+	from  bollettino_stazione where nameregion = 'EMILIA-ROMAGNA'
+	]]>
+	</sql>
+</custom-sql>

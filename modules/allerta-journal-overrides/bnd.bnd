@@ -1,0 +1,4 @@
+Bundle-Name: allerta-journal-overrides
+Bundle-SymbolicName: allerta.journal.overrides
+Bundle-Version: 1.0.0
+Fragment-Host: com.liferay.journal.taglib;bundle-version="3.0.1"

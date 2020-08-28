@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+<custom-sql>
+
+	<sql id="it.eng.allerte.service.persistence.impl.RubricaLogFinderImpl.getLogByNameTable">
+    <![CDATA[
+	select ID_LOG, FK_SITO_PROPRIETARIO, TABELLA, TIPO_OPERAZIONE, ID_OGGETTO, NUOVA_DESCRIZIONE, FK_UTENTE_MODIFICA,DATA_MODIFICA
+	from  rubrica_rubricaLog where upper(?) in (upper(tabella),'') and fk_sito_proprietario = ? order by data_modifica desc
+	]]>
+	</sql>
+
+</custom-sql>

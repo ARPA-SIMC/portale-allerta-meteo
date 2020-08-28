@@ -1,0 +1,9 @@
+Bundle-Name: allerta-short-message-services-api
+Bundle-SymbolicName: it.eng.allerta.messages.services.api
+Bundle-Version: 1.0.0
+Export-Package:\
+	it.eng.allerta.messages.services.exception,\
+	it.eng.allerta.messages.services.model,\
+	it.eng.allerta.messages.services.service,\
+	it.eng.allerta.messages.services.service.persistence
+-includeresource: META-INF/service.xml=../allerta-short-message-services-service/service.xml

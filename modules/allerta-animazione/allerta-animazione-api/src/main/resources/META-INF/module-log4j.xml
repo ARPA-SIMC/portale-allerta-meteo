@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+	
+
+	
+	<appender name="AnimazioneCronAppender" class="org.apache.log4j.RollingFileAppender">
+   
+    	<param name="file" value="${catalina.home}/logs/cron/animazione/info.log" />
+    	<param name="MaxFileSize" value="10MB" />
+    	<param name="MaxBackupIndex" value="5" />
+      		<layout class="org.apache.log4j.PatternLayout">
+            	<param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} %-5p %m%n" />
+        	</layout>
+	</appender>
+
+    <category name="it.eng.animazione.cron" >
+        <priority value="INFO" />
+        <appender-ref ref="AnimazioneCronAppender" />
+    </category>
+</log4j:configuration>

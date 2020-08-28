@@ -1,0 +1,4 @@
+Bundle-Name: allerta-web-rest
+Bundle-SymbolicName: it.eng.allerta.web.rest
+Bundle-Version: 1.0.0
+Liferay-Configuration-Path: /configuration

@@ -1,0 +1,8 @@
+Bundle-Name: allerta-legacy
+Bundle-SymbolicName: it.eng.allertaer.legacy
+Bundle-Version: 1.0.0
+Export-Package: \
+	it.eng.allerter.allerta,\
+	it.eng.allerter.allerta.svg,\
+	it.eng.allerter.allerta.utils
+	

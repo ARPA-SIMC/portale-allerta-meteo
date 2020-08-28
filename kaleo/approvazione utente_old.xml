@@ -1,0 +1,290 @@
+<?xml version="1.0"?>
+<workflow-definition
+	xmlns="urn:liferay.com:liferay-workflow_6.2.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:liferay.com:liferay-workflow_6.2.0 http://www.liferay.com/dtd/liferay-workflow-definition_6_2_0.xsd">
+	<name>Approvazione Utente Weballerte</name>
+	<description>approvazione utente per weballerte</description>
+	<version>42</version>
+	<state>
+		<name>richiesta registrazione</name>
+		<metadata><![CDATA[{"xy":[20,230],"transitions":{"review":{"bendpoints":[]}}}]]></metadata>
+		<initial>true</initial>
+		<transitions>
+			<transition>
+				<name>review</name>
+				<target>review</target>
+				<default>true</default>
+			</transition>
+		</transitions>
+	</state>
+	<task>
+		<name>review</name>
+		<metadata><![CDATA[{"xy":[230,70],"transitions":{"rigetta richiesta":{"bendpoints":[]}}}]]></metadata>
+		<actions>
+			<notification>
+				<name>Richiesta di registrazione</name>
+				<template>Nuova richiesta di abilitazione al portale</template>
+				<template-language>text</template-language>
+				<notification-type>email</notification-type>
+				<notification-type>user-notification</notification-type>
+				<execution-type>onAssignment</execution-type>
+			</notification>
+		</actions>
+		<assignments>
+			<scripted-assignment>
+				<script>
+					<![CDATA[
+					        // Custom script di abilitazione
+					        println "------------------------- INIZIO ASSIGMENT SCRIPT ----------------------------------------------";	
+							import com.liferay.portal.kernel.util.GetterUtil;
+							import com.liferay.portal.kernel.workflow.WorkflowConstants;
+							import com.liferay.portal.service.ServiceContext;
+							import com.liferay.portal.model.Group;
+							import com.liferay.portal.model.Role;
+							import com.liferay.portal.model.User;
+							import com.liferay.portal.service.GroupLocalServiceUtil;
+							import com.liferay.portal.service.RoleLocalServiceUtil;
+							import com.liferay.portal.service.UserLocalServiceUtil;
+							
+							ServiceContext  serviceUtil =	(ServiceContext) workflowContext.get(WorkflowConstants.CONTEXT_SERVICE_CONTEXT);	
+							
+							// RECUPER LA MAIL DELL UTENTE CHE E STATA SETTATA IN PRECEDENZA DAL CONTROLLER
+							String emailUser					=   serviceUtil.getAttribute("weballerteUserMail");
+							println "--->> emailUser"+emailUser;	
+							
+							// COME PRIMA OPERAZIONE ASSEGNO L APPROVAZIONE PER RUOLO
+							long companyId = GetterUtil.getLong((String)workflowContext.get(WorkflowConstants.CONTEXT_COMPANY_ID));
+							println "--->> companyId"+companyId;	
+							
+							Role adminRole = RoleLocalServiceUtil.getRole(companyId, "Administrator");
+							roles = new ArrayList<Role>();
+							roles.add(adminRole);
+							
+							// ASSEGNO PER UTENTE SE SETTATO DAL CONTROLLER	
+						    // NB L AZZEGANZIONE ALL UTENTE PUO ESSERE SOLO SINGOLA, ALTRIMENTI VUOL DIRE CHE SI DEVE LAVORARE SUI RUOLI
+							
+							User usr =null;		
+								
+						    long userId = serviceUtil.getAttribute("weballerteApprover");
+							if(userId!=0 && userId!=null){
+							
+								println "--->> UTENTE APPROVATORE SETTATO DAL CONTROLLER CON ID "+userId;	
+								try{
+									usr = UserLocalServiceUtil.getUser(userId);
+								} catch (Exception exc) {
+								
+									println "impossibile recuperare utente con id indicato "+userId;	
+									usr=null;
+								}
+								
+								if(usr!=null){
+								 println "IL WF e stato assegnato al singolo utente con id  "+userId;	
+								}
+							}								
+							
+						    user =usr;
+							println "------------------------- FINE  SCRIPT DI ASSEGNAZIONE DINAMICA----------------------------------------------";	
+						]]>
+				</script>
+				<script-language>groovy</script-language>
+			</scripted-assignment>
+		</assignments>
+		<transitions>
+			<transition>
+				<name>abilita utente</name>
+				<target>enable</target>
+				<default>true</default>
+			</transition>
+			<transition>
+				<name>rigetta richiesta</name>
+				<target>delete</target>
+				<default>false</default>
+			</transition>
+		</transitions>
+	</task>
+	<state>
+		<name>enable</name>
+		<metadata><![CDATA[{"xy":[380,240]}]]></metadata><actions><action><name>enable</name><script>
+			<![CDATA[
+					
+					    println "------------------------- STEP APPROVAZIONE UTENTE  ----------------------------------------------";	
+						import com.liferay.portal.kernel.util.GetterUtil;
+						import com.liferay.portal.kernel.workflow.WorkflowStatusManagerUtil;
+					    import com.liferay.portal.kernel.workflow.WorkflowConstants;
+						import com.liferay.portal.service.UserLocalServiceUtil;
+						import com.liferay.portal.service.ServiceContext;
+						import com.liferay.portal.model.Group;
+						import com.liferay.portal.model.Role;
+						import com.liferay.portal.model.User;
+						import javax.mail.internet.AddressException;
+						import javax.mail.internet.InternetAddress;
+						import com.liferay.portal.kernel.mail.MailMessage;
+						import com.liferay.mail.service.MailServiceUtil;
+						import com.liferay.portal.kernel.cache.CacheRegistryUtil;
+						import com.liferay.portal.kernel.cache.MultiVMPoolUtil;
+						import com.liferay.portal.kernel.webcache.WebCachePoolUtil;
+						
+						ServiceContext  serviceUtil =	(ServiceContext) workflowContext.get(WorkflowConstants.CONTEXT_SERVICE_CONTEXT);	
+						long   companyId            =   GetterUtil.getLong((String)workflowContext.get(WorkflowConstants.CONTEXT_COMPANY_ID));
+					    String emailUser	        =   serviceUtil.getAttribute("weballerteUserMail");
+					
+						User usr =null;							
+						try{
+							usr = UserLocalServiceUtil.getUserByEmailAddress(companyId,emailUser);
+							if(usr!=null ){
+								println "--->> Ho recuperato utente con id "+usr.getUserId();	
+								println "--->> companyId"+companyId;
+						        println "--->> emailUser"+emailUser;	
+								
+								// EFFETTUO AGGIORNAMENTO DELLO STATO ATTIVANDO UTENTE
+								UserLocalServiceUtil.updateStatus(usr.getUserId(),0,serviceUtil);
+							    UserLocalServiceUtil.updateUser(usr);
+							
+							
+							    // CANCELLO LA CACHE PER PERMETTERE UN ACCESSO ISTANTANEO
+								
+								CacheRegistryUtil.clear();
+								MultiVMPoolUtil.clear() ;
+								WebCachePoolUtil.clear();
+												
+							
+							    // INVIO MAIL									
+								try {
+									println  "--->> INVIO MAIL DI NOTIFICA";
+									InternetAddress fromAddress = new InternetAddress("valeriano.fabris@iquadro.net");
+									InternetAddress toAddress = new InternetAddress(emailUser);
+									MailMessage mailMessage = new MailMessage();
+									mailMessage.setTo(toAddress);
+									mailMessage.setFrom(fromAddress);
+									mailMessage.setSubject("attivazione utente al portale");								
+									mailMessage.setBody("Gentile utente sei stato abilitato al portale ");
+									mailMessage.setHTMLFormat(true);
+									MailServiceUtil.sendEmail(mailMessage);
+								} catch (Exception e) {
+										println  "--->> ERRORE INVIO MAIL"+e.getMessage();
+								}
+							  }else{
+								println "--->>>>>>>>>>>>Impossibile recuperare utente con email indicata"+emailUser;	
+							}
+						} catch (Exception exc) {						
+							println "utente non trovato per mail  ";	
+							usr=null;
+						}
+						if(usr!=null){
+							println "UTENTE RECUPERATO";	
+							WorkflowStatusManagerUtil.updateStatus(WorkflowConstants.getLabelStatus("approved"), workflowContext);
+						}else{
+						    WorkflowStatusManagerUtil.updateStatus(WorkflowConstants.getLabelStatus("approved"), workflowContext);
+							println "UTENTE NON TROVATO ";								
+														
+							try {
+									println  "--->> INVIO MAIL DI NOTIFICA ERRORE DI APPROVAZIONE";
+									InternetAddress fromAddress = new InternetAddress("valeriano.fabris@iquadro.net");
+									InternetAddress toAddress = new InternetAddress("valeriano.fabris@iquadro.net");
+									MailMessage mailMessage = new MailMessage();
+									mailMessage.setTo(toAddress);
+									mailMessage.setFrom(fromAddress);
+									mailMessage.setSubject("errore nell attivazione utente al portale");								
+									mailMessage.setBody("impossibile attivate utene con mail"+emailUser);
+									mailMessage.setHTMLFormat(true);
+									MailServiceUtil.sendEmail(mailMessage);
+								} catch (Exception e) {
+										println  "--->> ERRORE INVIO MAIL"+e.getMessage();
+								}
+					
+						}
+					    println "------------------------- END  STEP APPROVE  SCRIPT ----------------------------------------------";	
+					
+					]]></script><script-language>groovy</script-language><execution-type>onEntry</execution-type></action></actions></state><state><name>delete</name><metadata><![CDATA[{"xy":[560,90]}]]></metadata><actions><action><name>delete</name><script>
+			<![CDATA[
+					
+					    println "------------------------- STEP CANCELLAZIONE  UTENTE  ----------------------------------------------";	
+						import com.liferay.portal.kernel.util.GetterUtil;
+						import com.liferay.portal.kernel.workflow.WorkflowStatusManagerUtil;
+					    import com.liferay.portal.kernel.workflow.WorkflowConstants;
+						import com.liferay.portal.service.UserLocalServiceUtil;
+						import com.liferay.portal.service.ServiceContext;
+						import com.liferay.portal.model.Group;
+						import com.liferay.portal.model.Role;
+						import com.liferay.portal.model.User;
+						import javax.mail.internet.AddressException;
+						import javax.mail.internet.InternetAddress;
+						import com.liferay.portal.kernel.mail.MailMessage;
+						import com.liferay.mail.service.MailServiceUtil;
+						
+						import com.liferay.portal.kernel.cache.CacheRegistryUtil;
+						import com.liferay.portal.kernel.cache.MultiVMPoolUtil;
+						import com.liferay.portal.kernel.webcache.WebCachePoolUtil;
+						
+						ServiceContext  serviceUtil =	(ServiceContext) workflowContext.get(WorkflowConstants.CONTEXT_SERVICE_CONTEXT);	
+						long   companyId            =   GetterUtil.getLong((String)workflowContext.get(WorkflowConstants.CONTEXT_COMPANY_ID));
+					    String emailUser	        =   serviceUtil.getAttribute("weballerteUserMail");
+					
+						User usr =null;							
+						try{
+							usr = UserLocalServiceUtil.getUserByEmailAddress(companyId,emailUser);
+							if(usr!=null ){
+								println "--->> Ho recuperato utente con id "+usr.getUserId();	
+								println "--->> companyId"+companyId;
+						        println "--->> emailUser"+emailUser;	
+								
+								// EFFETTUO AGGIORNAMENTO DELLO STATO ATTIVANDO UTENTE
+								UserLocalServiceUtil.deleteUser(usr.getUserId());
+							
+							
+								
+							    // CANCELLO LA CACHE PER PERMETTERE UN ACCESSO ISTANTANEO
+								
+								CacheRegistryUtil.clear();
+								MultiVMPoolUtil.clear() ;
+								WebCachePoolUtil.clear();
+												
+							
+							
+							    // INVIO MAIL									
+								try {
+									println  "--->> INVIO MAIL DI NOTIFICA";
+									InternetAddress fromAddress = new InternetAddress("valeriano.fabris@iquadro.net");
+									InternetAddress toAddress = new InternetAddress(emailUser);
+									MailMessage mailMessage = new MailMessage();
+									mailMessage.setTo(toAddress);
+									mailMessage.setFrom(fromAddress);
+									mailMessage.setSubject("diniego attivazione utente al portale");								
+									mailMessage.setBody("Gentile utente la tua richiesta di attivazione è stata negata");
+									mailMessage.setHTMLFormat(true);
+									MailServiceUtil.sendEmail(mailMessage);
+								} catch (Exception e) {
+										println  "--->> ERRORE INVIO MAIL"+e.getMessage();
+								}
+							  }else{
+								println "--->>>>>>>>>>>>Impossibile recuperare utente con email indicata"+emailUser;	
+							}
+						} catch (Exception exc) {						
+							println "utente non trovato per mail  ";	
+							usr=null;
+						}
+						if(usr!=null){
+							println "UTENTE RECUPERATO";	
+							WorkflowStatusManagerUtil.updateStatus(WorkflowConstants.getLabelStatus("approved"), workflowContext);
+						}else{
+						    WorkflowStatusManagerUtil.updateStatus(WorkflowConstants.getLabelStatus("approved"), workflowContext);
+							println "UTENTE NON TROVATO ";	
+							
+							try {
+									println  "--->> INVIO MAIL DI NOTIFICA ERRORE DI APPROVAZIONE";
+									InternetAddress fromAddress = new InternetAddress("valeriano.fabris@iquadro.net");
+									InternetAddress toAddress = new InternetAddress("valeriano.fabris@iquadro.net");
+									MailMessage mailMessage = new MailMessage();
+									mailMessage.setTo(toAddress);
+									mailMessage.setFrom(fromAddress);
+									mailMessage.setSubject("errore nell cancellazione di un  utente al portale");								
+									mailMessage.setBody("impossibile cancellare utente  con mail"+emailUser);
+									mailMessage.setHTMLFormat(true);
+									MailServiceUtil.sendEmail(mailMessage);
+								} catch (Exception e) {
+										println  "--->> ERRORE INVIO MAIL"+e.getMessage();
+								}
+					
+						}
+					    println "------------------------- END  STEP cancellazione   SCRIPT ----------------------------------------------";	
+					]]></script><script-language>groovy</script-language><execution-type>onEntry</execution-type></action></actions></state></workflow-definition>

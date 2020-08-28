@@ -1,0 +1,579 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE service-builder PUBLIC "-//Liferay//DTD Service Builder 6.2.0//EN" "http://www.liferay.com/dtd/liferay-service-builder_6_2_0.dtd">
+<service-builder package-path="it.eng.bollettino">
+	<author>GFAVINI</author>
+	<namespace>BOLLETTINO</namespace>
+
+	<entity name="Stazione" local-service="true" remote-service="true" uuid="true" >
+
+		<!-- PK fields -->
+
+		<column name="id" type="String" primary="true"  />
+
+		<!-- Other fields -->
+
+		<column name="ident" type="String" />
+		<column name="name" type="String" />
+		<column name="lon" type="long" />
+		<column name="lat" type="long" />
+		<column name="height" type="double" />
+		
+		<column name="idBasin" type="String" />
+		<column name="idSubbasin" type="String" />
+		<column name="idCountry" type="String" />
+		<column name="idProvince" type="String" />
+		<column name="idRegion" type="String" />
+		<column name="idMunicipality" type="String" />
+		<column name="idMacroarea" type="String" />
+		<column name="nameBasin" type="String" />
+		<column name="nameSubbasin" type="String" />
+		<column name="nameCountry" type="String" />
+		<column name="nameProvince" type="String" />
+		<column name="nameRegion" type="String" />
+		<column name="nameMunicipality" type="String" />
+		<column name="nameMacroarea" type="String" />
+		
+		
+		<column name="network" type="String" />
+		
+		<column name="attivo" type="boolean" />
+		<column name="incluso" type="boolean" />
+		<column name="progressivo" type="int" />
+
+		<!-- Order -->
+
+		<order by="asc">
+			<order-column name="progressivo" />
+		</order>
+
+		<!-- Finder methods -->
+
+		<finder name="Name" return-type="Collection">
+			<finder-column name="name" />
+		</finder>
+		
+		<finder name="Bacino" return-type="Collection">
+			<finder-column name="idBasin" />
+		</finder>
+		
+		<finder name="BacinoAttivo" return-type="Collection">
+			<finder-column name="idBasin" />
+			<finder-column name="attivo" />
+
+		</finder>
+		
+		<finder name="BacinoAttivoIncluso" return-type="Collection">
+			<finder-column name="idBasin" />
+			<finder-column name="attivo" />
+			<finder-column name="incluso" />
+		</finder>
+	</entity>
+	
+	<entity name="Bacino" local-service="true" remote-service="true" uuid="true" >
+
+		<!-- PK fields -->
+
+		<column name="id" type="String" primary="true" />
+
+		<!-- Other fields -->
+
+		<column name="nome" type="String" />
+		<column name="progressivo" type="int" />
+
+		<!-- Order -->
+
+		<order by="asc">
+			<order-column name="progressivo" />
+		</order>
+
+ 
+	</entity>
+	
+	
+	<entity name="Variabile" local-service="true" remote-service="true" uuid="true" >
+
+		<!-- PK fields -->
+
+		<column name="id" type="String" primary="true" />
+
+		<!-- Other fields -->
+
+		<column name="description_it" type="String" />
+		<column name="level_t1" type="int" />
+		<column name="level_t2" type="int" />
+		<column name="level_v1" type="int" />
+		<column name="level_v2" type="int" />
+		<column name="trange_p1" type="int" />
+		<column name="trange_p2" type="int" />
+		<column name="trange_pind" type="int" />
+		<column name="unit" type="String" />
+		<column name="bcode" type="String" />
+
+		<!-- Order -->
+
+		<order by="asc">
+			<order-column name="description_it" />
+		</order>
+
+ 
+	</entity>
+	
+	<entity name="StazioneVariabile" local-service="true" remote-service="true" uuid="true" >
+
+		<!-- PK fields -->
+
+		<column name="id" type="long" primary="true" id-type="increment" />
+
+
+		<!-- Other fields -->
+
+		<column name="idStazione" type="String" />
+		<column name="idVariabile" type="String" />
+		<column name="dataUltimoValore" type="Date" />
+		<column name="soglia1" type="double" />
+		<column name="soglia2" type="double" />
+		<column name="soglia3" type="double" />
+		
+
+		<!-- Order -->
+
+		<order by="asc">
+			<order-column name="id" />
+		</order>
+
+		<!-- Finder methods -->
+
+		<finder name="Stazione" return-type="Collection">
+			<finder-column name="idStazione" />
+		</finder>
+		
+		<finder name="Variabile" return-type="Collection">
+			<finder-column name="idVariabile" />
+		</finder>
+
+	</entity>
+	
+	
+	<entity name="ValoreSensore" local-service="true" remote-service="true" uuid="true" cache-enabled="false">
+
+		<!-- PK fields -->
+
+		<column name="id" type="long" primary="true" id-type="increment" />
+
+		<!-- Other fields -->
+		
+		<column name="value" type="double" />
+		<column name="datetime" type="Date" />
+		<column name="idVariabile" type="String" />
+		<column name="idStazione" type="String" />
+
+		<!-- Order -->
+
+		<order by="desc">
+			<order-column name="datetime" />
+		</order>
+
+		<!-- Finder methods -->
+
+		<finder name="variabileStazione" return-type="Collection">
+			<finder-column name="idVariabile"  />
+			<finder-column name="idStazione"  />
+			
+		</finder>
+		
+	</entity>
+	
+	<entity name="Bollettino" local-service="true" remote-service="true" uuid="true" >
+
+		<!-- PK fields -->
+
+		<column name="bollettinoId" type="long" primary="true" />
+
+		<!-- Group instance -->
+
+		<column name="groupId" type="long" />
+
+		<!-- Audit fields -->
+
+		<column name="companyId" type="long" />
+		<column name="userId" type="long" />
+		<column name="userName" type="String" />
+		<column name="createDate" type="Date" />
+		<column name="modifiedDate" type="Date" />
+
+		<!-- Other fields -->
+		
+		<column name="stato" type="int" />
+		<column name="idApprovatore" type="long" />
+		<column name="dataApprovazione" type="Date" />
+		
+
+		<column name="numero" type="String" />
+		<column name="progressivo" type="int" />
+		<column name="anno" type="int" />
+		<column name="dataEmissione" type="Date" />
+		<column name="dataInizio" type="Date" />
+		<column name="dataFine" type="Date" />
+		<column name="noteMeteo" type="String" />
+		<column name="stringaMeteo" type="String" />
+		<column name="link" type="String" />
+		<column name="ultimo" type="boolean" />
+		<column name="hash" type="String" />
+
+		<!-- Order -->
+
+		<order by="asc">
+			<order-column name="numero" />
+		</order>
+
+		<!-- Finder methods -->
+
+		<finder name="Numero" return-type="Collection">
+			<finder-column name="numero" />
+		</finder>
+		
+		<reference package-path="com.liferay.portlet.asset" entity="AssetEntry" />
+
+	</entity>
+	
+	
+	<entity name="BollettinoBacino" local-service="true" remote-service="true" uuid="true" >
+
+		<!-- PK fields -->
+
+		<column name="id" type="long" primary="true" />
+
+		<!-- Other fields -->
+		
+		<column name="idBollettino" type="long" />
+		<column name="progressivo" type="int" />
+		<column name="idBacino" type="String" />
+		<column name="nomeBacino" type="String" />
+		<column name="oreOsservazione" type="String" />
+		<column name="note" type="String" />
+
+		<!-- Order -->
+
+		<order by="asc">
+			<order-column name="progressivo" />
+		</order>
+
+		<!-- Finder methods -->
+
+		<finder name="Bollettino" return-type="Collection">
+			<finder-column name="idBollettino"  />
+		</finder>
+		
+	</entity>
+	
+	
+	<entity name="BollettinoSensore" local-service="true" remote-service="true" uuid="true" >
+
+		<!-- PK fields -->
+
+		<column name="id" type="long" primary="true" />
+
+		<!-- Other fields -->
+		
+		<column name="idBollettino" type="long" />
+		<column name="idStazione" type="long" />
+		<column name="idBollettinoBacino" type="long" />
+		<column name="progressivo" type="int" />
+		<column name="nomeStazione" type="String" />
+		<column name="oreOsservazione" type="String" />
+		<column name="osservazione" type="double" />
+		<column name="tendenza" type="int" />
+		<column name="colmoPrevisto" type="String" />
+		<column name="oraPrevista" type="String" />
+		<column name="soglia1" type="double" />
+		<column name="soglia2" type="double" />
+		<column name="soglia3" type="double" />
+		<column name="giornoPrevisto" type="String" />
+		<column name="osservato" type="boolean" />
+		
+
+		<!-- Order -->
+
+		<order by="asc">
+			<order-column name="progressivo" />
+		</order>
+
+		<!-- Finder methods -->
+
+		<finder name="Bollettino" return-type="Collection">
+			<finder-column name="idBollettino"  />
+		</finder>
+		
+	</entity>
+
+	<entity name="Icona" local-service="true" remote-service="true" uuid="true" >
+
+		<!-- PK fields -->
+
+		<column name="id" type="long" primary="true" id-type="increment" />
+
+		<!-- Other fields -->
+		<column name="path" type="String" />
+		<column name="descrizione" type="String" />
+		
+		<!-- Order -->
+
+		<order by="asc">
+			<order-column name="id" />
+		</order>
+		
+	</entity>
+	
+
+	<entity name="BollettinoIcona" local-service="true" remote-service="true" uuid="true" >
+
+		<!-- PK fields -->
+
+		<column name="id" type="long" primary="true" id-type="increment" />
+
+		<!-- Other fields -->
+		
+		<column name="idBollettino" type="long" />
+		<column name="idIcona" type="long" />
+		
+		<column name="x" type="double" />
+		<column name="y" type="double" />
+
+		<!-- Order -->
+
+		<order by="asc">
+			<order-column name="id" />
+		</order>
+
+		<!-- Finder methods -->
+
+		<finder name="Bollettino" return-type="Collection">
+			<finder-column name="idBollettino"  />
+		</finder>
+		
+	</entity>
+	
+	
+	<entity name="RegolaAllarme" local-service="true" remote-service="true" uuid="true" >
+
+		<!-- PK fields -->
+
+		<column name="id" type="long" primary="true" />
+
+		<!-- Other fields -->
+		<column name="nome" type="String" />
+		<column name="espressione" type="String" />
+		<column name="descrizione" type="String" />
+		
+		<column name="colore" type="int" />
+		<column name="attivo" type="boolean" />
+		
+		<!-- Order -->
+
+		<order by="asc">
+			<order-column name="id" />
+		</order>
+		
+		<finder name="Attivo" return-type="Collection">
+			<finder-column name="attivo"  />
+		</finder>
+		
+	</entity>
+	
+	<entity name="RegolaAllarmeCondizione" local-service="true" remote-service="true" uuid="true" >
+
+		<!-- PK fields -->
+
+		<column name="id" type="long" primary="true" />
+
+		<!-- Other fields -->
+		
+		<column name="idRegola" type="long" />
+		<column name="lettera" type="String" />
+		<column name="idVariabile" type="String" />
+		<column name="idStazione" type="String" />
+		<column name="idStazioneVariabile" type="long" />
+		<column name="soglia" type="int" />
+		<column name="valoreSoglia" type="double" />		
+		
+		<!-- Order -->
+
+		<order by="asc">
+			<order-column name="id" />
+		</order>
+		
+		<finder name="Regola" return-type="Collection">
+			<finder-column name="idRegola"  />
+		</finder>
+		
+	</entity>
+	
+	<entity name="RegolaAllarmeComune" local-service="true" remote-service="true" uuid="true" >
+
+		<!-- PK fields -->
+
+		<column name="id" type="long" primary="true" />
+
+		<!-- Other fields -->
+		
+		<column name="idRegola" type="long" />
+		<column name="idComune" type="long" />		
+		
+		<!-- Order -->
+
+		<order by="asc">
+			<order-column name="id" />
+		</order>
+		
+		<finder name="Regola" return-type="Collection">
+			<finder-column name="idRegola"  />
+		</finder>
+		
+		<finder name="Comune" return-type="Collection">
+			<finder-column name="idComune"  />
+		</finder>
+		
+	</entity>
+	
+	
+	<entity name="Allarme" local-service="true" remote-service="true" uuid="true" >
+
+		<!-- PK fields -->
+
+		<column name="allarmeId" type="long" primary="true" id-type="increment" />
+
+		<!-- Group instance -->
+
+		<column name="groupId" type="long" />
+
+		<!-- Audit fields -->
+
+		<column name="companyId" type="long" />
+		<column name="userId" type="long" />
+		<column name="userName" type="String" />
+		<column name="createDate" type="Date" />
+		<column name="modifiedDate" type="Date" />
+
+		<!-- Other fields -->
+		
+		<column name="stato" type="int" />
+		<column name="idApprovatore" type="long" />
+		<column name="dataApprovazione" type="Date" />
+		
+
+		<column name="idRegola" type="long" />
+		<column name="colore" type="int" />
+		<column name="dataInizio" type="Date" />
+		<column name="dataFine" type="Date" />
+
+
+		<!-- Order -->
+
+		<order by="desc">
+			<order-column name="allarmeId" />
+		</order>
+
+		<!-- Finder methods -->
+
+		<finder name="Regola" return-type="Collection">
+			<finder-column name="idRegola" />
+		</finder>
+		
+		<reference package-path="com.liferay.portlet.asset" entity="AssetEntry" />
+
+	</entity>
+	
+	<entity name="BollettinoParametro" local-service="true" remote-service="true" cache-enabled="false">
+
+		<!-- PK fields -->
+
+		<column name="parametroId" type="String" primary="true" />
+
+		<!-- Other fields -->
+		<column name="valore" type="String" />
+	
+		<!-- Order -->
+
+		<order by="asc">
+			<order-column name="parametroId" />
+		</order>
+
+	</entity>
+	
+	<entity name="AttivazioneFiume" local-service="true" remote-service="true">
+
+		<!-- PK fields -->
+
+		<column name="fiumeId" type="String" primary="true" />
+
+		<!-- Other fields -->
+		<column name="attivo" type="boolean" />
+	
+		<!-- Order -->
+
+		<order by="asc">
+			<order-column name="fiumeId" />
+		</order>
+
+	</entity>
+	
+	<entity name="Pluviometro" local-service="true" remote-service="true">
+
+		<!-- PK fields -->
+
+		<column name="stazioneId" type="String" primary="true" />
+
+		<!-- Other fields -->
+		<column name="nomeGruppo" type="String" />
+		<column name="nomeRubrica" type="String" />
+	
+		<!-- Order -->
+
+		<order by="asc">
+			<order-column name="stazioneId" />
+		</order>
+		
+		<finder name="NomeGruppo" return-type="Collection">
+			<finder-column name="nomeGruppo" />
+		</finder>
+		
+		<finder name="NomeRubrica" return-type="Collection">
+			<finder-column name="nomeRubrica" />
+		</finder>
+
+	</entity>
+	
+	<entity name="Idrometro" local-service="true" remote-service="true">
+
+		<!-- PK fields -->
+
+		<column name="stazioneId" type="String" primary="true" />
+
+		<!-- Other fields -->
+		<column name="nomeBacino" type="String" />
+		<column name="nomeSottobacino" type="String" />
+		<column name="nomeRubrica" type="String" />
+		<column name="sogliaSpike" type="double" />
+	
+		<!-- Order -->
+
+		<order by="asc">
+			<order-column name="stazioneId" />
+		</order>
+		
+		<finder name="NomeBacino" return-type="Collection">
+			<finder-column name="nomeBacino" />
+		</finder>
+		
+		<finder name="NomeSottobacino" return-type="Collection">
+			<finder-column name="nomeSottobacino" />
+		</finder>
+		
+		<finder name="NomeRubrica" return-type="Collection">
+			<finder-column name="nomeRubrica" />
+		</finder>
+
+	</entity>
+	
+	
+</service-builder>

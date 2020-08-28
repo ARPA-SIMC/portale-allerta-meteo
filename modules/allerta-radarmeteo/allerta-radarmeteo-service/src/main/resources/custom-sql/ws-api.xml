@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+<custom-sql>
+	<sql
+		id="it.eng.radarMeteo.service.persistence.impl.Comuni_wsFinderImpl.getMeteomont">
+    <![CDATA[
+		SELECT * FROM meteomont_vw LIMIT 10 
+            ]]>
+	</sql>
+	<sql
+		id="it.eng.radarMeteo.service.persistence.impl.Comuni_wsFinderImpl.getStatoAllerta">
+    <![CDATA[
+		select x.nome, a.dataemissione, a.datafine,
+(select case when statoid=1 then 'yellow' when statoid=2 then 'orange' when statoid=3 then 'red' when statoid=0 then 'green' else null end from allerter_allertastato aa where aa.allertaid=a.allertaid and aa.areaid=x.areaid and aa.eventoid=1) as idraulica,
+(select case when statoid=1 then 'yellow' when statoid=2 then 'orange' when statoid=3 then 'red' when statoid=0 then 'green' else null end from allerter_allertastato aa where aa.allertaid=a.allertaid and aa.areaid=x.areaid and aa.eventoid=2) as idrogeologica,
+(select case when statoid=1 then 'yellow' when statoid=2 then 'orange' when statoid=3 then 'red' when statoid=0 then 'green' else null end from allerter_allertastato aa where aa.allertaid=a.allertaid and aa.areaid=x.areaid and aa.eventoid=3) as temporali,
+(select case when statoid=1 then 'yellow' when statoid=2 then 'orange' when statoid=3 then 'red' when statoid=0 then 'green' else null end from allerter_allertastato aa where aa.allertaid=a.allertaid and aa.areaid=x.areaid and aa.eventoid=4) as vento,
+(select case when statoid=1 then 'yellow' when statoid=2 then 'orange' when statoid=3 then 'red' when statoid=0 then 'green' else null end from allerter_allertastato aa where aa.allertaid=a.allertaid and aa.areaid=x.areaid and aa.eventoid=5) as temperature_estreme,
+(select case when statoid=1 then 'yellow' when statoid=2 then 'orange' when statoid=3 then 'red' when statoid=0 then 'green' else null end from allerter_allertastato aa where aa.allertaid=a.allertaid and aa.areaid=x.areaid and aa.eventoid=6) as neve,
+(select case when statoid=1 then 'yellow' when statoid=2 then 'orange' when statoid=3 then 'red' when statoid=0 then 'green' else null end from allerter_allertastato aa where aa.allertaid=a.allertaid and aa.areaid=x.areaid and aa.eventoid=7) as ghiaccio_pioggia_gela,
+(select case when statoid=1 then 'yellow' when statoid=2 then 'orange' when statoid=3 then 'red' when statoid=0 then 'green' else null end from allerter_allertastato aa where aa.allertaid=a.allertaid and aa.areaid=x.areaid and aa.eventoid=8) as stato_mare,
+(select case when statoid=1 then 'yellow' when statoid=2 then 'orange' when statoid=3 then 'red' when statoid=0 then 'green' else null end from allerter_allertastato aa where aa.allertaid=a.allertaid and aa.areaid=x.areaid and aa.eventoid=9) as mareggiate,
+a.titolo, a.descrizionemeteo, a.link
+from allerter_allerta a left join (select areaid,nome from allerter_area union select 61 as areaid, 'F1' as nome) x on 1=1 
+where a.stato = 0 and a.allertaid = (select allertaid from allerter_allerta a2 where a2.stato=0 
+and a2.datainizio <= ? and a2.datafine > ? order by a.dataemissione desc limit 1 )
+order by x.areaid asc
+            ]]>
+	</sql>
+	<sql
+		id="it.eng.radarMeteo.service.persistence.impl.Comuni_wsFinderImpl.getBollettinoMonitoraggio">
+    <![CDATA[
+		select b.numero,b.datainizio,b.datafine,b.notemeteo,bb.nomebacino,bs.nomestazione,bs.osservazione,bs.oreosservazione, b.link,bs.colmoprevisto,bs.oraprevista from 
+(select * from bollettino_bollettino where stato = 0 order by dataemissione desc limit 10) b
+left join bollettino_bollettinosensore bs on bs.idbollettino = b.bollettinoid and bs.tendenza <> -100
+left join bollettino_bollettinobacino bb on bs.idbollettinobacino = bb.id_
+            ]]>
+	</sql>
+</custom-sql>

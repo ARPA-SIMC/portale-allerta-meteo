@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false" default-lazy="false">
+	<import class="it.eng.animazione.image.model.altezzaOnda" />
+	<import class="it.eng.animazione.image.model.Parametro" />
+	<import class="it.eng.animazione.image.model.PioggiaCumulativa" />
+	<class name="it.eng.animazione.image.model.impl.altezzaOndaImpl" table="img_animazioni_altezzaOnda">
+		<id column="id_" name="id" type="long">
+			<generator class="assigned" />
+		</id>
+		<property name="im" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="text_LOC" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property column="timestamp" name="ts_UTC" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="imgData" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+	</class>
+	<class name="it.eng.animazione.image.model.impl.ParametroImpl" table="img_animazioni_Parametro">
+		<id column="key_" name="key" type="java.lang.String">
+			<generator class="assigned" />
+		</id>
+		<property name="value" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+	</class>
+	<class name="it.eng.animazione.image.model.impl.PioggiaCumulativaImpl" table="img_animazioni_PioggiaCumulativa">
+		<id column="id_" name="id" type="long">
+			<generator class="assigned" />
+		</id>
+		<property name="nome" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="cumulazione" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="inzioCumulazione" type="org.hibernate.type.TimestampType" />
+		<property name="fineCumulazione" type="org.hibernate.type.TimestampType" />
+		<property name="imgData" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+	</class>
+</hibernate-mapping>

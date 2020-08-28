@@ -1,0 +1,30 @@
+Bundle-Name: allerta-parer-api
+Bundle-SymbolicName: it.eng.allerta.parer.api
+Bundle-Version: 1.0.0
+Export-Package: \
+	it.eng.parer.xmlGen.allerta,\
+	it.eng.parer.xmlGen.allerta.bollettino,\
+	it.eng.parer.xmlGen.allerta.mail,\
+	it.eng.parer.xmlGen.allerta.sms,\
+	it.eng.parer.xmlGen.monitoraggio,\
+	it.eng.parer.xmlGen.monitoraggio.mail,\
+	it.eng.parer.xmlGen.monitoraggio.sms,\
+	it.eng.parer.xmlGen.serviziVersamento.rapportoVersamento,\
+	it.eng.parer.xmlGen.serviziVersamento.wsEsitoUnico,\
+	it.eng.parer.xmlGen.serviziVersamento.wsRequestInvioOggettoPreIngest,\
+	it.eng.parer.xmlGen.serviziVersamento.wsRequestMM,\
+	it.eng.parer.xmlGen.serviziVersamento.wsRequestUnico,\
+	it.eng.parer.xmlGen.superamento.mail,\
+	it.eng.parer.xmlGen.superamento.sms,\
+	it.eng.parer.xmlGen.util,\
+	it.eng.parer.exception,\
+	it.eng.parer.model,\
+	it.eng.parer.service,\
+	it.eng.parer.service.persistence
+-check: EXPORTS
+ Import-Package: !org.apache.log,*
+-includeresource:\
+	@httpclient-4.5.2.jar,\
+	@httpcore-4.4.6.jar,\
+	@commons-codec-1.9.jar,\
+	META-INF/service.xml=../allerta-parer-service/service.xml

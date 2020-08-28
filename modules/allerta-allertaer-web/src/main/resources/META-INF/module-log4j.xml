@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+	
+	<appender name="AllertaWFAppender" class="org.apache.log4j.RollingFileAppender">
+   
+    	<param name="file" value="${catalina.home}/logs/workflow/allerta/info.log" />
+    	<param name="MaxFileSize" value="10MB" />
+    	<param name="MaxBackupIndex" value="5" />
+      		<layout class="org.apache.log4j.PatternLayout">
+            	<param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} %-5p %m%n" />
+        	</layout>
+	</appender>
+	
+	<appender name="AllertaCronAppender" class="org.apache.log4j.RollingFileAppender">
+   
+    	<param name="file" value="${catalina.home}/logs/cron/conservazione_parer/info.log" />
+    	<param name="MaxFileSize" value="10MB" />
+    	<param name="MaxBackupIndex" value="5" />
+      		<layout class="org.apache.log4j.PatternLayout">
+            	<param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} %-5p %m%n" />
+        	</layout>
+	</appender>
+
+    <category name="it.eng.allerter.custom" >
+        <priority value="INFO" />
+        <appender-ref ref="AllertaWFAppender" />
+    </category>
+    
+    <category name="it.eng.allerter.cron" >
+        <priority value="INFO" />
+        <appender-ref ref="AllertaCronAppender" />
+    </category>
+</log4j:configuration>

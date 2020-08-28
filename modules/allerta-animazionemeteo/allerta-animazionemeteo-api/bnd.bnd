@@ -1,0 +1,10 @@
+Bundle-Name: allerta-animazionemeteo-api
+Bundle-SymbolicName: it.eng.allerta.animazionemeteo.api
+Bundle-Version: 1.0.0
+Export-Package: \
+	it.eng.animaeteo.exception,\
+	it.eng.animaeteo.model,\
+	it.eng.animaeteo.service,\
+	it.eng.animaeteo.service.persistence
+-check: EXPORTS
+-includeresource: META-INF/service.xml=../allerta-animazionemeteo-service/service.xml

@@ -1,0 +1,254 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false" default-lazy="false">
+	<import class="it.eng.bollettino.model.Allarme" />
+	<import class="it.eng.bollettino.model.AttivazioneFiume" />
+	<import class="it.eng.bollettino.model.Bacino" />
+	<import class="it.eng.bollettino.model.Bollettino" />
+	<import class="it.eng.bollettino.model.BollettinoBacino" />
+	<import class="it.eng.bollettino.model.BollettinoIcona" />
+	<import class="it.eng.bollettino.model.BollettinoParametro" />
+	<import class="it.eng.bollettino.model.BollettinoSensore" />
+	<import class="it.eng.bollettino.model.Icona" />
+	<import class="it.eng.bollettino.model.Idrometro" />
+	<import class="it.eng.bollettino.model.Pluviometro" />
+	<import class="it.eng.bollettino.model.RegolaAllarme" />
+	<import class="it.eng.bollettino.model.RegolaAllarmeComune" />
+	<import class="it.eng.bollettino.model.RegolaAllarmeCondizione" />
+	<import class="it.eng.bollettino.model.Stazione" />
+	<import class="it.eng.bollettino.model.StazioneVariabile" />
+	<import class="it.eng.bollettino.model.ValoreSensore" />
+	<import class="it.eng.bollettino.model.Variabile" />
+	<class name="it.eng.bollettino.model.impl.AllarmeImpl" table="BOLLETTINO_Allarme">
+		<id name="allarmeId" type="long">
+			<generator class="increment" />
+		</id>
+		<property column="uuid_" name="uuid" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="groupId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="companyId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="userId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="userName" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="createDate" type="org.hibernate.type.TimestampType" />
+		<property name="modifiedDate" type="org.hibernate.type.TimestampType" />
+		<property name="stato" type="com.liferay.portal.dao.orm.hibernate.IntegerType" />
+		<property name="idApprovatore" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="dataApprovazione" type="org.hibernate.type.TimestampType" />
+		<property name="idRegola" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="colore" type="com.liferay.portal.dao.orm.hibernate.IntegerType" />
+		<property name="dataInizio" type="org.hibernate.type.TimestampType" />
+		<property name="dataFine" type="org.hibernate.type.TimestampType" />
+	</class>
+	<class name="it.eng.bollettino.model.impl.AttivazioneFiumeImpl" table="BOLLETTINO_AttivazioneFiume">
+		<id name="fiumeId" type="java.lang.String">
+			<generator class="assigned" />
+		</id>
+		<property name="attivo" type="com.liferay.portal.dao.orm.hibernate.BooleanType" />
+	</class>
+	<class name="it.eng.bollettino.model.impl.BacinoImpl" table="BOLLETTINO_Bacino">
+		<id column="id_" name="id" type="java.lang.String">
+			<generator class="assigned" />
+		</id>
+		<property column="uuid_" name="uuid" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="nome" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="progressivo" type="com.liferay.portal.dao.orm.hibernate.IntegerType" />
+	</class>
+	<class name="it.eng.bollettino.model.impl.BollettinoImpl" table="BOLLETTINO_Bollettino">
+		<id name="bollettinoId" type="long">
+			<generator class="assigned" />
+		</id>
+		<property column="uuid_" name="uuid" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="groupId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="companyId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="userId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="userName" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="createDate" type="org.hibernate.type.TimestampType" />
+		<property name="modifiedDate" type="org.hibernate.type.TimestampType" />
+		<property name="stato" type="com.liferay.portal.dao.orm.hibernate.IntegerType" />
+		<property name="idApprovatore" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="dataApprovazione" type="org.hibernate.type.TimestampType" />
+		<property name="numero" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="progressivo" type="com.liferay.portal.dao.orm.hibernate.IntegerType" />
+		<property name="anno" type="com.liferay.portal.dao.orm.hibernate.IntegerType" />
+		<property name="dataEmissione" type="org.hibernate.type.TimestampType" />
+		<property name="dataInizio" type="org.hibernate.type.TimestampType" />
+		<property name="dataFine" type="org.hibernate.type.TimestampType" />
+		<property name="noteMeteo" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="stringaMeteo" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="link" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="ultimo" type="com.liferay.portal.dao.orm.hibernate.BooleanType" />
+		<property name="hash" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+	</class>
+	<class name="it.eng.bollettino.model.impl.BollettinoBacinoImpl" table="BOLLETTINO_BollettinoBacino">
+		<id column="id_" name="id" type="long">
+			<generator class="assigned" />
+		</id>
+		<property column="uuid_" name="uuid" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="idBollettino" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="progressivo" type="com.liferay.portal.dao.orm.hibernate.IntegerType" />
+		<property name="idBacino" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="nomeBacino" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="oreOsservazione" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="note" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+	</class>
+	<class name="it.eng.bollettino.model.impl.BollettinoIconaImpl" table="BOLLETTINO_BollettinoIcona">
+		<id column="id_" name="id" type="long">
+			<generator class="increment" />
+		</id>
+		<property column="uuid_" name="uuid" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="idBollettino" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="idIcona" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="x" type="com.liferay.portal.dao.orm.hibernate.DoubleType" />
+		<property name="y" type="com.liferay.portal.dao.orm.hibernate.DoubleType" />
+	</class>
+	<class name="it.eng.bollettino.model.impl.BollettinoParametroImpl" table="BOLLETTINO_BollettinoParametro">
+		<id name="parametroId" type="java.lang.String">
+			<generator class="assigned" />
+		</id>
+		<property name="valore" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+	</class>
+	<class name="it.eng.bollettino.model.impl.BollettinoSensoreImpl" table="BOLLETTINO_BollettinoSensore">
+		<id column="id_" name="id" type="long">
+			<generator class="assigned" />
+		</id>
+		<property column="uuid_" name="uuid" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="idBollettino" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="idStazione" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="idBollettinoBacino" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="progressivo" type="com.liferay.portal.dao.orm.hibernate.IntegerType" />
+		<property name="nomeStazione" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="oreOsservazione" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="osservazione" type="com.liferay.portal.dao.orm.hibernate.DoubleType" />
+		<property name="tendenza" type="com.liferay.portal.dao.orm.hibernate.IntegerType" />
+		<property name="colmoPrevisto" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="oraPrevista" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="soglia1" type="com.liferay.portal.dao.orm.hibernate.DoubleType" />
+		<property name="soglia2" type="com.liferay.portal.dao.orm.hibernate.DoubleType" />
+		<property name="soglia3" type="com.liferay.portal.dao.orm.hibernate.DoubleType" />
+		<property name="giornoPrevisto" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="osservato" type="com.liferay.portal.dao.orm.hibernate.BooleanType" />
+	</class>
+	<class name="it.eng.bollettino.model.impl.IconaImpl" table="BOLLETTINO_Icona">
+		<id column="id_" name="id" type="long">
+			<generator class="increment" />
+		</id>
+		<property column="uuid_" name="uuid" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property column="path_" name="path" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="descrizione" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+	</class>
+	<class name="it.eng.bollettino.model.impl.IdrometroImpl" table="BOLLETTINO_Idrometro">
+		<id name="stazioneId" type="java.lang.String">
+			<generator class="assigned" />
+		</id>
+		<property name="nomeBacino" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="nomeSottobacino" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="nomeRubrica" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="sogliaSpike" type="com.liferay.portal.dao.orm.hibernate.DoubleType" />
+	</class>
+	<class name="it.eng.bollettino.model.impl.PluviometroImpl" table="BOLLETTINO_Pluviometro">
+		<id name="stazioneId" type="java.lang.String">
+			<generator class="assigned" />
+		</id>
+		<property name="nomeGruppo" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="nomeRubrica" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+	</class>
+	<class name="it.eng.bollettino.model.impl.RegolaAllarmeImpl" table="BOLLETTINO_RegolaAllarme">
+		<id column="id_" name="id" type="long">
+			<generator class="assigned" />
+		</id>
+		<property column="uuid_" name="uuid" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="nome" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="espressione" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="descrizione" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="colore" type="com.liferay.portal.dao.orm.hibernate.IntegerType" />
+		<property name="attivo" type="com.liferay.portal.dao.orm.hibernate.BooleanType" />
+	</class>
+	<class name="it.eng.bollettino.model.impl.RegolaAllarmeComuneImpl" table="BOLLETTINO_RegolaAllarmeComune">
+		<id column="id_" name="id" type="long">
+			<generator class="assigned" />
+		</id>
+		<property column="uuid_" name="uuid" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="idRegola" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="idComune" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+	</class>
+	<class name="it.eng.bollettino.model.impl.RegolaAllarmeCondizioneImpl" table="BOLLETTINO_RegolaAllarmeCondizione">
+		<id column="id_" name="id" type="long">
+			<generator class="assigned" />
+		</id>
+		<property column="uuid_" name="uuid" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="idRegola" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="lettera" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="idVariabile" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="idStazione" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="idStazioneVariabile" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="soglia" type="com.liferay.portal.dao.orm.hibernate.IntegerType" />
+		<property name="valoreSoglia" type="com.liferay.portal.dao.orm.hibernate.DoubleType" />
+	</class>
+	<class name="it.eng.bollettino.model.impl.StazioneImpl" table="BOLLETTINO_Stazione">
+		<id column="id_" name="id" type="java.lang.String">
+			<generator class="assigned" />
+		</id>
+		<property column="uuid_" name="uuid" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="ident" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="name" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="lon" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="lat" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="height" type="com.liferay.portal.dao.orm.hibernate.DoubleType" />
+		<property name="idBasin" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="idSubbasin" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="idCountry" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="idProvince" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="idRegion" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="idMunicipality" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="idMacroarea" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="nameBasin" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="nameSubbasin" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="nameCountry" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="nameProvince" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="nameRegion" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="nameMunicipality" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="nameMacroarea" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="network" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="attivo" type="com.liferay.portal.dao.orm.hibernate.BooleanType" />
+		<property name="incluso" type="com.liferay.portal.dao.orm.hibernate.BooleanType" />
+		<property name="progressivo" type="com.liferay.portal.dao.orm.hibernate.IntegerType" />
+	</class>
+	<class name="it.eng.bollettino.model.impl.StazioneVariabileImpl" table="BOLLETTINO_StazioneVariabile">
+		<id column="id_" name="id" type="long">
+			<generator class="increment" />
+		</id>
+		<property column="uuid_" name="uuid" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="idStazione" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="idVariabile" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="dataUltimoValore" type="org.hibernate.type.TimestampType" />
+		<property name="soglia1" type="com.liferay.portal.dao.orm.hibernate.DoubleType" />
+		<property name="soglia2" type="com.liferay.portal.dao.orm.hibernate.DoubleType" />
+		<property name="soglia3" type="com.liferay.portal.dao.orm.hibernate.DoubleType" />
+	</class>
+	<class name="it.eng.bollettino.model.impl.ValoreSensoreImpl" table="BOLLETTINO_ValoreSensore">
+		<id column="id_" name="id" type="long">
+			<generator class="increment" />
+		</id>
+		<property column="uuid_" name="uuid" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="value" type="com.liferay.portal.dao.orm.hibernate.DoubleType" />
+		<property name="datetime" type="org.hibernate.type.TimestampType" />
+		<property name="idVariabile" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="idStazione" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+	</class>
+	<class name="it.eng.bollettino.model.impl.VariabileImpl" table="BOLLETTINO_Variabile">
+		<id column="id_" name="id" type="java.lang.String">
+			<generator class="assigned" />
+		</id>
+		<property column="uuid_" name="uuid" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="description_it" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="level_t1" type="com.liferay.portal.dao.orm.hibernate.IntegerType" />
+		<property name="level_t2" type="com.liferay.portal.dao.orm.hibernate.IntegerType" />
+		<property name="level_v1" type="com.liferay.portal.dao.orm.hibernate.IntegerType" />
+		<property name="level_v2" type="com.liferay.portal.dao.orm.hibernate.IntegerType" />
+		<property name="trange_p1" type="com.liferay.portal.dao.orm.hibernate.IntegerType" />
+		<property name="trange_p2" type="com.liferay.portal.dao.orm.hibernate.IntegerType" />
+		<property name="trange_pind" type="com.liferay.portal.dao.orm.hibernate.IntegerType" />
+		<property name="unit" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="bcode" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+	</class>
+</hibernate-mapping>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+<custom-sql>
+	<sql file="custom-sql/bollettino.xml" />
+	<sql file="custom-sql/rt-data.xml" />
+	<sql file="custom-sql/ws-api.xml" />
+</custom-sql>

@@ -1,0 +1,17 @@
+@CHARSET "UTF-8";
+
+.custom-scheduled .navbar{
+	padding: 0 15px;
+}
+
+.custom-scheduled .btn-toolbar{
+	padding: 20px;
+}
+
+.custom-scheduled .btn{
+	border-radius: 0;
+}
+
+.custom-scheduled .lfr-search-container-wrapper{
+	padding: 0 15px;
+}

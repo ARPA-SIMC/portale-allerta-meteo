@@ -1,0 +1,4 @@
+Bundle-Name: allerta-backoffice-web
+Bundle-SymbolicName: it.eng.allerta.backoffice
+Bundle-Version: 1.0.0
+Export-Package: it.eng.allerta.backoffice.constants

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+	
+	<appender name="UserWorkflowAppender" class="org.apache.log4j.RollingFileAppender">
+   
+    	<param name="file" value="${catalina.home}/logs/workflow/user_registration/info.log" />
+    	<param name="MaxFileSize" value="10MB" />
+    	<param name="MaxBackupIndex" value="5" />
+      		<layout class="org.apache.log4j.PatternLayout">
+            	<param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} %-5p %m%n" />
+        	</layout>
+	</appender>
+	
+	<appender name="UserWebAppender" class="org.apache.log4j.RollingFileAppender">
+   
+    	<param name="file" value="${catalina.home}/logs/web/user_registration/info.log" />
+    	<param name="MaxFileSize" value="10MB" />
+    	<param name="MaxBackupIndex" value="5" />
+      		<layout class="org.apache.log4j.PatternLayout">
+            	<param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} %-5p %m%n" />
+        	</layout>
+	</appender>
+
+    <category name="it.eng.allerta.registration.workflow" >
+        <priority value="INFO" />
+        <appender-ref ref="UserWorkflowAppender" />
+    </category>
+    
+    <category name="it.eng.allerta.registration.portlet" >
+        <priority value="INFO" />
+        <appender-ref ref="UserWebAppender" />
+    </category>
+    
+    <category name="it.eng.allerta.registration.service" >
+        <priority value="INFO" />
+        <appender-ref ref="UserWebAppender" />
+    </category>
+</log4j:configuration>

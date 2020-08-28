@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE service-builder PUBLIC "-//Liferay//DTD Service Builder 6.2.0//EN" "http://www.liferay.com/dtd/liferay-service-builder_6_2_0.dtd">
+<service-builder package-path="it.eng.parer">
+	<author>Pratola_L</author>
+	<namespace>parer</namespace>
+	<entity name="DatiSpecificiInvio" local-service="true" cache-enabled="false">
+		<column name="ID_INVIO" type="long" primary="true"></column>
+        <column name="AMBIENTE" type="String"></column>
+        <column name="VERSIONE" type="double"></column>
+        <column name="VERSATORE_ENTE" type="String"></column>
+        <column name="VERSATORE_USER_ID" type="String"></column>
+        <column name="VERSATORE_STRUTTURA" type="String"></column>
+        <column name="CHIAVE_NUMERO" type="String"></column>
+        <column name="CHIAVE_ANNO" type="long"></column>
+        <column name="CHIAVE_TIPO_REGISTRO" type="String"></column>
+		<column name="TIPOLOGIA_UNITA_DOCUMENTARIA" type="String"></column>
+		<!-- PK fields -->
+		<!-- Group instance -->
+		<!-- Audit fields -->
+        <column name="TIPO_CONSERVAZIONE" type="String"></column>
+        <column name="FORZA_ACCETTAZIONE" type="String"></column>
+        <column name="FORZA_CONSERVAZIONE" type="String"></column>
+        <column name="FORZA_COLLEGAMENTO" type="String"></column>
+        <column name="OGGETTO_UNITA_DOCUMENTARIA" type="String"></column>
+        <column name="DATA_UNITA_DOCUMENTARIA" type="Date"></column>
+        <column name="VERSIONE_DATI_SPECIFICI" type="double"></column>
+        <column name="IDENTIFICATIVO_DATO_SPECIFICO" type="String"></column>
+        <column name="DATA_GENERAZIONE" type="Date"></column>
+        <column name="NUM_SMS_GENERATI" type="int"></column>
+        <column name="NUM_SMS_INVIATI" type="int"></column>
+        <column name="NUM_NOTIFICHE_RICEZIONE" type="int"></column>
+        <column name="DENOMINAZIONE_APPLICATIVO" type="String"></column>
+        <column name="OGGETTO_MAIL" type="String"></column>
+        <column name="TESTO_MAIL" type="String"></column>
+        <column name="COMPILATORE_ARPAE" type="String"></column>
+        <column name="COMPILATORE_PROTEZIONE_CIVILE" type="String"></column>
+        <column name="DATA_INIZIO_VALIDITA" type="Date"></column>
+        <column name="DATA_FINE_VALIDITA" type="Date"></column>
+        <column name="APPROVATORE_ARPAE" type="String"></column>
+        <column name="DATA_FIRMA_ARPAE" type="Date"></column>
+        <column name="APPROVATORE_PROTEZIONE_CIVILE" type="String"></column>
+        <column name="DATA_FIRMA_PROTEZIONE_CIVILE" type="Date"></column>
+        <column name="INVIO_RESPONSABILE_TERRITORIO" type="String"></column>
+        <column name="ID_DOCUMENTO_PRINCIPALE" type="long"></column>
+        <column name="TIPO_DOCUMENTO" type="String"></column>
+        <column name="TIPO_STRUTTURA" type="String"></column>
+        <column name="DENOMINAZIONE_SENSORE_RILEVAMENTO" type="String"></column>
+        <column name="REGOLA_ALLARME_ID" type="String"></column>
+        <column name="REGOLA_ALLARME_NOME" type="String"></column>
+        <column name="REGOLA_ALLARME_DESCRIZIONE" type="String"></column>
+        <column name="ESITO_INVIO" type="String"></column>
+        <column name="userId" type="long"></column>
+        <column name="companyId" type="long"></column>
+        <column name="groupId" type="long"></column>
+        <column name="data_invio" type="Date"></column>
+        <column name="data_risposta" type="Date"></column>
+        <column name="CODICE_ESITO" type="String"></column>
+        <column name="CODICE_ERRORE" type="String"></column>
+        <column name="MESG_ERRORE" type="String"></column>
+        <column name="CODICE_TIPO_INVIO" type="String"></column>
+        <finder name="esitoInvio" return-type="Collection">
+            <finder-column name="ESITO_INVIO"></finder-column>
+        </finder>
+    </entity>
+    <entity name="DocumentiCollegati" local-service="true" cache-enabled="false">
+        <column name="DOC_COLLEGATO_NUMERO" type="String" primary="true"></column>
+        <column name="DOC_COLLEGATO_ANNO" type="int" primary="true"></column>
+        <column name="DOC_COLLEGATO_TIPO_REGISTRO" type="String" primary="true"></column>
+        <column name="DESCRIZIONE_COLLEGAMENTO" type="String"></column>
+        <column name="ID_INVIO" type="long" primary="true"></column>
+        <finder name="DocumentiCollegatiByIdInvio" return-type="Collection">
+            <finder-column name="ID_INVIO"></finder-column>
+        </finder>
+    </entity>
+    <entity name="ComponentiInvio" local-service="true" cache-enabled="false">
+        <column name="ID_INVIO" type="long" primary="true"></column>
+        <column name="ID_COMPONENTE" type="long" primary="true"></column>
+        <column name="ORDINE_PRESENTAZIONE" type="long"></column>
+        <column name="TIPO_COMPONENTE" type="String"></column>
+        <column name="TIPO_SUPPORTO_COMPONENTE" type="String"></column>
+        <column name="NOME_COMPONENTE" type="String"></column>
+        <column name="FORMATO_FILE_VERSATO" type="String"></column>
+        <column name="HASH_VERSATO" type="String"></column>
+        <column name="URN_VERSATO" type="String"></column>
+        <column name="ID_COMPONENTE_VERSATO" type="long"></column>
+        <finder name="ComponentiByIdInvio" return-type="Collection">
+            <finder-column name="ID_INVIO"></finder-column>
+        </finder>
+    </entity>
+    <entity name="Parametri" local-service="true" remote-service="false">
+        <column name="chiave" primary="true" type="String"></column>
+        <column name="valore" type="String"></column>
+    </entity>
+</service-builder>

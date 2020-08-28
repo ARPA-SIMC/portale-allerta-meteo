@@ -1,0 +1,85 @@
+-- Drop tables
+
+SELECT 'DROP VIEW IF EXISTS ' || table_name || ' CASCADE;'
+  FROM information_schema.views
+ WHERE table_schema NOT IN ('pg_catalog', 'information_schema')
+   AND table_name !~ '^pg_';
+   
+   
+DROP VIEW IF EXISTS area_rubrica_vw CASCADE;
+DROP VIEW IF EXISTS area_email_vw CASCADE;
+DROP VIEW IF EXISTS area_numeri_vw CASCADE;
+DROP VIEW IF EXISTS area_contatti_vw CASCADE;
+DROP VIEW IF EXISTS area_contatti_vw_2 CASCADE;
+DROP VIEW IF EXISTS area_email_vw_2 CASCADE;
+DROP VIEW IF EXISTS area_numeri_vw_2 CASCADE;
+DROP VIEW IF EXISTS area_contatti_vw_3 CASCADE;
+DROP VIEW IF EXISTS area_contatti_vw_4 CASCADE;
+DROP VIEW IF EXISTS org_rubrica_vw CASCADE;
+DROP VIEW IF EXISTS org_email_vw_2 CASCADE;
+DROP VIEW IF EXISTS fiume_email_vw_2 CASCADE;
+DROP VIEW IF EXISTS org_numeri_vw_2 CASCADE;
+DROP VIEW IF EXISTS fiume_numeri_vw_2 CASCADE;
+DROP VIEW IF EXISTS bacini_rubrica_vw CASCADE;
+DROP VIEW IF EXISTS comune_superamento_vw CASCADE;
+DROP VIEW IF EXISTS destinatari_sempre_vw CASCADE;
+DROP VIEW IF EXISTS destinatari_sempre_email_vw CASCADE;
+DROP VIEW IF EXISTS destinatari_sempre_numeri_vw CASCADE;
+DROP VIEW IF EXISTS destinatari_sempre_contatti_vw CASCADE;
+DROP VIEW IF EXISTS destinatari_sempre_contatti_vw_2 CASCADE;
+DROP VIEW IF EXISTS destinatari_sempre_email_vw_2 CASCADE;
+DROP VIEW IF EXISTS destinatari_sempre_numeri_vw_2 CASCADE;
+DROP VIEW IF EXISTS destinatari_sempre_contatti_vw_3 CASCADE;
+DROP VIEW IF EXISTS destinatari_sempre_contatti_vw_4 CASCADE;
+DROP VIEW IF EXISTS org_email_vw CASCADE;
+DROP VIEW IF EXISTS fiume_email_vw CASCADE;
+DROP VIEW IF EXISTS org_numeri_vw CASCADE;
+DROP VIEW IF EXISTS fiume_numeri_vw CASCADE;
+DROP VIEW IF EXISTS idro CASCADE;
+DROP VIEW IF EXISTS meteomont_email_vw CASCADE;
+DROP VIEW IF EXISTS meteomont_numeri_vw CASCADE;
+DROP VIEW IF EXISTS meteomont_rubrica_vw CASCADE;
+DROP VIEW IF EXISTS meteomont_vw CASCADE;
+DROP VIEW IF EXISTS monit_vw CASCADE;
+DROP VIEW IF EXISTS monitoraggio_email_vw CASCADE;
+DROP VIEW IF EXISTS monitoraggio_numeri_vw CASCADE;
+DROP VIEW IF EXISTS monitoraggio_rubrica_vw CASCADE;
+DROP VIEW IF EXISTS new_area_rubrica_vw CASCADE;
+DROP VIEW IF EXISTS new_fiume_email_vw CASCADE;
+DROP VIEW IF EXISTS new_fiume_numeri_vw CASCADE;
+DROP VIEW IF EXISTS new_fiume_rubrica_vw CASCADE;
+DROP VIEW IF EXISTS new_meteomont_email_vw CASCADE;
+DROP VIEW IF EXISTS new_meteomont_numeri_vw CASCADE;
+DROP VIEW IF EXISTS new_meteomont_rubrica_vw CASCADE;
+DROP VIEW IF EXISTS new_monitoraggio_email_vw CASCADE;
+DROP VIEW IF EXISTS new_monitoraggio_numeri_vw CASCADE;
+DROP VIEW IF EXISTS new_monitoraggio_rubrica_vw CASCADE;
+DROP VIEW IF EXISTS new_pluviometro_email_vw CASCADE;
+DROP VIEW IF EXISTS new_pluviometro_numeri_vw CASCADE;
+DROP VIEW IF EXISTS new_pluviometro_rubrica_vw CASCADE;
+DROP VIEW IF EXISTS pluvio CASCADE;
+DROP VIEW IF EXISTS pluviometro_email_vw CASCADE;
+DROP VIEW IF EXISTS pluviometro_numeri_vw CASCADE;
+DROP VIEW IF EXISTS pluviometro_rubrica_vw CASCADE;
+DROP VIEW IF EXISTS recapiti_agenzia_vw CASCADE;
+DROP VIEW IF EXISTS recapiti_comuni_vw CASCADE;
+DROP VIEW IF EXISTS regole_condizioni_vw CASCADE;
+DROP VIEW IF EXISTS regole_allarme_vw CASCADE;
+DROP VIEW IF EXISTS sensori_comuni_vw CASCADE;
+DROP VIEW IF EXISTS sms_by_day_and_type_vw CASCADE;
+DROP VIEW IF EXISTS sms_by_day_vw CASCADE;
+DROP VIEW IF EXISTS sms_by_month_vw CASCADE;
+DROP VIEW IF EXISTS sms_by_tempo_consegna_vw CASCADE;
+DROP VIEW IF EXISTS sms_dettaglio_vw CASCADE;
+DROP VIEW IF EXISTS sms_invii_vw CASCADE;
+DROP VIEW IF EXISTS ultimi_due_valori_sensori CASCADE;
+DROP VIEW IF EXISTS spike_idrometri CASCADE;
+DROP VIEW IF EXISTS valanghe_email_vw CASCADE;
+DROP VIEW IF EXISTS valanghe_email_vw_2 CASCADE;
+DROP VIEW IF EXISTS valanghe_numeri_vw CASCADE;
+DROP VIEW IF EXISTS valanghe_numeri_vw_2 CASCADE;
+DROP VIEW IF EXISTS view_staz_sens CASCADE;
+DROP VIEW IF EXISTS view_staz_sens_old CASCADE;
+DROP VIEW IF EXISTS view_staz_sensore_30m CASCADE;
+DROP VIEW IF EXISTS view_staz_sensore_30m_old CASCADE;
+DROP VIEW IF EXISTS visualizzazioni_allerta_vw CASCADE;

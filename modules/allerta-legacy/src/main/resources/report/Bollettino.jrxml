@@ -1,0 +1,507 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Autorizzazione" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="053b5bd2-37c7-4b31-b733-6cacc01d9380">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="ID_RICHIESTA" class="java.math.BigDecimal">
+		<defaultValueExpression><![CDATA[new BigDecimal(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\GFAVINI\\Documents\\Liferay\\liferay-plugins-sdk-6.2\\portlets\\compila-allerta-portlet\\docroot\\report\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="METEO" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["http://www.arpae.it/sim/archivio/homepage/immagine_previsione_home.php?im=0;t;w=426;h=230"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ICONE" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\GFAVINI\\Documents\\Liferay\\liferay-plugins-sdk-6.2\\portlets\\compila-allerta-portlet\\docroot\\report\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="PIOGGIA" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["http://www.arpae.it/sim/pagine/idrologia/pioggia_cumulata/riduciImmagine.php?im=MTG_AN_ARPA_DT_0_TTPC_GRND_NULL_NULL_NULL_NULL_2016083000_2016083100_024_999_1_AREA%2BPADA.1.png"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select a.*, u.lastname as arpacognome, u.firstname as arpanome, exists (select id_ from bollettino_bollettinosensore
+where idbollettino = $P{ID_RICHIESTA} and tendenza<>-100) as sensori from bollettino_bollettino a left join user_ u on a.idapprovatore = u.userid where $P{ID_RICHIESTA} = a.bollettinoid]]>
+	</queryString>
+	<field name="uuid_" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="bollettinoid" class="java.lang.Long">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="groupid" class="java.lang.Long">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="companyid" class="java.lang.Long">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="userid" class="java.lang.Long">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="username" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="createdate" class="java.sql.Timestamp">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="modifieddate" class="java.sql.Timestamp">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="stato" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="idapprovatore" class="java.lang.Long">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="dataapprovazione" class="java.sql.Timestamp">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="numero" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="progressivo" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="anno" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="dataemissione" class="java.sql.Timestamp">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="datainizio" class="java.sql.Timestamp">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="datafine" class="java.sql.Timestamp">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="notemeteo" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="stringameteo" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="link" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="ultimo" class="java.lang.Boolean">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="arpacognome" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="arpanome" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="sensori" class="java.lang.Boolean">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<title>
+		<band height="50" splitType="Stretch">
+			<image hAlign="Center" onErrorType="Blank">
+				<reportElement x="0" y="0" width="111" height="42" uuid="acd7d842-3779-45a2-a9e3-3e931037b0fa"/>
+				<imageExpression><![CDATA[$P{SUBREPORT_DIR}+ "arpa.png"]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="263" y="0" width="292" height="22" uuid="4c41855b-f291-416d-8d09-003dad678d7c">
+					<property name="net.sf.jasperreports.export.pdf.tag.h1" value="start"/>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="Arial" size="18" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<textFieldExpression><![CDATA["MONITORAGGIO"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="111" y="22" width="445" height="18" uuid="6131a2b3-21e9-4be8-ad64-9909d05962f4">
+					<property name="net.sf.jasperreports.export.pdf.tag.h1" value="end"/>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="Arial" size="14" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<textFieldExpression><![CDATA["METEO IDROLOGICO E IDRAULICO IN CORSO DI EVENTO"]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="46" width="553" height="1" uuid="fbd30c23-dc1f-41c6-b8a1-b1ecb4e61b8c"/>
+			</line>
+		</band>
+	</title>
+	<detail>
+		<band height="650" splitType="Stretch">
+			<textField>
+				<reportElement mode="Opaque" x="2" y="10" width="109" height="22" forecolor="#FFFFFF" backcolor="#999999" uuid="bf9c6a21-6276-449a-b570-96d7dd5e6de3">
+					<property name="net.sf.jasperreports.export.pdf.tag.table" value="start"/>
+					<property name="net.sf.jasperreports.export.pdf.tag.tr" value="start"/>
+					<property name="net.sf.jasperreports.export.pdf.tag.th" value="full"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="1.0" lineColor="#000000"/>
+					<topPen lineWidth="1.0" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["DOCUMENTO N."]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="111" y="10" width="146" height="22" forecolor="#FFFFFF" backcolor="#999999" uuid="503d5ca0-85be-4235-855f-d758259ec03e">
+					<property name="net.sf.jasperreports.export.pdf.tag.th" value="full"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="1.0" lineColor="#000000"/>
+					<topPen lineWidth="1.0" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["DATA EMISSIONE"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="257" y="10" width="150" height="22" forecolor="#FFFFFF" backcolor="#999999" uuid="17212621-70f4-4c47-8f9b-8ba3099fe39e">
+					<property name="net.sf.jasperreports.export.pdf.tag.th" value="full"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="1.0" lineColor="#000000"/>
+					<topPen lineWidth="1.0" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["INIZIO VALIDITA'"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="407" y="10" width="148" height="22" forecolor="#FFFFFF" backcolor="#999999" uuid="0e324abe-5a8e-4be6-98aa-0dfa5e639c6e">
+					<property name="net.sf.jasperreports.export.pdf.tag.th" value="full"/>
+					<property name="net.sf.jasperreports.export.pdf.tag.tr" value="end"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="1.0" lineColor="#000000"/>
+					<topPen lineWidth="1.0" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["FINE VALIDITA'"]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="2" y="32" width="109" height="16" forecolor="#000000" backcolor="#FFFFFF" uuid="c4473a18-8f10-4145-a51d-c11b18432157">
+					<property name="net.sf.jasperreports.export.pdf.tag.tr" value="start"/>
+					<property name="net.sf.jasperreports.export.pdf.tag.td" value="full"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{numero}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy HH:mm" isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="111" y="32" width="146" height="16" forecolor="#000000" backcolor="#FFFFFF" uuid="4dab88fd-2d89-43bf-ab98-1040c372fdeb">
+					<property name="net.sf.jasperreports.export.pdf.tag.td" value="full"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{dataemissione}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy HH:mm" isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="257" y="32" width="150" height="16" forecolor="#000000" backcolor="#FFFFFF" uuid="3e429015-f387-4b60-b063-07f3ca751462">
+					<property name="net.sf.jasperreports.export.pdf.tag.td" value="full"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{datainizio}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy HH:mm" isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="407" y="32" width="148" height="16" forecolor="#000000" backcolor="#FFFFFF" uuid="df8d4e6c-515e-4649-9471-23032f5f6bc6">
+					<property name="net.sf.jasperreports.export.pdf.tag.td" value="full"/>
+					<property name="net.sf.jasperreports.export.pdf.tag.tr" value="end"/>
+					<property name="net.sf.jasperreports.export.pdf.tag.table" value="end"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{datafine}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="348" y="52" width="207" height="18" forecolor="#FFFFFF" backcolor="#999999" uuid="989e7ee4-3959-4de9-9f11-65476823e30f">
+					<property name="net.sf.jasperreports.export.pdf.tag.h2" value="full"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="1.0" lineColor="#000000"/>
+					<topPen lineWidth="1.0" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["LEGENDA PREVISIONE"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="2" y="52" width="346" height="18" forecolor="#FFFFFF" backcolor="#999999" uuid="ade6add1-9d18-4d6d-97ca-3506a609c91e">
+					<property name="net.sf.jasperreports.export.pdf.tag.h2" value="full"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="1.0" lineColor="#000000"/>
+					<topPen lineWidth="1.0" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["PREVISIONE METEOROLOGICA PER LE PROSSIME ORE"]]></textFieldExpression>
+			</textField>
+			<image hAlign="Center" onErrorType="Blank">
+				<reportElement mode="Transparent" x="2" y="70" width="346" height="158" isPrintWhenDetailOverflows="true" uuid="8eb7e42e-f5fc-4b2d-913a-8b4117bf8c77"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<imageExpression><![CDATA[$P{METEO}]]></imageExpression>
+			</image>
+			<image hAlign="Center">
+				<reportElement x="359" y="81" width="16" height="16" uuid="294848d0-0ff5-42bd-a890-d4c2a171b868"/>
+				<imageExpression><![CDATA[$P{ICONE}+ "pioggiaassente.png"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="386" y="81" width="153" height="16" uuid="7fa57169-ff85-4930-960f-1234bc1db72c"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Pioggia trascurabile (<2 mm / 6h)]]></text>
+			</staticText>
+			<image hAlign="Center">
+				<reportElement x="359" y="102" width="16" height="16" uuid="b22dc3c6-7893-40a6-8abb-b8a7583b5df2"/>
+				<imageExpression><![CDATA[$P{ICONE}+ "pioggiadebole.png"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="386" y="102" width="153" height="16" uuid="958b3b0e-ef97-484f-9606-ee2c319b6c9b"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Pioggia debole (5-10 mm / 6h)]]></text>
+			</staticText>
+			<image hAlign="Center">
+				<reportElement x="359" y="123" width="16" height="16" uuid="26ebd646-e1ca-46c1-becb-7c5d614276ed"/>
+				<imageExpression><![CDATA[$P{ICONE}+ "pioggiamoderata.png"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="386" y="123" width="153" height="16" uuid="0f39c1ff-a7f2-49cd-b388-7b62133cc5bb"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Pioggia moderata (10-30 mm / 6h)]]></text>
+			</staticText>
+			<image hAlign="Center">
+				<reportElement x="359" y="165" width="16" height="16" uuid="cc12e033-8abb-4e09-b859-52dca298a6cf"/>
+				<imageExpression><![CDATA[$P{ICONE}+ "pioggianeve.png"]]></imageExpression>
+			</image>
+			<image hAlign="Center">
+				<reportElement x="359" y="144" width="16" height="16" uuid="6de3eeec-21f6-441a-8a58-d60d56d62bba"/>
+				<imageExpression><![CDATA[$P{ICONE}+ "pioggiaelevata.png"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="386" y="186" width="153" height="16" uuid="d55e70c3-6386-4c5d-a41c-13358ffb265b"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Neve]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="386" y="144" width="153" height="16" uuid="2a153ef1-1318-4c39-9009-f1f883c53c91"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Pioggia elevata (>30 mm / 6h)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="386" y="165" width="153" height="16" uuid="c2379550-8b85-4a1f-9223-d89b829a5a03"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Pioggia mista a neve]]></text>
+			</staticText>
+			<image hAlign="Center">
+				<reportElement x="359" y="186" width="16" height="16" uuid="c394e93e-5564-46ec-a6d8-f85bd480af47"/>
+				<imageExpression><![CDATA[$P{ICONE}+ "neve.png"]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement mode="Opaque" x="0" y="367" width="555" height="22" forecolor="#FFFFFF" backcolor="#999999" uuid="318fbd43-e776-43c5-ba4a-fa235b2f27b0">
+					<property name="net.sf.jasperreports.export.pdf.tag.h2" value="full"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="1.0" lineColor="#000000"/>
+					<topPen lineWidth="1.0" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["PIOGGIA OSSERVATA NELLE ULTIME 6 ORE"]]></textFieldExpression>
+			</textField>
+			<image hAlign="Center" onErrorType="Blank">
+				<reportElement mode="Transparent" x="0" y="389" width="555" height="247" uuid="d6d3a010-45f1-43bc-b94f-baa5b25f87f9"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<imageExpression><![CDATA[$P{PIOGGIA}]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="2" y="233" width="553" height="123" uuid="66753f9d-2bd5-4430-bb75-612b0da7068d">
+					<printWhenExpression><![CDATA[new Boolean($F{notemeteo}!=null)]]></printWhenExpression>
+				</reportElement>
+				<box topPadding="5" leftPadding="5" bottomPadding="5" rightPadding="5">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement>
+					<font fontName="DejaVu Sans"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{notemeteo}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="100">
+			<printWhenExpression><![CDATA[$F{sensori}]]></printWhenExpression>
+		</band>
+		<band height="10">
+			<subreport>
+				<reportElement x="1" y="0" width="555" height="6" uuid="0482f1e8-1c2d-4cee-a5ff-9afb91f319a8"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ID_INTERVENTO">
+					<subreportParameterExpression><![CDATA[$P{ID_RICHIESTA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "Bacini.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="80">
+			<printWhenExpression><![CDATA[$F{sensori}]]></printWhenExpression>
+			<frame>
+				<reportElement x="2" y="38" width="551" height="40" uuid="9b32c6f3-84bb-4726-86c7-89f740ffecfe"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+			</frame>
+			<textField>
+				<reportElement x="2" y="58" width="184" height="20" uuid="5a7dd1f2-8aa9-48f8-8647-9c906c72e7e6"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" isStrikeThrough="false" pdfFontName="DejaVu Sans" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["\u25B2 in aumento"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="186" y="58" width="184" height="20" uuid="8d066b72-d1ed-442f-b0e0-e25436d73f9e"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["= stazionaria"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="370" y="58" width="183" height="20" uuid="d3eade9b-3694-44d9-990d-587c4f119375"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["\u25BC in diminuzione"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="12" y="38" width="109" height="20" uuid="e6bbfbca-3a09-435b-819b-8da33df414bd"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["\u0394 - Tendenza"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="6" width="555" height="31" uuid="95b9196a-f533-4ea3-88ea-dcdcf4a02293"/>
+				<textElement textAlignment="Center">
+					<font isBold="false"/>
+				</textElement>
+				<text><![CDATA[Tutti gli orari sono riferiti all'ora locale.
+I dati indicati in grassetto si riferiscono ai livelli al colmo osservati.]]></text>
+			</staticText>
+		</band>
+		<band height="75">
+			<staticText>
+				<reportElement x="171" y="3" width="215" height="15" uuid="f7ae74fa-329a-475e-9eb0-c8ce85de4a26"/>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[Il Dirigente Referente Centro Funzionale]]></text>
+			</staticText>
+			<line>
+				<reportElement x="171" y="34" width="215" height="1" uuid="4468affe-5f07-437d-a0f3-890ec77552b1">
+					<printWhenExpression><![CDATA[new Boolean($F{arpacognome}==null)]]></printWhenExpression>
+				</reportElement>
+			</line>
+			<textField>
+				<reportElement x="171" y="14" width="215" height="20" uuid="3d706055-0122-4596-b242-7b431d0e7043">
+					<printWhenExpression><![CDATA[new Boolean($F{arpacognome}!=null)]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Bottom"/>
+				<textFieldExpression><![CDATA[$F{arpanome} + " " + $F{arpacognome}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="158" y="40" width="243" height="28" uuid="187bdaca-a611-492c-a80e-20a6473559ac"/>
+				<textElement textAlignment="Center">
+					<font isBold="false"/>
+				</textElement>
+				<text><![CDATA[Firma autografa omessa ai sensi dell'art.3, c.2, D.Lgs. 12/02/1993, n.39]]></text>
+			</staticText>
+		</band>
+	</detail>
+</jasperReport>

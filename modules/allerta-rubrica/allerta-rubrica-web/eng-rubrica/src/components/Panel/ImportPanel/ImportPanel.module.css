@@ -1,0 +1,50 @@
+.deleted {
+  text-decoration: line-through;
+  color: #888888;
+}
+
+.nothing {
+}
+
+.insert {
+  background-color: green;
+  color: white;
+}
+
+.update {
+  background-color: yellow;
+}
+
+.delete {
+  background-color: red;
+  color:white;
+}
+
+.tabella {
+  border: 1px solid black;
+}
+
+.riga {
+  border: 1px solid black;
+}
+
+.riga:nth-child(even) {background: #EEE}
+.riga:nth-child(odd) {background: #FFF}
+
+.cella {
+  padding: 4px;
+}
+
+.noteok {
+  border-radius: 5px;
+  padding: 5px;
+  border: 1px solid green;
+  background: #ccffcc;
+}
+
+.noteko {
+  border-radius: 5px;
+  padding: 5px;
+  border: 1px solid red;
+  background: #ffcccc;
+}

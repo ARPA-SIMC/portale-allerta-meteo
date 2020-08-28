@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">	
+	<!--
+	<appender name="SmsWebFile" class="org.apache.log4j.RollingFileAppender">   
+    	<param name="file" value="${catalina.home}/logs/web/sms/allerta_sms_web.log" />
+    	<param name="MaxFileSize" value="10MB" />
+    	<param name="MaxBackupIndex" value="5" />
+     	<layout class="org.apache.log4j.PatternLayout">
+           	<param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} %-5p %m%n" />
+       	</layout>
+	</appender>
+	-->
+	
+	<!--
+	<appender name="SmsWebFile" class="org.apache.log4j.DailyRollingFileAppender">       	
+        <param name="File" value="${catalina.home}/logs/web/sms/allerta_sms_web.log" />
+        <param name="DatePattern" value="'.'yyyy-MM-dd" />
+        <layout class="org.apache.log4j.PatternLayout">
+        	<param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n"/>          
+        </layout>
+	</appender>
+	-->
+	
+	<appender name="SmsWebFile" class="org.apache.log4j.rolling.RollingFileAppender">
+	    <rollingPolicy class="org.apache.log4j.rolling.TimeBasedRollingPolicy">
+	        <param name="ActiveFileName" value="${catalina.home}/logs/web/sms/allerta_sms_web.log" />
+	        <param name="FileNamePattern" value="${catalina.home}/logs/web/sms/allerta_sms_web.%d{dd-MMM}.part%i.log.gz" />
+	    </rollingPolicy>
+	    <triggeringPolicy class="org.apache.log4j.rolling.SizeBasedTriggeringPolicy">
+	        <param name="MaxFileSize" value="67108864" />
+	    </triggeringPolicy>
+	    <layout class="org.apache.log4j.PatternLayout">
+	        <param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n" />
+	    </layout>
+	</appender>	
+	
+	<appender name="SmsWebConsole" class="org.apache.log4j.ConsoleAppender">		
+		<param name="threshold" value="ALL" />
+		<!-- <param name="threshold" value="OFF" /> spegne questo appender -->
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n" />
+		</layout>
+	</appender>
+	
+	<!--
+	<root>
+		<priority value="INFO" />
+        <appender-ref ref="SmsWebConsole" />
+        <appender-ref ref="SmsWebFile" />
+	</root>
+	-->
+	
+    <logger name="it.eng.sms" >
+        <level value="DEBUG" />
+        <appender-ref ref="SmsWebConsole" />
+        <appender-ref ref="SmsWebFile" />        
+    </logger>
+
+</log4j:configuration>

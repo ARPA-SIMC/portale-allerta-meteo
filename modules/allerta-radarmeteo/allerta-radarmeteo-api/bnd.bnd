@@ -1,0 +1,11 @@
+Bundle-Name: allerta-radarmeteo-api
+Bundle-SymbolicName: it.eng.radarMeteo.api
+Bundle-Version: 1.0.0
+Export-Package: \
+	it.eng.radarMeteo.exception,\
+	it.eng.radarMeteo.model,\
+	it.eng.radarMeteo.service,\
+	it.eng.radarMeteo.service.persistence,\
+	it.eng.radarMeteo.bean
+-check: EXPORTS
+-includeresource: META-INF/service.xml=../allerta-radarmeteo-service/service.xml

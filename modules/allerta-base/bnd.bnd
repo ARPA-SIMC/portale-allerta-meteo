@@ -1,0 +1,8 @@
+Bundle-Name: allerta-base
+Bundle-SymbolicName: it.eng.allerta
+Bundle-Version: 1.0.0
+Export-Package: \
+	it.eng.allerta.utils,\
+	it.eng.allerta.configuration,\
+	it.eng.allerta.configuration.schedulers
+-metatype: *

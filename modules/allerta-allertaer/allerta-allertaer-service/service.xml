@@ -1,0 +1,491 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE service-builder PUBLIC "-//Liferay//DTD Service Builder 6.2.0//EN" "http://www.liferay.com/dtd/liferay-service-builder_6_2_0.dtd">
+<service-builder package-path="it.eng.allerter">
+	<author>GFAVINI</author>
+	<namespace>ALLERTER</namespace>
+
+	<entity name="Area" local-service="true" remote-service="true" uuid="true" >
+
+		<!-- PK fields -->
+
+		<column name="areaId" type="long" primary="true"  />
+
+		<!-- Group instance -->
+
+		<column name="groupId" type="long" />
+
+		<!-- Audit fields -->
+
+		<column name="companyId" type="long" />
+		<column name="userId" type="long" />
+		<column name="userName" type="String" />
+		<column name="createDate" type="Date" />
+		<column name="modifiedDate" type="Date" />
+
+		<!-- Other fields -->
+
+		<column name="nome" type="String" />
+		<column name="tipoArea" type="String" />
+		<column name="costiero" type="boolean" />
+		<column name="dataInizio" type="Date" />
+		<column name="dataFine" type="Date" />
+		<column name="parentId" type="long" />
+
+		<!-- Order -->
+
+		<order by="asc">
+			<order-column name="nome" />
+		</order>
+
+		<!-- Finder methods -->
+
+		<finder name="Nome" return-type="Collection">
+			<finder-column name="nome" />
+		</finder>
+		
+		<finder name="TipoArea" return-type="Collection">
+			<finder-column name="tipoArea" />
+		</finder>
+	</entity>
+	
+	<entity name="TipoEvento" local-service="true" remote-service="true" uuid="true" >
+
+		<!-- PK fields -->
+
+		<column name="eventoId" type="long" primary="true" id-type="increment" />
+
+		<!-- Group instance -->
+
+		<column name="groupId" type="long" />
+
+		<!-- Audit fields -->
+
+		<column name="companyId" type="long" />
+		<column name="userId" type="long" />
+		<column name="userName" type="String" />
+		<column name="createDate" type="Date" />
+		<column name="modifiedDate" type="Date" />
+
+		<!-- Other fields -->
+
+		<column name="nome" type="String" />
+		<column name="indice" type="int" />
+		<column name="tabella" type="int" />
+		<column name="split" type="boolean" />
+		<column name="costiero" type="boolean" />
+		<column name="dataInizio" type="Date" />
+		<column name="dataFine" type="Date" />
+		<column name="parentId" type="long" />
+
+		<!-- Order -->
+
+		<order by="asc">
+			<order-column name="indice" />
+		</order>
+
+		<!-- Finder methods -->
+
+		<finder name="Nome" return-type="Collection">
+			<finder-column name="nome" />
+		</finder>
+		
+		<finder name="Tabella" return-type="Collection">
+			<finder-column name="tabella" />
+		</finder>
+	</entity>
+	
+	<entity name="StatoAllertamento" local-service="true" remote-service="true" uuid="true" >
+
+		<!-- PK fields -->
+
+		<column name="statoId" type="long" primary="true" id-type="increment" />
+
+		<!-- Group instance -->
+
+		<column name="groupId" type="long" />
+
+		<!-- Audit fields -->
+
+		<column name="companyId" type="long" />
+		<column name="userId" type="long" />
+		<column name="userName" type="String" />
+		<column name="createDate" type="Date" />
+		<column name="modifiedDate" type="Date" />
+
+		<!-- Other fields -->
+
+		<column name="nome" type="String" />
+		<column name="dataInizio" type="Date" />
+		<column name="dataFine" type="Date" />
+		<column name="parentId" type="long" />
+
+		<!-- Order -->
+
+		<order by="asc">
+			<order-column name="nome" />
+		</order>
+
+		<!-- Finder methods -->
+
+		<finder name="Nome" return-type="Collection">
+			<finder-column name="nome" />
+		</finder>
+
+	</entity>
+	
+	
+	<entity name="Allerta" local-service="true" remote-service="true" uuid="true" >
+
+		<!-- PK fields -->
+
+		<column name="allertaId" type="long" primary="true" />
+
+		<!-- Group instance -->
+
+		<column name="groupId" type="long" />
+
+		<!-- Audit fields -->
+
+		<column name="companyId" type="long" />
+		<column name="userId" type="long" />
+		<column name="userName" type="String" />
+		<column name="creatorName" type="String" />
+		<column name="createDate" type="Date" />
+		<column name="modifiedDate" type="Date" />
+
+		<!-- Other fields -->
+		
+		<column name="stato" type="int" />
+
+		<column name="numero" type="String" />
+		<column name="progressivo" type="int" />
+		<column name="anno" type="int" />
+		<column name="dataEmissione" type="Date" />
+		<column name="dataInizio" type="Date" />
+		<column name="dataFine" type="Date" />
+		<column name="descrizioneMeteo" type="String" />
+		<column name="tendenza" type="int" />
+		<column name="note" type="String" />
+		<column name="riferimenti" type="String" />
+		<column name="utenteFirmaArpaId" type="long" />
+		<column name="dataFirmaArpa" type="Date" />
+		<column name="utenteFirmaProtId" type="long" />
+		<column name="dataFirmaProt" type="Date" />
+		<column name="parentId" type="long" />
+		<column name="sintesi" type="String" />
+		<column name="link" type="String" />
+		<column name="titolo" type="String" />
+		<column name="tipoAllerta" type="boolean" />
+		<column name="hash" type="String" />
+		<!-- Order -->
+
+		<order by="asc">
+			<order-column name="numero" />
+		</order>
+
+		<!-- Finder methods -->
+
+		<finder name="Numero" return-type="Collection">
+			<finder-column name="numero" />
+		</finder>
+		
+		<reference package-path="com.liferay.portlet.asset" entity="AssetEntry" />
+
+	</entity>
+	
+	<entity name="AllertaStato" local-service="true" remote-service="true" uuid="true" >
+
+		<!-- PK fields -->
+
+		<column name="allertaStatoId" type="long" primary="true" />
+
+		<!-- Group instance -->
+
+		<column name="groupId" type="long" />
+
+		<!-- Audit fields -->
+
+		<column name="companyId" type="long" />
+		<column name="userId" type="long" />
+		<column name="userName" type="String" />
+		<column name="createDate" type="Date" />
+		<column name="modifiedDate" type="Date" />
+
+		<!-- Other fields -->
+		
+		
+
+		<column name="nome" type="String" />
+		<column name="dataInizio" type="Date" />
+		<column name="dataFine" type="Date" />
+		<column name="parentId" type="long" />
+
+		<!-- Order -->
+        <column name="allertaId" type="long"></column>
+        <column name="statoId" type="long"></column>
+        <column name="eventoId" type="long"></column>
+        <column name="areaId" type="long"></column>
+
+		<order by="asc">
+			<order-column name="nome" />
+		</order>
+
+		<!-- Finder methods -->
+
+		<finder name="Nome" return-type="Collection">
+			<finder-column name="nome" />
+		</finder>
+		
+		<finder name="AllertaId" return-type="Collection">
+			<finder-column name="allertaId" />
+		</finder>
+
+	</entity>	
+	
+	<entity name="AllertaParametro" local-service="true" remote-service="true">
+
+		<!-- PK fields -->
+
+		<column name="parametroId" type="String" primary="true" />
+
+		<!-- Other fields -->
+		<column name="valore" type="String" />
+	
+		<!-- Order -->
+
+		<order by="asc">
+			<order-column name="parametroId" />
+		</order>
+
+	</entity>
+	
+	<entity name="SMS" local-service="true" remote-service="true" >
+
+		<!-- PK fields -->
+
+		<column name="id" type="long" primary="true"  />
+
+		<!-- Other fields -->
+		
+		<column name="tipo" type="String" />
+		<column name="sottotipo" type="String" />
+		<column name="param" type="long" />
+		<column name="testo" type="String" />
+
+		<column name="destinatario" type="long" />
+		<column name="numeroDa" type="String" />
+		<column name="numero" type="String" />
+		<column name="nomeDestinatario" type="String" />
+		
+		<column name="stato" type="long" />
+		<column name="dataInvio" type="Date" />
+		<column name="dataAck" type="Date" />
+		<column name="dataRicevuta" type="Date" />
+		
+		<column name="tentativi" type="long" />
+		<column name="prossimoInvio" type="Date" />
+		<column name="codiceErrore" type="String" />
+		<column name="descrizioneErrore" type="String" />
+		<column name="timestamp" type="String" />
+		
+		
+		<!-- Order -->
+
+		<order by="desc">
+			<order-column name="id" />
+		</order>
+
+		<!-- Finder methods -->
+
+		
+		
+		<finder name="Destinatario" return-type="Collection">
+			<finder-column name="destinatario" />
+		</finder>
+		
+		<finder name="Numero" return-type="Collection">
+			<finder-column name="numero" />
+
+		</finder>
+		
+		<finder name="NumeroDataAck" return-type="Collection">
+			<finder-column name="numero" />
+			<finder-column name="dataAck" />
+		</finder>
+		
+		<finder name="Invio" return-type="Collection">
+			<finder-column name="tipo" />
+			<finder-column name="sottotipo" />
+			<finder-column name="param" />
+		</finder>
+		
+		<finder name="TipoSottotipo" return-type="Collection">
+			<finder-column name="tipo" />
+			<finder-column name="sottotipo" />
+		</finder>
+		
+		<finder name="TipoParam" return-type="Collection">
+			<finder-column name="tipo" />
+			<finder-column name="param" />
+		</finder>
+		
+		<finder name="Timestamp" return-type="Collection">
+			<finder-column name="timestamp" />
+		</finder>
+	
+	</entity>
+	
+	<entity name="Email" local-service="true" remote-service="true" >
+
+		<!-- PK fields -->
+
+		<column name="id" type="long" primary="true"  />
+
+		<!-- Other fields -->
+		
+		<column name="tipo" type="String" />
+		<column name="sottotipo" type="String" />
+		<column name="param" type="long" />
+
+		<column name="destinatario" type="long" />
+		<column name="indirizzo" type="String" />
+		<column name="nomeDestinatario" type="String" />
+		
+		<column name="stato" type="long" />
+		
+		<column name="dataInvio" type="Date" />
+
+		<column name="testo" type="String" />
+		<column name="oggetto" type="String" />
+
+		<!-- Order -->
+
+		<order by="desc">
+			<order-column name="id" />
+		</order>
+
+		<!-- Finder methods -->
+
+		
+		
+		<finder name="Destinatario" return-type="Collection">
+			<finder-column name="destinatario" />
+		</finder>
+		
+		<finder name="Indirizzo" return-type="Collection">
+			<finder-column name="indirizzo" />
+
+		</finder>
+		
+		<finder name="Invio" return-type="Collection">
+			<finder-column name="tipo" />
+			<finder-column name="sottotipo" />
+			<finder-column name="param" />
+		</finder>
+		
+		<finder name="TipoSottotipo" return-type="Collection">
+			<finder-column name="tipo" />
+			<finder-column name="sottotipo" />
+		</finder>
+		
+		<finder name="TipoParam" return-type="Collection">
+			<finder-column name="tipo" />
+			<finder-column name="param" />
+		</finder>
+	
+	</entity>
+	
+	<entity name="LogInterno" local-service="true" remote-service="true">
+
+		<column name="logId" type="long" primary="true" />
+		
+		<!-- PK fields -->
+
+		<column name="timestamp" type="Date" />
+		<column name="thread" type="String" />
+
+		<!-- Other fields -->
+		<column name="cosa" type="String" />
+		<column name="dettaglio" type="String" />
+		<column name="utente" type="String" />
+		<column name="risultato" type="String" />
+		<column name="eccezione" type="String" />
+		<!-- Order -->
+
+		<order by="desc">
+			<order-column name="timestamp" />
+		</order>
+
+	</entity>
+	
+	<entity name="Feed" local-service="true" remote-service="true">
+
+		<!-- PK fields -->
+
+		<column name="feedId" type="String" primary="true" />
+
+		<!-- Other fields -->
+		<column name="titolo" type="String" />
+		<column name="link" type="String" />
+		<column name="autore" type="String" />
+		<column name="query" type="String" />
+	
+		<!-- Order -->
+
+		<order by="asc">
+			<order-column name="feedId" />
+		</order>
+
+	</entity>
+	
+	<entity name="Geografia" local-service="true" remote-service="true">
+
+		<!-- PK fields -->
+
+		<column name="geografiaId" type="String" primary="true" />
+
+		<!-- Other fields -->
+		<column name="tipo" type="String" primary="true"/>
+		<column name="area" type="String" primary="true" />
+		<column name="complessita" type="String" primary="true" />
+		<column name="geometria" type="String" />
+	
+		<!-- Order -->
+
+		<order by="asc">
+			<order-column name="geografiaId" />
+		</order>
+		
+		<finder name="Tipo" return-type="Collection">
+			<finder-column name="tipo" />
+		</finder>
+		<finder name="TipoArea" return-type="Collection">
+			<finder-column name="tipo" />
+			<finder-column name="area" />
+		</finder>
+		
+		<finder name="TipoAreaComplessita" return-type="Collection">
+			<finder-column name="tipo" />
+			<finder-column name="area" />
+			<finder-column name="complessita" />
+		</finder>
+		
+		<finder name="TipoComplessita" return-type="Collection">
+			<finder-column name="tipo" />
+			<finder-column name="complessita" />
+		</finder>
+		
+		<finder name="IdComplessita" return-type="Collection">
+			<finder-column name="geografiaId" />
+			<finder-column name="complessita" />
+		</finder>
+		
+		<finder name="AreaComplessita" return-type="Collection">
+			<finder-column name="area" />
+			<finder-column name="complessita" />
+		</finder>
+
+	</entity>
+	
+	
+</service-builder>

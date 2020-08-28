@@ -1,0 +1,7 @@
+Bundle-Name: allerta-rubrica-service
+Bundle-SymbolicName: it.eng.rubrica.service
+Bundle-Version: 1.0.0
+Liferay-Require-SchemaVersion: 1.0.0
+Liferay-Service: true
+-dsannotations-options: inherit
+
