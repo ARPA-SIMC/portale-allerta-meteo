@@ -49,7 +49,7 @@ Valgono i requisiti di Liferay 7.2. consultabili nel dettaglio https://www.lifer
     SQL Server,
     Sybase)
     
-Un'installazione di produzione richiede un'istanza separata del software ElasticSearch: https://www.elastic.co/
+Un'installazione di produzione richiede un'istanza separata del software ElasticSearch: https://www.elastic.co/ . In sviluppo è invece sufficiente l'istanza fornita all'interno dello stesso Liferay.
 
 Il sistema non ha alcuna dipendenza da software che non siano *open source*.
 
@@ -73,7 +73,7 @@ L'intero contenuto del repository può essere importato massivamente come proget
 I workflow, se desiderati, vanno creati copiando i contenuti della directory kaleo e creando nuovi workflow con quei testi dal pannello di controllo Liferay.
 
 # Utilizzo
-L'amministrazione di un sito Liferay è un argomento vasto su cui è disponibile una grande quantità di documentazione dedicata: https://help.liferay.com/hc/en-us/categories/360000928332-Liferay-DXP-7-0-Admin-Guide . Per usare questo portale è necessaria una familiarità con i concetti base di Liferay.
+L'amministrazione di un sito Liferay è un argomento vasto su cui è disponibile una grande quantità di documentazione dedicata: https://help.liferay.com/hc/en-us/categories/360000928332-Liferay-DXP-7-0-Admin-Guide . Per usare questo portale è necessaria una familiarità con i concetti principali di Liferay.
 
 L'identità del sito, intesa come struttura delle pagine, non è inclusa nel repository. Diventeranno invece disponibili all'amministratore il tema grafico del portale, nonché i seguenti widget (portlet) di categoria Allerta-Meteo, da disporre come si desidera all'interno del sito:
 
@@ -100,7 +100,7 @@ L'identità del sito, intesa come struttura delle pagine, non è inclusa nel rep
 - **Comune Previsione-Dati**: mappa centrata su un comune, con vari strati informativi
 - **Configurazione Allarmi**: gestione delle regole di superamento soglie dei sensori
 - **Configurazione Sensori**: gestione dell'elenco di sensori con attivazione/disattivazione e settaggio della soglia di "spike" idrometrico (valori fuori scala che non generano superamenti di soglia)
-- **Console per la gestione degli Scheduler di invio/verifica SMS: pannello per il controllo dell'invio degli SMS
+- **Console per la gestione degli Scheduler di invio/verifica SMS**: pannello per il controllo dell'invio degli SMS
 - **Cruscotto di sistema**: elenco di messaggi di sistema
 - **Dettaglio report Evento:** gestione report post-evento
 - **Documenti Comune**: gestione degli altri documenti caricati dal comune
@@ -116,10 +116,6 @@ L'identità del sito, intesa come struttura delle pagine, non è inclusa nel rep
 - **Preferenze Monitoraggio**: preferenze per la creazione del documento di monitoraggio (i sensori che possono essere inclusi nel documento)
 - **Report Invii analitico**: pannello con dettagli sui singoli SMS spediti e il loro stato di ricezione
 - **Strumenti Sindaco**: pulsanti per accedere alle funzionalità di amministrazione di un comune
-
-
-
-
 
 
 
