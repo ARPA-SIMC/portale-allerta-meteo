@@ -22,7 +22,34 @@ Tramite il software è possibile redigere allerte, bollettini e documenti di mon
 
 Il portale è online e raggiungibile su https://allertameteo.regione.emilia-romagna.it
 
-#Struttura del repository
+# Struttura del repository
+- configs: script per ricreare le viste di database (le tabelle sono create automaticamente dal software alla prima esecuzione, se ha i permessi per farlo.)
+- gradle: file di gradle (builder dei progetti)
+- kaleo: file contenenti i workflow del sito, da usare as-is oppure modificare secondo le esigenze (https://help.liferay.com/hc/en-us/articles/360018174111-Introduction-to-Workflow)
+- modules: progetti che producono moduli .jar con le funzionalità del sistema
+- war: come i moduli, ma producono file .war invece che .jar e forniscono temi e template di pagina.
+
+# Requisiti
+Valgono i requisiti di Liferay 7.2. consultabili nel dettaglio https://www.liferay.com/it/product/tech-specs . In breve:
+- sistemi operativi Linux (tutte le distribuzioni con JVM) o Windows
+- web server 
+    JBoss EAP
+    tcServer
+    Tomcat
+    WebLogic
+    WebSphere
+    Wildfly
+- database
+    DB2
+    MariaDB
+    MySQL
+    Oracle
+    PostgreSQL
+    SQL Server
+    Sybase
+    
+Il sistema non ha alcuna dipendenza da software che non siano *open source*.
+
 
 
 
