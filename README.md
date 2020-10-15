@@ -73,7 +73,9 @@ L'intero contenuto del repository può essere importato massivamente come proget
 I workflow, se desiderati, vanno creati copiando i contenuti della directory kaleo e creando nuovi workflow con quei testi dal pannello di controllo Liferay.
 
 # Utilizzo
-L'identità del sito, intesa come struttura delle pagine, non è inclusa nel repository. Diventeranno invece disponibili all'amministratore il tema grafico del portale, nonché i seguenti widget di categoria Allerta-Meteo, da disporre come si desidera all'interno del sito:
+L'amministrazione di un sito Liferay è un argomento vasto su cui è disponibile una grande quantità di documentazione dedicata: https://help.liferay.com/hc/en-us/categories/360000928332-Liferay-DXP-7-0-Admin-Guide . Per usare questo portale è necessaria una familiarità con i concetti base di Liferay.
+
+L'identità del sito, intesa come struttura delle pagine, non è inclusa nel repository. Diventeranno invece disponibili all'amministratore il tema grafico del portale, nonché i seguenti widget (portlet) di categoria Allerta-Meteo, da disporre come si desidera all'interno del sito:
 
 - **Allerta Messaggio del Sindaco**: permette di comporre un messaggio e di inviarlo a un gruppo di destinatari tramite uno o più canali
 - **Allerta Previsioni Home**: widget con previsioni regionali su 3 giorni
