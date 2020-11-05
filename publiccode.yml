@@ -1,0 +1,57 @@
+publiccodeYmlVersion: "0.2"
+
+name: Portale AllertaMeteo
+url: "https://github.com/ARPA-SIMC/portale-allerta-meteo.git"
+softwareVersion: "1.0" 
+releaseDate: "2020-08-28"
+platforms:
+  - web
+
+categories:
+  - content-management
+  - workflow-management
+  - event-management
+  - document-management
+  - data-collection
+  - data-visualization
+  
+developmentStatus: stable
+
+softwareType: "standalone/web"
+
+description:
+  it:
+    localisedName: Portale AllertaMeteo
+    genericName: Portale Pubblica Amministrazione
+    shortDescription: >
+          Portale di Pubblica Amministrazione per le funzioni di allertamento meteo
+    longDescription: >
+          Si tratta di un portale che una Pubblica Amministrazione locale può usare per pubblicare contenuti, notizie, documenti e news relativi
+          all'allertamento meteo sul territorio. E' possibile consultare e scaricare materiale informativo, documenti ufficiali emessi per
+          aggiornare la popolazione sullo stato meteo e su eventuali fenomeni in corso, consultare mappe con dati in tempo reale provenienti dalle
+          reti di sensori installati sul territorio, scaricare mappe informative e iscriversi a mini-portali comunali per tenersi aggiornati sulla
+          situazione in uno o più Comuni.
+    features:
+       - redigere allerte, bollettini e documenti di monitoraggio
+       - caricare altre categorie documentali
+       - mandare comunicazioni a gruppi presenti nella rubrica
+       - caricare dati di sensori forniti secondo opportuni protocolli
+       - stabilire regole anche complesse per allertare gruppi di rubrica sulla base dei dati dei sensori
+       - importare dati previsionali forniti secondo opportuni protocolli
+       - creare e mantenere siti comunali, dando ai sindaci e loro delegati la facoltà di postare news, caricare file e spedire comunicazioni agli iscritti 
+       - funzionalità complete di Content Management System
+
+legal:
+  license: AGPL-3.0-or-later
+
+maintenance:
+  type: "contract"
+  constractors:
+      - name: "Gruppo Engineering"
+        website: "https://www.eng.it"
+        until: "2022-12-31"
+
+localisation:
+  localisationReady: yes
+  availableLanguages:
+    - it
