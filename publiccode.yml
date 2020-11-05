@@ -1,6 +1,6 @@
 publiccodeYmlVersion: "0.2"
 
-name: Portale AllertaMeteo
+name: "Portale Allerta Meteo"
 url: "https://github.com/ARPA-SIMC/portale-allerta-meteo.git"
 softwareVersion: "1.0" 
 releaseDate: "2020-08-28"
@@ -21,8 +21,8 @@ softwareType: "standalone/web"
 
 description:
   it:
-    localisedName: Portale AllertaMeteo
-    genericName: Portale Pubblica Amministrazione
+    localisedName: "Portale Allerta Meteo"
+    genericName: "Portale Pubblica Amministrazione"
     shortDescription: >
           Portale di Pubblica Amministrazione per le funzioni di allertamento meteo
     longDescription: >
