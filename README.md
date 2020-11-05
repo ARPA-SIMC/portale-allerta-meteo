@@ -60,8 +60,10 @@ Il progetto è rilasciato come stabile.
 ARPAE / Agenzia Regionale per la Sicurezza Territoriale e la Protezione Civile Emilia-Romagna
 
 # Soggetti incaricati del mantenimento del progetto open source
+Gruppo Engineering - https://www.eng.it
 
 # Indirizzo per le segnalazioni di sicurezza
+simc-allerta-referenti@arpae.it
 
 # Installazione
 Per l'installazione di Liferay 7 Community fare riferimento alla documentazione di Liferay: https://www.liferay.com/it/downloads-community,  https://help.liferay.com/hc/en-us/articles/360018175851-Preparing-for-Install
