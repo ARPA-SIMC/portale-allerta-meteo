@@ -38,7 +38,8 @@ description:
        - caricare dati di sensori forniti secondo opportuni protocolli
        - stabilire regole anche complesse per allertare gruppi di rubrica sulla base dei dati dei sensori
        - importare dati previsionali forniti secondo opportuni protocolli
-       - creare e mantenere siti comunali, dando ai sindaci e loro delegati la facoltà di postare news, caricare file e spedire comunicazioni agli iscritti 
+       - creare e mantenere siti comunali, dando ai sindaci e loro delegati la facoltà di postare news
+       - caricare file e spedire comunicazioni agli iscritti 
        - funzionalità complete di Content Management System
 
 legal:
@@ -46,7 +47,7 @@ legal:
 
 maintenance:
   type: "contract"
-  constractors:
+  contractors:
       - name: "Gruppo Engineering"
         website: "https://www.eng.it"
         until: "2022-12-31"
