@@ -56,3 +56,7 @@ localisation:
   localisationReady: yes
   availableLanguages:
     - it
+    
+it:
+  riuso:
+    codiceIPA: arpa
