@@ -46,6 +46,10 @@ legal:
   license: AGPL-3.0-or-later
 
 maintenance:
+  contacts:
+    - affiliation: ARPAE Emilia-Romagna
+      email: fmartelli@arpae.it
+      name: Francesca Martelli
   type: "contract"
   contractors:
       - name: "Gruppo Engineering"
@@ -60,3 +64,6 @@ localisation:
 it:
   riuso:
     codiceIPA: arpa
+usedBy:
+  - Regione Umbria
+  - Regione Calabria
