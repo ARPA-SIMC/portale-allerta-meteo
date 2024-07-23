@@ -15,7 +15,6 @@
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.util.List"%>
 <%@page import="com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil"%>
-<%@page import="it.eng.allerter.model.AllertaStato"%>
 
 <%@page
 	import="com.liferay.portal.kernel.dao.orm.DynamicQueryFactoryUtil"%>
@@ -60,10 +59,7 @@
 		
 	}
 
-	DynamicQuery dyn = DynamicQueryFactoryUtil.forClass(AllertaStato.class)
-			.add(PropertyFactoryUtil.forName("allertaId").eq(feedback.getAllertaId()));
 
-	List<AllertaStato> bb = AllertaStatoLocalServiceUtil.dynamicQuery(dyn);
 	List<Long> stati = new ArrayList<Long>();
 	List<String> classi = new ArrayList<String>();
 
@@ -75,43 +71,6 @@
 	else
 		vedi = "VEDI IL BOLLETTINO";
 
-	for (AllertaStato b : bb) {
-
-		if (b.getStatoId() != 1000 && b.getStatoId() != 0) {
-
-			boolean trovato = false;
-
-			for (Long l : stati)
-				if (l.equals(b.getEventoId())) {
-					trovato = true;
-				}
-
-			if (!trovato) {
-
-				stati.add(b.getEventoId());
-
-				if (b.getEventoId() == 1)
-					classi.add(".idraulica");
-				if (b.getEventoId() == 2)
-					classi.add(".idrogeologica");
-				if (b.getEventoId() == 3)
-					classi.add(".temporali");
-				if (b.getEventoId() == 4)
-					classi.add(".vento");
-				if (b.getEventoId() == 5)
-					classi.add(".temperature");
-				if (b.getEventoId() == 6)
-					classi.add(".neve");
-				if (b.getEventoId() == 7)
-					classi.add(".ghiaccio");
-				if (b.getEventoId() == 8)
-					classi.add(".mare");
-				if (b.getEventoId() == 9)
-					classi.add(".costiera");
-			}
-
-		}
-	}
 
 	String displaynone = (feedback.getStato() == WorkflowConstants.STATUS_APPROVED ? "" : "display:none");
 	String notdisplaynone = (feedback.getStato() != WorkflowConstants.STATUS_APPROVED ? "" : "display:none");
@@ -334,7 +293,6 @@
 									<%=previsioniDatiDisplay.getContent()%>
 								</div>
 								<div class="col-12 col-md-6">
-									<%=mappeRischioDisplay.getContent()%>
 								</div>
 							</div>
 						</section>

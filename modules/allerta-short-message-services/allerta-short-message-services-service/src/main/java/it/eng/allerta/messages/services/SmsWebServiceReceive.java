@@ -1,6 +1,7 @@
 package it.eng.allerta.messages.services;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -8,6 +9,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -36,12 +38,16 @@ import com.liferay.portal.kernel.dao.orm.ORMException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
 
 import it.eng.allerta.messages.services.SmsWebServiceReceive.SmsReceiveTask.Result;
 import it.eng.allerta.messages.services.action.ShutdownAction;
 import it.eng.allerta.messages.services.model.impl.SmsSchedulerContextImpl.SmsSchedulerState;
 import it.eng.allerta.messages.services.service.SmsSchedulerContextLocalService;
 import it.eng.allerta.utils.AllertaTracker;
+import it.eng.allerte.model.RubricaNominativo;
+import it.eng.allerte.service.RubricaNominativoLocalServiceUtil;
 import it.eng.allerter.model.SMS;
 import it.eng.allerter.service.SMSLocalService;
 
@@ -170,7 +176,32 @@ public class SmsWebServiceReceive implements Runnable {
 			
 			String codiceOperazione = sms.getTimestamp();
 			// prepara la chiamata al servizio telecom
-			httpPost = prepareHttpPostForService(USERNAME, PASSWORD, TOKEN, codiceOperazione);
+			if (sms.getNumeroDa()!=null && sms.getNumeroDa().equals(ALIAS)) {
+				httpPost = prepareHttpPostForService(USERNAME, PASSWORD, TOKEN, codiceOperazione);
+			} else {
+				//sms del sindaco, non funziona se chiediamo la ricevuta con le credenziali dell'agenzia
+				if (sms.getNumeroDa()!=null && sms.getDestinatario()>0) {
+					RubricaNominativo rn = RubricaNominativoLocalServiceUtil.fetchRubricaNominativo(sms.getDestinatario());
+					//potrebbe non esistere, se il destinatario è un id utente Liferay e non un nominativo di rubrica. In questo
+					//caso nessun problema, perché questi non dovremmo nemmeno mandarli con un account del sindaco.
+					//controlliamo però che il sito della rubrica abbia un alias Telecom che fa match con il numeroDa.
+					if (rn!=null) {
+						long sito = rn.getFK_SITO_PROPRIETARIO();
+						Group g = GroupLocalServiceUtil.fetchGroup(sito);
+						if (g!=null) {
+							Map<String,Serializable> m = g.getExpandoBridge().getAttributes();
+							String user = (String)m.get("Telecom Username");
+							String pass = (String)m.get("Telecom Password");
+							String token = (String)m.get("Telecom Token");
+							String alias = (String)m.get("Telecom Alias");
+							if (alias!=null && alias.equals(sms.getNumeroDa())) {
+								//alias identico, possiamo procedere
+								httpPost = prepareHttpPostForService(user, pass, token, codiceOperazione);
+							}
+						}
+					}
+				}
+			}
 		}
 		
 		private SmsReceiveTask.Result receive(SMS sms) throws SystemException, ClientProtocolException, IOException, IllegalStateException {			
@@ -183,7 +214,7 @@ public class SmsWebServiceReceive implements Runnable {
 				response = httpClient.execute(httpPost);				
 				String content = EntityUtils.toString(response.getEntity());
 				
-				logger.info("risposta dal servizio di verifica invio = " + content);
+				//logger.info("risposta dal servizio di verifica invio = " + content);
 				
 				// se lo status Ã¨ ok (200) e la risposta json Ã¨ ok
 				if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK && getStatus(content, STATUS, 0).equals(STR_OK)) {					
@@ -230,10 +261,12 @@ public class SmsWebServiceReceive implements Runnable {
 						if (esito.equals(NONRICEVUTO)) {
 							stato = 7;
 							descrizione = "Esito: sms non ricevuto, data presente";
+							logger.info("risposta dal servizio di verifica invio = " + content);
 						// msg ricevuto
 						} else if (esito.equals(RICEVUTO)) {
 							stato = 4;
 							descrizione = "Esito: sms ricevuto, data presente";							
+							logger.info("risposta dal servizio di verifica invio = " + content);
 						} else {
 						// caso non definito
 							stato = 3;
@@ -425,7 +458,10 @@ public class SmsWebServiceReceive implements Runnable {
 			TOKEN = AuthLocalServiceUtil.fetchAuth("TOKEN").getValue();
 			ALIAS = AuthLocalServiceUtil.fetchAuth("ALIAS").getValue();
 			
-			*/
+			USERNAME = "AllertaMeteo2019";
+			PASSWORD = "Meteo-TIM-2019";
+			TOKEN = "249060EE1B4E52A3A33DC55840A8848418047584";
+			ALIAS = "AllerteER";*/
 			
 			USERNAME = AllertaTracker.getAllertaSMSConfiguration().username();
 			PASSWORD = AllertaTracker.getAllertaSMSConfiguration().password();
@@ -478,7 +514,7 @@ public class SmsWebServiceReceive implements Runnable {
 				
 				// se ci sono sms da verificare
 				if (smsFromDB.size() > 0) {
-					logger.info("call query ottieniPerSpedizione -> Trovati " + smsFromDB.size() + " SMS da verificare il relativo invio");
+					//logger.info("call query ottieniPerSpedizione -> Trovati " + smsFromDB.size() + " SMS da verificare il relativo invio");
 					
 					// creazione executorService con pool di Thread che gestiranno i task SmsReceiveTask
 					executorSmsReceive = Executors.newFixedThreadPool(4);
@@ -505,7 +541,7 @@ public class SmsWebServiceReceive implements Runnable {
 							idSms = Long.parseLong(o[3].toString());
 							sms = smsLocalService.fetchSMS(idSms);
 							
-							logger.debug("creo il task per SMS con id = " + sms.getId());					
+							//logger.debug("creo il task per SMS con id = " + sms.getId());					
 							// crea il task che invierÃ  sms
 							// se i relativi controlli non vanno a buon fine va in exception e quindi non viene eseguito dal pool di thread
 							SmsReceiveTask smsReceiveTask = new SmsReceiveTask(sms, httpClient);
@@ -594,8 +630,22 @@ public class SmsWebServiceReceive implements Runnable {
 	
 	private void putInDB(SMS sms, int stato, String what) throws SystemException {	
 		try {
+			
+			
+			if (sms.getStato()==6 && stato==3 && sms.getDataAck()!=null) {
+				long tempoTrascorso = new Date().getTime() - sms.getDataAck().getTime();
+				if (tempoTrascorso>72*3600*1000) {
+					stato = 5;
+					what = "Nessuna ricevuta 72 ore dopo l'invio";
+				}
+			}
+			
 			sms.setStato(stato);
 			sms.setDescrizioneErrore(what);
+			
+			if (sms.getDescrizioneErrore()!=null && sms.getDescrizioneErrore().length()>195)
+				sms.setDescrizioneErrore(sms.getDescrizioneErrore().substring(0, 194));
+			
 			smsLocalService.updateSMS(sms);
 		} catch (SystemException e) {
 			String logMsg = String.format("PutInDB %s -> sms id = %s, stato = %s, motivo = %s", "fail", sms.getId(), stato,  what);

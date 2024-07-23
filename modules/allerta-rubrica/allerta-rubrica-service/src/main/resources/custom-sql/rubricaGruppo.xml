@@ -24,6 +24,17 @@
 	]]>
 	</sql>
 	
+	<sql id="it.eng.allerte.service.persistence.impl.RubricaGruppoFinderImpl.getGruppiByNameCategory">
+    <![CDATA[
+	select distinct rg.ID_GRUPPO, rg.NOME, rg.FK_SITO_PROPRIETARIO, rg.NOTE, rg.FK_UTENTE_CREAZIONE, rg.DATA_CREAZIONE, rg.FK_UTENTE_MODIFICA, rg.DATA_MODIFICA, rg.DISABLED
+	from  rubrica_rubricaGruppo rg
+	where rg.fk_sito_proprietario = ? 
+	and not rg.disabled  
+	and upper(nome) like upper (?) and fk_categoria = ?
+	order by rg.nome
+	]]>
+	</sql>
+	
 	<sql id="it.eng.allerte.service.persistence.impl.RubricaGruppoFinderImpl.getGruppoForOwnerAndName">
     <![CDATA[
 	select rg.ID_GRUPPO, rg.NOME, rg.FK_SITO_PROPRIETARIO, rg.NOTE, rg.FK_UTENTE_CREAZIONE, rg.DATA_CREAZIONE, rg.FK_UTENTE_MODIFICA, rg.DATA_MODIFICA, rg.DISABLED
@@ -74,6 +85,14 @@
     )
     select * from grafo_gruppi where contatto is not null order by gruppo,cognome,nome,tipo_contatto,contatto
     ]]>
+	</sql>
+	
+	<sql id="it.eng.allerte.service.persistence.impl.RubricaGruppoFinderImpl.getGerarchia">
+    <![CDATA[
+	select *
+	from  lr7_rubrica_gerarchia rg
+	where rg.fk_sito_proprietario = ? 
+	]]>
 	</sql>
 
 </custom-sql>

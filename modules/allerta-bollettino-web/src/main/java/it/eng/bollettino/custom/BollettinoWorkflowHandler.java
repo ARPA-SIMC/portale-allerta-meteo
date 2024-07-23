@@ -16,8 +16,10 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 import com.liferay.asset.kernel.model.AssetCategory;
+import com.liferay.asset.kernel.model.AssetEntry;
 import com.liferay.asset.kernel.service.AssetCategoryLocalService;
 import com.liferay.asset.kernel.service.AssetEntryLocalService;
+import com.liferay.asset.kernel.service.persistence.AssetEntryQuery;
 import com.liferay.counter.kernel.service.CounterLocalServiceUtil;
 import com.liferay.document.library.kernel.model.DLFolderConstants;
 import com.liferay.document.library.kernel.service.DLAppService;
@@ -69,7 +71,9 @@ public class BollettinoWorkflowHandler extends BaseWorkflowHandler<Bollettino> {
 	public AssetCategory lavorazione;
 	public AssetCategory presentato;
 	public AssetCategory homepage;
-	
+
+	public AssetCategory ultimoEvento;
+
 	private Log logger = LogFactoryUtil.getLog(BollettinoWorkflowHandler.class);
 
 	String nomeFile = "";
@@ -81,18 +85,26 @@ public class BollettinoWorkflowHandler extends BaseWorkflowHandler<Bollettino> {
 	public String getType(Locale locale) {
 		return "Bollettino";
 	}
-	
+
 	private void logCambioStato(String b, int stato) {
 		String stringaStato = "";
 		switch (stato) {
-		case WorkflowConstants.STATUS_DRAFT: stringaStato="Bozza"; break;
-		case WorkflowConstants.STATUS_APPROVED: stringaStato="Approvato"; break;
-		case WorkflowConstants.STATUS_PENDING: stringaStato="In Approvazione"; break;
-		case WorkflowConstants.STATUS_DENIED: stringaStato="Respinto"; break;
+		case WorkflowConstants.STATUS_DRAFT:
+			stringaStato = "Bozza";
+			break;
+		case WorkflowConstants.STATUS_APPROVED:
+			stringaStato = "Approvato";
+			break;
+		case WorkflowConstants.STATUS_PENDING:
+			stringaStato = "In Approvazione";
+			break;
+		case WorkflowConstants.STATUS_DENIED:
+			stringaStato = "Respinto";
+			break;
 		}
-		
-		logInternoLocalService.log("monitoraggio",
-				"Cambio di stato","Documento "+b+" passato in stato "+stringaStato,"");
+
+		logInternoLocalService.log("monitoraggio", "Cambio di stato",
+				"Documento " + b + " passato in stato " + stringaStato, "");
 	}
 
 	public Bollettino updateStatus(int status, Map<String, Serializable> workflowContext)
@@ -110,18 +122,16 @@ public class BollettinoWorkflowHandler extends BaseWorkflowHandler<Bollettino> {
 		// GetterUtil.getLong(workflowContext.get(WorkflowConstants.CONTEXT_USER_ID));
 
 		long resourcePrimKey = GetterUtil.getLong(workflowContext.get(WorkflowConstants.CONTEXT_ENTRY_CLASS_PK));
-		//long userId = bollettinoLocalService.getApprovatore(resourcePrimKey);
+		// long userId = bollettinoLocalService.getApprovatore(resourcePrimKey);
 		Bollettino feedback = bollettinoLocalService.getBollettino(resourcePrimKey);
 
 		String tipo = "workflowMonitoraggio";
 		String sottotipo = feedback.getNumero();
 		long l = new Date().getTime();
-		
-		
 
 		if (status == WorkflowConstants.STATUS_PENDING && feedback.getStato() == WorkflowConstants.STATUS_DENIED)
 			return feedback;
-		
+
 		logCambioStato(sottotipo, status);
 
 		if (status == WorkflowConstants.STATUS_DRAFT) {
@@ -174,8 +184,7 @@ public class BollettinoWorkflowHandler extends BaseWorkflowHandler<Bollettino> {
 					+ " e' stato approvato.</body></html>";
 			subjectPlusOne = "Monitoraggio " + feedback.getNumero() + " approvato";
 
-			ServiceContext s = (ServiceContext) 
-					workflowContext.get(WorkflowConstants.CONTEXT_SERVICE_CONTEXT);
+			ServiceContext s = (ServiceContext) workflowContext.get(WorkflowConstants.CONTEXT_SERVICE_CONTEXT);
 			if (s != null) {
 				System.out.println("CONTEXT OK");
 				System.out.println(s.getThemeDisplay());
@@ -187,7 +196,7 @@ public class BollettinoWorkflowHandler extends BaseWorkflowHandler<Bollettino> {
 			feedback.setStato(status);
 			feedback.setDataApprovazione(new Date());
 			feedback.setDataEmissione(new Date());
-			//feedback.setIdApprovatore(userId);
+			// feedback.setIdApprovatore(userId);
 			feedback = bollettinoLocalService.updateBollettino(feedback);
 
 			rigeneraPdf(feedback, feedback.getGroupId());
@@ -209,10 +218,10 @@ public class BollettinoWorkflowHandler extends BaseWorkflowHandler<Bollettino> {
 					dsi.setDATA_INIZIO_VALIDITA(feedback.getDataInizio());
 					dsi.setDATA_FINE_VALIDITA(feedback.getDataFine());
 					dsi.setDATA_FIRMA_ARPAE(feedback.getDataApprovazione());
-	
+
 					ArrayList<DocumentiCollegati> documentiCollegati = new ArrayList<DocumentiCollegati>();
 					ArrayList<ComponentiInvio> componentiInvio = new ArrayList<ComponentiInvio>();
-	
+
 					ComponentiInvio c = componentiInvioLocalService.getNuovoComponenteInvio();
 					c.setHASH_VERSATO(feedback.getHash());
 					c.setID_COMPONENTE_VERSATO(getReportId(feedback));
@@ -225,7 +234,7 @@ public class BollettinoWorkflowHandler extends BaseWorkflowHandler<Bollettino> {
 				}
 
 			} catch (Exception e) {
-				//logInternoLocalService.log("MonitoraggioWorkflow", "approva", e, "");
+				// logInternoLocalService.log("MonitoraggioWorkflow", "approva", e, "");
 				logger.error(e);
 			}
 
@@ -236,8 +245,13 @@ public class BollettinoWorkflowHandler extends BaseWorkflowHandler<Bollettino> {
 					url = ap.getValore();
 			} catch (Exception e) {
 			}
-			sendToChannel(
-					"Emanato documento di monitoraggio " + feedback.getNumero() + ": " + url + feedback.getLink());
+			String u = "";
+			try {
+				u = url + feedback.getLink();
+				u = u.replace(" ", "%20");
+			} catch (Exception e) {
+			}
+			sendToChannel("Emanato documento di monitoraggio " + feedback.getNumero() + ": " + u);
 
 			if (pubblicato == null)
 				caricaPubblicatoTag();
@@ -263,6 +277,47 @@ public class BollettinoWorkflowHandler extends BaseWorkflowHandler<Bollettino> {
 			if (homepage != null) {
 				assetCategoryLocalService.addAssetEntryAssetCategory(assetEntryLocalService
 						.getEntry(Bollettino.class.getName(), feedback.getBollettinoId()).getEntryId(), homepage);
+			}
+
+			try {
+				if (ultimoEvento != null) {
+
+					// se questo è il primo monitoraggio di un nuovo evento...
+					try {
+						if (feedback.getNumero() != null && feedback.getNumero().endsWith("/01")) {
+							// rimuovi la categoria ultimoEvento da tutti i monitoraggi precedenti
+							AssetEntryQuery assetEntryQuery = new AssetEntryQuery();
+							assetEntryQuery.setAllCategoryIds(new long[] { ultimoEvento.getCategoryId() });
+							List<AssetEntry> allertaAssets = assetEntryLocalService.getEntries(assetEntryQuery);
+							for (AssetEntry allertaAssetEntry : allertaAssets) {
+
+								long[] cats = allertaAssetEntry.getCategoryIds();
+								long[] cc = new long[cats.length - 1];
+
+								int i = 0;
+								for (long ll : cats) {
+
+									if (ll != ultimoEvento.getCategoryId())
+										cc[i++] = ll;
+								}
+
+								assetEntryLocalService.deleteAssetCategoryAssetEntry(ultimoEvento.getCategoryId(),
+										allertaAssetEntry);
+								assetEntryLocalService.updateEntry(allertaAssetEntry.getUserId(),
+										allertaAssetEntry.getGroupId(), allertaAssetEntry.getClassName(),
+										allertaAssetEntry.getClassPK(), cc, new String[] {});
+							}
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+
+					assetCategoryLocalService.addAssetEntryAssetCategory(assetEntryLocalService
+							.getEntry(Bollettino.class.getName(), feedback.getBollettinoId()).getEntryId(),
+							ultimoEvento);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 
 			assetEntryLocalService.updateVisible(Bollettino.class.getName(), resourcePrimKey, true);
@@ -341,19 +396,23 @@ public class BollettinoWorkflowHandler extends BaseWorkflowHandler<Bollettino> {
 		for (AssetCategory t : list) {
 			if (t.getName().equals("monitoraggio-pubblicato")) {
 				pubblicato = t;
-				System.out.println("trovata categoria " + t.getCategoryId());
+				System.out.println("trovata categoria monitoraggio pubblicato " + t.getCategoryId());
 			}
 			if (t.getName().equals("monitoraggio-presentato")) {
 				presentato = t;
-				System.out.println("trovata categoria " + t.getCategoryId());
+				System.out.println("trovata categoria monitoraggio presentato " + t.getCategoryId());
 			}
 			if (t.getName().equals("monitoraggio-lavorazione")) {
 				lavorazione = t;
-				System.out.println("trovata categoria " + t.getCategoryId());
+				System.out.println("trovata categoria monitoraggio lavorazione " + t.getCategoryId());
 			}
 			if (t.getName().equals("mostra-in-home")) {
 				homepage = t;
-				System.out.println("trovata categoria " + t.getCategoryId());
+				System.out.println("trovata categoria mostra in home " + t.getCategoryId());
+			}
+			if (t.getName().equals("monitoraggio-ultimo")) {
+				ultimoEvento = t;
+				System.out.println("trovata categoria ultimo evento " + t.getCategoryId());
 			}
 		}
 
@@ -395,7 +454,7 @@ public class BollettinoWorkflowHandler extends BaseWorkflowHandler<Bollettino> {
 
 					// questi bacini sono inclusi
 					for (String s : b2)
-						regole.add("Monitoraggio "+s.toUpperCase()+"->true");
+						regole.add("Monitoraggio " + s.toUpperCase() + "->true");
 					// tutti gli altri no, usa una regular expression
 					regole.add("@Monitoraggio .*@->false");
 
@@ -416,14 +475,13 @@ public class BollettinoWorkflowHandler extends BaseWorkflowHandler<Bollettino> {
 			}
 		} catch (Exception e) {
 			logger.error(e);
-			//logInternoLocalService.log("BollettinoWorkflow", "inviaSMS", e, "");
+			// logInternoLocalService.log("BollettinoWorkflow", "inviaSMS", e, "");
 		}
 
 		String ff = "monitoraggio@allertameteoer.it";
 
 		try {
-			BollettinoParametro bp = bollettinoParametroLocalService
-					.fetchBollettinoParametro("EMAIL_FROM_BOLLETTINO");
+			BollettinoParametro bp = bollettinoParametroLocalService.fetchBollettinoParametro("EMAIL_FROM_BOLLETTINO");
 			if (bp != null)
 				ff = bp.getValore();
 
@@ -446,7 +504,7 @@ public class BollettinoWorkflowHandler extends BaseWorkflowHandler<Bollettino> {
 
 		} catch (Exception e) {
 			logger.error(e);
-			//logInternoLocalService.log("BollettinoWorkflow", "inviaEmail", e, "");
+			// logInternoLocalService.log("BollettinoWorkflow", "inviaEmail", e, "");
 		}
 
 	}
@@ -477,7 +535,8 @@ public class BollettinoWorkflowHandler extends BaseWorkflowHandler<Bollettino> {
 			mailService.sendEmail(mailMessage);
 
 		} catch (Exception e) {
-			//logInternoLocalService.log("BollettinoWorkflow", "mandaMessaggioRifiuto", e, "");
+			// logInternoLocalService.log("BollettinoWorkflow", "mandaMessaggioRifiuto", e,
+			// "");
 			logger.error(e);
 		}
 	}
@@ -485,24 +544,26 @@ public class BollettinoWorkflowHandler extends BaseWorkflowHandler<Bollettino> {
 	private void rigeneraPdf(Bollettino a, long scope) {
 
 		try {
-			
+
 			allertaUtils.invocaServizioRefreshMonitoraggio(a.getBollettinoId());
-			
-			/*BollettinoParametro ap = bollettinoParametroLocalService
-					.fetchBollettinoParametro("BOLLETTINO_PDF_REFRESH_URL");
 
-			String url = (ap != null ? ap.getValore()
-					: "http://localhost:" + portal.getPortalServerPort(false) + "/o/api/allerta/buildAllertaPdf");
+			/*
+			 * BollettinoParametro ap = bollettinoParametroLocalService
+			 * .fetchBollettinoParametro("BOLLETTINO_PDF_REFRESH_URL");
+			 * 
+			 * String url = (ap != null ? ap.getValore() : "http://localhost:" +
+			 * portal.getPortalServerPort(false) + "/o/api/allerta/buildAllertaPdf");
+			 * 
+			 * url += ("?tipo=bollettino&scope=" + scope + "&id=" + a.getBollettinoId());
+			 * 
+			 * System.out.println(url);
+			 * 
+			 * new URL(url).openConnection().getInputStream();
+			 */
 
-			url += ("?tipo=bollettino&scope=" + scope + "&id=" + a.getBollettinoId());
-
-			System.out.println(url);
-
-			new URL(url).openConnection().getInputStream();*/
-			
 		} catch (Exception e) {
-			
-			//logInternoLocalService.log("BollettinoWorkflow", "rigeneraPdf", e, "");
+
+			// logInternoLocalService.log("BollettinoWorkflow", "rigeneraPdf", e, "");
 			logger.error(e);
 		}
 
@@ -537,7 +598,7 @@ public class BollettinoWorkflowHandler extends BaseWorkflowHandler<Bollettino> {
 
 		} catch (Exception e) {
 			logger.error(e);
-			//logInternoLocalService.log("BollettinoWorkflow", "getReportAsFile", e, "");
+			// logInternoLocalService.log("BollettinoWorkflow", "getReportAsFile", e, "");
 			return null;
 		}
 
@@ -571,7 +632,7 @@ public class BollettinoWorkflowHandler extends BaseWorkflowHandler<Bollettino> {
 
 		} catch (Exception e) {
 			logger.error(e);
-			//logInternoLocalService.log("BollettinoWorkflow", "getReportAsFile", e, "");
+			// logInternoLocalService.log("BollettinoWorkflow", "getReportAsFile", e, "");
 			return 0;
 		}
 
@@ -585,7 +646,7 @@ public class BollettinoWorkflowHandler extends BaseWorkflowHandler<Bollettino> {
 			return ap.getValore();
 		} catch (Exception e) {
 			logger.error(e);
-			//logInternoLocalService.log("BollettinoWorkflow", "getParam", e, null);
+			// logInternoLocalService.log("BollettinoWorkflow", "getParam", e, null);
 			return def;
 		}
 	}
@@ -601,7 +662,7 @@ public class BollettinoWorkflowHandler extends BaseWorkflowHandler<Bollettino> {
 			// "no-reply@allertameteoer.it");
 		} catch (Exception e) {
 			logger.error(e);
-			//logInternoLocalService.log("AllertaWorkflow", "mandaNotifica", e, "");
+			// logInternoLocalService.log("AllertaWorkflow", "mandaNotifica", e, "");
 		}
 	}
 
@@ -616,7 +677,8 @@ public class BollettinoWorkflowHandler extends BaseWorkflowHandler<Bollettino> {
 			// "no-reply@allertameteoer.it");
 		} catch (Exception e) {
 			logger.error(e);
-			//logInternoLocalService.log("AllertaWorkflow", "mandaNotificaSoloEmail", e, "");
+			// logInternoLocalService.log("AllertaWorkflow", "mandaNotificaSoloEmail", e,
+			// "");
 		}
 	}
 
@@ -650,7 +712,8 @@ public class BollettinoWorkflowHandler extends BaseWorkflowHandler<Bollettino> {
 			// "no-reply@allertameteoer.it");
 		} catch (Exception e) {
 			logger.error(e);
-			//logInternoLocalService.log("AllertaWorkflow", "mandaNotificaSoloEmail", e, "");
+			// logInternoLocalService.log("AllertaWorkflow", "mandaNotificaSoloEmail", e,
+			// "");
 		}
 	}
 
@@ -665,24 +728,23 @@ public class BollettinoWorkflowHandler extends BaseWorkflowHandler<Bollettino> {
 					nomeFile);
 		} catch (Exception e) {
 			logger.error(e);
-			//logInternoLocalService.log("AllertaWorkflow", "spedisciNotifiche", e, "");
+			// logInternoLocalService.log("AllertaWorkflow", "spedisciNotifiche", e, "");
 		}
 	}
 
 	public void sendToChannel(String message) {
-		
+
 		AllertaBaseConfiguration configuration = AllertaTracker.getAllertaBaseConfiguration();
 		if (configuration.disableTelegram()) {
-			
+
 			System.out.println("TELEGRAM DISABILITATO");
 			return;
 		}
-		
-		String urlTest = "<URL_TELEGRAM>";
+
+		String urlTest = "https://api.telegram.org/bot524869072:AAEvFLpoFBHJUMNLhWn1aOvAPdZYPvkHBhM/sendMessage?chat_id=@AllertaMeteoEMR&text=";
 
 		try {
-			BollettinoParametro ap = bollettinoParametroLocalService
-					.fetchBollettinoParametro("ALLERTA_TELEGRAM_URL");
+			BollettinoParametro ap = bollettinoParametroLocalService.fetchBollettinoParametro("ALLERTA_TELEGRAM_URL");
 			if (ap != null)
 				urlTest = ap.getValore();
 		} catch (Exception e) {
@@ -695,11 +757,12 @@ public class BollettinoWorkflowHandler extends BaseWorkflowHandler<Bollettino> {
 			url = new URL(urlTest);
 			conn = (HttpURLConnection) url.openConnection();
 			conn.getInputStream();
-			//logInternoLocalService.log("BollettinoWorkflow", "sendToChannel", message, "");
+			// logInternoLocalService.log("BollettinoWorkflow", "sendToChannel", message,
+			// "");
 
 		} catch (IOException e) {
 			logger.error(e);
-			//logInternoLocalService.log("BollettinoWorkflow", "sendToChannel", e, "");
+			// logInternoLocalService.log("BollettinoWorkflow", "sendToChannel", e, "");
 		} finally {
 			if (conn != null)
 				conn.disconnect();
@@ -708,7 +771,7 @@ public class BollettinoWorkflowHandler extends BaseWorkflowHandler<Bollettino> {
 
 	@Reference
 	AllertaUtilsInterface allertaUtils;
-	
+
 	@Reference
 	private AssetCategoryLocalService assetCategoryLocalService;
 
@@ -717,42 +780,41 @@ public class BollettinoWorkflowHandler extends BaseWorkflowHandler<Bollettino> {
 
 	@Reference
 	private UserLocalService userLocalService;
-	
+
 	@Reference
 	private OrganizationLocalService organizationLocalService;
-	
+
 	@Reference
 	private MailService mailService;
-	
+
 	@Reference
 	private Portal portal;
-	
+
 	@Reference
 	private DLAppService dlAppService;
-	
+
 	@Reference
 	private BollettinoLocalService bollettinoLocalService;
-	
+
 	@Reference
 	private DatiSpecificiInvioLocalService datiSpecificiInvioLocalService;
-	
+
 	@Reference
 	private ComponentiInvioLocalService componentiInvioLocalService;
-	
+
 	@Reference
 	private LogInternoLocalService logInternoLocalService;
-	
+
 	@Reference
 	private AllertaParametroLocalService allertaParametroLocalService;
-	
+
 	@Reference
 	private BollettinoParametroLocalService bollettinoParametroLocalService;
-	
+
 	@Reference
 	private SMSLocalService smsLocalService;
-	
+
 	@Reference
 	private EmailLocalService emailLocalService;
-	
-	
+
 }

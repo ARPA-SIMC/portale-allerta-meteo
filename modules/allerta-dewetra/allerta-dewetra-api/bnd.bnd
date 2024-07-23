@@ -1,0 +1,10 @@
+Bundle-Name: allerta-dewetra-api
+Bundle-SymbolicName: allerta.dewetra.api
+Bundle-Version: 1.0.0
+Export-Package:\
+	allerta.dewetra.exception,\
+	allerta.dewetra.model,\
+	allerta.dewetra.service,\
+	allerta.dewetra.service.persistence
+-check: EXPORTS
+-includeresource: META-INF/service.xml=../allerta-dewetra-service/service.xml

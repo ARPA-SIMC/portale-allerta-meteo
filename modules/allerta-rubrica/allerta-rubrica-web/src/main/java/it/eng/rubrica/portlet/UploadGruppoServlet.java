@@ -3,6 +3,7 @@ package it.eng.rubrica.portlet;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.liferay.counter.kernel.service.CounterLocalServiceUtil;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.User;
@@ -28,7 +29,6 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.poi.ss.usermodel.DataFormatter;
@@ -54,7 +54,8 @@ import it.eng.allerte.service.RubricaNominativoLocalServiceUtil;
 import it.eng.allerte.service.RubricaRuoloLocalServiceUtil;
 import it.eng.allerte.service.RubricaUtenteSitoLocalServiceUtil;
 import it.eng.allerte.service.persistence.RubricaGruppoNominativiPK;
-import it.eng.allerte.service.persistence.RubricaGruppoNominativiUtil;
+import it.eng.allerter.service.LogInternoLocalServiceUtil;
+import it.eng.bollettino.service.BollettinoLocalServiceUtil;
 
 @Component(immediate = true, property = { "osgi.http.whiteboard.context.path=/",
 		"osgi.http.whiteboard.servlet.pattern=/rubrica/upload/*" }, service = Servlet.class)
@@ -338,14 +339,36 @@ public class UploadGruppoServlet extends HttpServlet {
 		
 
 	}
+	
+	public class Comandi {
+		List<NominativoChange> comandi;
+		String note;
+		public List<NominativoChange> getComandi() {
+			return comandi;
+		}
+		public void setComandi(List<NominativoChange> comandi) {
+			this.comandi = comandi;
+		}
+		public String getNote() {
+			return note;
+		}
+		public void setNote(String note) {
+			this.note = note;
+		}
+		
+		
+	}
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		User u = null;		
+		User u = null;	
+		
+		try {
 		
 		try {
 			u = PortalUtil.getUser(req);
 		} catch (Exception e) {
+			LogInternoLocalServiceUtil.log("UploadRubrica","getUser",e,"");
 			return;
 		}
 		long userId = u.getUserId();
@@ -377,6 +400,12 @@ public class UploadGruppoServlet extends HttpServlet {
 			try {
 				String out = esegui(list2, u);
 				
+				try {
+					consolidaRubrica(u.getUserId());
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+				
 
 				byte[] b = ("{\"risultato\":\"ok\", \"note\":\""+out+"\"}").getBytes();
 				resp.setContentLength(b.length);
@@ -398,7 +427,8 @@ public class UploadGruppoServlet extends HttpServlet {
 
 		Map<String, RubricaGruppo> gruppi = new HashMap<String, RubricaGruppo>();
 		Map<String, List<NominativoChange>> gruppiChanges = new HashMap<String, List<NominativoChange>>();
-
+		List<String> gruppiNonTrovati = new ArrayList<String>();
+		
 		XSSFWorkbook wb = new XSSFWorkbook(new ByteArrayInputStream(file));
 		XSSFSheet s = wb.getSheetAt(0);
 		
@@ -406,6 +436,8 @@ public class UploadGruppoServlet extends HttpServlet {
 
 		for (int k = 1; k <= s.getLastRowNum(); k++) {
 			XSSFRow r = s.getRow(k);
+			if (r==null) continue;
+			
 			String grp = df.formatCellValue(r.getCell(0));
 			
 			if (grp==null || grp.equals("")) continue;
@@ -444,7 +476,11 @@ public class UploadGruppoServlet extends HttpServlet {
 
 			if (!gruppi.containsKey(grp)) {
 				RubricaGruppo rgg = gruppoDaNome(grp, idSitoUtente);
-				if (rgg==null) continue;
+				
+				if (rgg==null) {
+					if (!gruppiNonTrovati.contains(grp)) gruppiNonTrovati.add(grp);
+					continue;
+				}
 				gruppi.put(grp, rgg);
 			}
 			RubricaGruppo gruppoRubrica = gruppi.get(grp);
@@ -606,11 +642,26 @@ public class UploadGruppoServlet extends HttpServlet {
 				return compare;
 			};
 		});
+		
+		Comandi c = new Comandi();
+		c.comandi = out;
+		c.note = "";
+		
+		if (gruppiNonTrovati.size()>0) {
+			c.note+="Non sono stati trovati i seguenti gruppi, i cui elementi saranno ignorati: ";
+			for (String gnt : gruppiNonTrovati) {
+				c.note+=gnt+" ";
+			}
+		}
 
-		byte[] b = new Gson().toJson(out).getBytes();
+		byte[] b = new Gson().toJson(c).getBytes();
 		resp.setContentLength(b.length);
 
 		resp.getOutputStream().write(b);
+		
+		} catch (Exception exc) {
+			LogInternoLocalServiceUtil.log("UploadRubrica","upload",exc,"");
+		}
 	}
 
 	private String esegui(List<NominativoChange> l, User u) {
@@ -661,6 +712,18 @@ public class UploadGruppoServlet extends HttpServlet {
 					
 					try {
 					RubricaGruppoNominativiLocalServiceUtil.deleteRubricaGruppoNominativi(new RubricaGruppoNominativiPK(rg.getID_GRUPPO(), nc.old));
+					List<RubricaGruppoNominativi> ll = RubricaGruppoNominativiLocalServiceUtil.findByRubricaGruppoRuoloByNominativo(nc.old);
+					if (ll!=null && ll.size()==0) {
+						//non fa più parte di niente, disattivalo
+						rubricaNominativo = RubricaNominativoLocalServiceUtil.fetchRubricaNominativo(nc.old);
+						if (rubricaNominativo!=null) {
+							rubricaNominativo.setDISABLED(true);
+							rubricaNominativo.setFK_UTENTE_MODIFICA(u.getUserId());
+							rubricaNominativo.setDATA_MODIFICA(new Date());
+							rubricaNominativo.setMODIFICA_MINORE(false);
+							RubricaNominativoLocalServiceUtil.updateRubricaNominativo(rubricaNominativo);
+						}
+					}
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -725,6 +788,8 @@ public class UploadGruppoServlet extends HttpServlet {
 					RubricaContatto rc = null;
 					String decisioneV2 = cc.decisione;
 					c++;
+					if (veraDecisione.equals("INSERT") && !decisioneV2.equals("DELETE")) decisioneV2 = "INSERT"; // stiamo duplicando il nominativo
+					if (veraDecisione.equals("INSERT") && decisioneV2.equals("DELETE")) decisioneV2 = "NOTHING";
 					/*if (decisioneV2.equals("UPDATE") && veraDecisione.equals("INSERT"))
 						decisioneV2 = "INSERT"; // stiamo duplicando il nominativo
 					else if (decisioneV2.equals("DELETE") && veraDecisione.equals("INSERT"))
@@ -809,8 +874,17 @@ public class UploadGruppoServlet extends HttpServlet {
 		}
 		
 		//aggiorna le date di modifica dei contatti
-		for (Long gruppo : gruppiModificati.keySet()) {
-			RubricaGruppoLocalServiceUtil.aggiornaTuttoGruppo(gruppo);
+		try { 
+			for (Long gruppo : gruppiModificati.keySet()) {
+				RubricaGruppo rg = RubricaGruppoLocalServiceUtil.fetchRubricaGruppo(gruppo);
+				if (rg!=null) {
+					rg.setFK_UTENTE_MODIFICA(u.getUserId());
+					RubricaGruppoLocalServiceUtil.updateRubricaGruppo(rg);
+				}
+				RubricaGruppoLocalServiceUtil.aggiornaTuttoGruppo(gruppo);
+			} 
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		
 		return "Elaborati "+n+" nominativi e "+c+" contatti. " + out;
@@ -983,5 +1057,69 @@ public class UploadGruppoServlet extends HttpServlet {
 
 		RubricaLogLocalServiceUtil.updateRubricaLog(rubricaLog);
 
+	}
+	
+	public void consolidaRubrica(long userId) throws SystemException, PortalException {
+		
+		String query = "select b.cognome,b.nome,b.contatti,b.id_nominativo,b.id_nominativo1,b.gruppi,string_agg(g.nome,',' order by g.nome) as gruppi1 from (select a.*,string_agg(g.nome,',' order by g.nome) as gruppi from (select x.*,y.id_nominativo as id_nominativo1, " + 
+				" y.cognome as cognome1, y.nome as nome1, y.contatti as contatti1 from (select n.id_nominativo, n.cognome, n.nome, " + 
+				" string_agg(c.contatto, ',' order by contatto) as contatti from rubrica_rubricanominativo n " + 
+				"join rubrica_rubricacontatto c on n.id_nominativo=c.fk_nominativo " + 
+				"where c.data_fine_validita is null and not n.disabled and n.fk_sito_proprietario=20181 " + 
+				"group by n.id_nominativo,n.cognome,n.nome) x " + 
+				"join (select n.id_nominativo, n.cognome, n.nome, " + 
+				" string_agg(c.contatto, ',' order by contatto) as contatti from rubrica_rubricanominativo n  " + 
+				"join rubrica_rubricacontatto c on n.id_nominativo=c.fk_nominativo " + 
+				"where c.data_fine_validita is null and not n.disabled and n.fk_sito_proprietario=20181 " + 
+				"group by n.id_nominativo,n.cognome,n.nome) y on x.cognome ilike y.cognome and x.nome ilike y.nome " + 
+				"where x.contatti ilike y.contatti and x.id_nominativo<y.id_nominativo " + 
+				"order by x.cognome, x.nome, x.id_nominativo,y.id_nominativo) a " + 
+				"join rubrica_rubricagrupponominativi rgn on rgn.fk_nominativo=a.id_nominativo " + 
+				"join rubrica_rubricagruppo g on rgn.fk_gruppo=g.id_gruppo " + 
+				"where not g.disabled " + 
+				"group by id_nominativo,cognome,a.nome,contatti,id_nominativo1,cognome1,nome1,contatti1) b " + 
+				"join rubrica_rubricagrupponominativi rgn on rgn.fk_nominativo=b.id_nominativo1 " + 
+				"join rubrica_rubricagruppo g on rgn.fk_gruppo=g.id_gruppo " + 
+				"where not g.disabled " + 
+				"group by id_nominativo,cognome,b.nome,contatti,id_nominativo1,cognome1,nome1,contatti1,gruppi " + 
+				"order by b.cognome,b.nome,b.id_nominativo,b.id_nominativo1 ";
+		
+		String spostaGruppi = "update rubrica_rubricagrupponominativi set fk_nominativo=<X> where fk_nominativo=<Y>";
+		
+		List<Object[]> l = BollettinoLocalServiceUtil.eseguiQueryGenericaLista(query);
+		
+		System.out.println("Trovati nominativi sovrapponibili: "+l.size());
+		
+		if (l==null || l.size()==0) return;
+		
+		HashMap<Long, Long> sostituzioni = new HashMap<Long, Long>();
+		
+		for (Object[] o : l) {
+			Long sostituito = Long.parseLong(o[4].toString());
+			Long sostituente = Long.parseLong(o[3].toString());
+			if (sostituzioni.containsKey(sostituito)) {
+				Long precedente = sostituzioni.get(sostituito);
+				if (sostituente<precedente) sostituzioni.put(sostituito, sostituente);
+			} else {
+				sostituzioni.put(sostituito, sostituente);
+			}
+		}
+		
+		for (Long sos : sostituzioni.keySet()) {
+			//sposta le appartenenze
+			String q = spostaGruppi.replace("<Y>", ""+sos);
+			q = q.replace("<X>", ""+sostituzioni.get(sos));
+			BollettinoLocalServiceUtil.eseguiQueryGenerica(q);
+			System.out.println(q);
+			
+			RubricaNominativo rn = RubricaNominativoLocalServiceUtil.getRubricaNominativo(sos);
+			if (rn!=null) {
+				rn.setDISABLED(true);
+				rn.setDATA_MODIFICA(new Date());
+				rn.setMODIFICA_MINORE(false);
+				rn.setFK_UTENTE_MODIFICA(userId);
+				RubricaNominativoLocalServiceUtil.updateRubricaNominativo(rn);
+			}
+		}
 	}
 }

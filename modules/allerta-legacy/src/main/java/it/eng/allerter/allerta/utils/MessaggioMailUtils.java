@@ -11,6 +11,7 @@ import java.util.List;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -45,9 +46,10 @@ public class MessaggioMailUtils {
 			String paginaNeve,String paginaMareggiate,String paginaGhiaccio,
 			String paginaOndateCalore,String paginaIncendio,String paginaTerremoto,
 			String paginaAllerta, String baseUrl) throws IOException{
-		
+		 
 		String body ="";
 		String html = "";
+		messaggio_pc = StringEscapeUtils.escapeHtml(messaggio_pc);
 		int minlenght=5;
 		if(showUtilsLink(sindaco,paginaPieneFiumi, paginaFrane, paginaTemporali, paginaVento, paginaNeve, paginaMareggiate, paginaGhiaccio, paginaOndateCalore, paginaIncendio, paginaTerremoto)){
 			html ="<h5 style=\"color:#2A768D\">Informazioni utili : </h5>";
@@ -105,12 +107,13 @@ public class MessaggioMailUtils {
 			//			body ="<h4 color =#2A768D>Gentile Utente Del Portale Weballerte  </h4>";
 			//			body =body+"<h5 >Il sindaco "+user.getFirstName() +" "+user.getLastName() +" ha inviato la seguente comunicazione</h5>";
 		}else{
-			body =body+"il portale weballerte invia la  seguente comunicazione</h5>";
+			body =body+"<html><head></head><body>";
 
 			body =body+"<table >";
 			body =body+"<tr><td>"+messaggio_pc+"</td></tr>";
-			body =body+"</table>";
+			body =body+"</table></body></html>";
 		}
+		System.out.println(body);
 		return body;
 	}
 

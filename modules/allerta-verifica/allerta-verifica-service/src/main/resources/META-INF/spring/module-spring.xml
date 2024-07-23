@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+
+<beans
+	default-destroy-method="destroy"
+	default-init-method="afterPropertiesSet"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
+>
+	<bean class="allerta.verifica.service.impl.UtenteLavoroLocalServiceImpl" id="allerta.verifica.service.UtenteLavoroLocalService" />
+	<bean class="allerta.verifica.service.impl.UtenteLavoroServiceImpl" id="allerta.verifica.service.UtenteLavoroService" />
+	<bean class="allerta.verifica.service.persistence.impl.UtenteLavoroPersistenceImpl" id="allerta.verifica.service.persistence.UtenteLavoroPersistence" parent="basePersistence" />
+	<bean class="allerta.verifica.service.impl.VerificaLocalServiceImpl" id="allerta.verifica.service.VerificaLocalService" />
+	<bean class="allerta.verifica.service.impl.VerificaServiceImpl" id="allerta.verifica.service.VerificaService" />
+	<bean class="allerta.verifica.service.persistence.impl.VerificaPersistenceImpl" id="allerta.verifica.service.persistence.VerificaPersistence" parent="basePersistence" />
+	<bean class="allerta.verifica.service.impl.VerificaDatoLocalServiceImpl" id="allerta.verifica.service.VerificaDatoLocalService" />
+	<bean class="allerta.verifica.service.impl.VerificaDatoServiceImpl" id="allerta.verifica.service.VerificaDatoService" />
+	<bean class="allerta.verifica.service.persistence.impl.VerificaDatoPersistenceImpl" id="allerta.verifica.service.persistence.VerificaDatoPersistence" parent="basePersistence" />
+</beans>

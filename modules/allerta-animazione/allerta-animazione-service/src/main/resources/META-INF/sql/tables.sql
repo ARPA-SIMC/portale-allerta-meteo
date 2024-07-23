@@ -19,3 +19,27 @@ create table img_animazioni_altezzaOnda (
 	timestamp LONG,
 	imgData TEXT null
 );
+
+create table img_animazioni_altezzaOndaAdriac (
+	id_ LONG not null primary key,
+	im VARCHAR(75) null,
+	text_LOC VARCHAR(75) null,
+	timestamp LONG,
+	imgData VARCHAR(75) null
+);
+
+create table img_animazioni_altezzaOndaSwanita (
+	id_ LONG not null primary key,
+	im VARCHAR(75) null,
+	text_LOC VARCHAR(75) null,
+	timestamp LONG,
+	imgData VARCHAR(75) null
+);
+
+create table img_animazioni_elevazione (
+	id_ LONG not null primary key,
+	im VARCHAR(75) null,
+	text_LOC VARCHAR(75) null,
+	timestamp LONG,
+	imgData VARCHAR(75) null
+);

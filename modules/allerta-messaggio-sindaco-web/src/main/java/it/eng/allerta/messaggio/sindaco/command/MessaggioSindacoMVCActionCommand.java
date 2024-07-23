@@ -269,15 +269,18 @@ public class MessaggioSindacoMVCActionCommand extends BaseMVCActionCommand {
 		MessaggioBean messaggioBean = (MessaggioBean) actionRequest
 				.getPortletSession().getAttribute(AllertaKeys.SessionMessaggioBean);
 		
-		if (messaggioBean.getStep() > 1) {
+		if (messaggioBean!=null && messaggioBean.getStep() > 1) {
 			int step = messaggioBean.getStep();
 			messaggioBean.setStep(--step);
 		}
 		
 		actionRequest.getPortletSession().setAttribute(AllertaKeys.SessionMessaggioBean, messaggioBean);
 	}
+
 	
 
 	private Log _log = LogFactoryUtil.getLog(MessaggioSindacoMVCActionCommand.class);
 
 }
+
+

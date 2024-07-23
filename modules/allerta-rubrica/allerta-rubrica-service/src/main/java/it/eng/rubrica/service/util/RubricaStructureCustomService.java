@@ -427,23 +427,28 @@ public class RubricaStructureCustomService {
 		
 		//List<Object[]> listaSubGroups = RubricaGruppoGruppiFinderUtil.getGruppiFigli(idGruppoPadre);
 		//List<Object[]> listaSubGroups = null;
-		if(null != listaSubGroups) {
+		String gerarchia = (String)cache.get("listasottogruppi_"+idGruppoPadre);
+		String[] g = (gerarchia!=null?gerarchia.split(","):new String[0]);
+		//if(null != listaSubGroups) {
 			
-			for (RubricaGruppoGruppi objectsSubGruop : listaSubGroups) {
+			for (String objectsSubGruop : g) {
+			//for (RubricaGruppoGruppi objectsSubGruop : listaSubGroups) {
 				
-				if (objectsSubGruop.getFK_GRUPPO_PADRE()!=idGruppoPadre) continue;
+				//if (objectsSubGruop.getFK_GRUPPO_PADRE()!=idGruppoPadre) continue;
 			
-				RubricaGruppoGruppi gruppoGruppi = objectsSubGruop; /*new RubricaGruppoGruppiImpl();
+				//RubricaGruppoGruppi gruppoGruppi = objectsSubGruop; 
+				/*new RubricaGruppoGruppiImpl();
 				gruppoGruppi.setFK_GRUPPO_PADRE((long) objectsSubGruop[0]);
 				gruppoGruppi.setFK_GRUPPO_FIGLIO((long)objectsSubGruop[1]);*/
+				long figlio = Long.parseLong(objectsSubGruop);
 				
 				//recupera le info del gruppo (passando gruppoGruppi.getFK_GRUPPO_FIGLIO)
-				RubricaGruppo subGroup = (RubricaGruppo)cache.get("gruppo_"+gruppoGruppi.getFK_GRUPPO_FIGLIO());
+				RubricaGruppo subGroup = (RubricaGruppo)cache.get("gruppo_"+figlio);
 				if (subGroup==null) {
 					subGroup = new RubricaGruppoImpl();
 					try {
-						subGroup = RubricaGruppoUtil.findByPrimaryKey(gruppoGruppi.getFK_GRUPPO_FIGLIO());
-						cache.put("gruppo_"+gruppoGruppi.getFK_GRUPPO_FIGLIO(), subGroup);
+						subGroup = RubricaGruppoUtil.findByPrimaryKey(figlio);
+						cache.put("gruppo_"+figlio, subGroup);
 					} catch (NoSuchRubricaGruppoException e) {
 						//logger.error("Errore in fase di caricamento sottogruppi. Gruppo figlio non presente", e);
 					}
@@ -457,7 +462,7 @@ public class RubricaStructureCustomService {
 								
 					subGruopJson.setId(subGroup.getID_GRUPPO());
 					subGruopJson.setName(subGroup.getNOME());
-					subGruopJson.setParentId(gruppoGruppi.getFK_GRUPPO_PADRE());
+					subGruopJson.setParentId(idGruppoPadre);
 					
 					//recupera il numero di nominativi e sottogruppi associati
 					if (cache.containsKey("nominativi_"+subGroup.getID_GRUPPO())) {
@@ -480,12 +485,12 @@ public class RubricaStructureCustomService {
 				}
 				
 				//Cerca i sottogruppi dei figli ricorsivamente
-				loadSubGruopElement(listaGruopElement, gruppoGruppi.getFK_GRUPPO_FIGLIO(), idSite,listaSubGroups,cache);
+				loadSubGruopElement(listaGruopElement, figlio, idSite,listaSubGroups,cache);
 			}
 			
 			
 
-		} 
+		//} 
 		
 		if (listaGruopElement!=null && listaGruopElement.size()>1) {
 			listaGruopElement.sort(

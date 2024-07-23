@@ -44,6 +44,10 @@ public class RubricaRuoloRubricaServiceUtil {
 		return getService().getAddressBookRoles();
 	}
 
+	public static Long getCurrentSite() {
+		return getService().getCurrentSite();
+	}
+
 	/**
 	 * Returns the OSGi service identifier.
 	 *
@@ -51,6 +55,14 @@ public class RubricaRuoloRubricaServiceUtil {
 	 */
 	public static String getOSGiServiceIdentifier() {
 		return getService().getOSGiServiceIdentifier();
+	}
+
+	public static java.util.Map<Long, String> getSites() {
+		return getService().getSites();
+	}
+
+	public static void updateSite(Long sito) {
+		getService().updateSite(sito);
 	}
 
 	public static RubricaRuoloRubricaService getService() {

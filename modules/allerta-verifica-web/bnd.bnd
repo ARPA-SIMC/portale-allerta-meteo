@@ -1,0 +1,5 @@
+Bundle-Name: allerta-verifica-web
+Bundle-SymbolicName: allerta.verifica.web
+Bundle-Version: 1.0.0
+Export-Package: allerta.verifica.web.constants
+Import-Package: *

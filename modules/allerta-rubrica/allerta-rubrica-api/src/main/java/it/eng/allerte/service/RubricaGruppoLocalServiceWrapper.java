@@ -212,6 +212,11 @@ public class RubricaGruppoLocalServiceWrapper
 	}
 
 	@Override
+	public java.util.ArrayList<Object[]> getGerarchia(Long site) {
+		return _rubricaGruppoLocalService.getGerarchia(site);
+	}
+
+	@Override
 	public java.util.List<Object[]> getGroup(Long id) {
 		return _rubricaGruppoLocalService.getGroup(id);
 	}
@@ -233,6 +238,14 @@ public class RubricaGruppoLocalServiceWrapper
 
 		return _rubricaGruppoLocalService.getGruppiByName(
 			site, groupName, limit, offset);
+	}
+
+	@Override
+	public java.util.ArrayList<Object[]> getGruppiByNameCategoria(
+		Long site, String groupName, Long categoria, Long limit, Long offset) {
+
+		return _rubricaGruppoLocalService.getGruppiByNameCategoria(
+			site, groupName, categoria, limit, offset);
 	}
 
 	@Override

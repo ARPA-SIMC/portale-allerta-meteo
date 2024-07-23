@@ -10,7 +10,9 @@
 	<sql
 		id="it.eng.radarMeteo.service.persistence.impl.Comuni_wsFinderImpl.getStatoAllerta">
     <![CDATA[
-		select x.nome, a.dataemissione, a.datafine,
+		select '' || abs(y.areaid) as nome,y.dataemissione,y.datainizio,y.datafine,
+y.idraulica,y.idrogeologica,y.temporali,y.vento,y.temperature_estreme,
+y.neve,y.ghiaccio_pioggia_gela,y.stato_mare,y.mareggiate,y.titolo, y.descrizionemeteo, y.link, y.tendenza from (select x.areaid, a.dataemissione, a.datafine, a.parentid, a.datainizio,
 (select case when statoid=1 then 'yellow' when statoid=2 then 'orange' when statoid=3 then 'red' when statoid=0 then 'green' else null end from allerter_allertastato aa where aa.allertaid=a.allertaid and aa.areaid=x.areaid and aa.eventoid=1) as idraulica,
 (select case when statoid=1 then 'yellow' when statoid=2 then 'orange' when statoid=3 then 'red' when statoid=0 then 'green' else null end from allerter_allertastato aa where aa.allertaid=a.allertaid and aa.areaid=x.areaid and aa.eventoid=2) as idrogeologica,
 (select case when statoid=1 then 'yellow' when statoid=2 then 'orange' when statoid=3 then 'red' when statoid=0 then 'green' else null end from allerter_allertastato aa where aa.allertaid=a.allertaid and aa.areaid=x.areaid and aa.eventoid=3) as temporali,
@@ -20,11 +22,45 @@
 (select case when statoid=1 then 'yellow' when statoid=2 then 'orange' when statoid=3 then 'red' when statoid=0 then 'green' else null end from allerter_allertastato aa where aa.allertaid=a.allertaid and aa.areaid=x.areaid and aa.eventoid=7) as ghiaccio_pioggia_gela,
 (select case when statoid=1 then 'yellow' when statoid=2 then 'orange' when statoid=3 then 'red' when statoid=0 then 'green' else null end from allerter_allertastato aa where aa.allertaid=a.allertaid and aa.areaid=x.areaid and aa.eventoid=8) as stato_mare,
 (select case when statoid=1 then 'yellow' when statoid=2 then 'orange' when statoid=3 then 'red' when statoid=0 then 'green' else null end from allerter_allertastato aa where aa.allertaid=a.allertaid and aa.areaid=x.areaid and aa.eventoid=9) as mareggiate,
-a.titolo, a.descrizionemeteo, a.link
-from allerter_allerta a left join (select areaid,nome from allerter_area union select 61 as areaid, 'F1' as nome) x on 1=1 
+a.titolo, a.descrizionemeteo, a.link, case when not a.tipoallerta then '' when a.tendenza=1 
+then 'intensificazione' when a.tendenza=2 then 'stazionarieta' 
+when a.tendenza=3 then 'attenuazione' else 'esaurimento' end as tendenza 
+from allerter_allerta a left join 
+(select distinct areaid from allerter_allertastato) x on 1=1 
 where a.stato = 0 and a.allertaid = (select allertaid from allerter_allerta a2 where a2.stato=0 
-and a2.datainizio <= ? and a2.datafine > ? order by a.dataemissione desc limit 1 )
-order by x.areaid asc
+and a2.datainizio <= ? and a2.datafine > ? order by a2.dataemissione desc limit 1 )
+order by x.areaid asc) y where (y.parentid=0 or (areaid<0 and date(?)=date(y.datainizio)) or
+(areaid>0 and date(?)<>date(y.datainizio))) and
+(idraulica is not null or idrogeologica is not null or temporali is not null or vento  is not null or 
+temperature_estreme is not null or neve is not null or ghiaccio_pioggia_gela is not null or 
+ stato_mare is not null or mareggiate is not null)
+            ]]>
+	</sql>
+	
+	<sql
+		id="it.eng.radarMeteo.service.persistence.impl.Comuni_wsFinderImpl.getAllertaForCap">
+    <![CDATA[
+		select * from (select x.areaid, a.dataemissione, a.datafine, a.parentid, a.datainizio,
+(select statoid from allerter_allertastato aa where aa.allertaid=a.allertaid and aa.areaid=x.areaid and aa.eventoid=1) as idraulica,
+(select statoid from allerter_allertastato aa where aa.allertaid=a.allertaid and aa.areaid=x.areaid and aa.eventoid=2) as idrogeologica,
+(select statoid from allerter_allertastato aa where aa.allertaid=a.allertaid and aa.areaid=x.areaid and aa.eventoid=3) as temporali,
+(select statoid from allerter_allertastato aa where aa.allertaid=a.allertaid and aa.areaid=x.areaid and aa.eventoid=4) as vento,
+(select statoid from allerter_allertastato aa where aa.allertaid=a.allertaid and aa.areaid=x.areaid and aa.eventoid=5) as temperature_estreme,
+(select statoid from allerter_allertastato aa where aa.allertaid=a.allertaid and aa.areaid=x.areaid and aa.eventoid=6) as neve,
+(select statoid from allerter_allertastato aa where aa.allertaid=a.allertaid and aa.areaid=x.areaid and aa.eventoid=7) as ghiaccio_pioggia_gela,
+(select statoid from allerter_allertastato aa where aa.allertaid=a.allertaid and aa.areaid=x.areaid and aa.eventoid=8) as stato_mare,
+(select statoid from allerter_allertastato aa where aa.allertaid=a.allertaid and aa.areaid=x.areaid and aa.eventoid=9) as mareggiate,
+a.numero,a.tipoallerta,a.titolo, a.descrizionemeteo, a.link, case when not a.tipoallerta then '' when a.tendenza=1 
+then 'intensificazione' when a.tendenza=2 then 'stazionarieta' 
+when a.tendenza=3 then 'attenuazione' else 'esaurimento' end as tendenza 
+from allerter_allerta a left join 
+(select distinct areaid from allerter_allertastato) x on 1=1 
+where a.stato = 0 and a.allertaid = (select allertaid from allerter_allerta a2 where a2.stato=0 
+and a2.datainizio <= ? and a2.datafine > ? order by a2.dataemissione desc limit 1 )
+order by x.areaid asc) y where
+(idraulica is not null or idrogeologica is not null or temporali is not null or vento  is not null or 
+temperature_estreme is not null or neve is not null or ghiaccio_pioggia_gela is not null or 
+ stato_mare is not null or mareggiate is not null)
             ]]>
 	</sql>
 	<sql

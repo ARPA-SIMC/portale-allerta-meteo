@@ -29,18 +29,13 @@
 				<div class="col-12 col-md-10">
                 	<h2><span class="icon i-social-allerta" aria-hidden="true"></span> Social Allerta</h2>
                 </div>
-                   
-                <div class="col-12 col-md-6 my-3">
+                 
+                
+                <div class="col-12 col-md-12 my-3">
                 	<!-- Inizio column-4 -->
 					${processor.processColumn("column-4", "portlet-column-content portlet-column-content-first")}
 					<!-- Fine column-4 -->
 				</div>
-				
-                <div class="col-12 col-md-6 my-3">
-                	<!-- Inizio column-5 -->
-					${processor.processColumn("column-5", "portlet-column-content portlet-column-content-last")}
-					<!-- Fine column-5 -->
-                </div>
 			
 			</div>
 		</div>

@@ -69,7 +69,7 @@ public class AllertaReportPostEventoPortlet extends MVCPortlet {
 		List<JournalArticle> articles = 
 					_journalArticleService.getArticlesByStructureId(themeDisplay.getScopeGroupId(), ddmStructureKey, 0, 3, comparator);
 		
-		System.out.println("articles trovati : "+ articles.size());
+		//System.out.println("articles trovati : "+ articles.size());
 		
 		List<Link> reports = new ArrayList<Link>();
 

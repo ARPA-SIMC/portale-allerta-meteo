@@ -66,7 +66,7 @@ public class RubricaGruppoCacheModel
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(19);
+		StringBundler sb = new StringBundler(21);
 
 		sb.append("{ID_GRUPPO=");
 		sb.append(ID_GRUPPO);
@@ -86,6 +86,8 @@ public class RubricaGruppoCacheModel
 		sb.append(DATA_MODIFICA);
 		sb.append(", DISABLED=");
 		sb.append(DISABLED);
+		sb.append(", FK_CATEGORIA=");
+		sb.append(FK_CATEGORIA);
 		sb.append("}");
 
 		return sb.toString();
@@ -132,6 +134,7 @@ public class RubricaGruppoCacheModel
 		}
 
 		rubricaGruppoImpl.setDISABLED(DISABLED);
+		rubricaGruppoImpl.setFK_CATEGORIA(FK_CATEGORIA);
 
 		rubricaGruppoImpl.resetOriginalValues();
 
@@ -153,6 +156,8 @@ public class RubricaGruppoCacheModel
 		DATA_MODIFICA = objectInput.readLong();
 
 		DISABLED = objectInput.readBoolean();
+
+		FK_CATEGORIA = objectInput.readLong();
 	}
 
 	@Override
@@ -182,6 +187,8 @@ public class RubricaGruppoCacheModel
 		objectOutput.writeLong(DATA_MODIFICA);
 
 		objectOutput.writeBoolean(DISABLED);
+
+		objectOutput.writeLong(FK_CATEGORIA);
 	}
 
 	public long ID_GRUPPO;
@@ -201,5 +208,7 @@ public class RubricaGruppoCacheModel
 	public long DATA_MODIFICA;
 
 	public boolean DISABLED;
+
+	public long FK_CATEGORIA;
 
 }

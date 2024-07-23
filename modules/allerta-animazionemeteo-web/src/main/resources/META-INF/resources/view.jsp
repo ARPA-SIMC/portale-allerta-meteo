@@ -11,7 +11,7 @@
                 
         <div class="container d-flex">
             <div class="row w-100 justify-content-between">
-                <h1 class="col-12 col-lg-12" >Animazione meteo</h1>
+                <h1 class="col-12 col-lg-12" >Previsioni meteo modellistiche</h1>
                 
                 <p class="col-12 lead">
                     
@@ -29,7 +29,7 @@
                            <a href="/">Home</a>
                        </li>
        
-                       <li class="breadcrumb-item active" aria-current="page">Animazione meteo</li>
+                       <li class="breadcrumb-item active" aria-current="page">Previsioni meteo modellistiche</li>
         
                     </ol>
                 </nav>
@@ -75,7 +75,6 @@
 						<a href="<%=precipitazioniUrl%>">
 							<span>Previsione di precipitazione cumulate su 3 ore</span>
 							<br/>
-							<img src="data:image/png;base64,<%=animBean.retrieveImgHome("preciHome") %>" />
 						</a>
 					</div>
 					
@@ -83,7 +82,6 @@
 						<a href="<%=nuovoleUrl%>">
 							<span>Previsione di copertura nuvolosa ogni 3 ore</span>
 							<br/>
-							<img src="data:image/png;base64,<%=animBean.retrieveImgHome("nuvHome") %>" />
 						</a>
 					</div>
 					
@@ -91,7 +89,6 @@
 						<a href="<%=ventoUrl%>">
 							<span>Previsione del vento ogni 3 ore</span>
 							<br/>
-							<img src="data:image/png;base64,<%=animBean.retrieveImgHome("windHome") %>" />
 						</a>
 					</div>
 				

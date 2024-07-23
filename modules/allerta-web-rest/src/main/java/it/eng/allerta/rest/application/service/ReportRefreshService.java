@@ -12,6 +12,7 @@ import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.service.UserLocalServiceUtil;
 
 import it.eng.allerter.allerta.AllertaBean;
+import it.eng.allerter.allerta.AllertaValangheBean;
 import it.eng.allerter.allerta.BollettinoBean;
 import it.eng.allerter.service.LogInternoLocalService;
 import it.eng.bollettino.model.Bollettino;
@@ -42,6 +43,8 @@ public class ReportRefreshService  {
 
 		if (oggetto.equals("allerta"))
 			refreshAllerta(l, request);
+		if (oggetto.equals("valanghe"))
+			refreshAllertaValanghe(l, request);
 		if (oggetto.equals("bollettino"))
 			refreshMonitoraggio(l, request);
 
@@ -52,6 +55,21 @@ public class ReportRefreshService  {
 		try {
 
 			AllertaBean ab = new AllertaBean(allertaId, request);
+			ab.setThreadUserPermission();
+			
+			ab.creaReport();
+
+		} catch (Exception e) {
+			//logInternoLocalService.log("ReportRefreshServlet", "refreshAllerta", e, "");
+			e.printStackTrace();
+		}
+	}
+	
+	private void refreshAllertaValanghe(long allertaId, HttpServletRequest request) {
+
+		try {
+
+			AllertaValangheBean ab = new AllertaValangheBean(allertaId, request);
 			ab.setThreadUserPermission();
 			
 			ab.creaReport();

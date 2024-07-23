@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Intervento" pageWidth="594" pageHeight="802" columnWidth="594" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="a327061f-de10-4d5c-af9c-f3894bcb8059">
 	<property name="ireport.zoom" value="2.0"/>
-	<property name="ireport.x" value="0"/>
+	<property name="ireport.x" value="432"/>
 	<property name="ireport.y" value="0"/>
 	<property name="net.sf.jasperreports.awt.ignore.missing.font" value="true"/>
 	<property name="net.sf.jasperreports.style.evaluation.time.enabled" value="true"/>
@@ -466,7 +466,7 @@ where bs.idbollettino = $P{ID_INTERVENTO} and tendenza<>-100 order by bb.progres
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font isBold="false"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{soglia1}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[($F{soglia1}==null||$F{soglia1}==0.0)?"":$F{soglia1}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement mode="Transparent" x="495" y="0" width="30" height="16" forecolor="#000000" backcolor="#FFFFFF" uuid="c2408f6e-7ec9-4e5c-aa50-23ac6906ba60">
@@ -482,7 +482,7 @@ where bs.idbollettino = $P{ID_INTERVENTO} and tendenza<>-100 order by bb.progres
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font isBold="false"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{soglia2}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[($F{soglia2}==null||$F{soglia2}==0.0)?"":$F{soglia2}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement mode="Transparent" x="525" y="0" width="30" height="16" forecolor="#000000" backcolor="#FFFFFF" uuid="4d295087-7c03-415f-9e36-a58dd2927389">
@@ -499,7 +499,7 @@ where bs.idbollettino = $P{ID_INTERVENTO} and tendenza<>-100 order by bb.progres
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font isBold="false"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{soglia3}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[($F{soglia3}==null||$F{soglia3}==0.0)?"":$F{soglia3}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

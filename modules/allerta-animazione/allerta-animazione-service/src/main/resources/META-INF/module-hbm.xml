@@ -3,9 +3,39 @@
 
 <hibernate-mapping auto-import="false" default-lazy="false">
 	<import class="it.eng.animazione.image.model.altezzaOnda" />
+	<import class="it.eng.animazione.image.model.altezzaOndaAdriac" />
+	<import class="it.eng.animazione.image.model.altezzaOndaSwanita" />
+	<import class="it.eng.animazione.image.model.elevazione" />
 	<import class="it.eng.animazione.image.model.Parametro" />
 	<import class="it.eng.animazione.image.model.PioggiaCumulativa" />
 	<class name="it.eng.animazione.image.model.impl.altezzaOndaImpl" table="img_animazioni_altezzaOnda">
+		<id column="id_" name="id" type="long">
+			<generator class="assigned" />
+		</id>
+		<property name="im" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="text_LOC" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property column="timestamp" name="ts_UTC" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="imgData" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+	</class>
+	<class name="it.eng.animazione.image.model.impl.altezzaOndaAdriacImpl" table="img_animazioni_altezzaOndaAdriac">
+		<id column="id_" name="id" type="long">
+			<generator class="assigned" />
+		</id>
+		<property name="im" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="text_LOC" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property column="timestamp" name="ts_UTC" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="imgData" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+	</class>
+	<class name="it.eng.animazione.image.model.impl.altezzaOndaSwanitaImpl" table="img_animazioni_altezzaOndaSwanita">
+		<id column="id_" name="id" type="long">
+			<generator class="assigned" />
+		</id>
+		<property name="im" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="text_LOC" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property column="timestamp" name="ts_UTC" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="imgData" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+	</class>
+	<class name="it.eng.animazione.image.model.impl.elevazioneImpl" table="img_animazioni_elevazione">
 		<id column="id_" name="id" type="long">
 			<generator class="assigned" />
 		</id>

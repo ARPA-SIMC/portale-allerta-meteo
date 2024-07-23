@@ -25,26 +25,39 @@
     left join bollettino_valoresensore vs on vs.idstazione = staz.id_ and vs.datetime = ? and vs.idvariabile = ?
     WHERE stazvar.idvariabile = ? 
     AND attivo = 't' AND stazvar.dataultimovalore >= (CURRENT_DATE - 4)
+    ORDER BY staz.progressivo DESC
             ]]>
 	</sql>
 	<sql
 		id="it.eng.radarMeteo.service.persistence.impl.JsonFinderImpl.findValuesByElenco">
 	<![CDATA[
-	SELECT staz.id_, vs.value, staz.lat, staz.lon, staz.name, staz.progressivo, view_s.idvariabile,
-	CASE 
-		WHEN valueadd.value ISNULL THEN vs.value
-		ELSE vs.value + valueadd.value END valuePlus
-	FROM 
-	view_staz_sensore_30m view_s
-	JOIN bollettino_stazione staz
-	ON view_s.idstazione=staz.id_
-	LEFT JOIN bollettino_valoresensore vs
-	ON vs.idvariabile = ? AND view_s.idstazione = vs.idstazione AND vs.datetime = ?
-	LEFT OUTER JOIN
-	(SELECT value, idvariabile, idstazione, datetime FROM bollettino_valoresensore) valueadd 
-		ON valueadd.idvariabile = vs.idvariabile 
-		AND valueadd.idstazione=vs.idstazione 
-		AND valueadd.datetime=(vs.datetime - INTERVAL '30 min')
+select q.id_, q.v60 as value, q.lat, q.lon, q.name, q.progressivo, q.idvariabile,
+	case
+		when q.v60 is not null then q.v60
+		when q.v30a is not null and q.v30b is not null then q.v30a + q.v30b
+		when q.v15a is not null and q.v15b is not null and q.v15c is not null and q.v15d is not null then q.v15a+q.v15b+q.v15c+q.v15d
+		else null end valuePlus
+		from
+	(select staz.id_,x.idvariabile,staz.lon,staz.lat,staz.name,staz.progressivo,vs.value as v60, vs2.value as v30a, vs3.value as v30b,
+	vs4.value as v15a, vs5.value as v15b, vs6.value as v15c, vs7.value as v15d 
+	from (select * from view_staz_sensore_15m v, 
+	  (select ? as var, cast(? as timestamp without time zone) as ts) tim) x
+	 JOIN bollettino_stazione staz
+		ON x.idstazione=staz.id_ 
+	 	LEFT JOIN bollettino_valoresensore vs on vs.idstazione=x.idstazione and 
+	  vs.idvariabile='1,0,3600/1,-,-,-/B13011' and vs.datetime=x.ts
+	  LEFT JOIN bollettino_valoresensore vs2 on x.idvariabile='1,0,1800/1,-,-,-/B13011' and vs2.idstazione=x.idstazione and 
+	  vs2.idvariabile='1,0,1800/1,-,-,-/B13011' and vs2.datetime=x.ts
+	  LEFT JOIN bollettino_valoresensore vs3 on x.idvariabile='1,0,1800/1,-,-,-/B13011' and vs3.idstazione=x.idstazione and 
+	  vs3.idvariabile='1,0,1800/1,-,-,-/B13011' and vs3.datetime=x.ts- INTERVAL '30 min'
+	  LEFT JOIN bollettino_valoresensore vs4 on x.idvariabile='1,0,900/1,-,-,-/B13011' and vs4.idstazione=x.idstazione and 
+	  vs4.idvariabile='1,0,900/1,-,-,-/B13011' and vs4.datetime=x.ts
+	  LEFT JOIN bollettino_valoresensore vs5 on x.idvariabile='1,0,900/1,-,-,-/B13011' and vs5.idstazione=x.idstazione and 
+	  vs5.idvariabile='1,0,900/1,-,-,-/B13011' and vs5.datetime=x.ts-INTERVAL '15 min'
+	  LEFT JOIN bollettino_valoresensore vs6 on x.idvariabile='1,0,900/1,-,-,-/B13011' and vs6.idstazione=x.idstazione and 
+	  vs6.idvariabile='1,0,900/1,-,-,-/B13011' and vs6.datetime=x.ts-INTERVAL '30 min'
+	  LEFT JOIN bollettino_valoresensore vs7 on x.idvariabile='1,0,900/1,-,-,-/B13011' and vs7.idstazione=x.idstazione and 
+	  vs7.idvariabile='1,0,900/1,-,-,-/B13011' and vs7.datetime=x.ts- INTERVAL '45 min') q
 	]]>
 	</sql>
 	<sql

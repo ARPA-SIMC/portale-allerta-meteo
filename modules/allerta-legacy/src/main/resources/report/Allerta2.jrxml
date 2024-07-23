@@ -1,0 +1,687 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Autorizzazione" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="881969b9-1e7c-419e-be23-86f3a873466d">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="25"/>
+	<property name="ireport.y" value="384"/>
+	<parameter name="ID_RICHIESTA" class="java.math.BigDecimal">
+		<defaultValueExpression><![CDATA[new BigDecimal(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\GFavini\\git\\allertameteo\\modules\\allerta-legacy\\src\\main\\resources\\report\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="MAPPA1" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="MAPPA2" class="java.lang.String" isForPrompting="false"/>
+	<queryString>
+		<![CDATA[select  a.*, u.firstname as arpanome, u.lastname as arpacognome, u2.firstname as protnome,
+u2.lastname as protcognome,
+exists(select * from users_roles rr where rr.userid=u2.userid and
+rr.roleid::character varying=(select valore from allerter_allertaparametro where
+parametroid='RUOLO_DIRETTORE')) as direttore, exists(select * from users_roles rr where
+rr.userid=u.userid and rr.roleid=1126970) as per_referente,
+case when false then '' else ('dalle ore ' || to_char(datainizio,'HH24:MI')
+|| ' di ' || (case
+when trim(to_char(datainizio, 'Day')) = 'Monday' then 'lunedì '
+when trim(to_char(datainizio, 'Day')) = 'Tuesday' then 'martedì '
+when trim(to_char(datainizio, 'Day')) = 'Wednesday' then 'mercoledì '
+when trim(to_char(datainizio, 'Day')) = 'Thursday' then 'giovedì '
+when trim(to_char(datainizio, 'Day')) = 'Friday' then 'venerdì '
+when trim(to_char(datainizio, 'Day')) = 'Saturday' then 'sabato '
+when trim(to_char(datainizio, 'Day')) = 'Sunday' then 'domenica '
+else trim(to_char(datainizio, 'Day')) || ' ' end) || to_char(datainizio,'DD/MM/YYYY')) end
+as intestazioneoggi,
+case when false then '' else ('dalle ore 00:00 di ' || (case
+when trim(to_char(datainizio::date + '1 day'::interval, 'Day')) = 'Monday' then 'lunedì '
+when trim(to_char(datainizio::date + '1 day'::interval, 'Day')) = 'Tuesday' then 'martedì '
+when trim(to_char(datainizio::date + '1 day'::interval, 'Day')) = 'Wednesday' then 'mercoledì '
+when trim(to_char(datainizio::date + '1 day'::interval, 'Day')) = 'Thursday' then 'giovedì '
+when trim(to_char(datainizio::date + '1 day'::interval, 'Day')) = 'Friday' then 'venerdì '
+when trim(to_char(datainizio::date + '1 day'::interval, 'Day')) = 'Saturday' then 'sabato '
+when trim(to_char(datainizio::date + '1 day'::interval, 'Day')) = 'Sunday' then 'domenica '
+else trim(to_char(datainizio::date + '1 day'::interval, 'Day')) || ' ' end) || to_char(datainizio::date + '1 day'::interval,'DD/MM/YYYY')) end
+as intestazionedomani
+from allerter_allerta a left join
+user_ u on a.utentefirmaarpaid = u.userid left join user_ u2 on a.utentefirmaprotid = u2.userid
+where $P{ID_RICHIESTA} = allertaid]]>
+	</queryString>
+	<field name="uuid_" class="java.lang.String"/>
+	<field name="allertaid" class="java.lang.Long"/>
+	<field name="groupid" class="java.lang.Long"/>
+	<field name="companyid" class="java.lang.Long"/>
+	<field name="userid" class="java.lang.Long"/>
+	<field name="username" class="java.lang.String"/>
+	<field name="createdate" class="java.sql.Timestamp"/>
+	<field name="modifieddate" class="java.sql.Timestamp"/>
+	<field name="stato" class="java.lang.Integer"/>
+	<field name="numero" class="java.lang.String"/>
+	<field name="progressivo" class="java.lang.Integer"/>
+	<field name="anno" class="java.lang.Integer"/>
+	<field name="dataemissione" class="java.sql.Timestamp"/>
+	<field name="datainizio" class="java.sql.Timestamp"/>
+	<field name="datafine" class="java.sql.Timestamp"/>
+	<field name="descrizionemeteo" class="java.lang.String"/>
+	<field name="tendenza" class="java.lang.Integer"/>
+	<field name="note" class="java.lang.String"/>
+	<field name="riferimenti" class="java.lang.String"/>
+	<field name="utentefirmaarpaid" class="java.lang.Long"/>
+	<field name="datafirmaarpa" class="java.sql.Timestamp"/>
+	<field name="utentefirmaprotid" class="java.lang.Long"/>
+	<field name="datafirmaprot" class="java.sql.Timestamp"/>
+	<field name="parentid" class="java.lang.Long"/>
+	<field name="sintesi" class="java.lang.String"/>
+	<field name="link" class="java.lang.String"/>
+	<field name="titolo" class="java.lang.String"/>
+	<field name="tipoallerta" class="java.lang.Boolean"/>
+	<field name="creatorname" class="java.lang.String"/>
+	<field name="hash" class="java.lang.String"/>
+	<field name="arpanome" class="java.lang.String"/>
+	<field name="arpacognome" class="java.lang.String"/>
+	<field name="protnome" class="java.lang.String"/>
+	<field name="protcognome" class="java.lang.String"/>
+	<field name="direttore" class="java.lang.Boolean"/>
+	<field name="per_referente" class="java.lang.Boolean"/>
+	<field name="intestazioneoggi" class="java.lang.String"/>
+	<field name="intestazionedomani" class="java.lang.String"/>
+	<pageHeader>
+		<band height="50">
+			<image hAlign="Center" onErrorType="Blank">
+				<reportElement x="474" y="13" width="42" height="20" backcolor="#FFFFFF" uuid="0f565792-25e1-43e5-9132-4958f82ed139"/>
+				<imageExpression><![CDATA[$P{SUBREPORT_DIR}+ "arpa.png"]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="158" y="0" width="311" height="22" backcolor="#FFFFFF" uuid="89ac03bd-914b-4095-8593-1bb0cd5bf8b2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="Arial" size="18" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{tipoallerta}!=null && $F{tipoallerta}.booleanValue()==true?"ALLERTA":"BOLLETTINO DI VIGILANZA")]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="174" y="22" width="295" height="18" backcolor="#FFFFFF" uuid="1df36922-9d9e-4167-a814-a6f16e40f26b"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="Arial" size="14" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<textFieldExpression><![CDATA["METEO-IDROGEOLOGICA-IDRAULICA"]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="2" y="46" width="553" height="1" uuid="340dd017-a39d-436f-bf77-796644d05f9c"/>
+			</line>
+			<image hAlign="Center" onErrorType="Blank">
+				<reportElement x="519" y="7" width="32" height="33" backcolor="#FFFFFF" uuid="22e6d78c-0017-44ab-9ad6-9672b151ee0f"/>
+				<imageExpression><![CDATA[$P{SUBREPORT_DIR}+ "pc.jpg"]]></imageExpression>
+			</image>
+			<image hAlign="Center" onErrorType="Blank">
+				<reportElement x="2" y="9" width="156" height="24" backcolor="#FFFFFF" uuid="dcde46c0-ecc0-4ff2-9e0a-bff4ec5bcba8"/>
+				<imageExpression><![CDATA[$P{SUBREPORT_DIR}+ "er.jpg"]]></imageExpression>
+			</image>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="750" splitType="Stretch">
+			<printWhenExpression><![CDATA[$F{parentid}>0]]></printWhenExpression>
+			<image hAlign="Center" onErrorType="Blank">
+				<reportElement mode="Transparent" x="2" y="70" width="345" height="200" uuid="9530da52-2b9e-4a34-b9d5-ef68abff2283"/>
+				<box>
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<imageExpression><![CDATA[$P{MAPPA2}]]></imageExpression>
+			</image>
+			<textField pattern="dd/MM/yyyy HH:mm" isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="407" y="21" width="148" height="16" forecolor="#000000" backcolor="#FFFFFF" uuid="69db3979-552a-4fae-badf-2e013dd4145c"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{datafine}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy HH:mm" isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="257" y="21" width="150" height="16" forecolor="#000000" backcolor="#FFFFFF" uuid="d5187e0d-f3e2-4b8c-b99d-64711a4c7e9b"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{datainizio}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="2" y="0" width="109" height="21" forecolor="#FFFFFF" backcolor="#999999" uuid="026c7be0-cb12-4c37-91df-aff6a3b298ad"/>
+				<box>
+					<pen lineWidth="1.0" lineColor="#000000"/>
+					<topPen lineWidth="1.0" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["DOCUMENTO N."]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy HH:mm" isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="111" y="21" width="146" height="16" forecolor="#000000" backcolor="#FFFFFF" uuid="44ec5147-f363-4288-b047-077e9db834d7"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{dataemissione}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="111" y="0" width="146" height="21" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#999999" uuid="2eb8f29b-84dc-438f-9753-f4fb6a62c104"/>
+				<box>
+					<pen lineWidth="1.0" lineColor="#000000"/>
+					<topPen lineWidth="1.0" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["DATA EMISSIONE"]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="2" y="21" width="109" height="16" forecolor="#000000" backcolor="#FFFFFF" uuid="23c8e7ad-0611-4647-866e-41e24bc0c866"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{numero}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="257" y="0" width="150" height="21" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#999999" uuid="cc457e77-afe7-4662-89f7-3dec30429e03"/>
+				<box>
+					<pen lineWidth="1.0" lineColor="#000000"/>
+					<topPen lineWidth="1.0" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["INIZIO VALIDITA'"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="407" y="0" width="148" height="21" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#999999" uuid="451fe210-6874-4483-8745-e47d49174b92"/>
+				<box>
+					<pen lineWidth="1.0" lineColor="#000000"/>
+					<topPen lineWidth="1.0" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["FINE VALIDITA'"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="354" y="70" width="199" height="210" uuid="4685e222-8c8f-4f67-8472-17eeeef38b1c"/>
+				<textElement markup="html">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[<b>ZONE DI ALLERTA:</b><br/><br/>
+
+A1: Montagna romagnola (FC, RN)<br/>
+A2: Alta collina romagnola (RA, FC, RN)<br/>
+B1: Bassa collina e pianura romagnola (RA, FC, RN)<br/>
+B2: Costa romagnola (RA, FC, RN)<br/>
+C1: Montagna bolognese (BO)<br/>
+C2: Collina bolognese (BO, RA)<br/>
+D1: Pianura bolognese (BO, FE, RA)<br/>
+D2: Costa ferrarese (FE)<br/>
+D3: Pianura ferrarese (FE)<br/>
+E1: Montagna emiliana centrale (PR, RE, MO)<br/>
+E2: Collina emiliana centrale (PR, RE, MO)<br/>
+F1: Pianura modenese (RE, MO)<br/>
+F2: Pianura reggiana (RE)<br/>
+F3: Pianura reggiana di Po (PR, RE)<br/>
+G1: Montagna piacentino-parmense (PC, PR)<br/>
+G2: Alta collina piacentino-parmense (PC, PR)<br/>
+H1: Bassa collina piacentino-parmense (PC, PR)<br/>
+H2: Pianura piacentino-parmense (PC, PR)<br/>]]></text>
+			</staticText>
+			<subreport>
+				<reportElement x="2" y="290" width="551" height="427" uuid="5644d697-dd4c-4a34-a456-4012ece56868"/>
+				<subreportParameter name="SECONDOGIORNO">
+					<subreportParameterExpression><![CDATA[true]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ALLERTA">
+					<subreportParameterExpression><![CDATA[$P{ID_RICHIESTA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "AllertaGriglia.jasper"]]></subreportExpression>
+			</subreport>
+			<textField>
+				<reportElement x="2" y="44" width="551" height="20" uuid="70949fb2-766d-4176-bfa9-8b7aa3d4d71e"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{intestazioneoggi}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="750" splitType="Stretch">
+			<image hAlign="Center" onErrorType="Blank">
+				<reportElement mode="Transparent" x="2" y="70" width="345" height="200" uuid="804cdc74-428e-4199-9bb0-f80269243bee"/>
+				<box>
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<imageExpression><![CDATA[$P{MAPPA1}]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="354" y="70" width="199" height="210" uuid="b7b6c69c-25c6-4b94-ad72-763e6c0ac983"/>
+				<textElement markup="html">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[<b>ZONE DI ALLERTA:</b><br/><br/>
+
+A1: Montagna romagnola (FC, RN)<br/>
+A2: Alta collina romagnola (RA, FC, RN)<br/>
+B1: Bassa collina e pianura romagnola (RA, FC, RN)<br/>
+B2: Costa romagnola (RA, FC, RN)<br/>
+C1: Montagna bolognese (BO)<br/>
+C2: Collina bolognese (BO, RA)<br/>
+D1: Pianura bolognese (BO, FE, RA)<br/>
+D2: Costa ferrarese (FE)<br/>
+D3: Pianura ferrarese (FE)<br/>
+E1: Montagna emiliana centrale (PR, RE, MO)<br/>
+E2: Collina emiliana centrale (PR, RE, MO)<br/>
+F1: Pianura modenese (RE, MO)<br/>
+F2: Pianura reggiana (RE)<br/>
+F3: Pianura reggiana di Po (PR, RE)<br/>
+G1: Montagna piacentino-parmense (PC, PR)<br/>
+G2: Alta collina piacentino-parmense (PC, PR)<br/>
+H1: Bassa collina piacentino-parmense (PC, PR)<br/>
+H2: Pianura piacentino-parmense (PC, PR)<br/>]]></text>
+			</staticText>
+			<subreport>
+				<reportElement x="2" y="290" width="551" height="427" uuid="3dc5c5ed-5782-488d-af21-b90475699be9"/>
+				<subreportParameter name="SECONDOGIORNO">
+					<subreportParameterExpression><![CDATA[false]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ALLERTA">
+					<subreportParameterExpression><![CDATA[$P{ID_RICHIESTA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "AllertaGriglia.jasper"]]></subreportExpression>
+			</subreport>
+			<textField>
+				<reportElement mode="Opaque" x="111" y="0" width="146" height="21" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#999999" uuid="4aa11819-3cda-44f7-a5e1-e93fd83089dd"/>
+				<box>
+					<pen lineWidth="1.0" lineColor="#000000"/>
+					<topPen lineWidth="1.0" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["DATA EMISSIONE"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="407" y="0" width="148" height="21" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#999999" uuid="12a1abaa-92fc-4544-aba3-e3dc117d2594"/>
+				<box>
+					<pen lineWidth="1.0" lineColor="#000000"/>
+					<topPen lineWidth="1.0" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["FINE VALIDITA'"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="2" y="0" width="109" height="21" forecolor="#FFFFFF" backcolor="#999999" uuid="cfd4c275-c636-46bd-b6dd-ee317894648f"/>
+				<box>
+					<pen lineWidth="1.0" lineColor="#000000"/>
+					<topPen lineWidth="1.0" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["DOCUMENTO N."]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="2" y="21" width="109" height="16" forecolor="#000000" backcolor="#FFFFFF" uuid="2b34b4dc-dcac-4ac6-873d-3dd70c0d425f"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{numero}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy HH:mm" isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="111" y="21" width="146" height="16" forecolor="#000000" backcolor="#FFFFFF" uuid="2dc65e57-9dd9-4c14-8ec7-d3b0ba54d054"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{dataemissione}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="257" y="0" width="150" height="21" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#999999" uuid="63a4b953-7734-467d-ad4e-a96a1bdaabd3"/>
+				<box>
+					<pen lineWidth="1.0" lineColor="#000000"/>
+					<topPen lineWidth="1.0" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["INIZIO VALIDITA'"]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy HH:mm" isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="257" y="21" width="150" height="16" forecolor="#000000" backcolor="#FFFFFF" uuid="11a12eeb-1713-4f14-a2c8-d08b975fb946"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{datainizio}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy HH:mm" isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="407" y="21" width="148" height="16" forecolor="#000000" backcolor="#FFFFFF" uuid="99925b4e-4d4b-466a-9267-9d8b1443c006"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{datafine}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="2" y="44" width="551" height="20" uuid="d7d1512d-6e2c-4b4a-80bb-ee50f86600e0"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{parentid}>0? $F{intestazionedomani} : ""]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="160">
+			<textField>
+				<reportElement mode="Opaque" x="0" y="11" width="553" height="21" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#999999" uuid="b57da155-c589-4bbd-86e0-45d1912279c1"/>
+				<box>
+					<pen lineWidth="1.0" lineColor="#000000"/>
+					<topPen lineWidth="1.0" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["DESCRIZIONE DEI FENOMENI"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="0" y="32" width="553" height="123" isPrintWhenDetailOverflows="true" forecolor="#000000" backcolor="#FFFFFF" uuid="4e09e8aa-2c1e-4ce6-8669-a047bf5315c8"/>
+				<box topPadding="5" leftPadding="5" bottomPadding="5" rightPadding="5">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font fontName="SansSerif" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{descrizionemeteo}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="25">
+			<printWhenExpression><![CDATA[$F{tipoallerta}]]></printWhenExpression>
+			<staticText>
+				<reportElement x="2" y="3" width="175" height="20" uuid="6934e843-cd9c-4123-9744-a0068cff4e65"/>
+				<textElement>
+					<font fontName="SansSerif"/>
+				</textElement>
+				<text><![CDATA[Tendenza nelle successive 48 ore:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="186" y="3" width="84" height="20" uuid="3284fae3-c9eb-4fd8-a765-dcde1ee39144"/>
+				<textElement>
+					<font fontName="SansSerif"/>
+				</textElement>
+				<text><![CDATA[intensificazione]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="388" y="3" width="74" height="20" uuid="a5664856-4652-4c6d-a71e-3b980eab027f"/>
+				<textElement>
+					<font fontName="SansSerif"/>
+				</textElement>
+				<text><![CDATA[attenuazione]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="477" y="3" width="79" height="20" isPrintWhenDetailOverflows="true" uuid="55f4e5ad-0747-4cfb-8270-fa31d1022456"/>
+				<textElement>
+					<font fontName="SansSerif"/>
+				</textElement>
+				<text><![CDATA[in esaurimento]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="294" y="3" width="84" height="20" uuid="85680536-c125-4189-a7c1-52536f545b6e"/>
+				<textElement>
+					<font fontName="SansSerif"/>
+				</textElement>
+				<text><![CDATA[stazionarietà]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="162" y="3" width="14" height="14" uuid="befb3b6c-7463-4751-9ba5-b6f290252519"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="270" y="3" width="14" height="14" uuid="c7d8e51d-dd2a-4ae3-b484-60991d3f985f"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="364" y="3" width="14" height="14" uuid="47cd537f-c4b2-4417-8ded-75a4a4f05e09"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="458" y="3" width="14" height="14" uuid="13780cb0-7061-45a5-8300-c9a0c2eb9768"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="165" y="6" width="8" height="8" backcolor="#000000" uuid="f7d22c78-533c-4c5d-a9ad-19f8579010fa">
+					<printWhenExpression><![CDATA[new Boolean($F{tendenza}.intValue()==1)]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="273" y="6" width="8" height="8" backcolor="#000000" uuid="6e4aef39-987c-4936-996f-f449f1165b24">
+					<printWhenExpression><![CDATA[new Boolean($F{tendenza}.intValue()==2)]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="367" y="6" width="8" height="8" backcolor="#000000" uuid="21cde000-5545-409b-ab53-2cef13a3560a">
+					<printWhenExpression><![CDATA[new Boolean($F{tendenza}.intValue()==3)]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="461" y="6" width="8" height="8" backcolor="#000000" uuid="7c960c27-abdf-4191-8493-3383c252add1">
+					<printWhenExpression><![CDATA[new Boolean($F{tendenza}.intValue()==4)]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+		</band>
+		<band height="160">
+			<textField>
+				<reportElement mode="Opaque" x="0" y="11" width="553" height="21" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#999999" uuid="7d0e6cb7-06bb-47a3-8ca7-e265f19cac30"/>
+				<box>
+					<pen lineWidth="1.0" lineColor="#000000"/>
+					<topPen lineWidth="1.0" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["NOTE"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="0" y="32" width="553" height="123" isPrintWhenDetailOverflows="true" forecolor="#000000" backcolor="#FFFFFF" uuid="23fdb7a5-2ed5-48aa-a4b0-400079b7bfea"/>
+				<box topPadding="5" leftPadding="5" bottomPadding="5" rightPadding="5">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font fontName="SansSerif" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{note}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="160">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="0" y="32" width="553" height="123" isPrintWhenDetailOverflows="true" forecolor="#000000" backcolor="#FFFFFF" uuid="f1f7626b-f612-479c-9630-104211e7b879"/>
+				<box topPadding="5" leftPadding="5" bottomPadding="5" rightPadding="5">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font fontName="SansSerif" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{riferimenti}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="0" y="11" width="553" height="21" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#999999" uuid="bfaaf2d7-a643-4b47-9ff5-c29ddd66b2cc"/>
+				<box>
+					<pen lineWidth="1.0" lineColor="#000000"/>
+					<topPen lineWidth="1.0" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["RIFERIMENTI E CONTATTI"]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="115">
+			<line>
+				<reportElement x="1" y="72" width="251" height="1" uuid="4e655bb0-e868-4b54-8573-a7a9003bd6d8">
+					<printWhenExpression><![CDATA[new Boolean($F{arpacognome}==null)]]></printWhenExpression>
+				</reportElement>
+			</line>
+			<line>
+				<reportElement x="300" y="72" width="243" height="1" uuid="8672db52-8963-4ec4-98cf-25f773dec976">
+					<printWhenExpression><![CDATA[new Boolean($F{protcognome}==null)]]></printWhenExpression>
+				</reportElement>
+			</line>
+			<textField>
+				<reportElement x="2" y="56" width="251" height="16" uuid="11128891-be1c-4ab4-9877-90d707a92a9d">
+					<printWhenExpression><![CDATA[new Boolean($F{arpacognome}!=null)]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{arpanome} + " " + $F{arpacognome}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="300" y="56" width="243" height="16" uuid="e95455a3-f538-475d-9535-c567bb5957d2">
+					<printWhenExpression><![CDATA[new Boolean($F{protcognome}!=null)]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{protnome} + " " + $F{protcognome}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="21" width="251" height="35" uuid="1013a7cb-0600-4d9a-a344-13eab2778573">
+					<printWhenExpression><![CDATA[new Boolean($F{arpacognome}!=null)]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{per_referente}.booleanValue()==true?"PER IL DIRIGENTE REFERENTE CENTRO FUNZIONALE":"IL DIRIGENTE REFERENTE CENTRO FUNZIONALE"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="300" y="21" width="251" height="35" isPrintWhenDetailOverflows="true" uuid="ac90068c-92d2-4f8f-929d-28c3d7f0aa60"/>
+				<textElement textAlignment="Center">
+					<font isBold="false"/>
+				</textElement>
+				<text><![CDATA[AGENZIA REGIONALE PER LA SICUREZZA TERRITORIALE E LA PROTEZIONE CIVILE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="300" y="80" width="243" height="33" isPrintWhenDetailOverflows="true" uuid="3b77be12-b3a4-49c0-947b-68386361dc64"/>
+				<textElement textAlignment="Center">
+					<font isBold="false"/>
+				</textElement>
+				<text><![CDATA[Firma autografa omessa ai sensi dell'art.3, c.2, D.Lgs. 12/02/1993, n.39]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="2" y="80" width="251" height="33" isPrintWhenDetailOverflows="true" uuid="a2b6086d-1aa8-40c6-8f66-7126a5d152f2"/>
+				<textElement textAlignment="Center">
+					<font isBold="false"/>
+				</textElement>
+				<text><![CDATA[Firma autografa omessa ai sensi dell'art.3, c.2, D.Lgs. 12/02/1993, n.39]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="300" y="4" width="251" height="16" uuid="41921a61-d1bb-4016-ade6-b7d4fc8c8376">
+					<printWhenExpression><![CDATA[new Boolean($F{protcognome}!=null)]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{direttore}.booleanValue()==true?"IL DIRETTORE":"PER IL DIRETTORE"]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

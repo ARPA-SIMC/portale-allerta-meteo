@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+
+<beans
+	default-destroy-method="destroy"
+	default-init-method="afterPropertiesSet"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
+>
+	<bean class="allerta.catasto.service.impl.CategoriaLocalServiceImpl" id="allerta.catasto.service.CategoriaLocalService" />
+	<bean class="allerta.catasto.service.impl.CategoriaServiceImpl" id="allerta.catasto.service.CategoriaService" />
+	<bean class="allerta.catasto.service.persistence.impl.CategoriaPersistenceImpl" id="allerta.catasto.service.persistence.CategoriaPersistence" parent="basePersistence" />
+	<bean class="allerta.catasto.service.impl.EffettiLocalServiceImpl" id="allerta.catasto.service.EffettiLocalService" />
+	<bean class="allerta.catasto.service.impl.EffettiServiceImpl" id="allerta.catasto.service.EffettiService" />
+	<bean class="allerta.catasto.service.persistence.impl.EffettiPersistenceImpl" id="allerta.catasto.service.persistence.EffettiPersistence" parent="basePersistence" />
+	<bean class="allerta.catasto.service.impl.EffettiSubLocalServiceImpl" id="allerta.catasto.service.EffettiSubLocalService" />
+	<bean class="allerta.catasto.service.impl.EffettiSubServiceImpl" id="allerta.catasto.service.EffettiSubService" />
+	<bean class="allerta.catasto.service.persistence.impl.EffettiSubPersistenceImpl" id="allerta.catasto.service.persistence.EffettiSubPersistence" parent="basePersistence" />
+	<bean class="allerta.catasto.service.impl.FonteLocalServiceImpl" id="allerta.catasto.service.FonteLocalService" />
+	<bean class="allerta.catasto.service.impl.FonteServiceImpl" id="allerta.catasto.service.FonteService" />
+	<bean class="allerta.catasto.service.persistence.impl.FontePersistenceImpl" id="allerta.catasto.service.persistence.FontePersistence" parent="basePersistence" />
+	<bean class="allerta.catasto.service.impl.SegnalazioneLocalServiceImpl" id="allerta.catasto.service.SegnalazioneLocalService" />
+	<bean class="allerta.catasto.service.impl.SegnalazioneServiceImpl" id="allerta.catasto.service.SegnalazioneService" />
+	<bean class="allerta.catasto.service.persistence.impl.SegnalazionePersistenceImpl" id="allerta.catasto.service.persistence.SegnalazionePersistence" parent="basePersistence" />
+	<bean class="allerta.catasto.service.impl.SottocategoriaLocalServiceImpl" id="allerta.catasto.service.SottocategoriaLocalService" />
+	<bean class="allerta.catasto.service.impl.SottocategoriaServiceImpl" id="allerta.catasto.service.SottocategoriaService" />
+	<bean class="allerta.catasto.service.persistence.impl.SottocategoriaPersistenceImpl" id="allerta.catasto.service.persistence.SottocategoriaPersistence" parent="basePersistence" />
+</beans>

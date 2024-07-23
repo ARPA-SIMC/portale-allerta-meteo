@@ -19,19 +19,47 @@ am.MapDataScenarioFactory = (function($){
                 return new MapDataScenarioTemperature(options);
             case 'pressione':
                 return new MapDataScenarioPressione(options);
+            case 'livellomare':
+                return new MapDataScenarioLivelloMare(options);
+            case 'altezzaonda':
+                return new MapDataScenarioAltezzaOnda(options);
+            case 'direzioneonda':
+                return new MapDataScenarioDirezioneOnda(options);
             case 'vento':
                 return new MapDataScenarioVento(options);
             case 'umidita':
                 return new MapDataScenarioUmidita(options);
 
             case 'radar':
-                return new MapDataScenarioRadar(options);                                        
+                return new MapDataScenarioRadar(options);     
+            case 'nowcasting':
+                return new MapDataScenarioNowcasting(options); 
             case 'cumulata-6h':
+            case 'cumulata-24h':
             case 'cumulata-48h':
                 options.cumulataHoursAmount = parseInt(k.split("-")[1]);
                 return new MapDataScenarioCumulata(options);
-            case 'anim-mare':
-                return new MapDataScenarioAnimazioneMare(options);
+            case 'animmare':
+            	options.tipo = 'mare';
+            	return new MapDataScenarioAnimeteo(options);
+            case 'swanita':
+            	options.tipo = 'swanita';
+            	return new MapDataScenarioAnimeteo(options);
+            case 'adriac':
+            	options.tipo = 'adriac';
+            	return new MapDataScenarioAnimeteo(options);
+                
+            case 'preci':
+            	options.tipo = 'preci';
+            	return new MapDataScenarioAnimeteo(options);
+            	
+            case 'nuv':
+            	options.tipo = 'nuv';
+            	return new MapDataScenarioAnimeteo(options);
+            	
+            case 'wind':
+            	options.tipo = 'wind';
+            	return new MapDataScenarioAnimeteo(options);
                 
             case '': // @FIXME qua ci vanno aggiunti i costruttori degli altri scenari di dati
             default:
@@ -72,7 +100,7 @@ am.MapDataScenarioFactory = (function($){
                 var color = (feature.properties.BACINO_AGG.indexOf("Pianura")<0)
                     ? MAP_STYLE.rtdata.bacini.colors[styleCount++] 
                     : MAP_STYLE.rtdata.bacini.defaultColor;
-                layer.setStyle({fillColor: color });  
+                layer.setStyle({fillColor: color, fillOpacity: 0.0 });  
                 break;
                 case 'reticolo':
                 if (feature.properties) {

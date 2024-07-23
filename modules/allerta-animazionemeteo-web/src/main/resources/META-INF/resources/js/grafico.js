@@ -56,7 +56,7 @@ leVariabili = {}
 leVariabili[variabile] = { description_it: data.description, unit: data.unit }
 //@ma
 //console.log(variabile, hash);
-function deltaTime (tipo) {
+function deltaTime (tipo,ora) {
 	switch (tipo) { 
 	case 'UTC':
 		return 2;
@@ -68,7 +68,7 @@ function deltaTime (tipo) {
 		break;
 	case 'LOC':
 		//return (moment(req['data2']).isDST())?4:3;
-		return (moment(req['data2']).isDST())?2:1;
+		return (moment(ora?ora:req['data2']).isDST())?2:1;
 		break;
 	}
 }
@@ -266,7 +266,7 @@ height = 500 - margin.top - margin.bottom;
 var parseDate = d3.time.format.utc("%Y-%m-%dT%H:%M:%SZ").parse,
 bisectDate = d3.bisector(function(d) { return d.t; }).right,
 bisectDateDef = d3.bisector(function(d) { return d.defX; }).right,
-formatValue = ((req['var']=='B13215')||(req['var']=='B13013'))?d3.format(",.2f"):d3.format(",.1f"),
+formatValue = ((req['var']=='B13215')||(req['var']=='B13013')||(req['var']=='B22037'))?d3.format(",.2f"):d3.format(",.1f"),
 		formatVal= function(d) { return (d!=null)?formatValue(d):'nd'; };
 		var x = d3.time.scale.utc().range([0, width]);
 		var y = d3.scale.linear().range([height, 0]);
@@ -281,19 +281,20 @@ formatValue = ((req['var']=='B13215')||(req['var']=='B13013'))?d3.format(",.2f")
 		var yAxis = d3.svg.axis()
 		.scale(y)
 		.orient("left").ticks(5);
+		var yRafficheAxis
 		if (req['var']=='B13011') { //precipitazione
-			var yCumAxis = d3.svg.axis().scale(cum).orient("right").ticks(6);
+			var yCumAxis = d3.svg.axis().scale(cum).orient("right").ticks(5);
 			var lineP = d3.svg.line()
 			.defined(function(d) {  return d.v != null; })
 			.x(function(d) { return x(d.t); })
 			.y(function(d) { return cum(d.c); });
 		}
 		if (req['var']=='B11002') { //ilvento
-			var yRafficheAxis = d3.svg.axis().scale(raffiche).orient("right").ticks(6);
+			yRafficheAxis = d3.svg.axis().scale(raffiche).orient("right").ticks(5);
 			var lineRaffiche = d3.svg.line()
 			.defined(function(d) {  return d.v != null; })
 			.x(function(d) { return x(d.t); })
-			.y(function(d) { return raffiche(d.v); });
+			.y(function(d) { return y(d.v)*3.6; });
 		}
 		var line = d3.svg.line()
 		.defined(function(d) {  return d.v != null; })
@@ -359,9 +360,9 @@ formatValue = ((req['var']=='B13215')||(req['var']=='B13013'))?d3.format(",.2f")
 						}
 						quantGiorni= moment(data[data.length-1].t).diff(moment(data[0].t),'days');
 						ultimo=data[data.length-1];
-						$(".ultDato").text(normalizzaValore(ultimo.v, req['var']).toFixed(1)+' ' +normalizzaUnita(leVariabili[variabile].unit)+ (location.search.match(/variabile=1,0,(3600|1800)\/1,-,-,-\/B13011/i) ? (leVariabili["/1,0,3600/1,-,-,-/B13011"] ? "/1h" : "/30'") : ""));
-						$(".ultOre").html( moment(ultimo.t).utc().add(deltaTime(timeType),'hours').format("HH:mm") +' <span class="timeType time'+timeType+'">'+tipotempo(timeType)+'</span>'  );
-						$(".ultGiorno").text( moment(ultimo.t).utc().add(deltaTime(timeType),'hours').format("ddd DD MMM YYYY")  );
+						$(".ultDato").text(normalizzaValore(ultimo.v, req['var']).toFixed(req['var']=='B13215'||req['var']=='B22037'?2:1)+' ' +normalizzaUnita(leVariabili[variabile].unit)+ (location.search.match(/variabile=1,0,(3600|1800)\/1,-,-,-\/B13011/i) ? (leVariabili["/1,0,3600/1,-,-,-/B13011"] ? "/1h" : "/30'") : ""));
+						$(".ultOre").html( moment(ultimo.t).utc().add(deltaTime(timeType,ultimo.t),'hours').format("HH:mm") +' <span class="timeType time'+timeType+'">'+tipotempo(timeType)+'</span>'  );
+						$(".ultGiorno").text( moment(ultimo.t).utc().add(deltaTime(timeType,ultimo.t),'hours').format("ddd DD MMM YYYY")  );
 						$('.basin').text( ( leStazioni[hash].basin && leStazioni[hash].basin.name )?leStazioni[hash].basin.name:'non disponibile' );
 						$('.subbasin').text( ( leStazioni[hash].subbasin && leStazioni[hash].subbasin.name )?leStazioni[hash].subbasin.name:'non disponibile' );
 						if ((req['var']=='B13215') || (req['var']=='B13226')) {
@@ -462,13 +463,15 @@ formatValue = ((req['var']=='B13215')||(req['var']=='B13013'))?d3.format(",.2f")
 					case 'B11002': //vento
 						min=0;
 						max=Math.ceil((max+.1)/5)*5;
+						var datamax = max
 						//x.domain([data[0].t, data[data.length - 1].t]);
 						y.domain([min,max]);
 						//disegnamo le raffiche, se esistono
-						var theReqRaffiche=req['ident']+'/'+req['lonlat'][0]+','+req['lonlat'][1]+'/'+req['net']+'/205,0,600/'+req['level']+'/B11041/'+moment(req['data1']).subtract(1,'day').format('YYYY-MM-DD')+'/'+req['data2']
+						var theReqRaffiche='stazione='+req['ident']+'/'+req['lonlat'][0]+','+req['lonlat'][1]+'/'+req['net']+'&variabile=2,0,3600/103,10000,-,-/B11041'
+						//+moment(req['data1']).subtract(1,'day').format('YYYY-MM-DD')+'/'+req['data2']
 						//console.log(theReqRaffiche);
 						$.ajax({
-							url: theService+"get-time-series/"+theReqRaffiche,
+							url: theService+"get-time-series?"+theReqRaffiche,
 							type: "GET",
 							async: false,
 							dataType: 'json',
@@ -502,22 +505,22 @@ formatValue = ((req['var']=='B13215')||(req['var']=='B13013'))?d3.format(",.2f")
 										max=maxRaffiche;
 									}
 									//xRaffi.domain([data[0].t, data[data.length - 1].t]);
-									raffiche.domain([0,maxRaffiche]);
+									raffiche.domain([0,datamax*3.6]);
 									//var svg = d3.select(".theGrafico");
-									y.domain([min,max]);
+									//y.domain([0,max*3.6]);
 									//if ( oggi24h && (req['data2']==moment().format("YYYY-MM-DD")) ) {x.domain([data[0].t, moment(myEndDate).utc()]);}
 									svg.append("g")
 									.attr("class", "y axis")
 									.attr("transform", "translate("+ (width)+ ",0 )")
-									//.call(yRafficheAxis)
+									.call(yRafficheAxis)
 									.append("text")
 									.attr("transform", "rotate(-90)")
 									.attr("y", 6)
 									.attr("dy", "-1em")
 									.style({"text-anchor": "end", 'fill': 'red'})
-									.text("raffiche ("+normalizzaUnita(leVariabili[variabile].unit)+')');
+									.text("Velocita' media e raffica degli ultimi 10 minuti del vento a 10 m dal suolo (km/h)");
 									/*svg.append("path")
-										.datum(dataRaffiche)
+										.datum(data)
 										.attr("class", "lineP")
 										.attr("d", lineRaffiche);*/
 									var svgRaffiche=svg.append("g").attr("class", "leRaffiche")
@@ -643,6 +646,21 @@ formatValue = ((req['var']=='B13215')||(req['var']=='B13013'))?d3.format(",.2f")
 					case 'B13013': //neve
 						min= 0;
 						max=Math.ceil((max+.1)/3)*3;
+						break;
+					case 'M00002': //altezza onda
+						min= min - 0.2;
+						max= max + 0.2;
+						y.domain([min,max]);
+						break;
+					case 'M00001': //direzione onda
+						min= min - 10;
+						max= max + 10;
+						y.domain([min,max]);
+						break;
+					case 'B22037': //altezza onda
+						min= min - 0.1;
+						max= max + 0.1;
+						y.domain([min,max]);
 						break;
 					default:
 						if (min<0) {min=Math.floor(min/5)*5} else {min=0}
@@ -858,7 +876,7 @@ formatValue = ((req['var']=='B13215')||(req['var']=='B13013'))?d3.format(",.2f")
 						//vediamo se è una cumulata
 						var arrayTempo = req['time'].split(",");
 						p2=arrayTempo[2];
-						if (p2 > 0) { //è una cumulata, grafico a barre
+						if (p2 > 0 && req['var']!='B22037' && req['var']!='M00001' && req['var']!='M00002') { //è una cumulata, grafico a barre
 							var barWidth=(x(moment(data[0].t).add(p2, 'seconds'))-x(data[0].t)); //mi calcolo la larghezza dalla barra
 							svg.selectAll(".bar")
 							.data(data)
@@ -869,17 +887,20 @@ formatValue = ((req['var']=='B13215')||(req['var']=='B13013'))?d3.format(",.2f")
 							.attr("y", function(d) { return y(d.v); })
 							.attr("height", function(d) {return height - y(d.v); });
 						} else { //non è una cumulata, metto un path
-							svg.append("path")
-							.datum(data)
-							.attr("class", "line")
-							.attr("d", line);
+							
+							if (req['var']!='M00001') { //la direzione dell'onda va mostrata con punti spezzati
+								svg.append("path")
+								.datum(data)
+								.attr("class", "line")
+								.attr("d", line);
+							}
 							
 							//@ma
 							for(var a = 0; a < data.length; a++) 
 								svg.append("circle")
 								.attr("cx", x(data[a].t))
 								.attr("cy", y(data[a].v)).style("fill", "#4682B4")
-								.attr("r", 1);
+								.attr("r", req['var']=='M00001'?3:1); //direzione onda - punti grossi
 							//@ma
 						}
 						if (req['var']=='B13011') { //precipitazione
@@ -912,6 +933,26 @@ formatValue = ((req['var']=='B13215')||(req['var']=='B13013'))?d3.format(",.2f")
 					.attr("dx", 2)
 					.attr("dy", ".36em")
 					.style("fill","#FFF");
+					
+					var visDato2 = null
+					
+					if (req['var']=='B11002') {
+						visDato2= svg.append("g")
+						.attr("class", "focus")
+						.style("display", "none");
+						visDato2.append("rect")
+						.attr("class", "focusRectVal")
+						.attr("height", '20px')
+						.attr("x", width-5)
+						.attr("y", -10)
+						.attr('opacity', .7);
+						visDato2.append("text")
+						.attr("x", width-5)
+						.attr("dx", 2)
+						.attr("dy", ".36em")
+						.style("fill","#FFF");
+					}
+					
 					var visData= svg.append("g")
 					.attr("class", "focus")
 					.style("display", "none");
@@ -991,6 +1032,7 @@ formatValue = ((req['var']=='B13215')||(req['var']=='B13013'))?d3.format(",.2f")
 							focusCum.style("display", null);
 						}
 						visDato.style("display", null);
+						if (visDato2) visDato2.style("display", null);
 						visData.style("display", null);
 						lineVal.style("display", null);
 						lineData.style("display", null);
@@ -1004,6 +1046,7 @@ formatValue = ((req['var']=='B13215')||(req['var']=='B13013'))?d3.format(",.2f")
 							focusCum.style("display", 'none');
 						}
 						visDato.style("display", "none");
+						if (visDato2) visDato2.style("display", "none");
 						visData.style("display", "none");
 						lineVal.style("display", "none");
 						lineVal.style("display", "none");
@@ -1024,6 +1067,8 @@ formatValue = ((req['var']=='B13215')||(req['var']=='B13013'))?d3.format(",.2f")
 										d = x0 - d0.t > d1.t - x0 ? d1 : d0;
 										//console.log(d);
 										visDato.select("text").text(formatVal(d.v)+' '+normalizzaUnita(leVariabili[variabile].unit));
+										if (visDato2) visDato2.select("text").text(formatVal(d.v*3.6)+' km/h');
+
 										visData.select("text").text('['+formattaData(d.t)+']');
 										var theX=x(d.t);
 										var theY=y(d.v);
@@ -1034,6 +1079,7 @@ formatValue = ((req['var']=='B13215')||(req['var']=='B13013'))?d3.format(",.2f")
 											focus.attr("transform", "translate(" + theX + "," + theY + ")");
 											if (valoriAssi) {
 												visDato.attr("transform", "translate("+ (-visDatoWidth-4) +"," + theY + ")");
+												if (visDato2) visDato2.attr("transform", "translate("+ 0 +"," + theY + ")");
 												if ( theX > width-200) {
 													visData.attr("transform", "translate(" + (theX-visDataWidth-4) + ","+ height + ")");
 												} else {
@@ -1052,7 +1098,7 @@ formatValue = ((req['var']=='B13215')||(req['var']=='B13013'))?d3.format(",.2f")
 												lineVal
 												.attr('x1', 0)
 												.attr('y1', theY)
-												.attr('x2', theX)
+												.attr('x2', (req['var']=='B11002'?width:theX))
 												.attr('y2', theY);
 											}
 											if (valoriAssi) {
@@ -1082,6 +1128,7 @@ formatValue = ((req['var']=='B13215')||(req['var']=='B13013'))?d3.format(",.2f")
 											lineData.style('display', "none");
 										}
 										visDato.select("rect").attr('width',visDatoWidth+4);
+										if (visDato2) visDato2.select("rect").attr('width',visDatoWidth+18);
 										visData.select("rect").attr('width',visDataWidth+4);
 										if (req['var']=='B13011') {// se pioggia
 											focusCum.select(".theVal").text(formatVal(d.c));

@@ -48,6 +48,8 @@ public class LoginUserActionCommand extends BaseMVCActionCommand {
 		boolean authenticated = false;
 		
 		try {
+			
+			System.out.println("LOGINNNNN!!!!!!!!!!!!!");
 		
 			//ThemeDisplay themeDisplay = (ThemeDisplay) actionRequest.getAttribute(WebKeys.THEME_DISPLAY);
 			

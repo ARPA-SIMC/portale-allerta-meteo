@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 
 import javax.portlet.Portlet;
@@ -84,8 +85,31 @@ public class AllertaElencoSMSPortlet extends MVCPortlet {
 		
 		params.put("PARAM", -1);
 
+		
+		
+		SimpleDateFormat sdf1 = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+		SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+		
+		try {
+			if (dataInvioDa!=null && !dataInvioDa.equals("")) {
+				
+				if (!dataInvioDa.contains(":")) 
+					dataInvioDa = dataInvioDa.trim()+" 00:00";
+				
+				dataInvioDa = sdf2.format(sdf1.parse(dataInvioDa));
+			}
+			if (dataInvioA!=null && !dataInvioA.equals("")) {
+				
+				if (!dataInvioA.contains(":")) 
+					dataInvioA = dataInvioA.trim()+" 00:00";
+				
+				dataInvioA = sdf2.format(sdf1.parse(dataInvioA));
+			}
+		} catch (Exception e) {}
+		
 		params.put("DATADA", dataInvioDa);
 		params.put("DATAA", dataInvioA);
+		
 		
 		params.put("STATO", stato);
 		
@@ -109,6 +133,12 @@ public class AllertaElencoSMSPortlet extends MVCPortlet {
 			out.write(report);
 			out.flush();
             out.close();
+		}
+		
+		if (connection!=null) {
+			try {
+				connection.close();
+			} catch (Exception e) {}
 		}
 	}
 	

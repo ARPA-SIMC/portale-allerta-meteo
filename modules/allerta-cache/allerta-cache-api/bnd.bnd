@@ -1,0 +1,11 @@
+Bundle-Name: allerta-cache-api
+Bundle-SymbolicName: it.eng.cache.api
+Bundle-Version: 1.0.0
+
+-check: EXPORTS
+-includeresource: META-INF/service.xml=../allerta-cache-service/service.xml
+Export-Package: \
+	it.eng.cache.exception,\
+	it.eng.cache.model,\
+	it.eng.cache.service,\
+	it.eng.cache.service.persistence

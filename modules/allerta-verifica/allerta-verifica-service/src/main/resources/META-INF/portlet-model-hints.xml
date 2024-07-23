@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+
+<model-hints>
+	<model name="allerta.verifica.model.UtenteLavoro">
+		<field name="id" type="long" />
+		<field name="documento" type="long" />
+		<field name="utente" type="String" />
+		<field name="ts" type="Date" />
+		<field name="attivita" type="String" />
+	</model>
+	<model name="allerta.verifica.model.Verifica">
+		<field name="uuid" type="String" />
+		<field name="id" type="long" />
+		<field name="groupId" type="long" />
+		<field name="companyId" type="long" />
+		<field name="userId" type="long" />
+		<field name="userName" type="String" />
+		<field name="createDate" type="Date" />
+		<field name="modifiedDate" type="Date" />
+		<field name="documento" type="long" />
+		<field name="stato" type="int" />
+		<field name="titolo" type="String" />
+		<field name="fenomeni" type="String" />
+		<field name="fenomeniDescritti" type="String" />
+		<field name="note" type="String" />
+		<field name="dataInizio" type="Date" />
+		<field name="dataFine" type="Date" />
+		<field name="link" type="String" />
+		<field name="hash" type="String" />
+	</model>
+	<model name="allerta.verifica.model.VerificaDato">
+		<field name="id" type="long" />
+		<field name="documento" type="long" />
+		<field name="giorno" type="Date" />
+		<field name="zona" type="String" />
+		<field name="evento" type="long" />
+		<field name="nomeDato" type="String" />
+		<field name="progressivo" type="int" />
+		<field name="datoInserito" type="String" />
+		<field name="datoCalcolato" type="String" />
+	</model>
+</model-hints>

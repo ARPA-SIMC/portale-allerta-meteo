@@ -88,6 +88,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 		attributes.put("titolo", getTitolo());
 		attributes.put("tipoAllerta", isTipoAllerta());
 		attributes.put("hash", getHash());
+		attributes.put("sintesiBriefing", getSintesiBriefing());
 
 		return attributes;
 	}
@@ -272,6 +273,12 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 
 		if (hash != null) {
 			setHash(hash);
+		}
+
+		String sintesiBriefing = (String)attributes.get("sintesiBriefing");
+
+		if (sintesiBriefing != null) {
+			setSintesiBriefing(sintesiBriefing);
 		}
 	}
 
@@ -537,6 +544,16 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	@Override
 	public String getSintesi() {
 		return _allerta.getSintesi();
+	}
+
+	/**
+	 * Returns the sintesi briefing of this allerta.
+	 *
+	 * @return the sintesi briefing of this allerta
+	 */
+	@Override
+	public String getSintesiBriefing() {
+		return _allerta.getSintesiBriefing();
 	}
 
 	/**
@@ -929,6 +946,16 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	@Override
 	public void setSintesi(String sintesi) {
 		_allerta.setSintesi(sintesi);
+	}
+
+	/**
+	 * Sets the sintesi briefing of this allerta.
+	 *
+	 * @param sintesiBriefing the sintesi briefing of this allerta
+	 */
+	@Override
+	public void setSintesiBriefing(String sintesiBriefing) {
+		_allerta.setSintesiBriefing(sintesiBriefing);
 	}
 
 	/**

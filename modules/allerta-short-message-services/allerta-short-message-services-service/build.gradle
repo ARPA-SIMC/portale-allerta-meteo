@@ -26,6 +26,8 @@ dependencies {
 	compileOnly project(":modules:allerta-short-message-services:allerta-short-message-services-api")
 	compileOnly project(":modules:allerta-allertaer:allerta-allertaer-api")
 	compileOnly project(":modules:allerta-allertaer:allerta-allertaer-service")
+	compileOnly project(":modules:allerta-rubrica:allerta-rubrica-api")
+	compileOnly project(":modules:allerta-rubrica:allerta-rubrica-service")
 	
 	compileOnly 'org.osgi:org.osgi.core'
 }

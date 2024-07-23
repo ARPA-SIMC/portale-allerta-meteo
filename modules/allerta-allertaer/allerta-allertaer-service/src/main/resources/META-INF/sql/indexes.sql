@@ -7,6 +7,15 @@ create index IX_9699A9FF on ALLERTER_AllertaStato (nome[$COLUMN_LENGTH:75$]);
 create index IX_73BA5826 on ALLERTER_AllertaStato (uuid_[$COLUMN_LENGTH:75$], companyId);
 create unique index IX_1C26B028 on ALLERTER_AllertaStato (uuid_[$COLUMN_LENGTH:75$], groupId);
 
+create index IX_605906FB on ALLERTER_AllertaValanghe (numero[$COLUMN_LENGTH:75$]);
+create index IX_7957CA9F on ALLERTER_AllertaValanghe (uuid_[$COLUMN_LENGTH:75$], companyId);
+create unique index IX_1406CE1 on ALLERTER_AllertaValanghe (uuid_[$COLUMN_LENGTH:75$], groupId);
+
+create index IX_1712B720 on ALLERTER_AllertaValangheStato (allertaValangheId);
+create index IX_41ACA6C9 on ALLERTER_AllertaValangheStato (nome[$COLUMN_LENGTH:75$]);
+create index IX_419675F0 on ALLERTER_AllertaValangheStato (uuid_[$COLUMN_LENGTH:75$], companyId);
+create unique index IX_3523B872 on ALLERTER_AllertaValangheStato (uuid_[$COLUMN_LENGTH:75$], groupId);
+
 create index IX_C1D9F52C on ALLERTER_Area (nome[$COLUMN_LENGTH:75$]);
 create index IX_612E1974 on ALLERTER_Area (tipoArea[$COLUMN_LENGTH:75$]);
 create index IX_EEA47D3 on ALLERTER_Area (uuid_[$COLUMN_LENGTH:75$], companyId);

@@ -8,6 +8,7 @@ dependencies {
 	compileOnly group: "com.liferay", name: "com.liferay.petra.string"
 	compileOnly group: "com.liferay", name: "com.liferay.upload.api"
 	
+	compileOnly group: "com.liferay", name: "com.liferay.document.library.api"
 	compileOnly group: "com.liferay", name: "com.liferay.document.library.web"
 	
 }

@@ -69,7 +69,8 @@ public class AllertaMessaggioSindacoPortlet extends MVCPortlet {
 			}
 			
 			renderRequest.setAttribute("messaggioBean", messaggioBean);
-			renderRequest.getPortletSession().setAttribute(AllertaKeys.SessionMessaggioBean, messaggioBean);
+			//se siamo arrivati in fondo, elimina i dati dell'invio dalla sessione
+			renderRequest.getPortletSession().setAttribute(AllertaKeys.SessionMessaggioBean, messaggioBean.getStep()==4?null:messaggioBean);
 			
 			renderRequest.setAttribute(
 					MessaggioSindacoConfiguration.class.getName(), _configuration);

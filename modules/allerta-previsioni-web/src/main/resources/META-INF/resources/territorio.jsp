@@ -1,14 +1,16 @@
+<%@page import="java.util.List"%>
 <%@ include file="./init.jsp"%>
 
 <%
 	GestioneBean gestioneBean = (GestioneBean) renderRequest.getAttribute("GestioneBean");
 	Previsioni previsioni = (Previsioni) renderRequest.getAttribute("PrevisioniBean");
 	String provincia = (String) renderRequest.getAttribute("Provincia");
+	List<String> previsioniDetails = previsioni.getMeteoProv(provincia);
 %>
 
 
 <c:set 	var="previsioniDetails"
-	   	value="<%=previsioni.getMeteoProv(provincia) %>" 
+	   	value="<%=previsioniDetails %>" 
 	   	scope="request" />
 	   	
 <c:set 	var="tabellaDati" 
@@ -101,31 +103,35 @@
                       
                       	<div class="tab-content">
                           <div class="tab-pane active" role="tabpanel" id="previsioni-tab-oggi__mattina">
-                              <img class="u-img-fit-x" src="data:image/jpg;base64,<%=previsioni.getImg("Mattina", "oggi", provincia)%>" alt="Previsioni di Oggi Mattina"> 
+                              <img class="u-img-fit-x" src="data:image/jpg;base64,<%=previsioni.getImg("mattina", "oggi", provincia)%>" alt="Previsioni di Oggi Mattina"> 
                           </div>
                           <div class="tab-pane " role="tabpanel" id="previsioni-tab-oggi__pomeriggio">
-                              <img class="u-img-fit-x" src="data:image/jpg;base64,<%=previsioni.getImg("Pomeriggio", "oggi", provincia)%>" alt="Previsioni di Oggi Pomeriggio">
+                              <img class="u-img-fit-x" src="data:image/jpg;base64,<%=previsioni.getImg("pomeriggio", "oggi", provincia)%>" alt="Previsioni di Oggi Pomeriggio">
                                
                           </div>
                           <div class="tab-pane" role="tabpanel" id="previsioni-tab-oggi__seranotte">
-                              <img class="u-img-fit-x" src="data:image/jpg;base64,<%=previsioni.getImg("Sera_Notte", "oggi", provincia)%>" alt="Previsioni di Oggi Sera-Notte">
+                              <img class="u-img-fit-x" src="data:image/jpg;base64,<%=previsioni.getImg("sera_notte", "oggi", provincia)%>" alt="Previsioni di Oggi Sera-Notte">
                           </div>
                       	</div>
 
                     </div>
                     <div class="col-12 col-md-6">
-                           
-                    	<span style="font-weight: bold;">Stato del tempo: </span>
-						<%=previsioni.readXmlBollettino("oggi").get(0)%>
-
-						<br /> <span style="font-weight: bold;">Temperature: </span>
-						<%=previsioni.readXmlBollettino("oggi").get(1)%>
-
-						<br /> <span style="font-weight: bold;">Venti: </span><br />
-						<%=previsioni.readXmlBollettino("oggi").get(2)%>
-
-						<br /> <span style="font-weight: bold;">Mare:</span><br />
-						<%=previsioni.readXmlBollettino("oggi").get(3)%>
+                        <c:if test="<%=provincia.equals("ND") %>">
+	                    	<span style="font-weight: bold;">Stato del tempo: </span>
+							<%=previsioni.readXmlBollettino("oggi").get(0)%>
+	
+							<br /> <span style="font-weight: bold;">Temperature: </span>
+							<%=previsioni.readXmlBollettino("oggi").get(1)%>
+	
+							<br /> <span style="font-weight: bold;">Venti: </span><br />
+							<%=previsioni.readXmlBollettino("oggi").get(2)%>
+	
+							<br /> <span style="font-weight: bold;">Mare:</span><br />
+							<%=previsioni.readXmlBollettino("oggi").get(3)%>
+						</c:if>
+						<c:if test="<%=!provincia.equals("ND") %>">
+							<%=previsioniDetails.get(0)%>
+						</c:if>
 						
 						<c:if test="<%=!provincia.equals("ND") %>">
 						
@@ -193,12 +199,12 @@
                               </a>
                           </li>
                           <li class="nav-item" role="presentation">
-                              <a class="nav-link" href="#previsioni-tab-oggi__pomeriggio" aria-controls="previsioni-tab-domani__pomeriggio" role="tab" data-toggle="tab">
+                              <a class="nav-link" href="#previsioni-tab-domani__pomeriggio" aria-controls="previsioni-tab-domani__pomeriggio" role="tab" data-toggle="tab">
                               	Pomeriggio
                               </a>
                           </li>
                           <li class="nav-item" role="presentation">
-                              <a class="nav-link" href="#previsioni-tab-oggi__seranotte" aria-controls="previsioni-tab-domani__seranotte" role="tab" data-toggle="tab">
+                              <a class="nav-link" href="#previsioni-tab-domani__seranotte" aria-controls="previsioni-tab-domani__seranotte" role="tab" data-toggle="tab">
                               	Sera e notte
                               </a>
                           </li>
@@ -206,31 +212,85 @@
                       
                       	<div class="tab-content">
                           <div class="tab-pane active" role="tabpanel" id="previsioni-tab-domani__mattina">
-                              <img class="u-img-fit-x" src="data:image/jpg;base64,<%=previsioni.getImg("Mattina", "domani", provincia)%>" alt="Previsioni di Domani Mattina"> 
+                              <img class="u-img-fit-x" src="data:image/jpg;base64,<%=previsioni.getImg("mattina", "domani", provincia)%>" alt="Previsioni di Domani Mattina"> 
                           </div>
                           <div class="tab-pane " role="tabpanel" id="previsioni-tab-domani__pomeriggio">
-                              <img class="u-img-fit-x" src="data:image/jpg;base64,<%=previsioni.getImg("Pomeriggio", "domani", provincia)%>" alt="Previsioni di Domani Pomeriggio">
+                              <img class="u-img-fit-x" src="data:image/jpg;base64,<%=previsioni.getImg("pomeriggio", "domani", provincia)%>" alt="Previsioni di Domani Pomeriggio">
                                
                           </div>
                           <div class="tab-pane" role="tabpanel" id="previsioni-tab-domani__seranotte">
-                              <img class="u-img-fit-x" src="data:image/jpg;base64,<%=previsioni.getImg("Sera_Notte", "domani", provincia)%>" alt="Previsioni di Domani Sera-Notte">
+                              <img class="u-img-fit-x" src="data:image/jpg;base64,<%=previsioni.getImg("sera_notte", "domani", provincia)%>" alt="Previsioni di Domani Sera-Notte">
                           </div>
                       	</div>
 
                     </div>
                     <div class="col-12 col-md-6">
-                           
-                    	<span style="font-weight: bold;">Stato del tempo: </span>
-						<%=previsioni.readXmlBollettino("domani").get(0)%>
-
-						<br /> <span style="font-weight: bold;">Temperature: </span>
-						<%=previsioni.readXmlBollettino("domani").get(1)%>
-
-						<br /> <span style="font-weight: bold;">Venti: </span><br />
-						<%=previsioni.readXmlBollettino("domani").get(2)%>
-
-						<br /> <span style="font-weight: bold;">Mare:</span><br />
-						<%=previsioni.readXmlBollettino("domani").get(3)%>
+                         <c:if test="<%=provincia.equals("ND") %>">  
+	                    	<span style="font-weight: bold;">Stato del tempo: </span>
+							<%=previsioni.readXmlBollettino("domani").get(0)%>
+	
+							<br /> <span style="font-weight: bold;">Temperature: </span>
+							<%=previsioni.readXmlBollettino("domani").get(1)%>
+	
+							<br /> <span style="font-weight: bold;">Venti: </span><br />
+							<%=previsioni.readXmlBollettino("domani").get(2)%>
+	
+							<br /> <span style="font-weight: bold;">Mare:</span><br />
+							<%=previsioni.readXmlBollettino("domani").get(3)%>
+						</c:if>
+						<c:if test="<%=!provincia.equals("ND") %>">
+							<%=previsioniDetails.get(1)%>
+						</c:if>
+						
+						<c:if test="<%=!provincia.equals("ND") %>">
+						
+							<div class="table table table-striped table--previsioni">
+							
+	                           <table>
+	                           
+	                               <thead>
+	                                   <tr>
+	                                   
+	                                   	 <th scope="col" id="dato" aria-hidden="true"><span class="sr-only">Dato di riferimento</span></th>
+	                                  	 <c:out value = "${tabellaDati.get(1).getHeader()}" escapeXml="false" />
+	                                  	 <th scope="col" id="unita"><span class="sr-only">Unità di misura</span></th>
+	                                  
+	                                   </tr>
+	                               </thead>
+	                               
+	                               <tbody>
+	                               		<tr>
+											<th>
+												<abbr title="Temperatura minima: valori medi previsti nell'area">T min</abbr>
+											</th> 
+											<c:out value = "${tabellaDati.get(1).gettMin()}" escapeXml="false" />
+										</tr>
+										<tr>
+											<th>
+												<abbr title="Temperatura massima: valori medi previsti nell'area">T	max</abbr>
+												<c:out value = "${tabellaDati.get(1).gettMax()}" escapeXml="false" />
+										</tr>
+										<tr>
+											<th>
+												<abbr title="Precipitazioni: valori minimi e massimi previsti nell'area">Prec</abbr>
+											</th>
+											<c:out value = "${tabellaDati.get(1).getPrecipitazioni()}" escapeXml="false" />									
+										</tr>
+										<tr>
+											<th>
+												<acronym title="Vento massimo: valori massimi previsti nell'area">V	max</acronym> 
+											</th>
+											<c:out value = "${tabellaDati.get(1).getVento()}" escapeXml="false" />		
+										</tr>
+										
+	                                 
+	                               </tbody>
+	                           </table>
+	                           <p class="pt-3"> <small>I dati fra parentesi si riferiscono ai valori medi climatologici 1991-2010 </small> </p>
+	                           
+	                        </div>
+	                        
+						</c:if>
 
 
                     </div>
@@ -262,32 +322,88 @@
                       
                       	<div class="tab-content">
                           <div class="tab-pane active" role="tabpanel" id="previsioni-tab-dopodomani__mattina">
-                              <img class="u-img-fit-x" src="data:image/jpg;base64,<%=previsioni.getImg("Mattina", "dopodomani", provincia)%>" alt="Previsioni di Domani Mattina"> 
+                              <img class="u-img-fit-x" src="data:image/jpg;base64,<%=previsioni.getImg("mattina", "dopodomani", provincia)%>" alt="Previsioni di Dopodomani Mattina"> 
                           </div>
                           <div class="tab-pane " role="tabpanel" id="previsioni-tab-dopodomani__pomeriggio">
-                              <img class="u-img-fit-x" src="data:image/jpg;base64,<%=previsioni.getImg("Pomeriggio", "dopodomani", provincia)%>" alt="Previsioni di Domani Pomeriggio">
+                              <img class="u-img-fit-x" src="data:image/jpg;base64,<%=previsioni.getImg("pomeriggio", "dopodomani", provincia)%>" alt="Previsioni di Dopodomani Pomeriggio">
                                
                           </div>
                           <div class="tab-pane" role="tabpanel" id="previsioni-tab-dopodomani__seranotte">
-                              <img class="u-img-fit-x" src="data:image/jpg;base64,<%=previsioni.getImg("Sera_Notte", "dopodomani", provincia)%>" alt="Previsioni di Domani Sera-Notte">
+                              <img class="u-img-fit-x" src="data:image/jpg;base64,<%=previsioni.getImg("sera_notte", "dopodomani", provincia)%>" alt="Previsioni di Dopodomani Sera-Notte">
                           </div>
                       	</div>
 
                     </div>
                     <div class="col-12 col-md-6">
-                           
-                    	<span style="font-weight: bold;">Stato del tempo: </span>
-						<%=previsioni.readXmlBollettino("dopodomani").get(0)%>
-
-						<br /> <span style="font-weight: bold;">Temperature: </span>
-						<%=previsioni.readXmlBollettino("dopodomani").get(1)%>
-
-						<br /> <span style="font-weight: bold;">Venti: </span><br />
-						<%=previsioni.readXmlBollettino("dopodomani").get(2)%>
-
-						<br /> <span style="font-weight: bold;">Mare:</span><br />
-						<%=previsioni.readXmlBollettino("dopodomani").get(3)%>
-
+                          
+                        <c:if test="<%=provincia.equals("ND") %>">
+	                    	<span style="font-weight: bold;">Stato del tempo: </span>
+							<%=previsioni.readXmlBollettino("dopodomani").get(0)%>
+	
+							<br /> <span style="font-weight: bold;">Temperature: </span>
+							<%=previsioni.readXmlBollettino("dopodomani").get(1)%>
+	
+							<br /> <span style="font-weight: bold;">Venti: </span><br />
+							<%=previsioni.readXmlBollettino("dopodomani").get(2)%>
+	
+							<br /> <span style="font-weight: bold;">Mare:</span><br />
+							<%=previsioni.readXmlBollettino("dopodomani").get(3)%>
+						</c:if>
+						
+						
+						<c:if test="<%=!provincia.equals("ND") %>">
+							<%=previsioniDetails.get(2)%>
+						</c:if>
+						
+						<c:if test="<%=!provincia.equals("ND") %>">
+						
+							<div class="table table table-striped table--previsioni">
+							
+	                           <table>
+	                           
+	                               <thead>
+	                                   <tr>
+	                                   
+	                                   	 <th scope="col" id="dato" aria-hidden="true"><span class="sr-only">Dato di riferimento</span></th>
+	                                  	 <c:out value = "${tabellaDati.get(2).getHeader()}" escapeXml="false" />
+	                                  	 <th scope="col" id="unita"><span class="sr-only">Unità di misura</span></th>
+	                                  
+	                                   </tr>
+	                               </thead>
+	                               
+	                               <tbody>
+	                               		<tr>
+											<th>
+												<abbr title="Temperatura minima: valori medi previsti nell'area">T min</abbr>
+											</th> 
+											<c:out value = "${tabellaDati.get(2).gettMin()}" escapeXml="false" />
+										</tr>
+										<tr>
+											<th>
+												<abbr title="Temperatura massima: valori medi previsti nell'area">T	max</abbr>
+												<c:out value = "${tabellaDati.get(2).gettMax()}" escapeXml="false" />
+										</tr>
+										<tr>
+											<th>
+												<abbr title="Precipitazioni: valori minimi e massimi previsti nell'area">Prec</abbr>
+											</th>
+											<c:out value = "${tabellaDati.get(2).getPrecipitazioni()}" escapeXml="false" />									
+										</tr>
+										<tr>
+											<th>
+												<acronym title="Vento massimo: valori massimi previsti nell'area">V	max</acronym> 
+											</th>
+											<c:out value = "${tabellaDati.get(2).getVento()}" escapeXml="false" />		
+										</tr>
+										
+	                                 
+	                               </tbody>
+	                           </table>
+	                           <p class="pt-3"> <small>I dati fra parentesi si riferiscono ai valori medi climatologici 1991-2010 </small> </p>
+	                           
+	                        </div>
+	                        
+						</c:if>
 
                     </div>
                	</div>

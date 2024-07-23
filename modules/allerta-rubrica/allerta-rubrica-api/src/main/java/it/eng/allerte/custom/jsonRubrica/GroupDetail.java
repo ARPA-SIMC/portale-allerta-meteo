@@ -9,6 +9,8 @@ public class GroupDetail {
 	
 	private Long id;
     private String name;
+    private Long categoria;
+    private String categoriaName;
     private Owner owner;
     private Long lastEdit;
     private UserInfo lastEditUser;
@@ -135,5 +137,23 @@ public class GroupDetail {
 	public void setSupergroupsCount(Long supergroupsCount) {
 		this.supergroupsCount = supergroupsCount;
 	}
+
+	public Long getCategoria() {
+		return categoria;
+	}
+
+	public void setCategoria(Long categoria) {
+		this.categoria = categoria;
+	}
+
+	public String getCategoriaName() {
+		return categoriaName;
+	}
+
+	public void setCategoriaName(String categoriaName) {
+		this.categoriaName = categoriaName;
+	}
+	
+	
     
 }

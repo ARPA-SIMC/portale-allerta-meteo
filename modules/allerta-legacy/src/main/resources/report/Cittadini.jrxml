@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Cittadini" pageWidth="1300" pageHeight="595" orientation="Landscape" columnWidth="1260" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isIgnorePagination="true" uuid="c946c046-f138-4a80-99d9-26c8780d760b">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="USER" class="java.lang.Long"/>
+	<parameter name="COGNOME" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="NOME" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="COMUNE" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="EMAIL" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="TEL" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select * from appartenenza_comuni_vw where (groupid in (select groupid from usergrouprole where userid=$P{USER} and roleid in (29574,75902,75920,451351)) or exists
+(select * from users_roles where userid=$P{USER} and roleid in (20161,168321)))
+AND ($P{COGNOME} is null or $P{COGNOME}::character varying = '' or upper(lastname) like '%' || upper($P{COGNOME} || '%'))
+AND ($P{NOME} is null or $P{NOME}::character varying = '' or upper(firstname) like '%' || upper($P{NOME} || '%'))
+AND ($P{COMUNE} is null or $P{COMUNE}::character varying = '' or upper(name) like '%' || upper($P{COMUNE} || '%'))
+AND ($P{EMAIL} is null or $P{EMAIL}::character varying = '' or upper(emailaddress) like '%' || upper($P{EMAIL} || '%'))
+AND ($P{TEL} is null or $P{TEL}::character varying = '' or upper(telefoni) like '%' || upper($P{TEL} || '%'))]]>
+	</queryString>
+	<field name="groupid" class="java.lang.Long"/>
+	<field name="name" class="java.lang.String"/>
+	<field name="userid" class="java.lang.Long"/>
+	<field name="lastname" class="java.lang.String"/>
+	<field name="firstname" class="java.lang.String"/>
+	<field name="emailaddress" class="java.lang.String"/>
+	<field name="telefoni" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="20" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="202" height="20" uuid="279fd0a9-0e37-4070-a717-d474f779015b"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Comune]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="202" y="0" width="202" height="20" uuid="9f8288b5-11cf-4120-9be5-fefca73e278f"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cognome]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="934" y="0" width="282" height="20" uuid="c03c5a72-b65e-4b97-ad3f-319fecbd8836"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Telefoni]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="404" y="0" width="202" height="20" uuid="ae6d18ff-177a-41eb-9dea-f6924af86ebc"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nome]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="606" y="0" width="328" height="20" uuid="240fb6ae-3ac3-484a-9abb-53bc068ba099"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Email]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="0" y="0" width="202" height="20" uuid="2ac97d9c-1e6b-4ad5-8519-46045b5188d1"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="202" y="0" width="202" height="20" uuid="3248fbfc-c28d-42a4-a555-d3a0a79eb6c0"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{lastname}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="934" y="0" width="319" height="20" uuid="168e471c-5dee-4c71-89fe-71a240edb6da"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{telefoni}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="404" y="0" width="202" height="20" uuid="45845eae-4edc-4dcd-b870-0b9efc53ac02"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{firstname}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="606" y="0" width="328" height="20" uuid="d74c1a53-3673-4e02-964d-e3deb97b31e3"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{emailaddress}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

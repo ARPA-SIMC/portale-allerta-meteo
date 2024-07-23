@@ -149,6 +149,31 @@ public class CumulativeScheduler extends BaseMessageListener{
 				
 				pioggiaCumulativaLocalService.updatePioggiaCumulativa(img);
 			}		
+			
+			
+			myArray = myObject.getJSONArray("24h");
+			
+			if (myArray!=null)
+				for (int i = 0; i < myArray.length(); i++) {
+					
+					countImg++;
+					
+					String image = myArray.getString(i);
+					
+					Calendar  calendar = parseTimestamps(image,"_024");
+					
+					input= getInputStreaWithTimeout(imgURL+"cu=24h&im="+image,authStringEnc);
+					
+					PioggiaCumulativa img = getPioggiaCumulativa(countImg);
+					img.setNome(image);
+					img.setInzioCumulazione(calendar.getTime());
+					calendar.add(Calendar.HOUR_OF_DAY, 24);
+					img.setFineCumulazione(calendar.getTime());
+					img.setCumulazione("24h");
+					img.setImgData(Base64.encode(fromStreamtoByteArray(input)));
+					
+					pioggiaCumulativaLocalService.updatePioggiaCumulativa(img);
+				}
 		}catch(Exception e){
 			
 			e.printStackTrace();
@@ -243,6 +268,8 @@ public class CumulativeScheduler extends BaseMessageListener{
 		
 		_log.info("CumulativeScheduler scheduling at " + configuration.schedulerCumulativeMinutes());
 
+		if (configuration.schedulerCumulativeMinutes()<1) return;
+		
 		Trigger trigger = _triggerFactory.createTrigger(className, className, null, null, configuration.schedulerCumulativeMinutes(), TimeUnit.MINUTE);
 
 		SchedulerEntry schedulerEntry = new SchedulerEntryImpl(className, trigger);

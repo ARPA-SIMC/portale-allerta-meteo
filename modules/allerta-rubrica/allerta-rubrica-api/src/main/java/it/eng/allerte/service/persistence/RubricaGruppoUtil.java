@@ -282,6 +282,81 @@ public class RubricaGruppoUtil {
 	}
 
 	/**
+	 * Returns the rubrica gruppo where FK_CATEGORIA = &#63; and FK_SITO_PROPRIETARIO = &#63; or throws a <code>NoSuchRubricaGruppoException</code> if it could not be found.
+	 *
+	 * @param FK_CATEGORIA the fk_categoria
+	 * @param FK_SITO_PROPRIETARIO the fk_sito_proprietario
+	 * @return the matching rubrica gruppo
+	 * @throws NoSuchRubricaGruppoException if a matching rubrica gruppo could not be found
+	 */
+	public static RubricaGruppo findByRubricaGruppoCategoria(
+			long FK_CATEGORIA, long FK_SITO_PROPRIETARIO)
+		throws it.eng.allerte.exception.NoSuchRubricaGruppoException {
+
+		return getPersistence().findByRubricaGruppoCategoria(
+			FK_CATEGORIA, FK_SITO_PROPRIETARIO);
+	}
+
+	/**
+	 * Returns the rubrica gruppo where FK_CATEGORIA = &#63; and FK_SITO_PROPRIETARIO = &#63; or returns <code>null</code> if it could not be found. Uses the finder cache.
+	 *
+	 * @param FK_CATEGORIA the fk_categoria
+	 * @param FK_SITO_PROPRIETARIO the fk_sito_proprietario
+	 * @return the matching rubrica gruppo, or <code>null</code> if a matching rubrica gruppo could not be found
+	 */
+	public static RubricaGruppo fetchByRubricaGruppoCategoria(
+		long FK_CATEGORIA, long FK_SITO_PROPRIETARIO) {
+
+		return getPersistence().fetchByRubricaGruppoCategoria(
+			FK_CATEGORIA, FK_SITO_PROPRIETARIO);
+	}
+
+	/**
+	 * Returns the rubrica gruppo where FK_CATEGORIA = &#63; and FK_SITO_PROPRIETARIO = &#63; or returns <code>null</code> if it could not be found, optionally using the finder cache.
+	 *
+	 * @param FK_CATEGORIA the fk_categoria
+	 * @param FK_SITO_PROPRIETARIO the fk_sito_proprietario
+	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @return the matching rubrica gruppo, or <code>null</code> if a matching rubrica gruppo could not be found
+	 */
+	public static RubricaGruppo fetchByRubricaGruppoCategoria(
+		long FK_CATEGORIA, long FK_SITO_PROPRIETARIO,
+		boolean retrieveFromCache) {
+
+		return getPersistence().fetchByRubricaGruppoCategoria(
+			FK_CATEGORIA, FK_SITO_PROPRIETARIO, retrieveFromCache);
+	}
+
+	/**
+	 * Removes the rubrica gruppo where FK_CATEGORIA = &#63; and FK_SITO_PROPRIETARIO = &#63; from the database.
+	 *
+	 * @param FK_CATEGORIA the fk_categoria
+	 * @param FK_SITO_PROPRIETARIO the fk_sito_proprietario
+	 * @return the rubrica gruppo that was removed
+	 */
+	public static RubricaGruppo removeByRubricaGruppoCategoria(
+			long FK_CATEGORIA, long FK_SITO_PROPRIETARIO)
+		throws it.eng.allerte.exception.NoSuchRubricaGruppoException {
+
+		return getPersistence().removeByRubricaGruppoCategoria(
+			FK_CATEGORIA, FK_SITO_PROPRIETARIO);
+	}
+
+	/**
+	 * Returns the number of rubrica gruppos where FK_CATEGORIA = &#63; and FK_SITO_PROPRIETARIO = &#63;.
+	 *
+	 * @param FK_CATEGORIA the fk_categoria
+	 * @param FK_SITO_PROPRIETARIO the fk_sito_proprietario
+	 * @return the number of matching rubrica gruppos
+	 */
+	public static int countByRubricaGruppoCategoria(
+		long FK_CATEGORIA, long FK_SITO_PROPRIETARIO) {
+
+		return getPersistence().countByRubricaGruppoCategoria(
+			FK_CATEGORIA, FK_SITO_PROPRIETARIO);
+	}
+
+	/**
 	 * Caches the rubrica gruppo in the entity cache if it is enabled.
 	 *
 	 * @param rubricaGruppo the rubrica gruppo

@@ -44,7 +44,9 @@ const MapDataServer = (function(){
         'cumulata-48h': _root + '/api/allerta/get-pioggia-cumulata-48', //_root+'?q=cumulata-48h',
         
         // Radar @CHECKME
-        'radar': _root + '/api/allerta/get-all-radar-images'//_root + '/api/allerta/getlastimages' //+'?q=radar-getlastimages'    
+        'radar': _root + '/api/allerta/get-all-radar-images', //_root + '/api/allerta/getlastimages' //+'?q=radar-getlastimages'    
+        'nowcasting': _root + '/api/allerta/get-nowcasting'
+    
     };
 
     // pivate method

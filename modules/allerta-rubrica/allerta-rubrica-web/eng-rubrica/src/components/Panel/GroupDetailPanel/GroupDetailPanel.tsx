@@ -120,11 +120,15 @@ toggleNominative = (nominative) => {
   }
 
   modifyGroup = (group: any) => () => {
-    Modal.show('Modifica Gruppo', <GroupForm refetch={this.refetch} group={group} />)
+    Modal.show('Modifica Gruppo', <GroupForm refetch={this.refetch} group={group} categories={this.context.categories} />)
   }
 
   exportGroup = (group: any) => () => {
     window.open("/o/rubrica/gruppo/?gruppo="+group.id, "_blank")
+}
+
+  exportGroup2 = (group: any) => () => {
+    window.open("/o/rubrica/gruppo/?gruppo="+group.id+"&separati=true", "_blank")
 }
 
   unsetNominative = (group, nominative) => async () => {
@@ -427,13 +431,18 @@ handleSpecifica = (nominativo) => (event) => {
                 <b>{data.supergroupsCount}</b> gruppi
               </span>
               <div>Proprietario: {data.owner && data.owner.name}</div>
+              <div>Categoria: {data.categoriaName?data.categoriaName:"Nessuna"}</div>
               <div>Ultima Modifica: {ultimaMod} - {data.lastEditUser && `${data.lastEditUser.firstName} ${data.lastEditUser.lastName}`}</div>
             </div>
           </div>
 	  <button
               style={{marginTop: '.5rem',marginRight: '.5rem',marginBottom: '.5rem'}}
               className={cStyles.button}
-              onClick={this.exportGroup(data)}> Esporta </button>
+              onClick={this.exportGroup(data)}> Esporta XLS </button>
+          <button
+              style={{marginTop: '.5rem',marginRight: '.5rem',marginBottom: '.5rem'}}
+              className={cStyles.button}
+              onClick={this.exportGroup2(data)}> Esporta ZIP </button>
           {data.id !== -1 && (
             <button
               style={{marginTop: '.5rem',marginBottom: '.5rem'}}

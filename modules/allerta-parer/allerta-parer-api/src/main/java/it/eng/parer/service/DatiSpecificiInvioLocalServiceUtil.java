@@ -179,6 +179,36 @@ public class DatiSpecificiInvioLocalServiceUtil {
 			datiSpecifici, documentiCollegati, componentiInvio);
 	}
 
+	public static String comunicaDatiSpecificiInvioValanghe(
+		it.eng.parer.model.DatiSpecificiInvio datiSpecifici,
+		java.util.List<it.eng.parer.model.DocumentiCollegati>
+			documentiCollegati,
+		java.util.List<it.eng.parer.model.ComponentiInvio> componentiInvio) {
+
+		return getService().comunicaDatiSpecificiInvioValanghe(
+			datiSpecifici, documentiCollegati, componentiInvio);
+	}
+
+	public static String comunicaDatiSpecificiInvioValangheMail(
+		it.eng.parer.model.DatiSpecificiInvio datiSpecifici,
+		java.util.List<it.eng.parer.model.DocumentiCollegati>
+			documentiCollegati,
+		java.util.List<it.eng.parer.model.ComponentiInvio> componentiInvio) {
+
+		return getService().comunicaDatiSpecificiInvioValangheMail(
+			datiSpecifici, documentiCollegati, componentiInvio);
+	}
+
+	public static String comunicaDatiSpecificiInvioValangheSms(
+		it.eng.parer.model.DatiSpecificiInvio datiSpecifici,
+		java.util.List<it.eng.parer.model.DocumentiCollegati>
+			documentiCollegati,
+		java.util.List<it.eng.parer.model.ComponentiInvio> componentiInvio) {
+
+		return getService().comunicaDatiSpecificiInvioValangheSms(
+			datiSpecifici, documentiCollegati, componentiInvio);
+	}
+
 	/**
 	 * Creates a new dati specifici invio with the primary key. Does not add the dati specifici invio to the database.
 	 *

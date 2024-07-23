@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Autorizzazione" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="881969b9-1e7c-419e-be23-86f3a873466d">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="192"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\GFavini\\git\\allertameteo\\modules\\allerta-legacy\\src\\main\\resources\\report\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DATA_REPORT" class="java.util.Date"/>
+	<parameter name="DATA_REPORT_FINE" class="java.util.Date"/>
+	<parameter name="URL_SERVIZI" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["http://localhost:8080"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select 1=1 as x]]>
+	</queryString>
+	<field name="x" class="java.lang.Boolean"/>
+	<pageHeader>
+		<band height="40">
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement mode="Opaque" x="141" y="5" width="178" height="22" forecolor="#000000" uuid="83a58447-0dbe-4086-ba84-919f7465960d"/>
+				<box>
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Report settimanale allertamento"]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement mode="Opaque" x="319" y="5" width="59" height="22" forecolor="#000000" uuid="93a044f0-9a9e-4373-83cf-ec98a48e7d0e"/>
+				<box>
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{DATA_REPORT}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement mode="Opaque" x="394" y="5" width="59" height="22" forecolor="#000000" uuid="e8d51e16-4ed2-4aca-96f2-b1c1d5040aa5"/>
+				<box>
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{DATA_REPORT_FINE}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement mode="Opaque" x="378" y="5" width="16" height="22" forecolor="#000000" uuid="c65acea4-1823-45c1-a27d-513221c23e22"/>
+				<box>
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["-"]]></textFieldExpression>
+			</textField>
+			<image hAlign="Center" onErrorType="Blank">
+				<reportElement x="0" y="5" width="141" height="22" backcolor="#FFFFFF" uuid="1521af82-937d-4305-a51b-dd1ea22c75cc"/>
+				<imageExpression><![CDATA[$P{SUBREPORT_DIR}+ "er.jpg"]]></imageExpression>
+			</image>
+			<image hAlign="Center" onErrorType="Blank">
+				<reportElement x="519" y="0" width="30" height="30" backcolor="#FFFFFF" uuid="7cf45b1d-454c-449a-8121-debbf6142f53"/>
+				<imageExpression><![CDATA[$P{SUBREPORT_DIR}+ "pc.jpg"]]></imageExpression>
+			</image>
+			<image hAlign="Center" onErrorType="Blank">
+				<reportElement x="462" y="5" width="42" height="20" backcolor="#FFFFFF" uuid="8f9f8359-623a-414c-828b-673cc5143b6c"/>
+				<imageExpression><![CDATA[$P{SUBREPORT_DIR}+ "arpa.png"]]></imageExpression>
+			</image>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="160" splitType="Stretch">
+			<subreport>
+				<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="555" height="151" uuid="f25eecc4-4643-42dd-b251-337e33d213ef"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="URL_SERVIZI">
+					<subreportParameterExpression><![CDATA[$P{URL_SERVIZI}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DATA_REPORT">
+					<subreportParameterExpression><![CDATA[$P{DATA_REPORT}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DATA_REPORT_FINE">
+					<subreportParameterExpression><![CDATA[$P{DATA_REPORT_FINE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "Verifica.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="400">
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement mode="Opaque" x="37" y="282" width="482" height="95" forecolor="#000000" uuid="45322117-c4a3-490d-9aa8-313eec514f58"/>
+				<box>
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="html">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Alla <b>Magnitudo</b> e alla <b>Localizzazione</b>, associati al codice sintetico <b>PC “Parzialmente Corretto”</b>, possono essere attribuiti due gradi di sovrastima (<b>+</b>, <b>++</b>) e sottostima (<b>-</b>, <b>--</b>) secondo il grado di differenza tra quanto previsto e quanto osservato.<br><br> La causa <b>F “Forzante”</b> viene utilizzata per i fenomeni di «criticità» che sono strettamente correlati alla previsione di forzanti meteo ma può essere utilizzata anche per indicare la causa della sottostima e sovrastima in caso di fenomeni valutati come Parzialmente Corretti. (<b>F+</b>= Forzante sovrastimata. <b>F-</b> = Forzante sottostimata)<br><br>La causa <b>P “Precauzionale”</b> viene utilizzata quando in previsione si decide di inserire un codice colore più alto per tener conto di situazioni di particolare vulnerabilità del territorio."]]></textFieldExpression>
+			</textField>
+			<image hAlign="Center" onErrorType="Blank">
+				<reportElement x="59" y="62" width="434" height="220" backcolor="#FFFFFF" uuid="7a3d32ad-4b8f-49d0-8ebe-9246e364fe6a"/>
+				<imageExpression><![CDATA[$P{SUBREPORT_DIR}+ "legendaverifica.png"]]></imageExpression>
+			</image>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement mode="Opaque" x="0" y="16" width="555" height="22" forecolor="#000000" uuid="7d71d9f0-4846-4bc2-8c2d-43f55018697e"/>
+				<box>
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Guida alla lettura dei codici sintetici"]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="151">
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="151" uuid="996b6e50-faff-4f18-9e36-7ba0ec8aa185"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="URL_SERVIZI">
+					<subreportParameterExpression><![CDATA[$P{URL_SERVIZI}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DATA_REPORT">
+					<subreportParameterExpression><![CDATA[$P{DATA_REPORT}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DATA_REPORT_FINE">
+					<subreportParameterExpression><![CDATA[$P{DATA_REPORT_FINE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "Verifica2.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+</jasperReport>

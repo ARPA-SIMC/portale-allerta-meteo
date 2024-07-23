@@ -532,6 +532,21 @@ public interface AllertaModel
 	 */
 	public void setHash(String hash);
 
+	/**
+	 * Returns the sintesi briefing of this allerta.
+	 *
+	 * @return the sintesi briefing of this allerta
+	 */
+	@AutoEscape
+	public String getSintesiBriefing();
+
+	/**
+	 * Sets the sintesi briefing of this allerta.
+	 *
+	 * @param sintesiBriefing the sintesi briefing of this allerta
+	 */
+	public void setSintesiBriefing(String sintesiBriefing);
+
 	@Override
 	public boolean isNew();
 

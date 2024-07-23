@@ -15,6 +15,32 @@ $( document ).ready(function() {
 		performSelectBooleanInfoCheck();
 	});
 	
+	$(".addChecked").prop("checked", true);
+	
+	console.log('Creo timer heartbeat')
+		if (!window.allertaTimer) window.allertaTimer = setInterval(function() {
+			
+		      console.log("Attivazione timer heartbeat");
+		      if (window.location.href.lastIndexOf("messaggio")!=-1) {
+		    	console.log("Mando heartbeat");
+		    	$.ajax({
+			      url: '/o/api/heartbeat/'+new Date().getTime(),
+			      method: 'GET',
+			    }).then(function (resp) {
+		   
+			    	console.log("Heartbeat ricevuto");
+		      	
+		    })
+		      }
+		     if (window.location.href.lastIndexOf("messaggio")==-1) {
+			  console.log("Cancellazione timer heartbeat");
+			  clearInterval(window.allertaTimer);
+			  window.allertaTimer=null;
+		   }
+		      	
+		   
+		}, 10000);
+	
 });
 
 function performSelectBooleanInfoCheck() {

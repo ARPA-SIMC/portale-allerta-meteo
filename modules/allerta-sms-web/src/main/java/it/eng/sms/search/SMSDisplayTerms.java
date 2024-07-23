@@ -15,6 +15,8 @@ public class SMSDisplayTerms extends DisplayTerms {
 	
 	private String dataInvioDa;
 	private String dataInvioA;
+	
+	private String email;
 
 	public SMSDisplayTerms(PortletRequest portletRequest) {
 		
@@ -25,6 +27,7 @@ public class SMSDisplayTerms extends DisplayTerms {
 		numero = ParamUtil.getString(portletRequest, "numero");
 		stato = ParamUtil.getLong(portletRequest, "stato");
 		destinatario =  ParamUtil.getString(portletRequest, "nome");
+		email =  ParamUtil.getString(portletRequest, "email");
 		dataInvioDa = ParamUtil.getString( portletRequest, "dataInvioDa");
 		dataInvioA = ParamUtil.getString( portletRequest, "dataInvioA");
 		
@@ -87,6 +90,14 @@ public class SMSDisplayTerms extends DisplayTerms {
 
 	public void setDataInvioA(String dataInvioA) {
 		this.dataInvioA = dataInvioA;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	

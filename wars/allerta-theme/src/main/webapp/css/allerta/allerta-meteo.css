@@ -266,6 +266,14 @@ html {
     margin: 2px 0;
     padding: 4px;
     width: 19em; }
+    
+    .map-section__emitted-bottom {
+        display:block;
+        }
+    .map-section__emitted-top {
+        display:none;
+        }
+    
     @media (min-width: 576px) {
       .bootstrap-datetimepicker-widget.dropdown-menu.timepicker-sbs {
         width: 38em; } }
@@ -274,7 +282,15 @@ html {
         width: 38em; } }
     @media (min-width: 992px) {
       .bootstrap-datetimepicker-widget.dropdown-menu.timepicker-sbs {
-        width: 38em; } }
+        width: 38em; }
+        .map-section__emitted-bottom {
+          display:none;
+        }
+        .map-section__emitted-top {
+          display:block;
+        }
+        
+         }
     .bootstrap-datetimepicker-widget.dropdown-menu:before, .bootstrap-datetimepicker-widget.dropdown-menu:after {
       content: '';
       display: inline-block;
@@ -2327,7 +2343,7 @@ html, body {
     transition: 0.5s;
     background-color: #2c6080; }
     .am .main-nav .nav-item {
-      flex: 1 0 100%;
+      flex: 0 1 auto;
       margin: 0;
       padding: 0; }
     .am .main-nav .nav-item .icon-collapse {
@@ -3208,6 +3224,8 @@ html, body {
       overflow-x: auto;
       overflow-y: hidden; } }
   @media (min-width: 992px) {
+  	.am .featured-contents {
+      padding: .5rem 0 2.25rem; }
     .am .wizard-bar .nav-item .nav-span {
       flex: unset; }
     .am .wizard-bar .nav-item .nav-span .step-label {
@@ -3246,7 +3264,7 @@ html, body {
   .am .featured-contents {
     background: #0C6AAF;
     color: #fff;
-    padding: .5rem 0 2.25rem; }
+     }
     .am .featured-contents .card--item, .am .featured-contents .card--item a {
       min-height: 0; }
     .am .featured-contents .card--item .card-header,
@@ -3582,7 +3600,7 @@ html, body {
         border-radius: 1.875rem; }
     .am .map-section .map-section__emitted {
       color: #5C5C5C;
-      padding: 0 1rem .75rem;
+      padding: 0 1rem .3rem;
       
       overflow: hidden; 
       text-align: center;
@@ -4398,43 +4416,16 @@ html, body {
       height: 3rem; }
     .am .map-toolbar .map-toolbar__animation,
     .am .map-toolbar .map-toolbar__datetime {
+      min-height: 1px;
       padding: 1rem 0; }
     .am .map-toolbar .map-toolbar__timewheel-player {
+      min-height: 1px;
       padding: 0;
       margin-left: -1rem;
       margin-right: -1rem;
       border-bottom: 1px solid #F4F4F4;
       position: relative; }
-      .am .map-toolbar .map-toolbar__timewheel-player:before {
-        content: "";
-        display: block;
-        position: absolute;
-        top: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 2;
-        width: 0;
-        height: 0;
-        border-style: solid;
-        border-width: 7px 7px 0 7px;
-        border-color: #034158 transparent transparent transparent; }
-      .am .map-toolbar .map-toolbar__timewheel-player .swiper-container:after, .am .map-toolbar .map-toolbar__timewheel-player .swiper-container:before {
-        display: block;
-        content: "";
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        width: .75rem;
-        height: 100%;
-        z-index: 1000; }
-      .am .map-toolbar .map-toolbar__timewheel-player .swiper-container:after {
-        right: 0;
-        background-image: linear-gradient(to right, transparent, #F2F2F2);
-        /* Standard syntax (must be last) */ }
-      .am .map-toolbar .map-toolbar__timewheel-player .swiper-container:before {
-        left: 0;
-        background-image: linear-gradient(to left, transparent, #F2F2F2);
-        /* Standard syntax (must be last) */ }
+      
       .am .map-toolbar .map-toolbar__timewheel-player .swiper-slide {
         display: flex;
         flex-direction: column;
@@ -4473,8 +4464,10 @@ html, body {
   @media (min-width: 768px) {
     .am .map-toolbar .map-toolbar__datetime,
     .am .map-toolbar .map-toolbar__animation {
+      min-height:1px;
       padding: 1rem; }
     .am .map-toolbar .map-toolbar__timewheel-player {
+      min-height:1px;
       margin: 0;
       padding: 0 1rem;
       border-bottom: none; }
@@ -5085,7 +5078,7 @@ html, body {
     width: 100%; }
   .am .page {
     flex: 1 1 auto;
-    padding-bottom: 4rem; }
+    padding-bottom: 1rem; }
     .am .page .page__head {
       padding: 1rem 0 0rem;
       background-color: #F2F2F2;
@@ -5119,7 +5112,7 @@ html, body {
         margin: 0 0 1rem 0;
         padding-left: 2.5rem;
         position: relative; }
-         .am .page .page__content section .default-asset-publisher ul li {
+         .am .page .page__content section .default-asset-publisher ul li, .am .page .page__content .default-asset-publisher section ul li  {
         list-style-type: disc !important;
         margin: 0 0 1rem 0;
         padding-left: 2.5rem;
@@ -5837,6 +5830,45 @@ html, body {
   
   .breadcrumb > li.active {
     color: #3c3c3c !important;
+}
+
+#portlet_new-password .sheet-header::after {
+    content: "Attenzione: la tua password deve contenere minuscole, maiuscole, numeri e caratteri speciali. Deve inoltre avere una lunghezza minima di 8 caratteri." !important;
+}
+
+#map-component--monitoraggio .map-component__image-viewer__lead {
+	display: none;
+}
+
+.autocomp-search-results {
+	position: absolute;
+	width: 100%;
+	max-height: 60vh;
+	overflow-y: auto;
+	top: 2.5rem;
+	border: 1px solid #0C6AAF;
+	margin: 0;
+	box-shadow: 0px 3px 24px 0px rgba(0, 0, 0, 0.1);
+	z-index: 10;
+	background: #fff;
+	padding: 0;	
+	top: 70px;
+}
+
+.autocomp-search-results a {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	color: #0C6AAF !important;
+	padding-left: 10px;
+	cursor:pointer;
+	text-decoration:none;
+	
+}
+
+.autocomp-search-results a:hover,.autocomp-search-results a:focus {
+	background-color: #DBF2FF;
+	text-decoration:none;
 }
 
 /*# sourceMappingURL=allerta-meteo.css.map */

@@ -29,6 +29,11 @@ AllarmeBean allarmi = (AllarmeBean) request.getAttribute("allarmi");
 </portlet:renderURL>
 
 <style>
+
+.container {
+    max-width: 1570px;
+}
+
 .tabella-regole_length {
 	display: none;
 }
@@ -74,6 +79,14 @@ AllarmeBean allarmi = (AllarmeBean) request.getAttribute("allarmi");
 				Nuova Regola
 			</button>
 			
+			<button
+						type="button" 
+						
+						class="btn btn-primary" 
+						onclick="window.open('/o/report/regole');"
+						
+						>Scarica Excel regole</button>
+			
 			<br/>
 			<br/>
 			
@@ -87,9 +100,13 @@ AllarmeBean allarmi = (AllarmeBean) request.getAttribute("allarmi");
 						<th >Sensore primario</th>
 						<th >Altri sensori</th>
 						<th >Comuni</th>
+						<th >Fiume</th>
+						<th >Tratti di fiume</th>
+						<th >Problemi</th>
 						<c:if test="${allarmi.canModifica }">
 						<th >Modifica</th>
 						<th >Elimina</th>
+						
 						</c:if>
 					</tr>
 	
@@ -127,6 +144,19 @@ AllarmeBean allarmi = (AllarmeBean) request.getAttribute("allarmi");
 						<td>${regola.sensorePrimario}</td>
 						<td>${regola.altriSensori}</td>
 						<td>${regola.comuni}</td>
+						<td>${regola.fiume}</td>
+						<td>${regola.tratti}</td>
+						
+						<td>
+							<c:choose>
+							    <c:when test="${regola.problemi}">
+							       <span style="font-size:xx-large">&#9888;</span>
+							    </c:when>    
+							    <c:otherwise>
+							      
+							    </c:otherwise>
+							</c:choose>
+						</td>
 						
 						<c:if test="${allarmi.canModifica }">
 						<td>
@@ -143,6 +173,8 @@ AllarmeBean allarmi = (AllarmeBean) request.getAttribute("allarmi");
 								class="btn btn-primary">Elimina
 							</button>
 						</td>
+						
+						
 						
 						</c:if>
 						
@@ -161,6 +193,14 @@ AllarmeBean allarmi = (AllarmeBean) request.getAttribute("allarmi");
 				class="btn btn-primary">
 				Nuova Regola
 			</button>
+			
+			<button
+						type="button" 
+						
+						class="btn btn-primary" 
+						onclick="window.open('/o/report/regole');"
+						
+						>Scarica Excel regole</button>
 		
 		</div>
 		
@@ -242,7 +282,7 @@ AllarmeBean allarmi = (AllarmeBean) request.getAttribute("allarmi");
 								<th>Identificatore</th>
 								<th>Tipo sensore</th>
 								<th>Stazione</th>
-								<th>Soglia</th>
+								<th>Problemi</th>
 								<th>Elimina</th>
 							</tr>
 						</thead>
@@ -366,6 +406,7 @@ AllarmeBean allarmi = (AllarmeBean) request.getAttribute("allarmi");
 		
 	<script>
 	
+	
 		var index = 0;
 		var sensori = [];
 		
@@ -468,7 +509,7 @@ AllarmeBean allarmi = (AllarmeBean) request.getAttribute("allarmi");
 				"scrollX": true,
 				 "order": [[ 0, "asc" ]],
 	                'columnDefs': [ {
-	                    'targets': [6,7,8], // column index (start from 0)
+	                    'targets': [6,10,11], // column index (start from 0)
 	                    'orderable': false, // set orderable false for selected columns
 	                 }]
 	            });

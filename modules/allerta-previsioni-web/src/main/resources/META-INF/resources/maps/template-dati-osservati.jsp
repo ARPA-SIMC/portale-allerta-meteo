@@ -489,7 +489,7 @@ DocumentazioneConfiguration doc = AllertaTracker.getDocumentazioneConfiguration(
 						<span
 							class="phenomenon-sign__icon icon__temperature-estreme-alte icon i-temperature-es"
 							aria-hidden="true"></span> <span class="phenomenon-sign__text">Temperature
-							estreme calde</span>
+							estreme</span>
 					</div>
 				</div>
 			</div>
@@ -510,7 +510,7 @@ DocumentazioneConfiguration doc = AllertaTracker.getDocumentazioneConfiguration(
 						<span
 							class="phenomenon-sign__icon icon__temperature-estreme-alte icon i-temperature-es"
 							aria-hidden="true"></span> <span class="phenomenon-sign__text">Temperature
-							estreme calde</span>
+							estreme</span>
 					</div>
 				</div>
 			</div>
@@ -531,7 +531,7 @@ DocumentazioneConfiguration doc = AllertaTracker.getDocumentazioneConfiguration(
 						<span
 							class="phenomenon-sign__icon icon__temperature-estreme-alte icon i-temperature-es"
 							aria-hidden="true"></span> <span class="phenomenon-sign__text">Temperature
-							estreme calde</span>
+							estreme</span>
 					</div>
 				</div>
 			</div>
@@ -552,7 +552,7 @@ DocumentazioneConfiguration doc = AllertaTracker.getDocumentazioneConfiguration(
 						<span
 							class="phenomenon-sign__icon icon__temperature-estreme-alte icon i-temperature-es"
 							aria-hidden="true"></span> <span class="phenomenon-sign__text">Temperature
-							estreme calde</span>
+							estreme</span>
 					</div>
 				</div>
 			</div>
@@ -573,7 +573,7 @@ DocumentazioneConfiguration doc = AllertaTracker.getDocumentazioneConfiguration(
 						<span
 							class="phenomenon-sign__icon icon__temperature-estreme-basse icon i-temperature-es"
 							aria-hidden="true"></span> <span class="phenomenon-sign__text">Temperature
-							estreme fredde</span>
+							estreme</span>
 					</div>
 				</div>
 			</div>
@@ -594,7 +594,7 @@ DocumentazioneConfiguration doc = AllertaTracker.getDocumentazioneConfiguration(
 						<span
 							class="phenomenon-sign__icon icon__temperature-estreme-basse icon i-temperature-es"
 							aria-hidden="true"></span> <span class="phenomenon-sign__text">Temperature
-							estreme fredde</span>
+							estreme</span>
 					</div>
 				</div>
 			</div>
@@ -615,7 +615,7 @@ DocumentazioneConfiguration doc = AllertaTracker.getDocumentazioneConfiguration(
 						<span
 							class="phenomenon-sign__icon icon__temperature-estreme-basse icon i-temperature-es"
 							aria-hidden="true"></span> <span class="phenomenon-sign__text">Temperature
-							estreme fredde</span>
+							estreme</span>
 					</div>
 				</div>
 			</div>
@@ -636,7 +636,7 @@ DocumentazioneConfiguration doc = AllertaTracker.getDocumentazioneConfiguration(
 						<span
 							class="phenomenon-sign__icon icon__temperature-estreme-basse icon i-temperature-es"
 							aria-hidden="true"></span> <span class="phenomenon-sign__text">Temperature
-							estreme fredde</span>
+							estreme</span>
 					</div>
 				</div>
 			</div>
@@ -953,6 +953,7 @@ DocumentazioneConfiguration doc = AllertaTracker.getDocumentazioneConfiguration(
 									</div>
 									<div>Assenza di fenomeni significativi prevedibili</div>
 								</div>
+								
 							</div>
 
 							<div data-if="filter" data-when="generale">
@@ -992,11 +993,11 @@ DocumentazioneConfiguration doc = AllertaTracker.getDocumentazioneConfiguration(
 									<li class="nav-item" data-if="filter"
 										data-when="temperature-estreme-alte"><a class="nav-link"
 										href="<%=doc.linkTemperature() %>" target="_blank"><span class="icon i-file-pdf-o"></span>Temperature
-											estreme calde</a></li>
+											estreme</a></li>
 									<li class="nav-item" data-if="filter"
 										data-when="temperature-estreme-basse"><a class="nav-link"
 										href="<%=doc.linkTemperature() %>" target="_blank"><span class="icon i-file-pdf-o"></span>Temperature
-											estreme fredde</a></li>
+											estreme</a></li>
 									<li class="nav-item" data-if="filter" data-when="stato-mare">
 										<a class="nav-link" href="<%=doc.linkStatoMare() %>" target="_blank"><span
 											class="icon i-file-pdf-o"></span>Stato del mare</a>
@@ -1006,6 +1007,17 @@ DocumentazioneConfiguration doc = AllertaTracker.getDocumentazioneConfiguration(
 											class="icon i-file-pdf-o"></span>Mareggiate</a>
 									</li>
 									<li class="nav-item" data-if="filter" data-when="valanghe">
+									   <div class="d-flex flex-row align-items-center my-md-2">
+									<div style="margin-top: -0.4rem !important;" data-toggle="tooltip" title=""
+										class="alert-sign alert-sign--white"
+										data-original-title="No neve">
+										<div style="background-color:#cccccc"></div>
+										<div style="background-color:#cccccc"></div>
+										<div style="background-color:#cccccc"></div>
+										<div style="background-color:#cccccc"></div>
+									</div>
+									<div style="font-size: .9rem;">Fenomeno non valutabile</div>
+								</div>
 										<a class="nav-link" href="<%=doc.linkValanghe() %>" target="_blank"><span
 											class="icon i-file-pdf-o"></span>Valanghe</a>
 									</li>
@@ -1107,7 +1119,7 @@ DocumentazioneConfiguration doc = AllertaTracker.getDocumentazioneConfiguration(
 						data-trigger="rtdata-filter">
 						<option value="">- mostra dati -</option>
 						<option value="">Nessuno</option>
-						<option value="precipitazioni">Pioggia</option>
+						<option value="precipitazioni">Precipitazioni</option>
 						<option value="idrometrico">Liv. Idrometrico</option>
 						<option value="temperature">Temperature</option>
 						<option value="umidita">Umidità</option>

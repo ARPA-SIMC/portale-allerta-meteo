@@ -1,5 +1,6 @@
 package it.eng.allerter.allerta.utils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -49,6 +50,28 @@ public class MessaggioService {
 					organizationIds.put(rg.getID_GRUPPO(),rg.getNOME());
 			}
 			
+		}
+		
+		/*List<Organization> oo = organizationLocalService.getOrganizations(org);
+		for(Organization o: organizationLocalService.getSuborganizations(oo))
+			organizationIds.put(o.getOrganizationId(),o.getName());*/
+		organizationIds =  sortByValues(organizationIds); 
+		
+		return organizationIds;
+
+	}
+	
+	public Map<Long,String> getOrganizations(long owner) throws PortalException {
+		 
+		Map<Long,String> organizationIds = new HashMap<Long, String>();
+		
+		if (owner == 0) {
+			return organizationIds;
+		}
+		
+		ArrayList<Object[]> o = rubricaGruppoService.getGruppiByName(owner, "%", -1L, -1L);
+		for (Object[] oo : o) {
+			organizationIds.put((Long)oo[0],(String) oo[1]);
 		}
 		
 		/*List<Organization> oo = organizationLocalService.getOrganizations(org);

@@ -1,0 +1,10 @@
+Bundle-Name: allerta-catasto-api
+Bundle-SymbolicName: allerta.catasto.api
+Bundle-Version: 1.0.0
+Export-Package:\
+	allerta.catasto.exception,\
+	allerta.catasto.model,\
+	allerta.catasto.service,\
+	allerta.catasto.service.persistence
+-check: EXPORTS
+-includeresource: META-INF/service.xml=../allerta-catasto-service/service.xml

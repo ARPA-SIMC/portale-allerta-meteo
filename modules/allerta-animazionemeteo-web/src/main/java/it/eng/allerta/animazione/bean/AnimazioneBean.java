@@ -21,9 +21,7 @@ public class AnimazioneBean implements Serializable {
 	private static final long serialVersionUID = 3899877445302620722L;
 	
 	private static Log _log = LogFactoryUtil.getLog(AnimazioneBean.class);
-	
-	private static final String arpaUrl = "https://www.arpae.it/sim/pagine/mappe_numeriche/immagine.php?im=";
-	
+		
 	Calendar calendar = null;
 	private List<String> days = new ArrayList<String>();
 	
@@ -43,22 +41,12 @@ public class AnimazioneBean implements Serializable {
 		
 		ArrayList<String> list = new ArrayList<String>();
 		
-		for(int i=1; i<25; i++){
-			
-			list.add(new String(arpaUrl + param + "_" + String.format("%02d",i) + "s.png"));
-		}
-		
 		return list;	
 	}
 	
 	public static ArrayList<String> createBigImageList(String param) {
 		
 		ArrayList<String> list = new ArrayList<String>();
-		
-		for(int i=1; i<25; i++){
-			
-			list.add(new String( arpaUrl + param + "_" + String.format("%02d",i) + ".png"));
-		}
 		
 		return list;	
 	}

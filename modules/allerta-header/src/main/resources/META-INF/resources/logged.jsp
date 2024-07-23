@@ -1,3 +1,5 @@
+<%@page import="it.eng.allerter.model.AllertaValanghe"%>
+<%@page import="java.util.HashMap"%>
 <%@page import="com.liferay.document.library.kernel.model.DLFileEntry"%>
 <%@page import="it.eng.bollettino.model.Bollettino"%>
 <%@page import="com.liferay.portal.kernel.util.DateFormatFactoryUtil"%>
@@ -93,6 +95,7 @@
 				Date date = new Date(n.getTimestamp());
 				if (entryClassName.equals(Allerta.class.getName()) || 
 					entryClassName.equals(Bollettino.class.getName()) ||
+					entryClassName.equals(AllertaValanghe.class.getName()) ||
 					entryClassName.equals(DLFileEntry.class.getName()) ) {
 					
 					long workflowTaskId = payload.getLong("workflowTaskId");
@@ -155,6 +158,11 @@
 	boolean isAdminPortale = false;
 	boolean isDelegatoTotale = false;
 	boolean isDelegatoParziale = false;
+	boolean isVerificaAllerte = false;
+	
+	boolean isCompilatorePC = false;
+	boolean isCompilatoreARPAE = false;
+	boolean isTecnicoPC = false;
 
 	long idSito = 0;
 	int numberSite = 0;
@@ -183,8 +191,15 @@
 	String admin_portale = "Amministratore portale";
 	String delegato_totale = "DELEGATO SINDACO";
 	String delegato_parziale_k = "DELEGATO POTERI PARZIALI";
+	
+	String compilatore_pc_k = "Compilatore PC";
+	String compilatore_arpae_k = "Compilatore ARPAE";
+	String tecnico_pc_k = "Tecnico PC";
+	String verifica_k = "Compilatore Verifica Allerte";
 	//String webmaster_k = "webmaster";
+	Map<String,String> sindacoLinks = new HashMap<String,String>();
 
+	
 	// COSTANTI DEI SITI
 	String guest_k = "guest";
 
@@ -210,7 +225,7 @@
 			Map<String, Serializable> expandoAttribs = null;
 			Group sitoAttuale;
 			String sname = "";
-			while (itSite.hasNext() && (!findSiteSindaco)) {
+			while (itSite.hasNext()) {
 				sitoAttuale = (Group) itSite.next();
 				sname = sitoAttuale.getName();
 				if (!sname.equalsIgnoreCase(guest_k)) {
@@ -237,6 +252,7 @@
 						urlSite = sitePath.concat(sitoAttuale.getFriendlyURL());
 						urlSite = urlSite.concat(url_parameter);
 						findSiteSindaco = true;
+						sindacoLinks.put(siteName,urlSite);
 					}
 				}
 
@@ -260,6 +276,14 @@
 			isCompilatore_monitoraggio = true;
 		if (name.equalsIgnoreCase(operatore_comunicazione_k))
 			isOperatore_comunicazione = true;
+		if (name.equalsIgnoreCase(compilatore_pc_k))
+			isCompilatorePC = true;
+		if (name.equalsIgnoreCase(compilatore_arpae_k))
+			isCompilatoreARPAE = true;
+		if (name.equalsIgnoreCase(tecnico_pc_k))
+			isTecnicoPC = true;
+		if (name.equalsIgnoreCase(verifica_k))
+			isVerificaAllerte = true;
 		//if (name.equalsIgnoreCase(webmaster_k)) {
 		//	isWebmaster = true;
 		//}
@@ -292,8 +316,17 @@
 
 		<nav role="navigation" class="nav-vertical">
 			<ul class="nav flex-column">
-				
-				<c:if test="<%=isSindaco || isDelegatoParziale%>">
+			
+				<% for (String sindacoLink : sindacoLinks.keySet()) {
+					%><li class="nav-item">
+						<a class="nav-link " href="<%=sindacoLinks.get(sindacoLink)%>"> <span
+							class="icon i-tree" title="Vai a <%=sindacoLink%>"></span> <span
+							class="nav-vertical__item-label">Vai a <%=sindacoLink%></span>
+						</a>
+					</li><%
+				}
+				%>
+				<c:if test="<%=false && (isSindaco || isDelegatoParziale)%>">
 					<li class="nav-item">
 						<a class="nav-link " href="<%=urlSite%>"> <span
 							class="icon i-tree" title="Il tuo comune"></span> <span
@@ -305,8 +338,8 @@
 				
 					
 				<c:if
-					test="<%=isAdministrator || isApprovatore_arpae || isApprovatore_pc
-										|| isCompilatore_allerta || isCompilatore_monitoraggio || isAdminPortale%>">
+					test="<%=false && (isAdministrator || isApprovatore_arpae || isApprovatore_pc
+										|| isCompilatore_allerta || isCompilatore_monitoraggio || isAdminPortale)%>">
 					
 					<%
 					PortletURL workflowUrl = 
@@ -364,122 +397,6 @@
 					
 				</c:if>
 				
-				<c:if test="<%=isAdministrator || isAdminPortale || isSindaco || isDelegatoTotale || isDelegatoParziale || isOperatore_comunicazione %>">
-			
-					<li class="nav-item">
-						<a class="nav-link " href="/documenti-allertameteoer"> <span
-							class="icon i-comment" title="Documenti AllertaMeteoER"></span> <span
-							class="nav-vertical__item-label">Documenti AllertaMeteoER</span>
-						</a>
-					</li>
-					
-				</c:if>
-				
-				
-				<c:if
-					test="<%=isAdministrator || isCompilatore_allerta || isCompilatore_monitoraggio%>">
-					
-					<li class="nav-item">
-						<a class="nav-link " href="/sensori"> 
-						  <span	class="icon i-bar-chart" title="Sensori per l'allertamento"></span> 
-							<span class="nav-vertical__item-label">Sensori </span>
-						</a>
-					</li>
-					
-					<li class="nav-item">
-						<a class="nav-link " href="allarme"> 
-						  <span	class="icon i-flag" title="Regole Allarmi"></span> 
-							<span class="nav-vertical__item-label">Allarmi</span>
-						</a>
-					</li>
-					
-					<%
-					long allertaPlid = PortalUtil.getPlidFromPortletId(scopeGroupId, false, 
-							AllertaKeys.AllertaCompilaSbPortlet); 
-					
-					PortletURL allertaUrl = PortletURLFactoryUtil.create(request, 
-							AllertaKeys.AllertaCompilaSbPortlet, allertaPlid, 
-							PortletRequest.RENDER_PHASE);
-					allertaUrl.setParameter("mvcRenderCommandName", "/allertaer/allerta/compila");
-					
-					%>
-					<li class="nav-item">
-						<a class="nav-link " href="<%=allertaUrl%>"> <span
-							class="icon i-files-o" title="Crea
-								allerte e bollettini"></span> <span
-							class="nav-vertical__item-label">Crea allerte e bollettini</span>
-						</a>
-					</li>
-					
-					<li class="nav-item">
-						<a class="nav-link " href="/gestione-monitoraggio"> <span
-							class="icon i-files-o" title="Gestione Monitoraggio"></span> 
-							<span class="nav-vertical__item-label">Gestione	Monitoraggio</span>
-						</a>
-					</li>
-					
-		
-				</c:if>
-				
-				
-				<c:if test="<%=isAdministrator || isCompilatore_monitoraggio%>">
-				
-					<li class="nav-item">
-						<a class="nav-link " href="/monitoraggio-eventi"> <span
-							class="icon i-files-o" title="Crea
-								doc. di monitoraggio"></span> <span
-							class="nav-vertical__item-label">Crea doc. di monitoraggio</span>
-						</a>
-					</li>
-					
-					<li class="nav-item">
-						<a class="nav-link " href="/preferenze-monitoraggio"> <span
-							class="icon i-files-o" title="Preferenze
-								Monitoraggio"></span> <span
-							class="nav-vertical__item-label">Preferenze	Monitoraggio</span>
-						</a>
-					</li>
-					
-				</c:if>
-				
-				<c:if
-					test="<%=isAdministrator || isCompilatore_allerta || isCompilatore_monitoraggio%>">
-
-					<li class="nav-item">
-						<a class="nav-link " href="/sms2"> <span
-							class="icon i-inbox" title="Report invii"></span> <span
-							class="nav-vertical__item-label">Report invii</span>
-						</a>
-					</li>
-					
-					
-					<li class="nav-item">
-						<a class="nav-link " href="/sms"> <span
-							class="icon i-inbox" title="Report invii analitico"></span> <span
-							class="nav-vertical__item-label">Report invii analitico</span>
-						</a>
-					</li>
-					
-					<li class="nav-item">
-						<a class="nav-link " href="/archivio-report-post-evento"> <span
-							class="icon i-files-o" title="Report post evento"></span> <span
-							class="nav-vertical__item-label">Report post
-								evento</span>
-						</a>
-					</li>
-					
-					<li class="nav-item">
-						<a class="nav-link " href="/meteomont"> <span
-							class="icon i-files-o" title="Documento meteomont"></span> <span
-							class="nav-vertical__item-label">Documento
-								meteomont</span>
-						</a>
-					</li>
-					
-					
-				</c:if>
-				
-				
 				<c:if test="<%=isAdministrator || isAmministratore_arpae_rubrica || isAdminPortale || isSindaco || isDelegatoTotale %>">
 				
 					<li class="nav-item">
@@ -492,10 +409,207 @@
 				
 				</c:if>
 				
+				<c:if
+					test="<%=isAdministrator || isCompilatore_allerta || isTecnico || isCompilatore_monitoraggio || isSindaco || isDelegatoTotale || isDelegatoParziale || isCompilatorePC || isCompilatoreARPAE || isTecnicoPC %>">
+					
+					<li class="nav-item">
+						<a class="nav-link " href="/sensori"> 
+						  <span	class="icon i-bar-chart" title="Sensori per l'allertamento"></span> 
+							<span class="nav-vertical__item-label">Sensori </span>
+						</a>
+					</li>
+					
+					
+		
+				</c:if>
+				
+				<c:if
+					test="<%=isAdministrator || isCompilatore_allerta || isCompilatore_monitoraggio || isAdminPortale %>">
+					
+				<li class="nav-item">
+						<a class="nav-link " href="/allarme"> 
+						  <span	class="icon i-flag" title="Regole Allarmi"></span> 
+							<span class="nav-vertical__item-label">Regole superamenti</span>
+						</a>
+					</li>
+				</c:if>
+				
+				<c:if
+					test="<%=isAdministrator || isCompilatore_allerta || isCompilatore_monitoraggio  || isCompilatoreARPAE %>">
+					
+					
+					
+					<%
+					long allertaPlid = PortalUtil.getPlidFromPortletId(scopeGroupId, false, 
+							AllertaKeys.AllertaCompilaSbPortlet); 
+					
+					PortletURL allertaUrl = PortletURLFactoryUtil.create(request, 
+							AllertaKeys.AllertaCompilaSbPortlet, allertaPlid, 
+							PortletRequest.RENDER_PHASE);
+					allertaUrl.setParameter("mvcRenderCommandName", "/allertaer/allerta/compila");
+					
+					long valanghePlid = PortalUtil.getPlidFromPortletId(scopeGroupId, false, 
+							AllertaKeys.AllertaValangheCompilaSbPortlet); 
+					
+					PortletURL valangheUrl = PortletURLFactoryUtil.create(request, 
+							AllertaKeys.AllertaValangheCompilaSbPortlet, valanghePlid, 
+							PortletRequest.RENDER_PHASE);
+					allertaUrl.setParameter("mvcRenderCommandName", "/allertaer/allerta_valanghe/compila");
+					
+					%>
+					<li class="nav-item">
+						<a class="nav-link " href="<%=allertaUrl%>"> <span
+							class="icon i-files-o" title="Crea
+								allerte e bollettini"></span> <span
+							class="nav-vertical__item-label">Crea allerte e bollettini</span>
+						</a>
+					</li>
+					
+					<li class="nav-item">
+						<a class="nav-link " href="<%=valangheUrl%>"> <span
+							class="icon i-files-o" title="Crea
+								documenti valanghe"></span> <span
+							class="nav-vertical__item-label">Crea documenti valanghe</span>
+						</a>
+					</li>
+					
+					<li class="nav-item">
+						<a class="nav-link " href="/gestione-monitoraggio"> <span
+							class="icon i-files-o" title="Mappa Monitoraggio"></span> 
+							<span class="nav-vertical__item-label">Mappa Monitoraggio</span>
+						</a>
+					</li>
+					
+		
+				</c:if>
+				
+				
+				<c:if test="<%=isAdministrator || isCompilatore_monitoraggio || isCompilatoreARPAE %>">
+				
+					<li class="nav-item">
+						<a class="nav-link " href="/monitoraggio-eventi"> <span
+							class="icon i-files-o" title="Crea
+								doc. di monitoraggio"></span> <span
+							class="nav-vertical__item-label">Crea doc. di monitoraggio</span>
+						</a>
+					</li>
+					
+					<li class="nav-item">
+						<a class="nav-link " href="/preferenze-monitoraggio"> <span
+							class="icon i-files-o" title="Idrometri
+								Monitoraggio"></span> <span
+							class="nav-vertical__item-label">Idrometri Monitoraggio</span>
+						</a>
+					</li>
+					
+				</c:if>
+				
+				<c:if
+					test="<%=isAdministrator || isCompilatore_allerta || isCompilatore_monitoraggio || isTecnico || isCompilatorePC || isCompilatoreARPAE || isTecnicoPC %>">
+				<li class="nav-item">
+						<a class="nav-link " href="/elenco-superamenti"> <span
+							class="icon i-umbrella" title="Elenco superamenti"></span> <span
+							class="nav-vertical__item-label">Elenco superamenti</span>
+						</a>
+					</li>
+				</c:if>
+				
+				<c:if
+					test="<%=isAdministrator || isCompilatorePC || isCompilatoreARPAE || isApprovatore_arpae || isApprovatore_pc  %>">
+				<li class="nav-item">
+						<a class="nav-link " href="/briefing"> <span
+							class="icon i-file-o" title="Briefing allerta"></span> <span
+							class="nav-vertical__item-label">Briefing allerta</span>
+						</a>
+					</li>
+				</c:if>
+				
+				<c:if
+					test="<%=isAdministrator || isCompilatore_allerta || isCompilatore_monitoraggio || isCompilatorePC || isCompilatoreARPAE %>">
+
+					
+
+					<li class="nav-item">
+						<a class="nav-link " href="/sms2"> <span
+							class="icon i-inbox" title="Report invii"></span> <span
+							class="nav-vertical__item-label">Report invii</span>
+						</a>
+					</li>
+					
+				</c:if>
+				
+				<c:if
+					test="<%=isAdministrator || isCompilatore_allerta || isCompilatore_monitoraggio  || isCompilatorePC %>">
+					
+					<li class="nav-item">
+						<a class="nav-link " href="/sms"> <span
+							class="icon i-inbox" title="Report invii analitico"></span> <span
+							class="nav-vertical__item-label">Report invii analitico</span>
+						</a>
+					</li>
+				</c:if>
+				
+				<c:if
+					test="<%=isAdministrator || isAdminPortale || isVerificaAllerte %>">
+					
+					<li class="nav-item">
+						<a class="nav-link " href="/verifica"> <span
+							class="icon i-files-o" title="Verifica allerte"></span> <span
+							class="nav-vertical__item-label">Verifica allerte</span>
+						</a>
+					</li>
+					
+					<li class="nav-item">
+						<a class="nav-link " href="/catasto-segnalazioni"> <span
+							class="icon i-files-o" title="Catasto segnalazioni"></span> <span
+							class="nav-vertical__item-label">Catasto segnalazioni</span>
+						</a>
+					</li>
+				</c:if>
+				
+				<c:if
+					test="<%=isAdministrator || isCompilatore_allerta || isCompilatore_monitoraggio  || isCompilatoreARPAE %>">
+							
+					<li class="nav-item">
+						<a class="nav-link " href="/archivio-report-post-evento"> <span
+							class="icon i-files-o" title="Report post evento"></span> <span
+							class="nav-vertical__item-label">Report post
+								evento</span>
+						</a>
+					</li>
+				
+				</c:if>
+				
+				<c:if
+					test="<%=isAdministrator || isCompilatore_allerta || isCompilatore_monitoraggio  %>">
+					
+						
+					<li class="nav-item">
+						<a class="nav-link " href="/meteomont"> <span
+							class="icon i-files-o" title="Documento meteomont"></span> <span
+							class="nav-vertical__item-label">Documento
+								meteomont</span>
+						</a>
+					</li>
+					
+					
+				</c:if>
+				
+				<c:if test="<%=isAdministrator || isAdminPortale || isTecnico || isSindaco || isDelegatoTotale || isDelegatoParziale || isOperatore_comunicazione || isCompilatorePC || isTecnicoPC %>">
+			
+					<li class="nav-item">
+						<a class="nav-link " href="/documenti-allertameteoer"> <span
+							class="icon i-comment" title="Documenti AllertaMeteoER"></span> <span
+							class="nav-vertical__item-label">Documenti AllertaMeteoER</span>
+						</a>
+					</li>
+					
+				</c:if>
+				
 				
 				<c:if
 					test="<%=isAdministrator || isCompilatore_allerta
-										|| isCompilatore_monitoraggio%>">
+										|| isCompilatore_monitoraggio || isCompilatorePC %>">
 						<%
 						long comunicazionePlid = PortalUtil.getPlidFromPortletId(scopeGroupId, 
 								AllertaKeys.AllertaMessaggioSindacoPortlet );
@@ -515,12 +629,14 @@
 								
 				</c:if>
 				
-				<li class="nav-item">
-					<a class="nav-link " href="/luoghi-preferiti"> <span
-						class="icon i-heart" title="Luoghi Preferiti"></span> <span
-						class="nav-vertical__item-label">Luoghi Preferiti</span>
-					</a>
-				</li>
+				<c:if test="<%=isAdministrator || isAdminPortale %>">
+					<li class="nav-item">
+						<a class="nav-link " href="/elenco-cittadini"> <span
+							class="icon i-user" title="Elenco cittadini"></span> <span
+							class="nav-vertical__item-label">Elenco cittadini</span>
+						</a>
+					</li>
+				</c:if>
 				
 				
 				<li class="nav-item">

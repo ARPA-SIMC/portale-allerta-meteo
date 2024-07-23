@@ -66,9 +66,51 @@
                             <li class="nav-item ">
                                 <a class="nav-link" href="/cookie" title="Vai a Informativa sui cookie">Informativa sui cookie</a>
                             </li>
+			    <li class="nav-item"><span  class="nav-link" style="padding-left:5px;padding-right:10px;color:#ffffff">Seguici su</span>
+	    			<span>
+                <a style="text-decoration:none" target="_blank" title="Segui Allerta Meteo Emilia-Romagna su Twitter" href="https://twitter.com/AllertaMeteoRER"><span class="icon i-twitter" style="margin-right:0.5rem"/></a>
+            			</span>
+            			<span>
+                <a style="text-decoration:none" target="_blank" title="Segui Allerta Meteo Emilia-Romagna su Telegram" href="https://t.me/AllertaMeteoEMR"><span class="icon i-telegram" style=""/></a>
+           			 </span>
+			    </li>
                     </ul>
                 </nav>
             </div>
         </div>
     </div>
-</footer><!-- / sezioni/layout/footer -->
+</footer>
+<script type="text/javascript">
+
+/* 	Aggiungere (o togliere) se necessario una definizione di variabile "var indexn = ..." per ogni ulteriore ambiente di test/sviluppo/backend da non tracciare e
+	modificare di conseguenza la condizione di filtro per escludere dal tracciamento anche le visite provenienti da quei siti.
+*/	 
+    var _paq = _paq || [];
+
+var index1 = location.href.indexOf("applicazioni.regione.emilia-romagna.it");
+var index2 = location.href.indexOf("applicazionitest.regione.emilia-romagna.it");
+var index3 = location.href.indexOf("wwwservizitest.regione.emilia-romagna.it");
+var index4 = location.href.indexOf("cm.regione.emilia-romagna.it");
+var index5 = location.href.indexOf("test-cm.regione.emilia-romagna.it");
+var index6 = location.href.indexOf("www2.regione.emilia-romagna.it");
+var index7 = location.href.indexOf("localhost");
+var index8 = location.href.indexOf("//10.");
+
+(function(){ var u="https://statisticheweb.regione.emilia-romagna.it/analytics/";
+
+if (index1==-1 && index2==-1 && index3==-1 && index4==-1 && index5==-1 && index6==-1 && index7==-1 && index8==-1){
+
+    _paq.push(['setSiteId', 125]);
+    _paq.push(['setTrackerUrl', u+'piwik.php']);
+    _paq.push(['setDocumentTitle', document.domain + "/" + document.title]);
+    _paq.push(['trackPageView']);
+    _paq.push(['enableLinkTracking']);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0]; g.type='text/javascript'; g.defer=true; g.async=true; g.src=u+'piwik.js';
+
+    s.parentNode.insertBefore(g,s); }})();
+
+</script>
+
+<noscript><p><img src="https://statisticheweb.regione.emilia-romagna.it/analytics/piwik.php?idsite=125" style="border:0" alt="" /></p></noscript>
+
+<!-- / sezioni/layout/footer -->

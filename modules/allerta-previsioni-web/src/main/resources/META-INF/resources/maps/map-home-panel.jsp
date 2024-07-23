@@ -153,8 +153,7 @@
 					<span
 						class="phenomenon-sign__icon icon__temperature-estreme-alte icon i-temperature-es"
 						aria-hidden="true"></span> <span
-						class="phenomenon-sign__text">Temperature estreme
-						calde</span>
+						class="phenomenon-sign__text">Temperature estreme</span>
 				</div>
 			</div>
 	</a></li>

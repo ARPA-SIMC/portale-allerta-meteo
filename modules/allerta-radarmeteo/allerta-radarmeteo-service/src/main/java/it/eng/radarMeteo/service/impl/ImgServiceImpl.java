@@ -153,14 +153,15 @@ public class ImgServiceImpl extends ImgServiceBaseImpl {
 		long step = 0;
 		ArrayList<Map<String,Object>> result = new ArrayList<Map<String,Object>>();
 		List<Object[]> list = jsonFinder.findLastTheeDays(stazione,variabile);
-		_log.info("elementi dal db: "+list.size() );
+		//_log.info("elementi dal db: "+list.size() );
 		TimeZone tz = TimeZone.getTimeZone("Europe/Rome");
 		boolean inDs = tz.inDaylightTime(new Date());
 		if (variabile.contains("B13011")){
 			if (variabile.contains("3600"))
 				step=3600000;
-			else
-				step=1800000;
+			else if (variabile.contains("1800"))
+					step=1800000;
+			else step=900000;
 		}
 		if(variabile.contains("B13215")){
 			step=3600000;

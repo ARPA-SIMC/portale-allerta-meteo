@@ -1,6 +1,7 @@
 package it.eng.allerter.allerta;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -18,6 +19,21 @@ import com.liferay.portal.kernel.workflow.WorkflowConstants;
 
 
 public class DocumentModelBean {
+	
+		public class FilenameComparator implements Comparator<FolderToView> {
+
+			@Override
+			public int compare(FolderToView arg0, FolderToView arg1) {
+				
+				if (arg0==null) return -1;
+				if (arg1==null) return 1;
+				String s1 = arg0.getTitle();
+				String s2 = arg1.getTitle();
+				
+				if (s1==null) return -1; else return s1.compareTo(s2);
+			}
+			
+		}
 
 	// serialVersionUID
 		private static final long   serialVersionUID = 7459438254337818761L;
@@ -274,6 +290,11 @@ public class DocumentModelBean {
 					}
 				}
 			}
+			
+			if (listFolder!=null && listFolder.size()>1) {
+				listFolder.sort(new FilenameComparator());
+			}
+			
 			return folderFounded;
 		}
 		
@@ -311,7 +332,7 @@ public class DocumentModelBean {
 			     	}
 					else{
 					
-					// Prendiamo tutte le cartelle compresa se stessa per questo Ã¨ impostata a true 
+					// Prendiamo tutte le cartelle compresa se stessa per questo è impostata a true 
 					
 					dlFoldersComune = DLFolderLocalServiceUtil.getFolders(groupId,folderId , true);
 					
@@ -330,6 +351,10 @@ public class DocumentModelBean {
 					}
 					}
 				}
+			}
+			
+			if (listFolder!=null && listFolder.size()>1) {
+				listFolder.sort(new FilenameComparator());
 			}
 		}
 		

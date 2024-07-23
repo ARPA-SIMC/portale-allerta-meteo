@@ -75,7 +75,8 @@ public class RubricaGruppoModelImpl
 		{"FK_UTENTE_CREAZIONE", Types.BIGINT},
 		{"DATA_CREAZIONE", Types.TIMESTAMP},
 		{"FK_UTENTE_MODIFICA", Types.BIGINT},
-		{"DATA_MODIFICA", Types.TIMESTAMP}, {"DISABLED", Types.BOOLEAN}
+		{"DATA_MODIFICA", Types.TIMESTAMP}, {"DISABLED", Types.BOOLEAN},
+		{"FK_CATEGORIA", Types.BIGINT}
 	};
 
 	public static final Map<String, Integer> TABLE_COLUMNS_MAP =
@@ -91,10 +92,11 @@ public class RubricaGruppoModelImpl
 		TABLE_COLUMNS_MAP.put("FK_UTENTE_MODIFICA", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("DATA_MODIFICA", Types.TIMESTAMP);
 		TABLE_COLUMNS_MAP.put("DISABLED", Types.BOOLEAN);
+		TABLE_COLUMNS_MAP.put("FK_CATEGORIA", Types.BIGINT);
 	}
 
 	public static final String TABLE_SQL_CREATE =
-		"create table rubrica_RubricaGruppo (ID_GRUPPO LONG not null primary key,NOME VARCHAR(512) null,FK_SITO_PROPRIETARIO LONG,NOTE VARCHAR(2048) null,FK_UTENTE_CREAZIONE LONG,DATA_CREAZIONE DATE null,FK_UTENTE_MODIFICA LONG,DATA_MODIFICA DATE null,DISABLED BOOLEAN)";
+		"create table rubrica_RubricaGruppo (ID_GRUPPO LONG not null primary key,NOME VARCHAR(512) null,FK_SITO_PROPRIETARIO LONG,NOTE VARCHAR(2048) null,FK_UTENTE_CREAZIONE LONG,DATA_CREAZIONE DATE null,FK_UTENTE_MODIFICA LONG,DATA_MODIFICA DATE null,DISABLED BOOLEAN,FK_CATEGORIA LONG)";
 
 	public static final String TABLE_SQL_DROP =
 		"drop table rubrica_RubricaGruppo";
@@ -128,11 +130,13 @@ public class RubricaGruppoModelImpl
 
 	public static final long DISABLED_COLUMN_BITMASK = 1L;
 
-	public static final long FK_SITO_PROPRIETARIO_COLUMN_BITMASK = 2L;
+	public static final long FK_CATEGORIA_COLUMN_BITMASK = 2L;
 
-	public static final long ID_GRUPPO_COLUMN_BITMASK = 4L;
+	public static final long FK_SITO_PROPRIETARIO_COLUMN_BITMASK = 4L;
 
-	public static final long NOME_COLUMN_BITMASK = 8L;
+	public static final long ID_GRUPPO_COLUMN_BITMASK = 8L;
+
+	public static final long NOME_COLUMN_BITMASK = 16L;
 
 	/**
 	 * Converts the soap model instance into a normal model instance.
@@ -156,6 +160,7 @@ public class RubricaGruppoModelImpl
 		model.setFK_UTENTE_MODIFICA(soapModel.getFK_UTENTE_MODIFICA());
 		model.setDATA_MODIFICA(soapModel.getDATA_MODIFICA());
 		model.setDISABLED(soapModel.isDISABLED());
+		model.setFK_CATEGORIA(soapModel.getFK_CATEGORIA());
 
 		return model;
 	}
@@ -481,6 +486,28 @@ public class RubricaGruppoModelImpl
 				}
 
 			});
+		attributeGetterFunctions.put(
+			"FK_CATEGORIA",
+			new Function<RubricaGruppo, Object>() {
+
+				@Override
+				public Object apply(RubricaGruppo rubricaGruppo) {
+					return rubricaGruppo.getFK_CATEGORIA();
+				}
+
+			});
+		attributeSetterBiConsumers.put(
+			"FK_CATEGORIA",
+			new BiConsumer<RubricaGruppo, Object>() {
+
+				@Override
+				public void accept(
+					RubricaGruppo rubricaGruppo, Object FK_CATEGORIA) {
+
+					rubricaGruppo.setFK_CATEGORIA((Long)FK_CATEGORIA);
+				}
+
+			});
 
 		_attributeGetterFunctions = Collections.unmodifiableMap(
 			attributeGetterFunctions);
@@ -649,6 +676,29 @@ public class RubricaGruppoModelImpl
 		return _originalDISABLED;
 	}
 
+	@JSON
+	@Override
+	public long getFK_CATEGORIA() {
+		return _FK_CATEGORIA;
+	}
+
+	@Override
+	public void setFK_CATEGORIA(long FK_CATEGORIA) {
+		_columnBitmask |= FK_CATEGORIA_COLUMN_BITMASK;
+
+		if (!_setOriginalFK_CATEGORIA) {
+			_setOriginalFK_CATEGORIA = true;
+
+			_originalFK_CATEGORIA = _FK_CATEGORIA;
+		}
+
+		_FK_CATEGORIA = FK_CATEGORIA;
+	}
+
+	public long getOriginalFK_CATEGORIA() {
+		return _originalFK_CATEGORIA;
+	}
+
 	public long getColumnBitmask() {
 		return _columnBitmask;
 	}
@@ -690,6 +740,7 @@ public class RubricaGruppoModelImpl
 		rubricaGruppoImpl.setFK_UTENTE_MODIFICA(getFK_UTENTE_MODIFICA());
 		rubricaGruppoImpl.setDATA_MODIFICA(getDATA_MODIFICA());
 		rubricaGruppoImpl.setDISABLED(isDISABLED());
+		rubricaGruppoImpl.setFK_CATEGORIA(getFK_CATEGORIA());
 
 		rubricaGruppoImpl.resetOriginalValues();
 
@@ -769,6 +820,11 @@ public class RubricaGruppoModelImpl
 
 		rubricaGruppoModelImpl._setOriginalDISABLED = false;
 
+		rubricaGruppoModelImpl._originalFK_CATEGORIA =
+			rubricaGruppoModelImpl._FK_CATEGORIA;
+
+		rubricaGruppoModelImpl._setOriginalFK_CATEGORIA = false;
+
 		rubricaGruppoModelImpl._columnBitmask = 0;
 	}
 
@@ -821,6 +877,8 @@ public class RubricaGruppoModelImpl
 		}
 
 		rubricaGruppoCacheModel.DISABLED = isDISABLED();
+
+		rubricaGruppoCacheModel.FK_CATEGORIA = getFK_CATEGORIA();
 
 		return rubricaGruppoCacheModel;
 	}
@@ -922,6 +980,11 @@ public class RubricaGruppoModelImpl
 
 	private boolean _originalDISABLED;
 	private boolean _setOriginalDISABLED;
+
+	private long _FK_CATEGORIA;
+
+	private long _originalFK_CATEGORIA;
+	private boolean _setOriginalFK_CATEGORIA;
 	private long _columnBitmask;
 	private RubricaGruppo _escapedModel;
 

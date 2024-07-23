@@ -51,6 +51,9 @@ import it.eng.parer.xmlGen.serviziVersamento.wsRequestUnico.UnitaDocumentaria;
 import it.eng.parer.xmlGen.serviziVersamento.wsRequestUnico.VersatoreType;
 import it.eng.parer.xmlGen.superamento.mail.DatiSpecificiTypeSuperamentoMail;
 import it.eng.parer.xmlGen.superamento.sms.DatiSpecificiTypeSuperamentoSms;
+import it.eng.parer.xmlGen.valanghe.DatiSpecificiTypeValanghe;
+import it.eng.parer.xmlGen.valanghe.mail.DatiSpecificiTypeValangheMail;
+import it.eng.parer.xmlGen.valanghe.sms.DatiSpecificiTypeValangheSms;
 
 
 
@@ -406,6 +409,97 @@ public class JavaToXMLParer implements IJavaToXMLParerConstants {
 			datiSpecifici.setTIPO_STRUTTURA(TIPO_STRUTTURA);
 			
 			initConfigComponente(listaComponenti);
+		} else if(TipoDatoDaInviare.VALANGHE.getTipoDatoDaInviare().equals(tipoDatiSpecifici)){
+			
+			datiSpecifici.setVERSATORE_ENTE(ENTE_REGIONE_EMILIA_ROMAGNA);
+			datiSpecifici.setVERSATORE_STRUTTURA(STRUTTURA_ALLERTA_PROTEZIONE_CIVILE);
+			datiSpecifici.setVERSATORE_USER_ID(ConstansUtil.VERSATORE_ALLERTA_USER_ID_PROT_CIVILE);
+			
+			datiSpecifici.setCHIAVE_TIPO_REGISTRO(TIPO_REGISTRO_VALANGHE);
+			
+			datiSpecifici.setTIPOLOGIA_UNITA_DOCUMENTARIA(TIPOLOGIA_UNITA_DOCUMENTARIA_VALANGHE);
+			
+			boolean all =  datiSpecifici.getCHIAVE_NUMERO().length()>3;
+			String num = all?datiSpecifici.getCHIAVE_NUMERO().substring(1):datiSpecifici.getCHIAVE_NUMERO();
+			String ogg = all?"Allerta valanghe "+num+" emanata il ":"Bollettino valanghe "+num+" emanato il ";
+			ogg += dateUtilToString(datiSpecifici.getDATA_UNITA_DOCUMENTARIA());
+			datiSpecifici.setOGGETTO_UNITA_DOCUMENTARIA(StringEscapeUtils.escapeXml(ogg));
+			
+			datiSpecifici.setINVIO_RESPONSABILE_TERRITORIO(INVIO_RESP_TERRITORIO_SI);
+			
+			datiSpecifici.setTIPO_DOCUMENTO(TIPO_DOCUMENTO_VALANGHE);
+			
+			datiSpecifici.setTIPO_STRUTTURA(TIPO_STRUTTURA);
+			
+			initConfigComponente(listaComponenti);
+			
+		}else if(TipoDatoDaInviare.VALANGHE_MAIL.getTipoDatoDaInviare().equals(tipoDatiSpecifici)) {
+			
+			datiSpecifici.setVERSATORE_ENTE(ENTE_REGIONE_EMILIA_ROMAGNA);
+			datiSpecifici.setVERSATORE_STRUTTURA(STRUTTURA_ALLERTA_PROTEZIONE_CIVILE);
+			datiSpecifici.setVERSATORE_USER_ID(ConstansUtil.VERSATORE_ALLERTA_USER_ID_PROT_CIVILE);
+			
+			datiSpecifici.setCHIAVE_TIPO_REGISTRO(TIPO_REGISTRO_VALANGHE_MAIL);
+			
+			datiSpecifici.setTIPOLOGIA_UNITA_DOCUMENTARIA(TIPOLOGIA_UNITA_DOCUMENTARIA_VALANGHE_MAIL);
+			
+			boolean all =  datiSpecifici.getIDENTIFICATIVO_DATO_SPECIFICO().length()>3;
+			String num = all?datiSpecifici.getIDENTIFICATIVO_DATO_SPECIFICO().substring(1):datiSpecifici.getIDENTIFICATIVO_DATO_SPECIFICO();
+			
+			String numeroAllertoUD [] = num.split("/");
+			
+			datiSpecifici.setOGGETTO_UNITA_DOCUMENTARIA(StringEscapeUtils.escapeXml("Report di invio degli avvisi trasmessi via mail, relativi "+(all?"ad allerta valanghe":"a bollettino valanghe")+" " + numeroAllertoUD[0] +
+														 " del "+  dateUtilToString(datiSpecifici.getDATA_UNITA_DOCUMENTARIA()) +", generato il " +  dateUtilToString(datiSpecifici.getDATA_GENERAZIONE())));
+			
+			
+			//Setto le costanti su doc collegati
+			for(DocumentiCollegati docCollegato : listaDocumentiCollegati) {
+				
+				docCollegato.setDOC_COLLEGATO_TIPO_REGISTRO(TIPO_REGISTRO_VALANGHE);
+				docCollegato.setDESCRIZIONE_COLLEGAMENTO(DESCR_COLLEGAMENTO_VALANGHE_MAIL);
+				
+			}
+								
+			datiSpecifici.setTIPO_DOCUMENTO(TIPO_DOCUMENTO_VALANGHE_MAIL);
+			
+			datiSpecifici.setTIPO_STRUTTURA(TIPO_STRUTTURA);
+			
+			initConfigComponente(listaComponenti);
+			
+		}else if (TipoDatoDaInviare.VALANGHE_SMS.getTipoDatoDaInviare().equals(tipoDatiSpecifici)) {
+			
+			datiSpecifici.setVERSATORE_ENTE(ENTE_REGIONE_EMILIA_ROMAGNA);
+			datiSpecifici.setVERSATORE_STRUTTURA(STRUTTURA_ALLERTA_PROTEZIONE_CIVILE);
+			datiSpecifici.setVERSATORE_USER_ID(ConstansUtil.VERSATORE_ALLERTA_USER_ID_PROT_CIVILE);
+			
+			datiSpecifici.setCHIAVE_TIPO_REGISTRO(TIPO_REGISTRO_VALANGHE_SMS);
+			
+			datiSpecifici.setTIPOLOGIA_UNITA_DOCUMENTARIA(TIPOLOGIA_UNITA_DOCUMENTARIA_VALANGHE_SMS);
+			
+			boolean all =  datiSpecifici.getIDENTIFICATIVO_DATO_SPECIFICO().length()>3;
+			String num = all?datiSpecifici.getIDENTIFICATIVO_DATO_SPECIFICO().substring(1):datiSpecifici.getIDENTIFICATIVO_DATO_SPECIFICO();
+			
+			String numeroAllertoUD [] = num.split("/");
+			
+			datiSpecifici.setOGGETTO_UNITA_DOCUMENTARIA(StringEscapeUtils.escapeXml("Report di invio degli avvisi trasmessi via sms, relativi "+(all?"ad allerta valanghe":"a bollettino valanghe")+" " + numeroAllertoUD[0] +
+					 " del "+  dateUtilToString(datiSpecifici.getDATA_UNITA_DOCUMENTARIA()) +", generato il " +  dateUtilToString(datiSpecifici.getDATA_GENERAZIONE())));
+
+			
+			//Setto le costanti su doc collegati
+			for(DocumentiCollegati docCollegato : listaDocumentiCollegati) {
+				
+				docCollegato.setDOC_COLLEGATO_TIPO_REGISTRO(TIPO_REGISTRO_VALANGHE);
+				docCollegato.setDESCRIZIONE_COLLEGAMENTO(DESCR_COLLEGAMENTO_VALANGHE_SMS);
+				
+			}
+					
+			datiSpecifici.setTIPO_DOCUMENTO(TIPO_DOCUMENTO_VALANGHE_SMS);
+			
+			datiSpecifici.setTIPO_STRUTTURA(TIPO_STRUTTURA);
+			
+			initConfigComponente(listaComponenti);
+
+		
 		}
 		
 	}
@@ -478,6 +572,15 @@ public class JavaToXMLParer implements IJavaToXMLParerConstants {
 			unDoc.setDatiSpecifici(datiSpecSuperamentoMail);				
 		}else if (TipoDatoDaInviare.SUPERAMENTO_SMS.getTipoDatoDaInviare().equals(tipoDatiSpecifici)) {
 			JAXBElement<DatiSpecificiTypeSuperamentoSms> datiSpecSuperamentoSms = buildDatiSpecificiSuperamentoSms(datiSpec);
+			unDoc.setDatiSpecifici(datiSpecSuperamentoSms);	
+		}else if (TipoDatoDaInviare.VALANGHE.getTipoDatoDaInviare().equals(tipoDatiSpecifici)) {
+			JAXBElement<DatiSpecificiTypeValanghe> datiSpecSuperamentoSms = buildDatiSpecificiValanghe(datiSpec);
+			unDoc.setDatiSpecifici(datiSpecSuperamentoSms);	
+		}else if (TipoDatoDaInviare.VALANGHE_SMS.getTipoDatoDaInviare().equals(tipoDatiSpecifici)) {
+			JAXBElement<DatiSpecificiTypeValangheSms> datiSpecSuperamentoSms = buildDatiSpecificiValangheSms(datiSpec);
+			unDoc.setDatiSpecifici(datiSpecSuperamentoSms);	
+		}else if (TipoDatoDaInviare.VALANGHE_MAIL.getTipoDatoDaInviare().equals(tipoDatiSpecifici)) {
+			JAXBElement<DatiSpecificiTypeValangheMail> datiSpecSuperamentoSms = buildDatiSpecificiValangheMail(datiSpec);
 			unDoc.setDatiSpecifici(datiSpecSuperamentoSms);	
 		}
 	  
@@ -593,8 +696,16 @@ public class JavaToXMLParer implements IJavaToXMLParerConstants {
 		}else if (TipoDatoDaInviare.SUPERAMENTO_SMS.getTipoDatoDaInviare().equals(tipoDatiSpecifici)) {
 			configurazione = settaParamConfigurazione(false, true, true);
 			configurazione.setTipoConservazione(TipoConservazioneType.fromValue(TipoConservazioneType.VERSAMENTO_ANTICIPATO.value()));
+		} else if(TipoDatoDaInviare.VALANGHE.getTipoDatoDaInviare().equals(tipoDatiSpecifici)){
+			configurazione = settaParamConfigurazione(false, true, false);
+			configurazione.setTipoConservazione(TipoConservazioneType.fromValue(TipoConservazioneType.VERSAMENTO_ANTICIPATO.value()));				
+		}else if(TipoDatoDaInviare.VALANGHE_MAIL.getTipoDatoDaInviare().equals(tipoDatiSpecifici)) {
+			configurazione = settaParamConfigurazione(false, true, false);
+			configurazione.setTipoConservazione(TipoConservazioneType.fromValue(TipoConservazioneType.VERSAMENTO_ANTICIPATO.value()));
+		}else if (TipoDatoDaInviare.VALANGHE_SMS.getTipoDatoDaInviare().equals(tipoDatiSpecifici)) {
+			configurazione = settaParamConfigurazione(false, true, false);
+			configurazione.setTipoConservazione(TipoConservazioneType.fromValue(TipoConservazioneType.VERSAMENTO_ANTICIPATO.value()));
 		}
-		
 		datiSpecificiInvio.setTIPO_CONSERVAZIONE(configurazione.getTipoConservazione().name());
 		datiSpecificiInvio.setFORZA_ACCETTAZIONE(configurazione.isForzaAccettazione()?"S":"N");
 		datiSpecificiInvio.setFORZA_COLLEGAMENTO(configurazione.isForzaCollegamento()?"S":"N");
@@ -761,6 +872,25 @@ public class JavaToXMLParer implements IJavaToXMLParerConstants {
 		return datiSpec;
 	}
 	
+	private static JAXBElement<DatiSpecificiTypeValangheMail> buildDatiSpecificiValangheMail(DatiSpecificiInvio datiSpecificiInvio) throws DatatypeConfigurationException {
+		
+		it.eng.parer.xmlGen.valanghe.mail.ObjectFactory obj = new it.eng.parer.xmlGen.valanghe.mail.ObjectFactory();
+	    DatiSpecificiTypeValangheMail datiSpecificiMail =  obj.createDatiSpecificiType();
+	    datiSpecificiMail.setVersioneDatiSpecifici(StringEscapeUtils.escapeXml(String.valueOf(datiSpecificiInvio.getVERSIONE_DATI_SPECIFICI())));
+			  
+		datiSpecificiMail.setDataGenerazione(StringEscapeUtils.escapeXml(formattaData(datiSpecificiInvio.getDATA_GENERAZIONE())));
+
+		datiSpecificiMail.setNumeroComunicazione((StringEscapeUtils.escapeXml(datiSpecificiInvio.getIDENTIFICATIVO_DATO_SPECIFICO())));
+		datiSpecificiMail.setTipoComunicazione(StringEscapeUtils.escapeXml(TIPO_COMUNICAZIONE_VALANGHE));		
+		datiSpecificiMail.setOggettoMail(StringEscapeUtils.escapeXml(datiSpecificiInvio.getOGGETTO_MAIL()));
+		datiSpecificiMail.setTestoMail(StringEscapeUtils.escapeXml(datiSpecificiInvio.getTESTO_MAIL()));
+		datiSpecificiMail.setDenominazioneApplicativo(StringEscapeUtils.escapeXml(datiSpecificiInvio.getDENOMINAZIONE_APPLICATIVO()));
+		  
+		JAXBElement<DatiSpecificiTypeValangheMail> datiSpec = obj.createDatiSpecifici(datiSpecificiMail);
+		
+		return datiSpec;
+	}
+	
 	
 	private static JAXBElement<DatiSpecificiTypeSuperamentoSms> buildDatiSpecificiSuperamentoSms(DatiSpecificiInvio datiSpec) throws DatatypeConfigurationException {
 		it.eng.parer.xmlGen.superamento.sms.ObjectFactory obj = new it.eng.parer.xmlGen.superamento.sms.ObjectFactory();
@@ -887,6 +1017,25 @@ public class JavaToXMLParer implements IJavaToXMLParerConstants {
 		
 		return datiSpecAllertaSms;
 	}
+	
+	private static JAXBElement<DatiSpecificiTypeValangheSms> buildDatiSpecificiValangheSms(DatiSpecificiInvio datiSpec) throws DatatypeConfigurationException {
+		it.eng.parer.xmlGen.valanghe.sms.ObjectFactory obj = new it.eng.parer.xmlGen.valanghe.sms.ObjectFactory();
+		DatiSpecificiTypeValangheSms datiSpecificiAllertaSms =  obj.createDatiSpecificiType();
+		datiSpecificiAllertaSms.setVersioneDatiSpecifici(StringEscapeUtils.escapeXml(String.valueOf(datiSpec.getVERSIONE_DATI_SPECIFICI())));
+
+		datiSpecificiAllertaSms.setDataGenerazione(StringEscapeUtils.escapeXml(formattaData(datiSpec.getDATA_GENERAZIONE())));
+		
+		datiSpecificiAllertaSms.setNumeroComunicazione(StringEscapeUtils.escapeXml(datiSpec.getIDENTIFICATIVO_DATO_SPECIFICO()));
+		datiSpecificiAllertaSms.setTipoComunicazione(StringEscapeUtils.escapeXml(TIPO_COMUNICAZIONE_VALANGHE));
+		datiSpecificiAllertaSms.setNumeroNotificheDiRicezione(new BigInteger(String.valueOf(datiSpec.getNUM_NOTIFICHE_RICEZIONE())));
+		datiSpecificiAllertaSms.setNumeroSMSGenerati(new BigInteger( String.valueOf(datiSpec.getNUM_SMS_GENERATI())));
+		datiSpecificiAllertaSms.setNumeroSMSInviati(new BigInteger (String.valueOf( datiSpec.getNUM_SMS_INVIATI())));
+		datiSpecificiAllertaSms.setDenominazioneApplicativo(StringEscapeUtils.escapeXml(datiSpec.getDENOMINAZIONE_APPLICATIVO()));
+		  
+		JAXBElement<DatiSpecificiTypeValangheSms> datiSpecAllertaSms = obj.createDatiSpecifici(datiSpecificiAllertaSms);
+		
+		return datiSpecAllertaSms;
+	}
 
 	private static JAXBElement<DatiSpecificiTypeAllerta> buildDatiSpecificiAllerta(DatiSpecificiInvio datiSpec) throws DatatypeConfigurationException {
 		it.eng.parer.xmlGen.allerta.ObjectFactory obj = new it.eng.parer.xmlGen.allerta.ObjectFactory();
@@ -908,6 +1057,27 @@ public class JavaToXMLParer implements IJavaToXMLParerConstants {
 		datiSpecificiAllerta.setInvioResponsabiliTerritorio(StringEscapeUtils.escapeXml(datiSpec.getINVIO_RESPONSABILE_TERRITORIO()));		
 		  
 		JAXBElement<DatiSpecificiTypeAllerta> datiSpecAllerta = obj.createDatiSpecifici(datiSpecificiAllerta);
+		
+		return datiSpecAllerta;
+	}
+	
+	private static JAXBElement<DatiSpecificiTypeValanghe> buildDatiSpecificiValanghe(DatiSpecificiInvio datiSpec) throws DatatypeConfigurationException {
+		it.eng.parer.xmlGen.valanghe.ObjectFactory obj = new it.eng.parer.xmlGen.valanghe.ObjectFactory();
+		DatiSpecificiTypeValanghe datiSpecificiAllerta =  obj.createDatiSpecificiType();
+		datiSpecificiAllerta.setVersioneDatiSpecifici(StringEscapeUtils.escapeXml(String.valueOf(datiSpec.getVERSIONE_DATI_SPECIFICI())));
+
+		datiSpecificiAllerta.setDataCreazione(StringEscapeUtils.escapeXml(formattaData(datiSpec.getDATA_GENERAZIONE())));
+		datiSpecificiAllerta.setBollettinoValangheID(StringEscapeUtils.escapeXml(datiSpec.getIDENTIFICATIVO_DATO_SPECIFICO()));
+		datiSpecificiAllerta.setApprovatoreProtezioneCivile(StringEscapeUtils.escapeXml(datiSpec.getAPPROVATORE_PROTEZIONE_CIVILE()));
+		datiSpecificiAllerta.setCompilatoreARPAE(StringEscapeUtils.escapeXml(datiSpec.getCOMPILATORE_ARPAE()));
+
+		datiSpecificiAllerta.setDataInizioValidita(StringEscapeUtils.escapeXml(formattaData(datiSpec.getDATA_INIZIO_VALIDITA())));
+		datiSpecificiAllerta.setDataFineValidita(StringEscapeUtils.escapeXml(formattaData(datiSpec.getDATA_FINE_VALIDITA())));
+		datiSpecificiAllerta.setDataFirmaProtezioneCivile(StringEscapeUtils.escapeXml(formattaData(datiSpec.getDATA_FIRMA_PROTEZIONE_CIVILE())));
+		
+		datiSpecificiAllerta.setInvioResponsabiliTerritorio(StringEscapeUtils.escapeXml(datiSpec.getINVIO_RESPONSABILE_TERRITORIO()));		
+		  
+		JAXBElement<DatiSpecificiTypeValanghe> datiSpecAllerta = obj.createDatiSpecifici(datiSpecificiAllerta);
 		
 		return datiSpecAllerta;
 	}

@@ -14,6 +14,7 @@
 
 package it.eng.bollettino.service.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,10 +30,15 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 
+import it.eng.allerter.service.LogInternoLocalServiceUtil;
 import it.eng.bollettino.cron.RisultatiAggiornamento;
 import it.eng.bollettino.model.RegolaAllarmeCondizione;
+import it.eng.bollettino.model.Stazione;
 import it.eng.bollettino.model.StazioneVariabile;
+import it.eng.bollettino.model.Variabile;
+import it.eng.bollettino.service.StazioneLocalServiceUtil;
 import it.eng.bollettino.service.StazioneVariabileLocalServiceUtil;
+import it.eng.bollettino.service.VariabileLocalServiceUtil;
 import it.eng.bollettino.service.base.StazioneVariabileLocalServiceBaseImpl;
 
 /**
@@ -86,6 +92,9 @@ public class StazioneVariabileLocalServiceImpl
 		}
 		
 		List<StazioneVariabile> all = getStazioneVariabiles(QueryUtil.ALL_POS, QueryUtil.ALL_POS);
+		List<StazioneVariabile> all2 = new ArrayList<StazioneVariabile>();
+		all2.addAll(all);
+		
 		Map<String,StazioneVariabile> map = new HashMap<String, StazioneVariabile>();
 		for (StazioneVariabile sv : all) {
 			String key = sv.getIdStazione()+sv.getIdVariabile();
@@ -95,12 +104,26 @@ public class StazioneVariabileLocalServiceImpl
 		for (String var : v.keySet()) {
 			for (Object o : v.get(var)) {
 				try {
+					
+					
 					Map<String,Object> sensore = (Map)o;
 					String stazione = (String)sensore.get("station");
+					
+					
+					for (int k=0; k<all2.size(); k++) {
+						StazioneVariabile ssvv = all2.get(k);
+						if (ssvv.getIdStazione().equals(stazione) && ssvv.getIdVariabile().equals(var)) {
+							all2.remove(k);
+							break;
+						}
+					}
+					
 					Map<String,Object> datiSensore = (Map)sensore.get("sensor");
 					double soglia1 = 0.0;
 					double soglia2 = 0.0;
 					double soglia3 = 0.0;
+					
+					Integer progressivo = null;
 					
 					if (datiSensore!=null) {
 						Object hydroInfo = datiSensore.get("hydroinfo");
@@ -114,25 +137,62 @@ public class StazioneVariabileLocalServiceImpl
 									soglia3 = (t.get(2)!=null?Double.parseDouble(t.get(2).toString()):0.0);
 								}
 							}
+							Object streamOrder = ((Map<String,Object>)hydroInfo).get("stream_order");
+							
+							if (streamOrder!=null && !streamOrder.toString().equals("P") && !streamOrder.toString().equals("T")) {
+								try {
+									progressivo = Integer.parseInt(streamOrder.toString());
+								} catch (Exception e) {
+									//logger.error(e);
+								}
+							}
+							
 						}
 					}
 					
 					if (stazione==null) continue;
 					
-					StazioneVariabile l = map.get(stazione+var);
 					boolean changed = false;
+					
+					if (progressivo!=null) {
+						try {
+							Stazione s = StazioneLocalServiceUtil.fetchStazione(stazione);
+							if (s!=null) {
+								int i = s.getProgressivo();
+								if (i!=progressivo.intValue()) {
+									s.setProgressivo(progressivo);
+									StazioneLocalServiceUtil.updateStazione(s);
+									changed=true;
+								}
+							}
+						} catch (Exception e) {
+							logger.error(e);
+						}
+					}
+					
+					StazioneVariabile l = map.get(stazione+var);
+					
 					if (l==null) {
 						changed = true;
 						out.aggiunti++;
 						l = createStazioneVariabile(0);
 						l.setIdStazione(stazione);
 						l.setIdVariabile(var);
+						Stazione s = StazioneLocalServiceUtil.fetchStazione(stazione);
+						Variabile vb = VariabileLocalServiceUtil.fetchVariabile(var);
+						out.aggiungi(l.getIdStazione()+" ("+(s!=null?s.getName():"")+") - variabile "+var+" ("+(vb!=null?vb.getDescription_it():"")+")");
 					} else {
 						
 						if (l.getSoglia1()!=soglia1) changed = true;
 						if (l.getSoglia2()!=soglia2) changed = true;
 						if (l.getSoglia3()!=soglia3) changed = true;
-						if (changed) out.modificati++;
+						if (changed) {
+							Stazione s = StazioneLocalServiceUtil.fetchStazione(stazione);
+							Variabile vb = VariabileLocalServiceUtil.fetchVariabile(var);
+							out.modificati++;
+							if (s!=null)
+								out.modifica(l.getIdStazione()+" ("+(s!=null?s.getName():"")+") - variabile "+var+" ("+(vb!=null?vb.getDescription_it():"")+")");
+						}
 					}
 					l.setSoglia1(soglia1);
 					l.setSoglia2(soglia2);
@@ -145,6 +205,28 @@ public class StazioneVariabileLocalServiceImpl
 				}
 			}
 			
+		}
+		
+		try {
+			for (StazioneVariabile ssvv : all2) {
+				if (ssvv==null) continue;
+				
+				if ("254,0,0/101,-,-,-/B22037".equals(ssvv.getIdVariabile())) continue;
+				if ("200,0,1800/1,-,-,-/M00001".equals(ssvv.getIdVariabile())) continue;
+				if ("0,0,1800/1,-,-,-/M00002".equals(ssvv.getIdVariabile())) continue;
+				
+				Stazione st = StazioneLocalServiceUtil.fetchStazione(ssvv.getIdStazione());
+				Variabile vb = VariabileLocalServiceUtil.fetchVariabile(ssvv.getIdVariabile());
+
+				out.rimossi++;
+				out.rimuovi(ssvv.getIdStazione()+" ("+st.getName()+") variabile "+ssvv.getIdVariabile()+" ("+(vb!=null?vb.getDescription_it():"")+")");
+				StazioneVariabileLocalServiceUtil.deleteStazioneVariabile(ssvv);
+				LogInternoLocalServiceUtil.log("rimuoviSV", "rimuoviSV", "Rimuovo "+ssvv.getIdStazione()+" ("+(st!=null?st.getName():"???")+") variabile "+ssvv.getIdVariabile(), "");
+			}
+		}
+		catch (Exception e) {
+			logger.error(e);
+			LogInternoLocalServiceUtil.log("rimuoviSV", "rimuoviSV", e, "");
 		}
 		
 		return out;

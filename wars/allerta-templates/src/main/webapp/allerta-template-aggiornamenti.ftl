@@ -49,7 +49,13 @@
 		                <ul class="nav flex-column">
 		                    <li class="nav-item">
 		                        <a class="nav-link " href="/allerte-e-bollettini">
-		                            <span class="nav-vertical__item-label">Allerte e bollettini</span>
+		                            <span class="nav-vertical__item-label">Allerte e bollettini meteo</span>
+		                        </a>    
+		                    </li>
+
+                                    <li class="nav-item">
+		                        <a class="nav-link " href="/allerte-e-bollettini-valanghe">
+		                            <span class="nav-vertical__item-label">Allerte e bollettini valanghe</span>
 		                        </a>    
 		                    </li>
 		                    
@@ -61,13 +67,13 @@
 		                    
 		                    <li class="nav-item">
 		                        <a class="nav-link " href="/comunicazioni">
-		                            <span class="nav-vertical__item-label">Comunicazioni</span>
+		                            <span class="nav-vertical__item-label">Notizie</span>
 		                        </a>    
 		                    </li>
 		                    
 		                    <li class="nav-item">
-		                        <a class="nav-link " href="/report-post-evento">
-		                            <span class="nav-vertical__item-label">Report Post-Evento</span>
+		                        <a class="nav-link " href="/archivio-report-post-evento">
+		                            <span class="nav-vertical__item-label">Report post evento</span>
 		                        </a>    
 		                    </li>
 		                                    

@@ -177,6 +177,7 @@
 		<column name="titolo" type="String" />
 		<column name="tipoAllerta" type="boolean" />
 		<column name="hash" type="String" />
+		<column name="sintesiBriefing" type="String" />
 		<!-- Order -->
 
 		<order by="asc">
@@ -241,6 +242,120 @@
 		</finder>
 
 	</entity>	
+	
+	<entity name="AllertaValanghe" local-service="true" remote-service="true" uuid="true" >
+
+		<!-- PK fields -->
+
+		<column name="allertaValangheId" type="long" primary="true" />
+
+		<!-- Group instance -->
+
+		<column name="groupId" type="long" />
+
+		<!-- Audit fields -->
+
+		<column name="companyId" type="long" />
+		<column name="userId" type="long" />
+		<column name="userName" type="String" />
+		<column name="creatorName" type="String" />
+		<column name="createDate" type="Date" />
+		<column name="modifiedDate" type="Date" />
+
+		<!-- Other fields -->
+		
+		<column name="dataEmissione" type="Date" />
+		<column name="dataInizio" type="Date" />
+		<column name="dataFine" type="Date" />
+		
+		<column name="numero" type="String" />		
+		<column name="progressivo" type="int" />
+		<column name="anno" type="int" />
+		
+		<column name="titolo" type="String" />
+		<column name="descrizioneFenomeni" type="String" />			
+		<column name="note" type="String" />
+		<column name="riferimenti" type="String" />
+		<column name="sintesi" type="String" />
+		
+		<column name="utenteFirmaArpaId" type="long" />
+		<column name="dataFirmaArpa" type="Date" />
+		<column name="utenteFirmaProtId" type="long" />
+		<column name="dataFirmaProt" type="Date" />
+		
+		<column name="parentId" type="long" />
+		
+		<column name="link" type="String" />
+		
+		<column name="stato" type="int" />
+		
+		<column name="tipoAllerta" type="boolean" />
+		<column name="hash" type="String" />
+		<!-- Order -->
+
+		<order by="asc">
+			<order-column name="numero" />
+		</order>
+
+		<!-- Finder methods -->
+
+		<finder name="Numero" return-type="Collection">
+			<finder-column name="numero" />
+		</finder>
+		
+		<reference package-path="com.liferay.portlet.asset" entity="AssetEntry" />
+
+	</entity>
+	
+	<entity name="AllertaValangheStato" local-service="true" remote-service="true" uuid="true" >
+
+		<!-- PK fields -->
+
+		<column name="allertaValangheStatoId" type="long" primary="true" />
+
+		<!-- Group instance -->
+
+		<column name="groupId" type="long" />
+
+		<!-- Audit fields -->
+
+		<column name="companyId" type="long" />
+		<column name="userId" type="long" />
+		<column name="userName" type="String" />
+		<column name="createDate" type="Date" />
+		<column name="modifiedDate" type="Date" />
+
+		<!-- Other fields -->		
+
+		<column name="nome" type="String" />
+		<column name="dataInizio" type="Date" />
+		<column name="dataFine" type="Date" />
+		
+		<column name="parentId" type="long" />
+
+		<!-- Order -->
+        <column name="allertaValangheId" type="long"></column>
+        
+        <column name="statoId" type="long"></column>
+        <column name="eventoId" type="long"></column>
+        <column name="areaId" type="long"></column>
+
+		<order by="asc">
+			<order-column name="nome" />
+		</order>
+
+		<!-- Finder methods -->
+
+		<finder name="Nome" return-type="Collection">
+			<finder-column name="nome" />
+		</finder>
+		
+		<finder name="AllertaValangheId" return-type="Collection">
+			<finder-column name="allertaValangheId" />
+		</finder>
+
+	</entity>	
+	
 	
 	<entity name="AllertaParametro" local-service="true" remote-service="true">
 

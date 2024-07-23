@@ -16,7 +16,10 @@ import it.eng.animazione.image.exception.NoSuchPioggiaCumulativaException;
 import it.eng.animazione.image.model.PioggiaCumulativa;
 import it.eng.animazione.image.model.altezzaOnda;
 import it.eng.animazione.image.service.PioggiaCumulativaLocalServiceUtil;
+import it.eng.animazione.image.service.altezzaOndaAdriacLocalServiceUtil;
 import it.eng.animazione.image.service.altezzaOndaLocalServiceUtil;
+import it.eng.animazione.image.service.altezzaOndaSwanitaLocalServiceUtil;
+import it.eng.animazione.image.service.elevazioneLocalServiceUtil;
 
 public class AnimazioneMarePioggiaBean implements Serializable {
 
@@ -27,6 +30,9 @@ public class AnimazioneMarePioggiaBean implements Serializable {
 	private List<PioggiaCumulativa> cumulativa48 = null;
 	private List<PioggiaCumulativa> cumulativa6 = null;
 	private List<altezzaOnda> altezzaOnda = null;
+	private List<it.eng.animazione.image.model.altezzaOndaSwanita> altezzaOndaSwanita = null;
+	private List<it.eng.animazione.image.model.altezzaOndaAdriac> altezzaOndaAdriac = null;
+	private List<it.eng.animazione.image.model.elevazione> elevazione = null;
 	private SimpleDateFormat sdf;
 	private Calendar calendar = Calendar.getInstance();
 	
@@ -131,6 +137,51 @@ public class AnimazioneMarePioggiaBean implements Serializable {
 		return new Gson().toJson(altezzaOnda);
 	}
 	
+	public String altezzaOndaSwanitaJson() {
+		
+		if (altezzaOndaSwanita == null)
+			try {
+				
+				altezzaOndaSwanita = altezzaOndaSwanitaLocalServiceUtil.getaltezzaOndaSwanitas(QueryUtil.ALL_POS, QueryUtil.ALL_POS);
+				
+			} catch (SystemException e) {
+				// TODO Auto-generated catch block
+				_log.error(e);
+			}
+		
+		return new Gson().toJson(altezzaOndaSwanita);
+	}
+	
+	public String altezzaOndaAdriacJson() {
+		
+		if (altezzaOndaAdriac == null)
+			try {
+				
+				altezzaOndaAdriac = altezzaOndaAdriacLocalServiceUtil.getaltezzaOndaAdriacs(QueryUtil.ALL_POS, QueryUtil.ALL_POS);
+				
+			} catch (SystemException e) {
+				// TODO Auto-generated catch block
+				_log.error(e);
+			}
+		
+		return new Gson().toJson(altezzaOndaSwanita);
+	}
+	
+	public String elevazioneJson() {
+		
+		if (elevazione == null)
+			try {
+				
+				elevazione = elevazioneLocalServiceUtil.getelevaziones(QueryUtil.ALL_POS, QueryUtil.ALL_POS);
+				
+			} catch (SystemException e) {
+				// TODO Auto-generated catch block
+				_log.error(e);
+			}
+		
+		return new Gson().toJson(elevazione);
+	}
+	
 	public List<altezzaOnda> getaltezzaOnda() {
 		if (altezzaOnda == null)
 			try {
@@ -140,6 +191,28 @@ public class AnimazioneMarePioggiaBean implements Serializable {
 				_log.error(e);
 			}
 		return altezzaOnda;
+	}
+	
+	public List<it.eng.animazione.image.model.altezzaOndaSwanita> getaltezzaOndaSwanita() {
+		if (altezzaOndaSwanita == null)
+			try {
+				altezzaOndaSwanita = altezzaOndaSwanitaLocalServiceUtil.getaltezzaOndaSwanitas(QueryUtil.ALL_POS, QueryUtil.ALL_POS);
+			} catch (SystemException e) {
+				// TODO Auto-generated catch block
+				_log.error(e);
+			}
+		return altezzaOndaSwanita;
+	}
+	
+	public List<it.eng.animazione.image.model.altezzaOndaAdriac> getaltezzaOndaAdriac() {
+		if (altezzaOndaAdriac == null)
+			try {
+				altezzaOndaAdriac = altezzaOndaAdriacLocalServiceUtil.getaltezzaOndaAdriacs(QueryUtil.ALL_POS, QueryUtil.ALL_POS);
+			} catch (SystemException e) {
+				// TODO Auto-generated catch block
+				_log.error(e);
+			}
+		return altezzaOndaAdriac;
 	}
 
 	public SimpleDateFormat getSdf(Date date){

@@ -51,7 +51,15 @@ public class RigeneraAllertaNumeroMVCActionCommand extends BaseMVCActionCommand{
 		
 		AllertaBean allertaBean = new AllertaBean(request);
 		
-		allertaBean.setTitoloDefault();
+		String allerta = request.getParameter("allerta");
+		int eventi[] = new int[9];
+		
+		if (allerta!=null) {
+			String x[] = allerta.split(",");
+			for (int k=0; k<x.length; k++) eventi[k] = Integer.parseInt(x[k]);
+		} 
+		
+		allertaBean.setTitoloDefault(eventi);
 		
 		actionRequest.setAttribute(AllertaKeys.RequestAllertaBean, allertaBean);
 		
@@ -67,7 +75,14 @@ public class RigeneraAllertaNumeroMVCActionCommand extends BaseMVCActionCommand{
 		
 		AllertaBean allertaBean = new AllertaBean(request);
 		
-		allertaBean.setNumeroDefault();		
+		String allerta = request.getParameter("allerta");
+		int eventi[] = new int[9];
+		
+		if (allerta!=null) {
+			String x[] = allerta.split(",");
+			for (int k=0; k<x.length; k++) eventi[k] = Integer.parseInt(x[k]);
+		} 		
+		allertaBean.setNumeroDefault(eventi);		
 		
 		actionRequest.setAttribute(AllertaKeys.RequestAllertaBean, allertaBean);
 		

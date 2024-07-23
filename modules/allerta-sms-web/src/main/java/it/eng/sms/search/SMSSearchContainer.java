@@ -40,6 +40,7 @@ public class SMSSearchContainer extends SearchContainer<SMS> {
 		iteratorURL.setParameter("tipo", ""+displayTerms.getTipo());
 		iteratorURL.setParameter("sottotipo", displayTerms.getSottoTipo());
 		iteratorURL.setParameter("numero", displayTerms.getNumero());
+		iteratorURL.setParameter("nome", displayTerms.getDestinatario());
 		iteratorURL.setParameter("stato", String.valueOf(displayTerms.getStato()));
 		iteratorURL.setParameter("dataInvioDa", displayTerms.getDataInvioDa());
 		iteratorURL.setParameter("dataInvioA", displayTerms.getDataInvioA());

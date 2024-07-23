@@ -14,8 +14,7 @@
                      
          </div>
          <!-- Go to www.addthis.com/dashboard to customize your tools --> 
-    	<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5cf4d7ff9c8211b9" ></script>
-    	
+		   	
     	<script>
     		console.log('social');
     	</script>

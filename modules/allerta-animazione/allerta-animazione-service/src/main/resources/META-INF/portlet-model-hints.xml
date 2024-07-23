@@ -10,6 +10,27 @@
 			<hint name="max-length">5000</hint>
 		</field>
 	</model>
+	<model name="it.eng.animazione.image.model.altezzaOndaAdriac">
+		<field name="id" type="long" />
+		<field name="im" type="String" />
+		<field name="text_LOC" type="String" />
+		<field name="ts_UTC" type="long" />
+		<field name="imgData" type="String" />
+	</model>
+	<model name="it.eng.animazione.image.model.altezzaOndaSwanita">
+		<field name="id" type="long" />
+		<field name="im" type="String" />
+		<field name="text_LOC" type="String" />
+		<field name="ts_UTC" type="long" />
+		<field name="imgData" type="String" />
+	</model>
+	<model name="it.eng.animazione.image.model.elevazione">
+		<field name="id" type="long" />
+		<field name="im" type="String" />
+		<field name="text_LOC" type="String" />
+		<field name="ts_UTC" type="long" />
+		<field name="imgData" type="String" />
+	</model>
 	<model name="it.eng.animazione.image.model.Parametro">
 		<field name="key" type="String" />
 		<field name="value" type="String" />

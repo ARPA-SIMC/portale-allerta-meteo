@@ -63,6 +63,13 @@ public class Comuni_wsServiceWrapper
 	}
 
 	@Override
+	public java.util.List<Object[]> getStatoAllertaCap(
+		java.sql.Timestamp timestamp) {
+
+		return _comuni_wsService.getStatoAllertaCap(timestamp);
+	}
+
+	@Override
 	public Comuni_wsService getWrappedService() {
 		return _comuni_wsService;
 	}

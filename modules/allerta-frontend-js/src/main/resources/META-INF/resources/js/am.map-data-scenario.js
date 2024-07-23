@@ -75,9 +75,13 @@ am.MapDataScenario = (function($){
 		*/
         
         if (moment(d).isDST())
-            d.setHours(d.getHours() - 1); // Solare
+            //d.setHours(d.getHours() - 1); // Solare
+        	d = moment(d).subtract(1,'hour').toDate();
         else
             d.setHours(d.getHours() ); // Legale
+        
+        
+        d = moment(d).add(30,'minute').toDate();
         
         ts = +d
         return ts; 

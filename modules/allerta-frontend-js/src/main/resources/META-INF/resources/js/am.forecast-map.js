@@ -67,7 +67,7 @@ am.ForecastMap = (function($){
         };
   
         // switch's flag
-        this.accessibilityIsShown = true;
+        this.accessibilityIsShown = false;
     
         this.comunePopup = []; // @checkme we don't need this anymore?
     
@@ -82,7 +82,7 @@ am.ForecastMap = (function($){
         if( !this.options.rtdataScenarios ){
             this.options.rtdataScenarios = ['idrometrico'];  
             // @fixme with the following commented line when all these MapDataScenario's subclass will be developed
-            this.options.rtdataScenarios = ['precipitazioni', 'idrometrico', 'temperature','umidita','pressione','vento'];
+            this.options.rtdataScenarios = ['precipitazioni', 'idrometrico', 'temperature','umidita','pressione','vento','livellomare','altezzaonda','direzioneonda'];
         }
 
         // go init the map
@@ -221,6 +221,8 @@ am.ForecastMap = (function($){
   
             ls = obj.eventi.replace(/:/g, "-").split(",")
   
+            if (obj.area.length > 1 && !mapNew[obj.area]) continue;
+            
             // Metto i fenomeni previsti nell'array con i dettagli sulle aree
             if(obj.area.length > 1) 						
                 this.areaData[mapNew[obj.area]].phenos = this.areaData[mapNew[obj.area]].phenos.concat(ls)
@@ -450,7 +452,7 @@ am.ForecastMap = (function($){
                     var p = L.popup({ autoPan: true, keepInView:true, className: 'map-popup', closeButton: true, minWidth: (numEv*this.styles.phenoWidth) }) 
                         .setContent(
                                 '<h4>' + fName + '</h4>'
-                                + '<div class="map-popup__lead">Area '+fAreaData.name+'</div>'
+                                + '<div class="map-popup__lead">Zona '+fAreaData.name+'</div>'
                                 + '<div class="map-popup__phenos">'+phenosHtml+'</div>' // style="width: '+ (numEv*this.styles.phenoWidth) +'px;"
                                 + '<a class="btn btn-xs btn-default go-to-loc-page" href="'+fUrl+'"> Vai a '+fName +' <span class="icon i-angle-right"></span></a>'
                         );	

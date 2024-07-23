@@ -21,6 +21,7 @@
 
         // Init areas and get basic data layer
         MapDataServer.init();
+        MapDataServer2.init();
     
         // Init all map components
         var mapComponents = [];
@@ -41,6 +42,8 @@
         			 mapComponent = $('#map-component--domani');
         		 
         			 
+        		 var versione = mapComponent.attr("data-versione")
+        		 var TERR = (versione=="1"? TERRITORY : TERRITORY2)
         		 //var mapComponent =  $('[data-toggle=forecast-map]');
         		 
         		 console.log( mapComponent.attr("data-initialized") );
@@ -48,17 +51,31 @@
         		 // Init the map if not yet done
  	             if( ! mapComponent.attr("data-initialized") ) {
  	            	
+ 	            	 var map;
  	            	// create the controller
-	                var map = new ForecastMap({
+ 	            	 if (versione=="1") {
+	                 map = new ForecastMap({
 	                    context: context,
-	                    center: TERRITORY.REGION_LAT_LNG,
-	                    territory: TERRITORY,
+	                    center: TERR.REGION_LAT_LNG,
+	                    territory: TERR,
 	                    container: mapComponent,
+	                    version: versione,
 	                    mapContainer: $(".map-component__map", mapComponent),
-	                    comune: COMUNE,
+	                    comune: mapComponent.attr("data-comune"),
 	                    rtdataControl: ( !! mapComponent.attr("data-comune") )
-	                });
-	        
+	                }) }
+ 	            	 else {
+ 	            		map = new ForecastMap2({
+ 		                    context: context,
+ 		                    center: TERR.REGION_LAT_LNG,
+ 		                    territory: TERR,
+ 		                    container: mapComponent,
+ 		                    version: versione,
+ 		                    mapContainer: $(".map-component__map", mapComponent),
+ 		                    comune: mapComponent.attr("data-comune"),
+ 		                    rtdataControl: ( !! mapComponent.attr("data-comune") )
+ 		                });
+ 	            	 }
 	                // add a scope reference (just in case) and store a ref in the tab head's data
 	                mapComponents.push(map);
 	                $(this).data("mapComponent", map);
@@ -71,13 +88,11 @@
 	          //  	$(this).data("mapComponent").refresh();  
 	         //   }
  	            
- 	          
- 	            
-        	 } else if (context == '#tab--monitoraggio' ) { // Monitoraggio
+        	 } else { // Monitoraggio
         		 
         		 var mapComponent =  $('[data-toggle=monitoring-map]');
         		 
-        		 if( ! mapComponent.attr("data-initialized") ) {
+        		// if( ! mapComponent.attr("data-initialized") ) {
 	            	
 	        		 var rtdata = mapComponent.attr("data-scenarios").split("|");
 	                
@@ -86,14 +101,16 @@
 		                dataScenarios: rtdata, // keys of the data filers to manage, that is "radar","idrometrico","precipitazioni", "cumulata-6h"
 		                center: mapComponent.attr("data-comune-latlng")
 		                    ? mapComponent.attr("data-comune-latlng") 
-		                    : TERRITORY.REGION_LAT_LNG,
-		                territory: TERRITORY,
+		                    : TERRITORY2.REGION_LAT_LNG,
+		                territory: TERRITORY2,
 		                container: mapComponent,
 		                mapContainer: $(".map-component__map", mapComponent),
 		                comune: mapComponent.attr("data-comune"),
 		                refreshTool: true,
 		                currentScenario: 'radar', // change me with radar
 		                renderScenarioOnLoad: true
+		               // searchTool: true,
+		               // searchToolPosition: "topleft"
 		             });
 		             
 		             // now I'm initialized
@@ -102,29 +119,19 @@
         		 //} else {
  	            	
  	            	//$(this).data("mapComponent").refresh();  
- 	            }
+ 	            //}
     
-            } else {
-            	
-            	 var mapComponent =  $('[data-toggle=backoffice-monitoring-map]');
-            	 
-            	 if( ! mapComponent.attr("data-initialized") ) {
-	            	// create the controller
-	                var map = new BackofficeMonitoringMap({
-	                    center: TERRITORY.REGION_LAT_LNG,
-	                    territory: TERRITORY,
-	                    container: mapComponent,
-	                    mapContainer: $(".map-component__map", mapComponent),
-	                    currentScenario: 'radar', // change me with radar
-	                    renderScenarioOnLoad: true
-	                });
-	                
-	             // now I'm initialized
-			         mapComponent.attr("data-initialized", true);
-            	 }
-                
-                
-            }
+            }  /*else {
+            	// create the controller
+                var map = new BackofficeMonitoringMap({
+                    center: TERRITORY2.REGION_LAT_LNG,
+                    territory: TERRITORY2,
+                    container: mapComponent,
+                    mapContainer: $(".map-component__map", mapComponent),
+                    currentScenario: 'radar', // change me with radar
+                    renderScenarioOnLoad: true
+                });
+            }*/
         	
         });
         
@@ -145,8 +152,6 @@
 	        // Load current active tab
 	        if( $(this).parent().hasClass("active") ){
 	            $('[data-toggle="tab"][href="#'+$(this).parent().attr("id")+'"]').trigger("shown.bs.tab"); 
-	            
-	           
 	        }
 	    
 	        // Scroll to the correct viewport when clicking a tab

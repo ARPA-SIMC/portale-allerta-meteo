@@ -189,7 +189,7 @@ public class BollettinoCompilaSbWebPortlet extends MVCPortlet {
 					if (rl==227354) { //approvatore_arpae_vero
 						canApprove = true;
 					}
-					if (rl==246577) { //compilatore monitoraggio
+					if (rl==246577 || rl==2059543) { //compilatore monitoraggio, compilatore_arpae
 						canModify = true;
 					}
 				}

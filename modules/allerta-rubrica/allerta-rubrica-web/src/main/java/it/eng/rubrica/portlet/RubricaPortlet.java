@@ -18,8 +18,8 @@ import org.osgi.service.component.annotations.Component;
 		"com.liferay.portlet.header-portlet-css=/static/css/2.fdb9d380.chunk.css",
 		"com.liferay.portlet.header-portlet-css=/static/css/main.1a2880f2.chunk.css",
 		
-		"com.liferay.portlet.header-portlet-javascript=/static/js/2.65940d50.chunk.js",
-		"com.liferay.portlet.header-portlet-javascript=/static/js/main.cfd30776.chunk.js",
+		"com.liferay.portlet.header-portlet-javascript=/static/js/2.b86de75a.chunk.js",
+		"com.liferay.portlet.header-portlet-javascript=/static/js/main.dd894b59.chunk.js",
 		"com.liferay.portlet.footer-portlet-javascript=/static/js/pre.js",
 		
 		

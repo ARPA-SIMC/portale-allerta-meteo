@@ -72,6 +72,7 @@ import it.eng.allerte.exception.NoSuchRubricaGruppoGruppiException;
 import it.eng.allerte.exception.NoSuchRubricaGruppoNominativiException;
 import it.eng.allerte.exception.NoSuchRubricaNominativoException;
 import it.eng.allerte.model.RubricaCanale;
+import it.eng.allerte.model.RubricaCategoria;
 import it.eng.allerte.model.RubricaContatto;
 import it.eng.allerte.model.RubricaGruppo;
 import it.eng.allerte.model.RubricaGruppoGruppi;
@@ -91,6 +92,7 @@ import it.eng.allerte.model.impl.RubricaGruppoNominativiImpl;
 import it.eng.allerte.model.impl.RubricaLogImpl;
 import it.eng.allerte.model.impl.RubricaNominativoImpl;
 import it.eng.allerte.model.impl.RubricaRuoloPermessiImpl;
+import it.eng.allerte.service.RubricaCategoriaLocalServiceUtil;
 import it.eng.allerte.service.RubricaContattoLocalServiceUtil;
 import it.eng.allerte.service.RubricaGruppoGruppiLocalServiceUtil;
 import it.eng.allerte.service.RubricaGruppoLocalServiceUtil;
@@ -133,6 +135,9 @@ public class GestioneRubricaCustomService implements IRubricaLogConstants, IRubr
 	public static Long getIdSitoUtente(Long userId) {
 		if (userId==null) return null;
 		
+		RubricaUtenteSito rus = RubricaUtenteSitoLocalServiceUtil.fetchRubricaUtenteSito(userId);
+		if (rus!=null) return rus.getID_SITO();
+		
 		if (RoleLocalServiceUtil.hasUserRole(userId, AMMINISTRATORE_RUBRICA)) return 20181L;
 		if (RoleLocalServiceUtil.hasUserRole(userId, AMMINISTRATORE_PORTALE)) return 20181L;
 		if (RoleLocalServiceUtil.hasUserRole(userId, ADMIN)) return 20181L;
@@ -144,9 +149,45 @@ public class GestioneRubricaCustomService implements IRubricaLogConstants, IRubr
 				return g.getGroupId();
 		}
 		
-		RubricaUtenteSito rus = RubricaUtenteSitoLocalServiceUtil.fetchRubricaUtenteSito(userId);
-		if (rus!=null) return rus.getID_SITO();
+		
 		return null;
+	}
+	
+	public static void updateIdSitoUtente(Long userId, Long sito) {
+		
+		Map<Long,String> m = getSitiUtente(userId);
+		if (!m.containsKey(sito)) return; //non hai il permesso
+		
+		RubricaUtenteSito rus = RubricaUtenteSitoLocalServiceUtil.fetchRubricaUtenteSito(userId);
+		if (rus==null) {
+			rus = RubricaUtenteSitoLocalServiceUtil.createRubricaUtenteSito(userId);
+			rus.setID_SITO(sito);
+			rus.setID_UTENTE(userId);
+			//rus = RubricaUtenteSitoLocalServiceUtil.addRubricaUtenteSito(rus);
+			RubricaUtenteSitoLocalServiceUtil.updateRubricaUtenteSito(rus);
+		} else {
+			rus.setID_SITO(sito);
+			RubricaUtenteSitoLocalServiceUtil.updateRubricaUtenteSito(rus);
+		}
+
+	}
+	
+	public static Map<Long,String> getSitiUtente(Long userId) {
+		Map<Long,String> m = new HashMap<Long, String>();
+		
+		if (RoleLocalServiceUtil.hasUserRole(userId, AMMINISTRATORE_RUBRICA)) m.put(20181L,"Rubrica Portale");
+		if (RoleLocalServiceUtil.hasUserRole(userId, AMMINISTRATORE_PORTALE)) m.put(20181L,"Rubrica Portale");
+		if (RoleLocalServiceUtil.hasUserRole(userId, ADMIN)) m.put(20181L,"Rubrica Portale");
+		
+		List<Group> groups = GroupLocalServiceUtil.getUserGroups(userId);
+		for (Group g : groups) {
+			if (UserGroupRoleLocalServiceUtil.hasUserGroupRole(userId, g.getGroupId(), SINDACO)
+					|| UserGroupRoleLocalServiceUtil.hasUserGroupRole(userId, g.getGroupId(), DELEGATO_TOTALE))
+				
+				m.put(g.getGroupId(),"Rubrica "+g.getName());
+		}
+		
+		return m;
 	}
 	
 	//Costruttore
@@ -387,6 +428,12 @@ public class GestioneRubricaCustomService implements IRubricaLogConstants, IRubr
 						rn.setDATA_MODIFICA(new Date());
 						RubricaNominativoLocalServiceUtil.updateRubricaNominativo(rn);
 					}
+					RubricaGruppo rg = RubricaGruppoLocalServiceUtil.fetchRubricaGruppo(idGruppo);
+					if (rg!=null) {
+						rg.setFK_UTENTE_MODIFICA(userId);
+						rg.setDATA_MODIFICA(new Date());
+						RubricaGruppoLocalServiceUtil.updateRubricaGruppo(rg);
+					}
 				} catch (Exception ee) {
 					ee.printStackTrace();
 				}
@@ -443,6 +490,12 @@ public class GestioneRubricaCustomService implements IRubricaLogConstants, IRubr
 							rn.setFK_UTENTE_MODIFICA(userId);
 							rn.setDATA_MODIFICA(new Date());
 							RubricaNominativoLocalServiceUtil.updateRubricaNominativo(rn);
+						}
+						RubricaGruppo rg = RubricaGruppoLocalServiceUtil.fetchRubricaGruppo(idGruppo);
+						if (rg!=null) {
+							rg.setFK_UTENTE_MODIFICA(userId);
+							rg.setDATA_MODIFICA(new Date());
+							RubricaGruppoLocalServiceUtil.updateRubricaGruppo(rg);
 						}
 					} catch (Exception ee) {
 						ee.printStackTrace();
@@ -1363,6 +1416,7 @@ public class GestioneRubricaCustomService implements IRubricaLogConstants, IRubr
 				
 				rubricaGruppo.setFK_SITO_PROPRIETARIO(groupId);
 				rubricaGruppo.setNOME(group.getName().trim());
+				rubricaGruppo.setFK_CATEGORIA(group.getCategoria());
 				
 				//In inserimento sovrascrivo data modifica a null
 				rubricaGruppo.setDATA_CREAZIONE(new Date());
@@ -1425,7 +1479,7 @@ public class GestioneRubricaCustomService implements IRubricaLogConstants, IRubr
 			if(null != rubricaGruppo) {
 			
 				RubricaJsonValidation validator = new RubricaJsonValidation();
-				errValid = validator.validateGroupCreateRequest(group, groupId);
+				//errValid = validator.validateGroupCreateRequest(group, groupId);
 				
 				if(null != errValid && errValid.isEmpty()) {
 				
@@ -1441,6 +1495,8 @@ public class GestioneRubricaCustomService implements IRubricaLogConstants, IRubr
 					//setto le modifiche secondo il json ricevuto
 					rubricaGruppo.setNOME(group.getName().trim());
 					//rubricaGruppo.setFK_SITO_PROPRIETARIO(groupId);
+					
+					rubricaGruppo.setFK_CATEGORIA(group.getCategoria());
 								
 					RubricaGruppoLocalServiceUtil.updateRubricaGruppo(rubricaGruppo);
 												
@@ -2119,25 +2175,47 @@ private boolean creaAssociazioneGruppoSuperGruppo(long idGruppo, GroupSubGroupAs
 	 * @throws PortalException
 	 * @throws JsonProcessingException
 	 */
-	public List<GroupElement> loadGroupsByName(Long idSite, String groupName, Long limit, Long offset) throws SystemException, ParseException, PortalException, JsonProcessingException {
+	public List<GroupElement> loadGroupsByName(Long idSite, String groupName, Long category, Long limit, Long offset) throws SystemException, ParseException, PortalException, JsonProcessingException {
 		
 		List<Object[]> listaGruppi = new ArrayList<>();
 		
 		//cache
-		List<RubricaGruppoGruppi> gg = RubricaGruppoGruppiLocalServiceUtil.getRubricaGruppoGruppis(QueryUtil.ALL_POS, QueryUtil.ALL_POS);
+		//List<RubricaGruppoGruppi> gg = RubricaGruppoGruppiLocalServiceUtil.getRubricaGruppoGruppis(QueryUtil.ALL_POS, QueryUtil.ALL_POS);
+		List<RubricaGruppoGruppi> gg = null;
+
 		Map<String,Object> cache = new HashMap<>();
 		
 		//Lista finale che conterrà tutta la struttura Json
 		List<GroupElement> listaGruopElementFinal = new ArrayList<>();
+		if (limit==null || limit<=0) limit=10000L;
 
-		listaGruppi = RubricaGruppoLocalServiceUtil.getGruppiByName(idSite, groupName, limit, offset);
+		if (category==null || category<=0 || category>10000) listaGruppi = RubricaGruppoLocalServiceUtil.getGruppiByName(idSite, groupName, limit, offset);
+		else listaGruppi = RubricaGruppoLocalServiceUtil.getGruppiByNameCategoria(idSite, groupName, category, limit, offset);
+		
+		List<Object[]> gerarchia = RubricaGruppoLocalServiceUtil.getGerarchia(idSite);
+		for (Object[] o : gerarchia) {
+			long idgruppo = (long) o[0];
+			String sottogruppi = (String)o[3];
+			String nominativi = (String)o[4];
+			cache.put("listasottogruppi_"+idgruppo, sottogruppi);
+			cache.put("listanominativi_"+idgruppo, nominativi);
+			long numsottogruppi = 0;
+			if (sottogruppi!=null) {
+				numsottogruppi = sottogruppi.split(",").length;
+			}
+			long numnominativi = 0;
+			if (nominativi!=null)
+				numnominativi = nominativi.split(",").length;
+			
+			cache.put("sottogruppi_"+idgruppo, numsottogruppi);
+			cache.put("nominativi_"+idgruppo, numnominativi);
+			
+		}
 		
 		for (Object[] objectsGruop : listaGruppi) {
 			
 			//Considero solo quelli attivi
 			if(!(boolean)objectsGruop[8]) {
-			
-				//Creo un nuovo oggetto RubricaGruppo
 				RubricaGruppo gruppo = new RubricaGruppoImpl();
 				gruppo.setID_GRUPPO((long) objectsGruop[0]);
 				gruppo.setNOME((String) objectsGruop[1]);
@@ -2150,6 +2228,17 @@ private boolean creaAssociazioneGruppoSuperGruppo(long idGruppo, GroupSubGroupAs
 				gruppo.setDISABLED((boolean)objectsGruop[8]);
 				
 				cache.put("gruppo_"+gruppo.getID_GRUPPO(), gruppo);
+				
+			}
+		}
+		
+		
+		for (Object[] objectsGruop : listaGruppi) {
+			
+			//Considero solo quelli attivi
+			if(!(boolean)objectsGruop[8]) {
+
+				RubricaGruppo gruppo = (RubricaGruppo)cache.get("gruppo_"+(long) objectsGruop[0]);
 				
 				
 				//Ricorsivamente devo creare su ogni gruppo la lista di sottogruppi a partire dalle relazioni
@@ -2165,11 +2254,18 @@ private boolean creaAssociazioneGruppoSuperGruppo(long idGruppo, GroupSubGroupAs
 				rootGroup.setParentId(null);
 				
 				//recupera il numero di nominativi e sottogruppi associati
-				Long nomin = RubricaStructureCustomService.countNominativiPerGruppo(gruppo.getID_GRUPPO(), idSite);
-				cache.put("nominativi_"+gruppo.getID_GRUPPO(), nomin);
+				Long nomin = (Long) cache.get("nominativi_"+gruppo.getID_GRUPPO());
+				if (nomin==null) {
+					nomin = RubricaStructureCustomService.countNominativiPerGruppo(gruppo.getID_GRUPPO(), idSite);
+					cache.put("nominativi_"+gruppo.getID_GRUPPO(), nomin);
+				}
 				rootGroup.setNominativeCount(nomin);
-				Long subg = RubricaStructureCustomService.countSottoGruppi(gruppo.getID_GRUPPO());
-				cache.put("sottogruppi_"+gruppo.getID_GRUPPO(), subg);
+				
+				Long subg = (Long) cache.get("sottogruppi_"+gruppo.getID_GRUPPO());
+				if (subg==null) {
+					subg = RubricaStructureCustomService.countSottoGruppi(gruppo.getID_GRUPPO());
+					cache.put("sottogruppi_"+gruppo.getID_GRUPPO(), subg);
+				}
 				rootGroup.setSubgroupsCount(subg);
 				
 				listaGruopElement.add(rootGroup);
@@ -2303,6 +2399,15 @@ private boolean creaAssociazioneGruppoSuperGruppo(long idGruppo, GroupSubGroupAs
 			 
 			groupJson.setId(group.getID_GRUPPO());
 			groupJson.setName(group.getNOME());
+			groupJson.setCategoria(group.getFK_CATEGORIA());
+			if (group.getFK_CATEGORIA()>0) {
+				try {
+					RubricaCategoria rc = RubricaCategoriaLocalServiceUtil.fetchRubricaCategoria(group.getFK_CATEGORIA());
+					groupJson.setCategoriaName(rc.getDESCRIZIONE());
+				} catch (Exception e) {
+					
+				}
+			}
 			 
 			//Carica i dati del proprietario
 			Owner ownerJson = RubricaStructureCustomService.loadOwnerForGroup(group.getFK_SITO_PROPRIETARIO());
@@ -2753,9 +2858,18 @@ private boolean creaAssociazioneGruppoSuperGruppo(long idGruppo, GroupSubGroupAs
 			
 			//Aggiorna Log
 			if(null!=rubricaGruppoNominativo) {
+				
+				
 
 				RubricaGruppoNominativiLocalServiceUtil.deleteNominativoDaGruppo(idGruppo, groupNominative.getNominativeId());
-					
+				
+				RubricaGruppo rg = RubricaGruppoLocalServiceUtil.fetchRubricaGruppo(idGruppo);
+				if (rg!=null) {
+					rg.setDATA_MODIFICA(new Date());
+					rg.setFK_UTENTE_MODIFICA(userId);
+					RubricaGruppoLocalServiceUtil.updateRubricaGruppo(rg);
+				}
+				
 				aggiornaRubricaLog(TABELLA_RUBRICA_GRUPPO_NOMINATIVI, 
 							String.valueOf(idGruppo).concat("-").concat(String.valueOf(groupNominative.getNominativeId())).concat("-").concat(String.valueOf(rubricaGruppoNominativo.getFK_RUOLO())), 
 							TIPO_OPERAZIONE_DELETE,	rubricaGruppoNominativo.toString(), userId );

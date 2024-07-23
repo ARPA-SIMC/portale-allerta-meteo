@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+
+<model-hints>
+	<model name="allerta.catasto.model.Categoria">
+		<field name="id" type="long" />
+		<field name="descrizione" type="String" />
+	</model>
+	<model name="allerta.catasto.model.Effetti">
+		<field name="id" type="long" />
+		<field name="descrizione" type="String" />
+	</model>
+	<model name="allerta.catasto.model.EffettiSub">
+		<field name="id" type="long" />
+		<field name="idEffetti" type="long" />
+		<field name="descrizione" type="String" />
+	</model>
+	<model name="allerta.catasto.model.Fonte">
+		<field name="id" type="long" />
+		<field name="descrizione" type="String" />
+	</model>
+	<model name="allerta.catasto.model.Segnalazione">
+		<field name="id" type="long" />
+		<field name="groupId" type="long" />
+		<field name="companyId" type="long" />
+		<field name="userId" type="long" />
+		<field name="userName" type="String" />
+		<field name="createDate" type="Date" />
+		<field name="modifiedDate" type="Date" />
+		<field name="documentoAssociato" type="long" />
+		<field name="dataEvento" type="Date" />
+		<field name="enteSegnalante" type="String" />
+		<field name="fonte" type="long" />
+		<field name="categoria" type="long" />
+		<field name="sottocategoria" type="long" />
+		<field name="riferimento" type="String" />
+		<field name="descrizione" type="String" />
+		<field name="note" type="String" />
+		<field name="area" type="String" />
+		<field name="provincia" type="String" />
+		<field name="comune" type="String" />
+		<field name="indirizzo" type="String" />
+		<field name="civico" type="String" />
+		<field name="lat" type="double" />
+		<field name="lon" type="double" />
+		<field name="effetti" type="long" />
+		<field name="effettiSub" type="long" />
+	</model>
+	<model name="allerta.catasto.model.Sottocategoria">
+		<field name="id" type="long" />
+		<field name="idCategoria" type="long" />
+		<field name="descrizione" type="String" />
+	</model>
+</model-hints>

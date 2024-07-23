@@ -45,6 +45,7 @@ import com.liferay.portal.spring.extender.service.ServiceReference;
 import it.eng.allerte.model.RubricaContatto;
 import it.eng.allerte.service.RubricaContattoLocalService;
 import it.eng.allerte.service.persistence.RubricaCanalePersistence;
+import it.eng.allerte.service.persistence.RubricaCategoriaPersistence;
 import it.eng.allerte.service.persistence.RubricaContattoFinder;
 import it.eng.allerte.service.persistence.RubricaContattoPersistence;
 import it.eng.allerte.service.persistence.RubricaGruppoFinder;
@@ -394,6 +395,49 @@ public abstract class RubricaContattoLocalServiceBaseImpl
 		RubricaCanalePersistence rubricaCanalePersistence) {
 
 		this.rubricaCanalePersistence = rubricaCanalePersistence;
+	}
+
+	/**
+	 * Returns the rubrica categoria local service.
+	 *
+	 * @return the rubrica categoria local service
+	 */
+	public it.eng.allerte.service.RubricaCategoriaLocalService
+		getRubricaCategoriaLocalService() {
+
+		return rubricaCategoriaLocalService;
+	}
+
+	/**
+	 * Sets the rubrica categoria local service.
+	 *
+	 * @param rubricaCategoriaLocalService the rubrica categoria local service
+	 */
+	public void setRubricaCategoriaLocalService(
+		it.eng.allerte.service.RubricaCategoriaLocalService
+			rubricaCategoriaLocalService) {
+
+		this.rubricaCategoriaLocalService = rubricaCategoriaLocalService;
+	}
+
+	/**
+	 * Returns the rubrica categoria persistence.
+	 *
+	 * @return the rubrica categoria persistence
+	 */
+	public RubricaCategoriaPersistence getRubricaCategoriaPersistence() {
+		return rubricaCategoriaPersistence;
+	}
+
+	/**
+	 * Sets the rubrica categoria persistence.
+	 *
+	 * @param rubricaCategoriaPersistence the rubrica categoria persistence
+	 */
+	public void setRubricaCategoriaPersistence(
+		RubricaCategoriaPersistence rubricaCategoriaPersistence) {
+
+		this.rubricaCategoriaPersistence = rubricaCategoriaPersistence;
 	}
 
 	/**
@@ -1200,6 +1244,15 @@ public abstract class RubricaContattoLocalServiceBaseImpl
 
 	@BeanReference(type = RubricaCanalePersistence.class)
 	protected RubricaCanalePersistence rubricaCanalePersistence;
+
+	@BeanReference(
+		type = it.eng.allerte.service.RubricaCategoriaLocalService.class
+	)
+	protected it.eng.allerte.service.RubricaCategoriaLocalService
+		rubricaCategoriaLocalService;
+
+	@BeanReference(type = RubricaCategoriaPersistence.class)
+	protected RubricaCategoriaPersistence rubricaCategoriaPersistence;
 
 	@BeanReference(type = RubricaContattoLocalService.class)
 	protected RubricaContattoLocalService rubricaContattoLocalService;

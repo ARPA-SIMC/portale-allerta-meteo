@@ -6,7 +6,9 @@ import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.math.BigInteger;
 import java.net.URL;
+import java.net.URLConnection;
 import java.security.MessageDigest;
+import java.sql.Connection;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -50,14 +52,18 @@ import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.PortalUtil;
 
 import it.eng.allerta.configuration.AllertaBaseConfiguration;
 import it.eng.allerta.configuration.schedulers.AllertaBaseSchedulersConfiguration;
 import it.eng.allerta.utils.AllertaTracker;
+import it.eng.allerter.allerta.JasperUtils;
 import it.eng.allerter.model.Allerta;
 import it.eng.allerter.model.AllertaParametro;
+import it.eng.allerter.model.AllertaValanghe;
 import it.eng.allerter.service.AllertaLocalService;
 import it.eng.allerter.service.AllertaParametroLocalService;
+import it.eng.allerter.service.AllertaValangheLocalService;
 import it.eng.bollettino.model.Allarme;
 import it.eng.bollettino.model.Bollettino;
 import it.eng.bollettino.model.BollettinoParametro;
@@ -405,9 +411,104 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
 			versione++;
 		}
 		
+		versione = 1;
+		
+		for (String s : quandosms.split(",")) {
+			
+			try {
+				
+				String vv = (versione>=10?""+versione:"0"+versione);
+				String query = QUERY_INVII.replace("__TIPODOC__","BOLLETTINO VALANGHE").replace("__PROGRESSIVO__", vv).replace("__TIPOREGISTRO__", "METEOMONT SMS").replace("__ORE__", s);
+				List<String> l = bollettinoLocalService.eseguiQueryGenericaLista(query);
+				
+				for (String n : l) {
+					
+					try {
+						
+						AllertaValanghe a = allertaValangheLocalService.getAllertaValanghe(Long.parseLong(n));
+						
+						String querysms1 = "select count(*) as x from allerter_sms where tipo='valanghe' and sottotipo='"+a.getNumero()+"' and stato>=0";
+						String querysms2 = "select count(*) as x from allerter_sms where tipo='valanghe' and sottotipo='"+a.getNumero()+"' and stato>=0 and dataack is not null";
+						String querysms3 = "select count(*) as x from allerter_sms where tipo='valanghe' and sottotipo='"+a.getNumero()+"' and stato=4";
+						
+						int smsgenerati = ((Number)bollettinoLocalService.eseguiQueryGenerica(querysms1)).intValue();
+						int smsinviati = ((Number)bollettinoLocalService.eseguiQueryGenerica(querysms2)).intValue();
+						int smsricevuti = ((Number)bollettinoLocalService.eseguiQueryGenerica(querysms3)).intValue();
+						
+						String num = a.getNumero().split("/")[0];
+						String anno = a.getNumero().split("/")[1];
+						
+						PrincipalThreadLocal.setName(a.getUserId());
+						
+						PermissionChecker pc = PermissionCheckerFactoryUtil.create(userLocalService.fetchUser(a.getUserId()));
+						PermissionThreadLocal.setPermissionChecker(pc);
+						
+						creaOggettiParerValangheSms(a, Integer.parseInt(s), num, anno, smsgenerati, smsinviati, smsricevuti, versione);
+						
+					} catch (Exception e) {
+						_log.error(e);
+						//logInternoLocalService.log("ReportGeneratorTimer", "receive", e, "");
+					}
+				}
+				
+			} catch (Exception e) {
+				_log.error(e);
+				//logInternoLocalService.log("ReportGeneratorTimer", "receive", e, "");
+			}
+			
+			versione++;
+		}
+		
+		versione = 1;
+		
+		for (String s : quandomail.split(",")) {
+			
+			try {
+				
+				String vv = (versione>=10?""+versione:"0"+versione);
+				String query = QUERY_INVII.replace("__TIPODOC__","BOLLETTINO VALANGHE").replace("__PROGRESSIVO__", vv).replace("__TIPOREGISTRO__", "METEOMONT MAIL").replace("__ORE__", s);
+				
+				List<String> l = bollettinoLocalService.eseguiQueryGenericaLista(query);
+				
+				for (String n : l) {
+				
+					try {
+					
+						AllertaValanghe a = allertaValangheLocalService.getAllertaValanghe(Long.parseLong(n));
+						
+						String queryemail1 = "select oggetto from allerter_email where tipo='valanghe' and sottotipo='"+a.getNumero()+"' limit 1";
+						String queryemail2 = "select testo from allerter_email where tipo='valanghe' and sottotipo='"+a.getNumero()+"' limit 1";
+						String oggettoemail = (String)bollettinoLocalService.eseguiQueryGenerica(queryemail1);
+						String testoemail = (String)bollettinoLocalService.eseguiQueryGenerica(queryemail2);
+
+						String num = a.getNumero().split("/")[0];
+						String anno = a.getNumero().split("/")[1];
+						
+						PrincipalThreadLocal.setName(a.getUserId());
+						PermissionChecker pc = PermissionCheckerFactoryUtil.create(userLocalService.fetchUser(a.getUserId()));
+						PermissionThreadLocal.setPermissionChecker(pc);
+						
+						creaOggettiParerValangheEmail(a, Integer.parseInt(s), num, anno, oggettoemail, testoemail, versione);
+						
+					} catch (Exception e) {
+						_log.error(e);
+						//logInternoLocalService.log("ReportGeneratorTimer", "receive", e, "");
+					}
+				}
+				
+			} catch (Exception e) {
+				_log.error(e);
+				//logInternoLocalService.log("ReportGeneratorTimer", "receive", e, "");
+			}
+			
+			versione++;
+		}
+		
 		arretratiAllerte(true);
 		arretratiAllerte(false);
 		arretratiMonitoraggi();
+		arretratiValanghe(true);
+		arretratiValanghe(false);
 		
 		_log.info("ReportGenerator Scheduler - END");
 	}
@@ -415,9 +516,9 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
 	Map<String,Object> creaReportSms(Allerta a, int ore, int versione) {
 		
 		try {
-		AllertaParametro ap = allertaParametroLocalService.fetchAllertaParametro("ALLERTA_PDF_REFRESH_URL");
-		String u = (ap!=null? ap.getValore() : "http://localhost:"+portal.getPortalServerPort(false)+"/compila-allerta-portlet/refresh-allerta");
-		String u2 = u.replace("refresh-allerta", "sms-pdf-report");
+		String cpu = PortalUtil.getComputerName();
+		String host = cpu.contains("667") || cpu.contains("668")? "https://allertameteo.regione.emilia-romagna.it" : "http://localhost:8080";
+		String u2 =  host+"/o/report/sms";
 		
 		String urlpdf = u2 + ("?tipo=allerta&sottotipo="+a.getNumero());
 		System.out.println(urlpdf);
@@ -439,6 +540,45 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
 		 Map<String,Object> m = new HashMap<String, Object>();
 		 m.put("entry", l);
 		 m.put("hash", getHash(sms));
+		 try { sms.delete(); } catch (Exception e) {}
+		 return m;
+		}
+		
+		catch (Exception e) {
+			_log.error(e);
+			//logInternoLocalService.log("ReportGeneratorTimer", "creaReportSms", e, "");
+			return null;
+		}
+	}
+	
+	Map<String,Object> creaReportSmsValanghe(AllertaValanghe a, int ore, int versione) {
+		
+		try {
+		String cpu = PortalUtil.getComputerName();
+		String host = cpu.contains("667") || cpu.contains("668")? "https://allertameteo.regione.emilia-romagna.it" : "http://localhost:8080";
+		String u2 =  host+"/o/report/sms";
+		
+		String urlpdf = u2 + ("?tipo=valanghe&sottotipo="+a.getNumero());
+		System.out.println(urlpdf);
+		File sms = FileUtil.createTempFile(new URL(urlpdf).openConnection().getInputStream());
+
+		long user = a.getUserId();
+	
+		//trova i dati del creatore
+		User us = userLocalService.fetchUser(user);
+		
+		 ServiceContext sc = new ServiceContext();
+		 
+		 sc.setUserId(user);
+		 sc.setScopeGroupId(a.getGroupId());
+		 sc.setCompanyId(a.getCompanyId());
+		 
+		 long l = fileUploadByApp(sc, sms, "allerta-valanghe-"+a.getAllertaValangheId(), "rep_invio_sms_"+ore+"_ore.pdf", "Report invio", "application/pdf");
+		 
+		 Map<String,Object> m = new HashMap<String, Object>();
+		 m.put("entry", l);
+		 m.put("hash", getHash(sms));
+		 try { sms.delete(); } catch (Exception e) {}
 		 return m;
 		}
 		
@@ -452,9 +592,9 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
 	Map<String,Object> creaReportSmsBollettino(Bollettino a, int ore, int versione) {
 		
 		try {
-		AllertaParametro ap = allertaParametroLocalService.fetchAllertaParametro("ALLERTA_PDF_REFRESH_URL");
-		String u = (ap!=null? ap.getValore() : "http://localhost:"+portal.getPortalServerPort(false)+"/compila-allerta-portlet/refresh-allerta");
-		String u2 = u.replace("refresh-allerta", "sms-pdf-report");
+		String cpu = PortalUtil.getComputerName();
+		String host = cpu.contains("667") || cpu.contains("668")? "https://allertameteo.regione.emilia-romagna.it" : "http://localhost:8080";
+		String u2 =  host+"/o/report/sms";
 		
 		String urlpdf = u2 + ("?tipo=monitoraggio&sottotipo="+a.getNumero());
 		System.out.println(urlpdf);
@@ -476,6 +616,7 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
 		 Map<String,Object> m = new HashMap<String, Object>();
 		 m.put("entry", l);
 		 m.put("hash", getHash(sms));
+		 try { sms.delete(); } catch (Exception e) {}
 		 return m;
 		}
 		
@@ -489,15 +630,20 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
 	Map<String,Object> creaReportSmsAllarme(Allarme a, int ore, int versione) {
 		
 		try {
-		AllertaParametro ap = allertaParametroLocalService.fetchAllertaParametro("ALLERTA_PDF_REFRESH_URL");
-		String u = (ap!=null? ap.getValore() : "http://localhost:"+portal.getPortalServerPort(false)+"/compila-allerta-portlet/refresh-allerta");
-		String u2 = u.replace("refresh-allerta", "sms-pdf-report");
-		
+		String cpu = PortalUtil.getComputerName();
+			
+		String host = cpu.contains("667") || cpu.contains("668")? "https://allertameteo.regione.emilia-romagna.it" : "http://localhost:8080";
+		String u2 =  host+"/o/report/sms";
+				
 		String urlpdf = u2 + ("?tipo=superamento&param="+a.getAllarmeId());
 		System.out.println(urlpdf);
-		File sms = FileUtil.createTempFile(new URL(urlpdf).openConnection().getInputStream());
+		URLConnection uc = new URL(urlpdf).openConnection();
+		InputStream is = uc.getInputStream();
+		File sms = FileUtil.createTempFile(is);
 
-
+		try {
+			is.close();
+		} catch (Exception e) { e.printStackTrace(); }
 	
 		//trova i dati del creatore
 		
@@ -512,6 +658,7 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
 		 Map<String,Object> m = new HashMap<String, Object>();
 		 m.put("entry", l);
 		 m.put("hash", getHash(sms));
+		 try { sms.delete(); } catch (Exception e) {}
 		 return m;
 		}
 		
@@ -525,14 +672,22 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
 	Map<String,Object> creaReportEmail(Allerta a, int ore, int versione) {
 		
 		try {
-		AllertaParametro ap = allertaParametroLocalService.fetchAllertaParametro("ALLERTA_PDF_REFRESH_URL");
-		String u = (ap!=null? ap.getValore() : "http://localhost:"+portal.getPortalServerPort(false)+"/compila-allerta-portlet/refresh-allerta");
-		String u2 = u.replace("refresh-allerta", "email-pdf-report");
+			String cpu = PortalUtil.getComputerName();
+			
+			String host = cpu.contains("667") || cpu.contains("668")? "https://allertameteo.regione.emilia-romagna.it" : "http://localhost:8080";
+		String u2 =  host+"/o/report/email";
 		
 		String urlpdf = u2 + ("?tipo=allerta&sottotipo="+a.getNumero());
 		System.out.println(urlpdf);
-		File sms = FileUtil.createTempFile(new URL(urlpdf).openConnection().getInputStream());
+		URLConnection uc = new URL(urlpdf).openConnection();
+		InputStream is = uc.getInputStream();
+		File sms = FileUtil.createTempFile(is);
 
+		try {
+			is.close();
+		} catch (Exception e) { e.printStackTrace(); }
+		
+		
 		long user = a.getUserId();
 	
 		//trova i dati del creatore
@@ -549,6 +704,51 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
 		 Map<String,Object> m = new HashMap<String, Object>();
 		 m.put("entry", l);
 		 m.put("hash", getHash(sms));
+		 try { sms.delete(); } catch (Exception e) {}
+		 return m;
+		} catch (Exception e) {
+			_log.error(e);
+			//logInternoLocalService.log("ReportGeneratorTimer", "creaReportEmail", e, "");
+			return null;
+		}
+	}
+	
+	Map<String,Object> creaReportEmailValanghe(AllertaValanghe a, int ore, int versione) {
+		
+		try {
+			String cpu = PortalUtil.getComputerName();
+			
+			String host = cpu.contains("667") || cpu.contains("668")? "https://allertameteo.regione.emilia-romagna.it" : "http://localhost:8080";
+		String u2 =  host+"/o/report/email";
+		
+		String urlpdf = u2 + ("?tipo=valanghe&sottotipo="+a.getNumero());
+		System.out.println(urlpdf);
+		URLConnection uc = new URL(urlpdf).openConnection();
+		InputStream is = uc.getInputStream();
+		File sms = FileUtil.createTempFile(is);
+
+		try {
+			is.close();
+		} catch (Exception e) { e.printStackTrace(); }
+		
+		
+		long user = a.getUserId();
+	
+		//trova i dati del creatore
+		User us = userLocalService.fetchUser(user);
+		
+		 ServiceContext sc = new ServiceContext();
+		 
+		 sc.setUserId(user);
+		 sc.setScopeGroupId(a.getGroupId());
+		 sc.setCompanyId(a.getCompanyId());
+		 
+		 long l = fileUploadByApp(sc, sms, "allerta-valanghe-"+a.getAllertaValangheId(), "rep_invio_email_"+ore+"_ore.pdf", "Report invio", "application/pdf");
+		 
+		 Map<String,Object> m = new HashMap<String, Object>();
+		 m.put("entry", l);
+		 m.put("hash", getHash(sms));
+		 try { sms.delete(); } catch (Exception e) {}
 		 return m;
 		} catch (Exception e) {
 			_log.error(e);
@@ -560,9 +760,9 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
 	Map<String,Object> creaReportEmailBollettino(Bollettino a, int ore, int versione) {
 		
 		try {
-		AllertaParametro ap = allertaParametroLocalService.fetchAllertaParametro("ALLERTA_PDF_REFRESH_URL");
-		String u = (ap!=null? ap.getValore() : "http://localhost:"+portal.getPortalServerPort(false)+"/compila-allerta-portlet/refresh-allerta");
-		String u2 = u.replace("refresh-allerta", "email-pdf-report");
+		String cpu = PortalUtil.getComputerName();
+		String host = cpu.contains("667") || cpu.contains("668")? "https://allertameteo.regione.emilia-romagna.it" : "http://localhost:8080";
+		String u2 =  host+"/o/report/email";
 		
 		String urlpdf = u2 + ("?tipo=monitoraggio&sottotipo="+a.getNumero());
 		System.out.println(urlpdf);
@@ -584,6 +784,7 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
 		 Map<String,Object> m = new HashMap<String, Object>();
 		 m.put("entry", l);
 		 m.put("hash", getHash(sms));
+		 try { sms.delete(); } catch (Exception e) {}
 		 return m;
 		} catch (Exception e) {
 			_log.error(e);
@@ -595,9 +796,9 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
 	Map<String,Object> creaReportEmailAllarme(Allarme a, int ore, int versione) {
 		
 		try {
-		AllertaParametro ap = allertaParametroLocalService.fetchAllertaParametro("ALLERTA_PDF_REFRESH_URL");
-		String u = (ap!=null? ap.getValore() : "http://localhost:"+portal.getPortalServerPort(false)+"/compila-allerta-portlet/refresh-allerta");
-		String u2 = u.replace("refresh-allerta", "email-pdf-report");
+		String cpu = PortalUtil.getComputerName();
+		String host = cpu.contains("667") || cpu.contains("668")? "https://allertameteo.regione.emilia-romagna.it" : "http://localhost:8080";
+		String u2 =  host+"/o/report/email";
 		
 		String urlpdf = u2 + ("?tipo=superamento&param="+a.getAllarmeId());
 		System.out.println(urlpdf);
@@ -616,6 +817,7 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
 		 Map<String,Object> m = new HashMap<String, Object>();
 		 m.put("entry", l);
 		 m.put("hash", getHash(sms));
+		 try { sms.delete(); } catch (Exception e) {}
 		 return m;
 		} catch (Exception e) {
 			_log.error(e);
@@ -660,6 +862,53 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
     		
     		if (feedback.getTipoAllerta())
     			datiSpecificiInvioLocalService.comunicaDatiSpecificiInvioAllertaSms(dsi, documentiCollegati, componentiInvio);
+    		
+    	} catch (Exception e) {
+    		_log.error(e);
+    		//logInternoLocalService.log("ReportGeneratorTimer", "creaOggettiParer", e, "");
+    	}
+	}
+	
+	
+	public void creaOggettiParerValangheSms(AllertaValanghe feedback, int ore, String num, String anno, int sms1, int sms2, int sms3, int versione) {
+		try {
+			
+			if (!feedback.getTipoAllerta()) return;
+			
+    		String vv = (versione>=10?""+versione:"0"+versione);
+    		Map<String,Object> m = creaReportSmsValanghe(feedback,ore,versione);
+    		
+    		DatiSpecificiInvio dsi = datiSpecificiInvioLocalService.createDatiSpecificiInvio(0);
+    		dsi.setCHIAVE_NUMERO("0"+num+vv);
+    		dsi.setCHIAVE_ANNO(Long.parseLong(feedback.getNumero().split("/")[1]));
+    		dsi.setDATA_UNITA_DOCUMENTARIA(feedback.getDataEmissione());
+    		dsi.setIDENTIFICATIVO_DATO_SPECIFICO(feedback.getNumero());
+    		dsi.setDATA_GENERAZIONE(new Date());
+    		dsi.setDENOMINAZIONE_APPLICATIVO("AllertaMeteoER");
+
+    		dsi.setNUM_SMS_GENERATI(sms1);
+    		dsi.setNUM_SMS_INVIATI(sms2);
+    		dsi.setNUM_NOTIFICHE_RICEZIONE(sms3);
+    		
+    		ArrayList<DocumentiCollegati> documentiCollegati = new ArrayList<DocumentiCollegati>();
+    		ArrayList<ComponentiInvio> componentiInvio = new ArrayList<ComponentiInvio>();
+    		
+    		//DocumentiCollegatiPK pk = new DocumentiCollegatiPK(num, Integer.parseInt(anno), "ALLERTE", 0);
+    		DocumentiCollegati dc = documentiCollegatiLocalService.getNuovoDocumentoCollegato();
+    		dc.setDOC_COLLEGATO_NUMERO("0"+num);
+    		dc.setDOC_COLLEGATO_ANNO(Integer.parseInt(anno));
+    		dc.setDOC_COLLEGATO_TIPO_REGISTRO("METEOMONT");
+    		documentiCollegati.add(dc);
+    		
+    		ComponentiInvio c = componentiInvioLocalService.getNuovoComponenteInvio();
+    		c.setHASH_VERSATO((String)m.get("hash"));
+    		c.setID_COMPONENTE_VERSATO((Long)m.get("entry"));
+    		c.setNOME_COMPONENTE("rep_invio_sms_"+ore+"_ore.pdf");
+    		c.setURN_VERSATO("https://allertameteo.regione.emilia-romagna.it"+feedback.getLink());
+    		c.setFORMATO_FILE_VERSATO("PDF"); componentiInvio.add(c);
+    		
+    		if (feedback.getTipoAllerta())
+    			datiSpecificiInvioLocalService.comunicaDatiSpecificiInvioValangheSms(dsi, documentiCollegati, componentiInvio);
     		
     	} catch (Exception e) {
     		_log.error(e);
@@ -802,6 +1051,53 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
     		
     		if (feedback.getTipoAllerta())
     			datiSpecificiInvioLocalService.comunicaDatiSpecificiInvioAllertaMail(dsi, documentiCollegati, componentiInvio);
+    		
+    	} catch (Exception e) {
+    		_log.error(e);
+    		//logInternoLocalService.log("ReportGeneratorTimer", "creaOggettiParerEmail", e, "");
+    		System.out.println("PARER EXCEPTION: "+e.getMessage());
+    	}
+		
+		
+	}
+	
+	public void creaOggettiParerValangheEmail(AllertaValanghe feedback, int ore, String num, String anno, String oggetto, String testo, int versione) {
+		try {
+			
+			if (!feedback.getTipoAllerta()) return;
+			
+			String vv = (versione>=10?""+versione:"0"+versione);
+    		Map<String,Object> m = creaReportEmailValanghe(feedback,ore,versione);
+    		
+    		DatiSpecificiInvio dsi = datiSpecificiInvioLocalService.createDatiSpecificiInvio(0);
+    		dsi.setCHIAVE_NUMERO("0"+num+vv);
+    		dsi.setCHIAVE_ANNO(Long.parseLong(feedback.getNumero().split("/")[1]));
+    		dsi.setDATA_UNITA_DOCUMENTARIA(feedback.getDataEmissione());
+    		dsi.setIDENTIFICATIVO_DATO_SPECIFICO(feedback.getNumero());
+    		dsi.setDATA_GENERAZIONE(new Date());
+    		dsi.setDENOMINAZIONE_APPLICATIVO("AllertaMeteoER");
+
+    		dsi.setOGGETTO_MAIL(oggetto);
+    		dsi.setTESTO_MAIL(testo);
+    		
+    		ArrayList<DocumentiCollegati> documentiCollegati = new ArrayList<DocumentiCollegati>();
+    		ArrayList<ComponentiInvio> componentiInvio = new ArrayList<ComponentiInvio>();
+    		
+    		DocumentiCollegati dc = documentiCollegatiLocalService.getNuovoDocumentoCollegato();
+    		dc.setDOC_COLLEGATO_NUMERO("0"+num);
+    		dc.setDOC_COLLEGATO_ANNO(Integer.parseInt(anno));
+    		dc.setDOC_COLLEGATO_TIPO_REGISTRO("METEOMONT");
+    		documentiCollegati.add(dc);
+    		
+    		ComponentiInvio c = componentiInvioLocalService.getNuovoComponenteInvio();
+    		c.setHASH_VERSATO((String)m.get("hash"));
+    		c.setID_COMPONENTE_VERSATO((Long)m.get("entry"));
+    		c.setNOME_COMPONENTE("rep_invio_email_"+ore+"_ore.pdf");
+    		c.setURN_VERSATO("https://allertameteo.regione.emilia-romagna.it"+feedback.getLink());
+    		c.setFORMATO_FILE_VERSATO("PDF"); componentiInvio.add(c);
+    		
+    		if (feedback.getTipoAllerta())
+    			datiSpecificiInvioLocalService.comunicaDatiSpecificiInvioValangheMail(dsi, documentiCollegati, componentiInvio);
     		
     	} catch (Exception e) {
     		_log.error(e);
@@ -969,6 +1265,11 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
 				BollettinoParametro ap = bollettinoParametroLocalService.fetchBollettinoParametro("BOLLETTINO_PARENT_FOLDER_ID");
 				if (ap!=null) parentFolderId = Long.parseLong(ap.getValore());
 			} catch (Exception e) {}
+		} else if (folderName.startsWith("allerta-valanghe")) {
+			try {
+				AllertaParametro ap = allertaParametroLocalService.fetchAllertaParametro("VALANGHE_PARENT_FOLDER_ID");
+				if (ap!=null) parentFolderId = Long.parseLong(ap.getValore());
+			} catch (Exception e) {}
 		} else {
 		try {
 			AllertaParametro ap = allertaParametroLocalService.fetchAllertaParametro("ALLERTA_PARENT_FOLDER_ID");
@@ -1005,6 +1306,12 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
 				}
 			}
 			
+			if (is!=null) {
+				try {
+					is.close();
+				} catch (Exception e) {}
+			}
+			
 			return f.getFileEntryId();
 	    	
 	     }
@@ -1016,6 +1323,71 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
 	    }
 	}
 	
+	
+	public void arretratiValanghe(boolean allerte) {
+		
+		String query= "select allertavalangheid from allerter_allertavalanghe a where tipoallerta and stato=0 and dataemissione<current_timestamp - cast('2 hours' as interval) and not exists "+
+				"(select * from parer_datispecificiinvio i where chiave_tipo_registro='METEOMONT' and ('0' || a.numero)=i.chiave_numero || '/' || i.chiave_anno) limit "+LIMITE_ARRETRATI;
+		
+		String queryB= "select allertavalangheid from allerter_allertavalanghe a where not tipoallerta and stato=0 and dataemissione<current_timestamp - cast('2 hours' as interval) and not exists "+
+				"(select * from parer_datispecificiinvio i where chiave_tipo_registro='METEOMONT' and a.numero=i.chiave_numero || '/' || i.chiave_anno) limit "+LIMITE_ARRETRATI;
+		
+		try {
+			List<Object> l = bollettinoLocalService.eseguiQueryGenericaLista(allerte?query:queryB);
+			
+			for (Object o : l) {
+				AllertaValanghe feedback = allertaValangheLocalService.getAllertaValanghe(Long.parseLong(o.toString()));
+				PermissionChecker perm = PermissionCheckerFactoryUtil.create(userLocalService.fetchUser(feedback.getUserId()));
+				PermissionThreadLocal.setPermissionChecker(perm);
+				
+				_log.info("Arretrati valanghe: "+feedback.getAllertaValangheId());
+				//logInternoLocalService.log("arretratiAllerte", ""+feedback.getAllertaId(), "","");
+				
+				User arpa = userLocalService.getUser(feedback.getUtenteFirmaArpaId());
+        		User pc = userLocalService.getUser(feedback.getUtenteFirmaProtId());
+        		
+        		DatiSpecificiInvio dsi = datiSpecificiInvioLocalService.createDatiSpecificiInvio(0);
+				dsi.setCHIAVE_NUMERO((feedback.getTipoAllerta()?"0":"")
+						+feedback.getNumero().split("/")[0]);
+				dsi.setCHIAVE_ANNO(Long.parseLong(feedback.getNumero().split("/")[1]));
+				dsi.setDATA_UNITA_DOCUMENTARIA(feedback.getDataEmissione());
+				dsi.setIDENTIFICATIVO_DATO_SPECIFICO("" + feedback.getAllertaValangheId());
+				dsi.setDATA_GENERAZIONE(feedback.getCreateDate());
+				dsi.setDENOMINAZIONE_APPLICATIVO("AllertaMeteoER");
+				dsi.setCOMPILATORE_ARPAE(feedback.getCreatorName());
+				dsi.setCOMPILATORE_PROTEZIONE_CIVILE(feedback.getUserName());
+				dsi.setAPPROVATORE_ARPAE(arpa.getFullName());
+				dsi.setAPPROVATORE_PROTEZIONE_CIVILE(pc.getFullName());
+				dsi.setDATA_INIZIO_VALIDITA(feedback.getDataInizio());
+				dsi.setDATA_FINE_VALIDITA(feedback.getDataFine());
+				dsi.setDATA_FIRMA_ARPAE(feedback.getDataFirmaArpa());
+				dsi.setDATA_FIRMA_PROTEZIONE_CIVILE(feedback.getDataFirmaProt());
+        		
+        		ArrayList<DocumentiCollegati> documentiCollegati = new ArrayList<DocumentiCollegati>();
+        		ArrayList<ComponentiInvio> componentiInvio = new ArrayList<ComponentiInvio>();
+        		
+        		ComponentiInvio c = componentiInvioLocalService.getNuovoComponenteInvio();
+        		c.setHASH_VERSATO(feedback.getHash());
+        		
+        		FileEntry f = getValangheReportId(feedback);
+        		c.setID_COMPONENTE_VERSATO(f.getFileEntryId());
+        		c.setNOME_COMPONENTE(f.getTitle());
+        		c.setURN_VERSATO("https://allertameteo.regione.emilia-romagna.it"+feedback.getLink());
+        		c.setFORMATO_FILE_VERSATO("PDF");
+        		componentiInvio.add(c);
+        		datiSpecificiInvioLocalService.comunicaDatiSpecificiInvioValanghe
+        			(dsi, documentiCollegati, componentiInvio);
+        		
+			}
+		}
+	    catch (Exception e)
+	    {
+	    	_log.error(e);
+	    	 //logInternoLocalService.log("arretratiAllerte", "fileUpload", e, "");
+	    	 return;
+	    }	
+		
+	}
 	
 	public void arretratiAllerte(boolean allerte) {
 		
@@ -1097,6 +1469,36 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
 	    	} catch (Exception e) {}
 	    	
 	    	Folder folder =DLAppServiceUtil.getFolder(20181, parentFolderId, "allerta-"+a.getAllertaId());
+			List<FileEntry> fileEntries = DLAppServiceUtil.getFileEntries(20181, folder.getFolderId());
+			
+			for (FileEntry f : fileEntries) {
+				if (f.getTitle().startsWith("allerta") || f.getTitle().startsWith("bollettino")) {
+					return f;
+				}
+			}
+			
+			return null;
+			
+    	} catch (Exception e) {
+    		_log.error(e);
+    		//logInternoLocalService.log("AllertaWorkflow", "getReportId", e, "");
+    		return null;
+    	}
+    	
+    }
+    
+    private FileEntry getValangheReportId(AllertaValanghe a) {
+    	
+    	try {
+    	
+	    	Long parentFolderId = DLFolderConstants.DEFAULT_PARENT_FOLDER_ID;
+	    	
+	    	try {
+	    		AllertaParametro ap = allertaParametroLocalService.fetchAllertaParametro("VALANGHE_PARENT_FOLDER_ID");
+	    		if (ap!=null) parentFolderId = Long.parseLong(ap.getValore());
+	    	} catch (Exception e) {}
+	    	
+	    	Folder folder =DLAppServiceUtil.getFolder(20181, parentFolderId, "allerta-valanghe-"+a.getAllertaValangheId());
 			List<FileEntry> fileEntries = DLAppServiceUtil.getFileEntries(20181, folder.getFolderId());
 			
 			for (FileEntry f : fileEntries) {
@@ -1208,6 +1610,8 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
 		AllertaBaseSchedulersConfiguration configuration = AllertaTracker.getAllertaSchedulersConfiguration();
 		
 		_log.info("ReportoGeneratori scheduling at " + configuration.schedulerReportGeneratorMinutes());
+		
+		if (configuration.schedulerReportGeneratorMinutes()<1) return;
 
 		Trigger trigger = _triggerFactory.createTrigger(className, className, null, null, configuration.schedulerReportGeneratorMinutes(), TimeUnit.MINUTE);
 
@@ -1268,6 +1672,12 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
     
     @Reference
     private AllertaLocalService allertaLocalService;
+    
+    @Reference
+    private AllertaValangheLocalService allertaValangheLocalService;
+    
+    @Reference
+    private JasperUtils jasperUtils;
     
     //@Reference
     //private LogInternoLocalService logInternoLocalService;

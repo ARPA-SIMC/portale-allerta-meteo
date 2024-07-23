@@ -55,13 +55,92 @@ import it.eng.allerte.service.RubricaRuoloRubricaServiceUtil;
 @ProviderType
 public class RubricaRuoloRubricaServiceHttp {
 
+	public static java.util.Map<Long, String> getSites(
+		HttpPrincipal httpPrincipal) {
+
+		try {
+			MethodKey methodKey = new MethodKey(
+				RubricaRuoloRubricaServiceUtil.class, "getSites",
+				_getSitesParameterTypes0);
+
+			MethodHandler methodHandler = new MethodHandler(methodKey);
+
+			Object returnObj = null;
+
+			try {
+				returnObj = TunnelUtil.invoke(httpPrincipal, methodHandler);
+			}
+			catch (Exception e) {
+				throw new com.liferay.portal.kernel.exception.SystemException(
+					e);
+			}
+
+			return (java.util.Map<Long, String>)returnObj;
+		}
+		catch (com.liferay.portal.kernel.exception.SystemException se) {
+			_log.error(se, se);
+
+			throw se;
+		}
+	}
+
+	public static void updateSite(HttpPrincipal httpPrincipal, Long sito) {
+		try {
+			MethodKey methodKey = new MethodKey(
+				RubricaRuoloRubricaServiceUtil.class, "updateSite",
+				_updateSiteParameterTypes1);
+
+			MethodHandler methodHandler = new MethodHandler(methodKey, sito);
+
+			try {
+				TunnelUtil.invoke(httpPrincipal, methodHandler);
+			}
+			catch (Exception e) {
+				throw new com.liferay.portal.kernel.exception.SystemException(
+					e);
+			}
+		}
+		catch (com.liferay.portal.kernel.exception.SystemException se) {
+			_log.error(se, se);
+
+			throw se;
+		}
+	}
+
+	public static Long getCurrentSite(HttpPrincipal httpPrincipal) {
+		try {
+			MethodKey methodKey = new MethodKey(
+				RubricaRuoloRubricaServiceUtil.class, "getCurrentSite",
+				_getCurrentSiteParameterTypes2);
+
+			MethodHandler methodHandler = new MethodHandler(methodKey);
+
+			Object returnObj = null;
+
+			try {
+				returnObj = TunnelUtil.invoke(httpPrincipal, methodHandler);
+			}
+			catch (Exception e) {
+				throw new com.liferay.portal.kernel.exception.SystemException(
+					e);
+			}
+
+			return (Long)returnObj;
+		}
+		catch (com.liferay.portal.kernel.exception.SystemException se) {
+			_log.error(se, se);
+
+			throw se;
+		}
+	}
+
 	public static java.util.Map<String, Object> getAddressBookRoles(
 		HttpPrincipal httpPrincipal) {
 
 		try {
 			MethodKey methodKey = new MethodKey(
 				RubricaRuoloRubricaServiceUtil.class, "getAddressBookRoles",
-				_getAddressBookRolesParameterTypes0);
+				_getAddressBookRolesParameterTypes3);
 
 			MethodHandler methodHandler = new MethodHandler(methodKey);
 
@@ -87,7 +166,13 @@ public class RubricaRuoloRubricaServiceHttp {
 	private static Log _log = LogFactoryUtil.getLog(
 		RubricaRuoloRubricaServiceHttp.class);
 
-	private static final Class<?>[] _getAddressBookRolesParameterTypes0 =
+	private static final Class<?>[] _getSitesParameterTypes0 = new Class[] {};
+	private static final Class<?>[] _updateSiteParameterTypes1 = new Class[] {
+		Long.class
+	};
+	private static final Class<?>[] _getCurrentSiteParameterTypes2 =
+		new Class[] {};
+	private static final Class<?>[] _getAddressBookRolesParameterTypes3 =
 		new Class[] {};
 
 }

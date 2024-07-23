@@ -1,9 +1,11 @@
 package it.eng.allerta.web.rest.application;
 
 import java.net.UnknownHostException;
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -26,7 +28,11 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.jaxrs.whiteboard.JaxrsWhiteboardConstants;
 
+import allerta.dewetra.service.HRWLocalService;
+
 import com.google.gson.Gson;
+import com.liferay.blogs.model.BlogsEntry;
+import com.liferay.blogs.service.BlogsEntryLocalServiceUtil;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.service.JournalArticleLocalServiceUtil;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
@@ -38,6 +44,7 @@ import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONSerializer;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.security.access.control.AccessControlled;
 import com.liferay.portal.kernel.service.UserLocalServiceUtil;
 import com.liferay.portal.kernel.util.Validator;
 
@@ -45,16 +52,29 @@ import it.eng.allerta.rest.application.service.AllertaRestService;
 import it.eng.allerta.rest.application.service.ReportRefreshService;
 import it.eng.allerter.service.AllertaService;
 import it.eng.allerter.service.LogInternoLocalService;
+import it.eng.allerter.service.LogInternoLocalServiceUtil;
 import it.eng.allerter.service.SMSLocalService;
+import it.eng.animaeteo.model.AnimeteoImg;
+import it.eng.animaeteo.service.AnimeteoImgLocalServiceUtil;
 import it.eng.animazione.image.exception.NoSuchPioggiaCumulativaException;
 import it.eng.animazione.image.model.PioggiaCumulativa;
+import it.eng.animazione.image.model.altezzaOnda;
+import it.eng.animazione.image.model.altezzaOndaAdriac;
+import it.eng.animazione.image.model.altezzaOndaSwanita;
 import it.eng.animazione.image.service.PioggiaCumulativaLocalServiceUtil;
+import it.eng.animazione.image.service.altezzaOndaAdriacLocalServiceUtil;
+import it.eng.animazione.image.service.altezzaOndaLocalServiceUtil;
+import it.eng.animazione.image.service.altezzaOndaSwanitaLocalServiceUtil;
 import it.eng.bollettino.service.BollettinoService;
 import it.eng.bollettino.service.RegolaAllarmeLocalService;
 import it.eng.bollettino.service.ValoreSensoreLocalService;
 import it.eng.bollettino.service.ValoreSensoreService;
+import it.eng.cache.service.DatiLocalServiceUtil;
 import it.eng.radarMeteo.model.Img;
+import it.eng.radarMeteo.service.Comuni_bacini_wsServiceUtil;
+import it.eng.radarMeteo.service.Comuni_wsLocalServiceUtil;
 import it.eng.radarMeteo.service.Comuni_wsService;
+import it.eng.radarMeteo.service.Comuni_wsServiceUtil;
 import it.eng.radarMeteo.service.ImgLocalServiceUtil;
 import it.eng.radarMeteo.service.ImgService;
 
@@ -80,6 +100,9 @@ public class AllertaWebRestApplication extends Application {
 	public Set<Object> getSingletons() {
 		return Collections.<Object>singleton(this);
 	}
+	
+	
+	
 
 	@GET
 	@Path("/group/search-groups")
@@ -373,6 +396,28 @@ public class AllertaWebRestApplication extends Application {
 		
 	}
 	
+	@GET
+	@Path("/deleteBlog")
+	@Produces("application/json; charset=UTF-8")
+	public String deleteBlog(
+			@QueryParam("entryId") long entryId) {
+		BlogsEntry b = null;
+		
+			 b = BlogsEntryLocalServiceUtil.fetchBlogsEntry(entryId);
+		
+		 
+		 if( Validator.isNotNull(b)) {
+			 
+	
+				 BlogsEntryLocalServiceUtil.deleteBlogsEntry( b);
+			
+		 }
+		 
+		
+		return "[]";
+		
+	}
+	
 	
 	@POST
 	@Path("/getlastimages")
@@ -415,6 +460,42 @@ public class AllertaWebRestApplication extends Application {
 		return getSensorValuesNotime(time, var);
 	}
 	
+	
+	@GET
+	@Path("/legacy-get-monitoraggio")
+	@Produces("application/json; charset=UTF-8")
+	public String legacyGetMonitoraggio() {
+		Map<String,Object> m = Comuni_bacini_wsServiceUtil.getBollettinoMonitoraggio();
+		return JSONFactoryUtil.serialize(m);
+	}
+	
+	@GET
+	@Path("/legacy-get-meteomont")
+	@Produces("application/json; charset=UTF-8")
+	public String legacyGetMeteomont() {
+		ArrayList<HashMap<String,String>>  m = Comuni_wsServiceUtil.getMeteomont();
+		
+		return JSONFactoryUtil.createJSONArray(m).toString();
+	}
+	
+	@GET
+	@Path("/legacy-get-allerta")
+	@Produces("application/json; charset=UTF-8")
+	public String legacyGetAllerta(String data) {
+		Date d = new Date();
+		if (data!=null) {
+			try {
+			d = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(data);
+			} catch (Exception e) {}
+		}
+		
+		Timestamp t = new Timestamp(d.getTime());
+		JSONSerializer serializer = JSONFactoryUtil.createJSONSerializer();
+		
+		Map<String,Object> m = Comuni_wsServiceUtil.getStatoAllerta(t);
+		return serializer.serialize(m);
+	}
+	
 	@GET
 	@Path("/get-sensor-values-no-time")
 	@Produces("application/json; charset=UTF-8")
@@ -426,8 +507,21 @@ public class AllertaWebRestApplication extends Application {
 		if( var == "undefined") var = "";
 		try {
 			
-			JSONSerializer serializer = JSONFactoryUtil.createJSONSerializer();
-			String jsonData = serializer.serialize(imagesService.getsensorvaluesnotime(var, time));
+			String cacheName = "sensorvaluesnotime_"+time+"_"+var;
+			String jsonData = null;
+			
+			try {
+				jsonData = (String) DatiLocalServiceUtil.getDato(cacheName);
+			} catch (Exception ee) {};
+			
+			if (jsonData==null) {
+				JSONSerializer serializer = JSONFactoryUtil.createJSONSerializer();
+				jsonData = serializer.serialize(imagesService.getsensorvaluesnotime(var, time));
+				try {
+					DatiLocalServiceUtil.putDato(cacheName, jsonData);
+				} catch (Exception eeee) {}
+			}
+			
 			return JSONFactoryUtil.createJSONArray(jsonData).toString();
 			
 		} catch (Exception e) {
@@ -458,9 +552,22 @@ public class AllertaWebRestApplication extends Application {
 		
 		if( var == "undefined") var = "";
 		try {
+			String cacheName = "sensorvalues_"+time+"_"+var;
+			String jsonData = null;
 			
-			JSONSerializer serializer = JSONFactoryUtil.createJSONSerializer();
-			String jsonData = serializer.serialize(imagesService.getSensorValues(var, time));
+			try {
+				jsonData = (String) DatiLocalServiceUtil.getDato(cacheName);
+			} catch (Exception ee) {}
+			
+			if (jsonData==null) {
+				JSONSerializer serializer = JSONFactoryUtil.createJSONSerializer();
+				jsonData = serializer.serialize(imagesService.getSensorValues(var, time));
+				try {
+					DatiLocalServiceUtil.putDato(cacheName, jsonData);
+				} catch (Exception eee) {}
+			}
+			
+			
 			return JSONFactoryUtil.createJSONArray(jsonData).toString();
 			
 		} catch (Exception e) {
@@ -469,6 +576,45 @@ public class AllertaWebRestApplication extends Application {
 			
 			return "[]" ;
 		}
+	}
+	
+	@POST
+	@Path("/get-pioggia-cumulata-24")
+	@Produces("application/json; charset=UTF-8")
+	public String getPioggiaCumulata24Post() {
+		return  getPioggiaCumulata24();
+	}
+	
+	@GET
+	@Path("/get-pioggia-cumulata-24")
+	@Produces("application/json; charset=UTF-8")
+	public String getPioggiaCumulata24() {
+		
+		Calendar calendar = Calendar.getInstance();
+		
+		List<PioggiaCumulativa> cumulativa24 = null;
+		
+		try {
+			
+			cumulativa24 = PioggiaCumulativaLocalServiceUtil.findByCumulazione("24h");
+			
+			for(PioggiaCumulativa cumulativa : cumulativa24) {
+				
+				calendar.setTime(cumulativa.getInzioCumulazione());
+//				calendar.add(Calendar.MONTH, -1);
+				cumulativa.setInzioCumulazione(calendar.getTime());
+
+				calendar.setTime(cumulativa.getFineCumulazione());
+//				calendar.add(Calendar.MONTH, -1);
+				cumulativa.setFineCumulazione(calendar.getTime());
+			}
+		} catch (SystemException | NoSuchPioggiaCumulativaException e) {
+			// TODO Auto-generated catch block
+			_log.error(e);
+		}
+	
+		return new Gson().toJson(cumulativa24);
+		
 	}
 	
 	@POST
@@ -593,6 +739,242 @@ public class AllertaWebRestApplication extends Application {
 	}
 	
 	@POST
+	@Path("/get-all-animeteo-preci")
+	@Produces("application/json; charset=UTF-8")
+	public String getAllAnimeteoPreciPost() {
+		return getAllAnimeteoPreciImages();
+	}
+	
+	@GET
+	@Path("/get-all-animeteo-preci")
+	@Produces("application/json; charset=UTF-8")
+	public String getAllAnimeteoPreciImages() {
+		return getAllAnimeteoImages("preci");
+	}
+	
+	@POST
+	@Path("/get-all-animeteo-nuv")
+	@Produces("application/json; charset=UTF-8")
+	public String getAllAnimeteoNuvPost() {
+		return getAllAnimeteoNuvImages();
+	}
+	
+	@GET
+	@Path("/get-all-animeteo-nuv")
+	@Produces("application/json; charset=UTF-8")
+	public String getAllAnimeteoNuvImages() {
+		return getAllAnimeteoImages("nuv");
+	}
+	
+	@POST
+	@Path("/get-all-animeteo-wind")
+	@Produces("application/json; charset=UTF-8")
+	public String getAllAnimeteoWindPost() {
+		return getAllAnimeteoWindImages();
+	}
+	
+	@GET
+	@Path("/get-all-animeteo-wind")
+	@Produces("application/json; charset=UTF-8")
+	public String getAllAnimeteoWindImages() {
+		return getAllAnimeteoImages("wind");
+	}
+	
+	private String getAllAnimeteoImages(String tipo) {
+		
+		 List<AnimeteoImg> allImagesList = null;
+		 HashMap<Long,String> imgMap = new HashMap<Long,String>();
+		 String bounds;
+		
+		try {
+			allImagesList = AnimeteoImgLocalServiceUtil.findByType(tipo);
+			for(AnimeteoImg current:allImagesList){
+				
+				imgMap.put(current.getInserted().getTime()/1000,current.getData());
+			}
+			
+			bounds = "7,43,14,46.5";
+			
+			JSONSerializer serializer = JSONFactoryUtil.createJSONSerializer();
+			
+			String jsonData =  serializer.serialize(imgMap) ;
+			
+			String imagesArray = "\"images\":" + JSONFactoryUtil.createJSONObject(jsonData).toString();
+			
+			return "{" + imagesArray + ", \"bounds\":[" + bounds + "] }";
+			
+		} catch (Exception e) {
+			_log.error(e);
+		}
+		
+		return "[]" ;
+		
+	}
+	
+	@POST
+	@Path("/get-nowcasting")
+	@Produces("application/json; charset=UTF-8")
+	public String getNowcastingPost() {
+		return getNowcasting();
+	}
+	
+	@GET
+	@Path("/get-nowcasting")
+	@Produces("application/json; charset=UTF-8")
+	public String getNowcasting() {
+		
+		 HashMap<Long,String> imgMap = new HashMap<Long,String>();
+		 String bounds;
+		 
+		
+		try {
+			
+			it.eng.previsioni.meteo.model.Img i = it.eng.previsioni.meteo.service.ImgLocalServiceUtil.getByPartDayProvincia("immagineRadar", "Nowcasting", "ND");
+			
+
+			imgMap.put(i.getId(),i.getData());
+			
+			
+			bounds = "5.00129,40.999,17.0188,48.216";
+			
+			JSONSerializer serializer = JSONFactoryUtil.createJSONSerializer();
+			
+			String jsonData =  serializer.serialize(imgMap) ;
+			
+			String imagesArray = "\"images\":" + JSONFactoryUtil.createJSONObject(jsonData).toString();
+			
+			return "{" + imagesArray + ", \"bounds\":[" + bounds + "] }";
+			
+		} catch (Exception e) {
+			_log.error(e);
+		}
+		
+		return "[]" ;
+		
+	}
+	
+	@POST
+	@Path("/get-altezza-onda")
+	@Produces("application/json; charset=UTF-8")
+	public String getAltezzaOndaPost() {
+		return getAltezzaOnda();
+	}
+	
+	@GET
+	@Path("/get-altezza-onda")
+	@Produces("application/json; charset=UTF-8")
+	public String getAltezzaOnda() {
+		HashMap<Long,String> imgMap = new HashMap<Long,String>();
+		 String bounds;
+		 
+		 try {
+		List<altezzaOnda> al = altezzaOndaLocalServiceUtil.getaltezzaOndas(-1, -1);
+		
+		for(altezzaOnda current:al){
+			
+			imgMap.put(current.getTs_UTC(),current.getImgData());
+		}
+		
+		bounds = "12,43.8,13,45";
+		
+		JSONSerializer serializer = JSONFactoryUtil.createJSONSerializer();
+		
+		String jsonData =  serializer.serialize(imgMap) ;
+		
+		String imagesArray = "\"images\":" + JSONFactoryUtil.createJSONObject(jsonData).toString();
+		
+		return "{" + imagesArray + ", \"bounds\":[" + bounds + "] }";
+		
+		
+		 } catch (Exception e) {
+				_log.error(e);
+			}
+			
+			return "[]" ;
+	}
+	
+	@POST
+	@Path("/get-altezza-onda-swanita")
+	@Produces("application/json; charset=UTF-8")
+	public String getAltezzaOndaSwanitaPost() {
+		return getAltezzaOndaSwanita();
+	}
+	
+	@GET
+	@Path("/get-altezza-onda-swanita")
+	@Produces("application/json; charset=UTF-8")
+	public String getAltezzaOndaSwanita() {
+		HashMap<Long,String> imgMap = new HashMap<Long,String>();
+		 String bounds;
+		 
+		 try {
+		List<altezzaOndaSwanita> al = altezzaOndaSwanitaLocalServiceUtil.getaltezzaOndaSwanitas(-1, -1);
+		
+		for(altezzaOndaSwanita current:al){
+			
+			imgMap.put(current.getTs_UTC(),current.getImgData());
+		}
+		
+		bounds = "6,36,20,47";
+		
+		JSONSerializer serializer = JSONFactoryUtil.createJSONSerializer();
+		
+		String jsonData =  serializer.serialize(imgMap) ;
+		
+		String imagesArray = "\"images\":" + JSONFactoryUtil.createJSONObject(jsonData).toString();
+		
+		return "{" + imagesArray + ", \"bounds\":[" + bounds + "] }";
+		
+		
+		 } catch (Exception e) {
+				_log.error(e);
+			}
+			
+			return "[]" ;
+	}
+	
+	@POST
+	@Path("/get-altezza-onda-adriac")
+	@Produces("application/json; charset=UTF-8")
+	public String getAltezzaOndaAdriacPost() {
+		return getAltezzaOndaAdriac();
+	}
+	
+	@GET
+	@Path("/get-altezza-onda-adriac")
+	@Produces("application/json; charset=UTF-8")
+	public String getAltezzaOndaAdriac() {
+		HashMap<Long,String> imgMap = new HashMap<Long,String>();
+		 String bounds;
+		 
+		 try {
+		List<altezzaOndaAdriac> al = altezzaOndaAdriacLocalServiceUtil.getaltezzaOndaAdriacs(-1, -1);
+		
+		for(altezzaOndaAdriac current:al){
+			
+			imgMap.put(current.getTs_UTC(),current.getImgData());
+		}
+		
+		bounds = "12,40,20,46";
+		
+		JSONSerializer serializer = JSONFactoryUtil.createJSONSerializer();
+		
+		String jsonData =  serializer.serialize(imgMap) ;
+		
+		String imagesArray = "\"images\":" + JSONFactoryUtil.createJSONObject(jsonData).toString();
+		
+		return "{" + imagesArray + ", \"bounds\":[" + bounds + "] }";
+		
+		
+		 } catch (Exception e) {
+				_log.error(e);
+			}
+			
+			return "[]" ;
+	}
+	
+	
+	@POST
 	@Path("/get-allarmi")
 	@Produces("application/json; charset=UTF-8")
 	public String getAllarmiPost() {
@@ -645,22 +1027,6 @@ public class AllertaWebRestApplication extends Application {
 		
 		return "[]" ;
 		
-		
-		/*
-		try {
-			Calendar calendar = Calendar.getInstance();
-			calendar.add(Calendar.DATE, 1);
-			
-			String parameter = dateFormat.format(calendar.getTime());
-			
-			return getStatoAllerta(parameter);
-			
-		} catch (Exception e) {
-			_log.error(e);
-		}
-		
-		return "";
-		*/
 	}
 	
 	@POST
@@ -781,12 +1147,16 @@ public class AllertaWebRestApplication extends Application {
 			@QueryParam("id") String id,
 			@QueryParam("scope") String scope) {
 		
+		LogInternoLocalServiceUtil.log("buildAllertaPdf", "buildAllertaPdf", tipo, "");
+
+		
 		try {
 			
 			reportService.refreshPdf(null, tipo, id, scope, servletRequest);
 			
 		} catch (Exception e) {
 			_log.error(e);
+			LogInternoLocalServiceUtil.log("buildAllertaPdf", "buildAllertaPdf", e, "");
 		}
 		
 	}
@@ -795,11 +1165,21 @@ public class AllertaWebRestApplication extends Application {
 	@Path("/aggiorna-dati-osservati")
 	@Produces("application/json; charset=UTF-8")
 	public String aggiornaDatiOsservati(String dati) {
+		
+		DatiLocalServiceUtil.removeDatiByPrefix("sensorvalues%");
+		
 		Map<String,Object> a = valoreSensoreService.aggiornaDatiOsservati(dati);
-		int v = (int)a.get("valori");
-		if (v>0) {
-			logInternoService.log("dati osservati", "Aggiornamento dati osservati", "Comunicati "+v+" dati", "");
+		int v = 0;
+		if (a.get("valori")!=null) {
+			v = (int)a.get("valori");
+			if (v>0) {
+				logInternoService.log("dati osservati", "Aggiornamento dati osservati", "Comunicati "+v+" dati", "");
+			}
 		}
+		
+		//logInternoService.log("dati osservati", "Aggiornamento dati osservati", "Comunicati 0 dati", "");
+		
+		logger.error(dati);
 		
 		if (1==1) return "{\"result\":\"ok\", \"data\":"+v+"}";
 		
@@ -840,6 +1220,30 @@ public class AllertaWebRestApplication extends Application {
 		}
 		
 		return "{\"result\":\"ok\", \"data\":"+v+"}";
+	}
+	
+	@POST
+	@Path("/dewetra-hrw")
+	@Produces("application/json; charset=UTF-8")
+	public String aggiornaDewetra(String dati) {
+		
+		
+		Map<String,Object> a = hrwService.aggiornaDewetra(dati);
+		int v = 0;
+		if (a.get("valori")!=null) {
+			v = (int)a.get("valori");
+			if (v>0) {
+				logInternoService.log("aggiornaDewetra", "Aggiornamento Dewetra", "Comunicati "+v+" dati", "");
+			}
+		}
+		
+		//logInternoService.log("dati osservati", "Aggiornamento dati osservati", "Comunicati 0 dati", "");
+		
+		logger.error(dati);
+		
+		return "{\"result\":\"ok\",  \"data\":"+v+"}";
+		
+		
 	}
 	
 	private void notificaSpike(String s, String nom, Date d, double delta, double soglia) {
@@ -890,6 +1294,9 @@ public class AllertaWebRestApplication extends Application {
 	
 	@Reference
 	private ValoreSensoreLocalService valoreSensoreService;
+	
+	@Reference
+	private HRWLocalService hrwService;
 	
 	@Reference
 	private LogInternoLocalService logInternoService;

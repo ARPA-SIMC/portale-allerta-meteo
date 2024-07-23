@@ -25,6 +25,7 @@
                 var map = new DataMap({
                     dataScenarios: rtdata, // key of data, Note: this should be one element, but we let the code generic
                     center: TERRITORY.REGION_LAT_LNG,
+                    zoom: rtdata[0]=='adriac' || rtdata[0]=='swanita'?8:null,
                     territory: TERRITORY,
                     container: mapComponent,
                     mapContainer: $(".map-component__map", mapComponent),

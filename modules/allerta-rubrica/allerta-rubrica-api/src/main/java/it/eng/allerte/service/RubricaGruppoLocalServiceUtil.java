@@ -203,6 +203,10 @@ public class RubricaGruppoLocalServiceUtil {
 		return getService().getActionableDynamicQuery();
 	}
 
+	public static java.util.ArrayList<Object[]> getGerarchia(Long site) {
+		return getService().getGerarchia(site);
+	}
+
 	public static java.util.List<Object[]> getGroup(Long id) {
 		return getService().getGroup(id);
 	}
@@ -220,6 +224,13 @@ public class RubricaGruppoLocalServiceUtil {
 		Long site, String groupName, Long limit, Long offset) {
 
 		return getService().getGruppiByName(site, groupName, limit, offset);
+	}
+
+	public static java.util.ArrayList<Object[]> getGruppiByNameCategoria(
+		Long site, String groupName, Long categoria, Long limit, Long offset) {
+
+		return getService().getGruppiByNameCategoria(
+			site, groupName, categoria, limit, offset);
 	}
 
 	public static Object[] getGruppiByOwnerAndName(

@@ -1,0 +1,12 @@
+dependencies {
+	compileOnly group: "com.liferay.portal", name: "com.liferay.portal.kernel"
+	compileOnly group: "com.liferay.portal", name: "com.liferay.util.taglib"
+	compileOnly group: "javax.portlet", name: "portlet-api"
+	compileOnly group: "javax.servlet", name: "javax.servlet-api"
+	compileOnly group: "jstl", name: "jstl"
+	compileOnly group: "org.osgi", name: "org.osgi.service.component.annotations"
+	
+	compileOnly project(":modules:allerta-catasto:allerta-catasto-api")
+	compileOnly project(":modules:allerta-allertaer:allerta-allertaer-api")
+	compileOnly project(":modules:allerta-bollettino:allerta-bollettino-api")
+}

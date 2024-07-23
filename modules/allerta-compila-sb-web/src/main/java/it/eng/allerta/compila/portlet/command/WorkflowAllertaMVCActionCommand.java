@@ -1,6 +1,7 @@
 package it.eng.allerta.compila.portlet.command;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 import javax.portlet.ActionRequest;
@@ -31,6 +32,7 @@ import com.liferay.portal.kernel.workflow.permission.WorkflowPermissionUtil;
 import it.eng.allerta.utils.AllertaKeys;
 import it.eng.allerter.model.Allerta;
 import it.eng.allerter.service.AllertaLocalServiceUtil;
+import it.eng.allerter.service.LogInternoLocalServiceUtil;
 import it.eng.bollettino.model.Bollettino;
 import it.eng.bollettino.service.BollettinoLocalServiceUtil;
 
@@ -46,14 +48,23 @@ public class WorkflowAllertaMVCActionCommand extends BaseMVCActionCommand {
 
 	@Override
 	protected void doProcessAction(ActionRequest actionRequest, ActionResponse actionResponse) throws Exception {
-		
+		String cmd = "";
+		try {
 		long allertaId = ParamUtil.getLong(actionRequest, "allertaId");
 		long taskId = ParamUtil.getLong(actionRequest, "taskId");
-		String cmd = ParamUtil.getString(actionRequest, "cmd");
+		cmd = ParamUtil.getString(actionRequest, "cmd");
 		
 		ThemeDisplay themeDisplay = (ThemeDisplay) actionRequest.getAttribute(WebKeys.THEME_DISPLAY);
 		
 		Allerta b = AllertaLocalServiceUtil.getAllerta(allertaId);
+		
+		try {
+			LogInternoLocalServiceUtil.log("WorkflowAllertaMVCActionCommand",
+					"doProcessAction", ""+allertaId+" "+taskId+" "+cmd, "");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 		
 		boolean hasWfl = 
 				WorkflowInstanceLinkLocalServiceUtil.hasWorkflowInstanceLink(
@@ -94,7 +105,28 @@ public class WorkflowAllertaMVCActionCommand extends BaseMVCActionCommand {
 	            			 WorkflowInstanceManagerUtil.getWorkflowInstance(themeDisplay.getCompanyId(), wil.getWorkflowInstanceId());
 	            	
 	            	 Map<String, Serializable> workflowContext = workflowInstance.getWorkflowContext();
-
+	            	 
+	            	 try {
+		            	 if (task.isCompleted()) {
+		            		 //stiamo tentando di riassegnare un task vecchio, forse problema di cache
+		            		 List<WorkflowTask> ls = WorkflowTaskManagerUtil.getWorkflowTasksByWorkflowInstance(themeDisplay.getCompanyId(), 0L, workflowInstance.getWorkflowInstanceId(), false, -1, -1, null);
+		            		 if (ls!=null) {
+		            			 for (WorkflowTask wt : ls) { 
+		            				 if (!wt.isCompleted() && wt.getName().equals(task.getName())) {
+		            					 
+			            				 LogInternoLocalServiceUtil.log("workflow", "test", "taskId->"+taskId+"->"+wt.getWorkflowTaskId(), null);
+			            				 task = wt;
+			            				 taskId = wt.getWorkflowTaskId();
+		            					 break;
+		            				 }
+		            			 }
+		            		 }
+		            	 }
+	            	 } catch (Exception e) {
+        				 LogInternoLocalServiceUtil.log("workflow", "test", e, null);
+	            	 }
+	            	 
+	            	 
 	            	 WorkflowTask nextTask = 
 	            			 	WorkflowTaskManagerUtil.assignWorkflowTaskToUser(
 	            			 			b.getCompanyId(), 
@@ -121,7 +153,7 @@ public class WorkflowAllertaMVCActionCommand extends BaseMVCActionCommand {
 	    						themeDisplay.getUserId(), 
 	    						nextTask.getWorkflowTaskId(), 
 	    						"reject", 
-	    						"Rjected", 
+	    						"Rejected", 
 	    						workflowContext);
 	    			}
 	            }
@@ -140,7 +172,13 @@ public class WorkflowAllertaMVCActionCommand extends BaseMVCActionCommand {
 		 redirect.setWindowState(WindowState.NORMAL);		 
 		 //actionResponse.sendRedirect(redirect.toString());
 
-		 actionResponse.sendRedirect("/");
+		 actionResponse.sendRedirect("/esito-approvazione?cmd="+cmd+"&oggetto=allerta&status=ok");
+		 
+		} catch (Exception e) {
+			LogInternoLocalServiceUtil.log("WorkflowAllertaMVCActionCommand", "doProcessAction", e, "");
+			actionResponse.sendRedirect("/esito-approvazione?cmd="+cmd+"&oggetto=allerta&status=ko");
+
+		}
 	}
 
 }

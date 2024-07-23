@@ -113,7 +113,7 @@ public class RubricaGruppoServiceImpl extends RubricaGruppoServiceBaseImpl imple
 	//GET groups (name, limit, offset)
 	@JSONWebService
 	@AccessControlled(guestAccessEnabled = false)
-	public Map<String,Object> getGroups(String name, int limit, int offset){
+	public Map<String,Object> getGroups(String name, Long categoria, int limit, int offset){
 		
 		Map<String,Object> mappa = new HashMap<String, Object>();
 		try {
@@ -125,7 +125,7 @@ public class RubricaGruppoServiceImpl extends RubricaGruppoServiceBaseImpl imple
 		Long idSite = GestioneRubricaCustomService.getIdSitoUtente(userId);
 		
 			
-		mappa = loadGroupByName(userId, idSite, name, limit, offset);
+		mappa = loadGroupByName(userId, idSite,  name, categoria, limit, offset);
 
 		return mappa;
 
@@ -305,7 +305,7 @@ public class RubricaGruppoServiceImpl extends RubricaGruppoServiceBaseImpl imple
 	 * @param offset
 	 * @return
 	 */
-	private Map<String, Object> loadGroupByName( long userId, long site, String name, int limit, int offset) {
+	private Map<String, Object> loadGroupByName( long userId, long site, String name, Long categoria, int limit, int offset) {
 		
 		Map<String,Object> mappa = new HashMap<String, Object>();
 		
@@ -313,7 +313,7 @@ public class RubricaGruppoServiceImpl extends RubricaGruppoServiceBaseImpl imple
 		
 		try {
 			GestioneRubricaCustomService gestRubrica = new GestioneRubricaCustomService(userId, site);
-		    listaGroupElement = gestRubrica.loadGroupsByName(site, name, new Long(limit), new Long(offset));
+		    listaGroupElement = gestRubrica.loadGroupsByName(site, name, categoria, new Long(limit), new Long(offset));
 			 
 			if(null == listaGroupElement) {
 				mappa.put(CODE, 404);

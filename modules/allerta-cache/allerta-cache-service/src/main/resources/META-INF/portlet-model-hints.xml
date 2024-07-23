@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+
+<model-hints>
+	<model name="it.eng.cache.model.Dati">
+		<field name="idDati" type="String" />
+		<field name="dato" type="String" />
+		<field name="createDate" type="Date" />
+	</model>
+</model-hints>

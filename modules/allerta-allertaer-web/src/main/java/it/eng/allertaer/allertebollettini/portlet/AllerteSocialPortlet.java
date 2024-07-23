@@ -13,9 +13,8 @@ import it.eng.allerta.utils.AllertaKeys;
 		property = {
 			"com.liferay.portlet.display-category=" + AllertaKeys.AllertaCategory,
 			"com.liferay.portlet.instanceable=false",
-			"javax.portlet.init-param.add-process-action-success-action=false",
-			"javax.portlet.init-param.add-process-action-error-action=false",
 			"javax.portlet.display-name=Link Social", 
+			"javax.portlet.init-param.template-path=/",
 			"javax.portlet.init-param.view-template=/social.jsp",
 			"javax.portlet.name=" + AllertaKeys.AllertaSocialPortlet,
 			"javax.portlet.resource-bundle=content.Language",

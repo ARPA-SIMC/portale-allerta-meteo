@@ -48,6 +48,9 @@ import it.eng.allerter.service.persistence.AllertaFinder;
 import it.eng.allerter.service.persistence.AllertaParametroPersistence;
 import it.eng.allerter.service.persistence.AllertaPersistence;
 import it.eng.allerter.service.persistence.AllertaStatoPersistence;
+import it.eng.allerter.service.persistence.AllertaValangheFinder;
+import it.eng.allerter.service.persistence.AllertaValanghePersistence;
+import it.eng.allerter.service.persistence.AllertaValangheStatoPersistence;
 import it.eng.allerter.service.persistence.AreaPersistence;
 import it.eng.allerter.service.persistence.EmailPersistence;
 import it.eng.allerter.service.persistence.FeedPersistence;
@@ -476,6 +479,115 @@ public abstract class EmailLocalServiceBaseImpl
 		AllertaStatoPersistence allertaStatoPersistence) {
 
 		this.allertaStatoPersistence = allertaStatoPersistence;
+	}
+
+	/**
+	 * Returns the allerta valanghe local service.
+	 *
+	 * @return the allerta valanghe local service
+	 */
+	public it.eng.allerter.service.AllertaValangheLocalService
+		getAllertaValangheLocalService() {
+
+		return allertaValangheLocalService;
+	}
+
+	/**
+	 * Sets the allerta valanghe local service.
+	 *
+	 * @param allertaValangheLocalService the allerta valanghe local service
+	 */
+	public void setAllertaValangheLocalService(
+		it.eng.allerter.service.AllertaValangheLocalService
+			allertaValangheLocalService) {
+
+		this.allertaValangheLocalService = allertaValangheLocalService;
+	}
+
+	/**
+	 * Returns the allerta valanghe persistence.
+	 *
+	 * @return the allerta valanghe persistence
+	 */
+	public AllertaValanghePersistence getAllertaValanghePersistence() {
+		return allertaValanghePersistence;
+	}
+
+	/**
+	 * Sets the allerta valanghe persistence.
+	 *
+	 * @param allertaValanghePersistence the allerta valanghe persistence
+	 */
+	public void setAllertaValanghePersistence(
+		AllertaValanghePersistence allertaValanghePersistence) {
+
+		this.allertaValanghePersistence = allertaValanghePersistence;
+	}
+
+	/**
+	 * Returns the allerta valanghe finder.
+	 *
+	 * @return the allerta valanghe finder
+	 */
+	public AllertaValangheFinder getAllertaValangheFinder() {
+		return allertaValangheFinder;
+	}
+
+	/**
+	 * Sets the allerta valanghe finder.
+	 *
+	 * @param allertaValangheFinder the allerta valanghe finder
+	 */
+	public void setAllertaValangheFinder(
+		AllertaValangheFinder allertaValangheFinder) {
+
+		this.allertaValangheFinder = allertaValangheFinder;
+	}
+
+	/**
+	 * Returns the allerta valanghe stato local service.
+	 *
+	 * @return the allerta valanghe stato local service
+	 */
+	public it.eng.allerter.service.AllertaValangheStatoLocalService
+		getAllertaValangheStatoLocalService() {
+
+		return allertaValangheStatoLocalService;
+	}
+
+	/**
+	 * Sets the allerta valanghe stato local service.
+	 *
+	 * @param allertaValangheStatoLocalService the allerta valanghe stato local service
+	 */
+	public void setAllertaValangheStatoLocalService(
+		it.eng.allerter.service.AllertaValangheStatoLocalService
+			allertaValangheStatoLocalService) {
+
+		this.allertaValangheStatoLocalService =
+			allertaValangheStatoLocalService;
+	}
+
+	/**
+	 * Returns the allerta valanghe stato persistence.
+	 *
+	 * @return the allerta valanghe stato persistence
+	 */
+	public AllertaValangheStatoPersistence
+		getAllertaValangheStatoPersistence() {
+
+		return allertaValangheStatoPersistence;
+	}
+
+	/**
+	 * Sets the allerta valanghe stato persistence.
+	 *
+	 * @param allertaValangheStatoPersistence the allerta valanghe stato persistence
+	 */
+	public void setAllertaValangheStatoPersistence(
+		AllertaValangheStatoPersistence allertaValangheStatoPersistence) {
+
+		this.allertaValangheStatoPersistence = allertaValangheStatoPersistence;
 	}
 
 	/**
@@ -1022,6 +1134,27 @@ public abstract class EmailLocalServiceBaseImpl
 
 	@BeanReference(type = AllertaStatoPersistence.class)
 	protected AllertaStatoPersistence allertaStatoPersistence;
+
+	@BeanReference(
+		type = it.eng.allerter.service.AllertaValangheLocalService.class
+	)
+	protected it.eng.allerter.service.AllertaValangheLocalService
+		allertaValangheLocalService;
+
+	@BeanReference(type = AllertaValanghePersistence.class)
+	protected AllertaValanghePersistence allertaValanghePersistence;
+
+	@BeanReference(type = AllertaValangheFinder.class)
+	protected AllertaValangheFinder allertaValangheFinder;
+
+	@BeanReference(
+		type = it.eng.allerter.service.AllertaValangheStatoLocalService.class
+	)
+	protected it.eng.allerter.service.AllertaValangheStatoLocalService
+		allertaValangheStatoLocalService;
+
+	@BeanReference(type = AllertaValangheStatoPersistence.class)
+	protected AllertaValangheStatoPersistence allertaValangheStatoPersistence;
 
 	@BeanReference(type = it.eng.allerter.service.AreaLocalService.class)
 	protected it.eng.allerter.service.AreaLocalService areaLocalService;

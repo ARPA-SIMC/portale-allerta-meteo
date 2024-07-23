@@ -163,14 +163,23 @@ public class AllertaCompilaSbWebPortlet extends MVCPortlet {
 		long allertaId = ParamUtil.getLong(httpRequest, "allertaId");
 		
 		String op = ParamUtil.getString(httpRequest, "generaField");
-
+ 
+		String allerta = httpRequest.getParameter("allerta");
+		int eventi[] = new int[9];
+		
+		if (allerta!=null) {
+			String x[] = allerta.split(",");
+			for (int k=0; k<x.length; k++) eventi[k] = Integer.parseInt(x[k]);
+		} 
+ 
+		
 		AllertaBean allertaBean = new AllertaBean(allertaId, httpRequest);
 
 		PrintWriter writer = resourceResponse.getWriter();
 		if( op.equals("titolo"))
-			writer.println(allertaBean.getTitoloDefault());
+			writer.println(allertaBean.getTitoloDefault(eventi));
 		else 
-			writer.println(allertaBean.getNumeroDefault());
+			writer.println(allertaBean.getNumeroDefault(eventi));
 		
 	}
 	

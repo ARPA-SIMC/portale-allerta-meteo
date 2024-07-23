@@ -37,6 +37,7 @@ import com.liferay.portal.kernel.workflow.comparator.WorkflowComparatorFactoryUt
 import com.liferay.portal.kernel.workflow.permission.WorkflowPermissionUtil;
 
 import it.eng.allerta.utils.AllertaKeys;
+import it.eng.allerter.service.LogInternoLocalServiceUtil;
 import it.eng.bollettino.model.Bollettino;
 import it.eng.bollettino.service.BollettinoLocalServiceUtil;
 
@@ -101,6 +102,27 @@ public class WorkflowBollettinoMVCActionCommand extends BaseMVCActionCommand {
 	            	
 	            	 Map<String, Serializable> workflowContext = workflowInstance.getWorkflowContext();
 
+	            	 try {
+		            	 if (task.isCompleted()) {
+		            		 //stiamo tentando di riassegnare un task vecchio, forse problema di cache
+		            		 List<WorkflowTask> ls = WorkflowTaskManagerUtil.getWorkflowTasksByWorkflowInstance(themeDisplay.getCompanyId(), 0L, workflowInstance.getWorkflowInstanceId(), false, -1, -1, null);
+		            		 if (ls!=null) {
+		            			 for (WorkflowTask wt : ls) { 
+		            				 if (!wt.isCompleted() && wt.getName().equals(task.getName())) {
+		            					 
+			            				 LogInternoLocalServiceUtil.log("workflow", "test", "taskId->"+taskId+"->"+wt.getWorkflowTaskId(), null);
+			            				 task = wt;
+			            				 taskId = wt.getWorkflowTaskId();
+		            					 break;
+		            				 }
+		            			 }
+		            		 }
+		            	 }
+	            	 } catch (Exception e) {
+        				 LogInternoLocalServiceUtil.log("workflow", "test", e, null);
+	            	 }
+	            	 
+	            	 
 	            	 WorkflowTask nextTask = 
 	            			 	WorkflowTaskManagerUtil.assignWorkflowTaskToUser(
 	            			 			b.getCompanyId(), 

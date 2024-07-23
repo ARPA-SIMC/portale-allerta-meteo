@@ -63,11 +63,25 @@ public interface RubricaRuoloRubricaService extends BaseService {
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public Map<String, Object> getAddressBookRoles();
 
+	@JSONWebService
+	@AccessControlled(guestAccessEnabled = true)
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public Long getCurrentSite();
+
 	/**
 	 * Returns the OSGi service identifier.
 	 *
 	 * @return the OSGi service identifier
 	 */
 	public String getOSGiServiceIdentifier();
+
+	@JSONWebService
+	@AccessControlled(guestAccessEnabled = true)
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public Map<Long, String> getSites();
+
+	@JSONWebService
+	@AccessControlled(guestAccessEnabled = true)
+	public void updateSite(Long sito);
 
 }

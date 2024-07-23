@@ -19,28 +19,28 @@ public interface AllertaSMSConfiguration {
 
 	@Meta.AD(
 			name = "sms-username",
-			deflt = "X",
+			deflt = "AllertaMeteo2019",
 			required = false
 			)
 	public String username();
 	
 	@Meta.AD(
 			name = "sms-password",
-			deflt = "X",
+			deflt = "Meteo-TIM-2019",
 			required = false
 			)
 	public String password();
 	
 	@Meta.AD(
 			name = "sms-token",
-			deflt = "X",
+			deflt = "249060EE1B4E52A3A33DC55840A8848418047584",
 			required = false
 			)
 	public String token();
 	
 	@Meta.AD(
 			name = "sms-alias",
-			deflt = "X",
+			deflt = "AllerteER",
 			required = false
 			)
 	public String alias();

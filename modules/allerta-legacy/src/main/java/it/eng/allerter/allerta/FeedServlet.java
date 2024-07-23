@@ -8,19 +8,32 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
+import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
+import org.osgi.service.component.annotations.Component;
+
 import com.liferay.portal.kernel.util.InfrastructureUtil;
 
 import it.eng.allerter.model.Feed;
 import it.eng.allerter.service.FeedLocalServiceUtil;
 import it.eng.allerter.service.LogInternoLocalServiceUtil;
+import it.eng.bollettino.service.BollettinoLocalServiceUtil;
 
+@Component(
+	    immediate = true,
+	    property = {
+	        "osgi.http.whiteboard.context.path=/",
+	        "osgi.http.whiteboard.servlet.pattern=/compila-allerta-portlet/feed"
+	    },
+	    service = Servlet.class
+	)
 public class FeedServlet  extends HttpServlet {
 	
 	@Override
@@ -45,31 +58,26 @@ public class FeedServlet  extends HttpServlet {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 			SimpleDateFormat sdf2 = new SimpleDateFormat("HH:mm:ss");
 			
-	        DataSource ds = InfrastructureUtil.getDataSource();
-	        connection = ds.getConnection();
+			List<Object[]> l = BollettinoLocalServiceUtil.eseguiQueryGenericaLista(f.getQuery());
+			if (l==null) return;
 			
-			Statement s = connection.createStatement();
-			ResultSet rs = s.executeQuery(f.getQuery());
 			String lastDate = null;
 			Date las = null;
-			while (rs.next()) {
-				String title = rs.getString(1);
-				String link = rs.getString(2);
-				String id = rs.getString(3);
-				Date updated = rs.getTimestamp(4);
+			for (Object[] o : l) {
+				String title = (String) o[0];
+				String link = (String) o[1];
+				String id = (String) o[2];
+				Date updated = (Date) o[3];
+				if (updated==null) updated = new Date();
 				String dat = sdf.format(updated)+"T"+sdf2.format(updated)+"Z";
 				if (las==null || updated.after(las)) {
 					lastDate = dat;
 					las = updated;
 				}
-				String summary = rs.getString(5);
+				String summary = (String) o[4];
 				String entryString = "<entry><title>"+title+"</title><link href=\""+link+"\"/><id>"+link+"</id><updated>"+dat+"</updated><summary>"+summary+"</summary></entry>";
 				out+=entryString;
 			}
-			
-			rs.close();
-			s.close();
-			connection.close();
 			
 			String start = "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
 			start+="<feed xmlns=\"http://www.w3.org/2005/Atom\">";

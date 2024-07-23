@@ -120,6 +120,34 @@ public class DatiSpecificiInvioLocalServiceImpl
 		}
 		return esitoInvio;
 	}
+	
+	public String comunicaDatiSpecificiInvioValanghe(DatiSpecificiInvio datiSpecifici, 
+			List<DocumentiCollegati> documentiCollegati, List<ComponentiInvio> componentiInvio) {
+		
+		//Esito di default
+		String esitoInvio = ESITO_INVIO_IN_INVIO;
+		
+		try {
+			//costruisci xml per l'invio
+			String xmlAllerta = generaFileXml(datiSpecifici, documentiCollegati,  componentiInvio, TipoDatoDaInviare.VALANGHE.getTipoDatoDaInviare());
+
+			//inserisco con esito invio = "in invio" 
+			//Serve per lo scheduler
+			datiSpecifici.setESITO_INVIO(esitoInvio);
+			
+			//Inserimento in DatiSpecificiInvio e Documenti Collegati
+			insertDatiSpecificiInvio(datiSpecifici, documentiCollegati, componentiInvio, TipoDatoDaInviare.VALANGHE.getTipoDatoDaInviare());
+			
+			//Carico i file (componenti) da inviare
+			List<File> listaFileComponenti = caricaFileComponenti(componentiInvio);
+			
+			esitoInvio = invioDatiParer(datiSpecifici, esitoInvio, xmlAllerta, listaFileComponenti);
+
+		} catch (SystemException | DatatypeConfigurationException | PortalException | IOException e) {
+			logger.error(e);
+		}
+		return esitoInvio;
+	}
 
 	/**
 	 * 
@@ -153,6 +181,34 @@ public class DatiSpecificiInvioLocalServiceImpl
 		}
 		return esitoInvio;
 	}
+	
+	public String comunicaDatiSpecificiInvioValangheSms(DatiSpecificiInvio datiSpecifici, List<DocumentiCollegati> documentiCollegati, List<ComponentiInvio> componentiInvio ){
+
+		//Esito di default
+		String esitoInvio = ESITO_INVIO_IN_INVIO;
+
+		try {
+			
+			//costruisci xml per l'invio
+			String xmlAllerta = generaFileXml(datiSpecifici, documentiCollegati,  componentiInvio, TipoDatoDaInviare.VALANGHE_SMS.getTipoDatoDaInviare());
+
+			//inserisco con esito invio = "in invio"
+			//Serve per lo scheduler
+			datiSpecifici.setESITO_INVIO(esitoInvio);
+			
+			//Inserimento in DatiSpecificiInvio e Documenti Collegati
+			insertDatiSpecificiInvio(datiSpecifici, documentiCollegati, componentiInvio, TipoDatoDaInviare.VALANGHE_SMS.getTipoDatoDaInviare());
+			
+			//Carico i file (componenti) da inviare
+			List<File> listaFileComponenti = caricaFileComponenti(componentiInvio);
+			
+			esitoInvio = invioDatiParer(datiSpecifici, esitoInvio, xmlAllerta, listaFileComponenti);
+
+		} catch (SystemException | DatatypeConfigurationException | PortalException | IOException e) {
+			logger.error(e);
+		}
+		return esitoInvio;
+	}
 
 	/**
 	 * 
@@ -174,6 +230,33 @@ public class DatiSpecificiInvioLocalServiceImpl
 			
 			//Inserimento in DatiSpecificiInvio e Documenti Collegati
 			insertDatiSpecificiInvio(datiSpecifici, documentiCollegati, componentiInvio, TipoDatoDaInviare.ALLERTA_MAIL.getTipoDatoDaInviare());
+			
+			//Carico i file (componenti) da inviare
+			List<File> listaDocumenti = caricaFileComponenti(componentiInvio);
+
+			esitoInvio = invioDatiParer(datiSpecifici, esitoInvio, xmlAllerta, listaDocumenti);
+
+		} catch (SystemException | DatatypeConfigurationException | PortalException | IOException e) {
+			logger.error(e);
+		}
+		return esitoInvio;
+	}
+	
+	public String comunicaDatiSpecificiInvioValangheMail(DatiSpecificiInvio datiSpecifici, List<DocumentiCollegati> documentiCollegati, List<ComponentiInvio> componentiInvio){
+
+		//Esito di default
+		String esitoInvio = ESITO_INVIO_IN_INVIO;
+
+		try {
+			//costruisci xml per l'invio
+			String xmlAllerta = generaFileXml(datiSpecifici, documentiCollegati, componentiInvio, TipoDatoDaInviare.VALANGHE_MAIL.getTipoDatoDaInviare());
+
+			//inserisco con esito invio = "in invio" 
+			//Serve per lo scheduler
+			datiSpecifici.setESITO_INVIO(esitoInvio);
+			
+			//Inserimento in DatiSpecificiInvio e Documenti Collegati
+			insertDatiSpecificiInvio(datiSpecifici, documentiCollegati, componentiInvio, TipoDatoDaInviare.VALANGHE_MAIL.getTipoDatoDaInviare());
 			
 			//Carico i file (componenti) da inviare
 			List<File> listaDocumenti = caricaFileComponenti(componentiInvio);

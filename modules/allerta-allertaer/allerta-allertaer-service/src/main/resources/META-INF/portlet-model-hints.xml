@@ -44,6 +44,7 @@
 		</field>
 		<field name="tipoAllerta" type="boolean" />
 		<field name="hash" type="String" />
+		<field name="sintesiBriefing" type="String" />
 	</model>
 	<model name="it.eng.allerter.model.AllertaParametro">
 		<field name="parametroId" type="String" />
@@ -65,6 +66,55 @@
 		<field name="dataFine" type="Date" />
 		<field name="parentId" type="long" />
 		<field name="allertaId" type="long" />
+		<field name="statoId" type="long" />
+		<field name="eventoId" type="long" />
+		<field name="areaId" type="long" />
+	</model>
+	<model name="it.eng.allerter.model.AllertaValanghe">
+		<field name="uuid" type="String" />
+		<field name="allertaValangheId" type="long" />
+		<field name="groupId" type="long" />
+		<field name="companyId" type="long" />
+		<field name="userId" type="long" />
+		<field name="userName" type="String" />
+		<field name="creatorName" type="String" />
+		<field name="createDate" type="Date" />
+		<field name="modifiedDate" type="Date" />
+		<field name="dataEmissione" type="Date" />
+		<field name="dataInizio" type="Date" />
+		<field name="dataFine" type="Date" />
+		<field name="numero" type="String" />
+		<field name="progressivo" type="int" />
+		<field name="anno" type="int" />
+		<field name="titolo" type="String" />
+		<field name="descrizioneFenomeni" type="String" />
+		<field name="note" type="String" />
+		<field name="riferimenti" type="String" />
+		<field name="sintesi" type="String" />
+		<field name="utenteFirmaArpaId" type="long" />
+		<field name="dataFirmaArpa" type="Date" />
+		<field name="utenteFirmaProtId" type="long" />
+		<field name="dataFirmaProt" type="Date" />
+		<field name="parentId" type="long" />
+		<field name="link" type="String" />
+		<field name="stato" type="int" />
+		<field name="tipoAllerta" type="boolean" />
+		<field name="hash" type="String" />
+	</model>
+	<model name="it.eng.allerter.model.AllertaValangheStato">
+		<field name="uuid" type="String" />
+		<field name="allertaValangheStatoId" type="long" />
+		<field name="groupId" type="long" />
+		<field name="companyId" type="long" />
+		<field name="userId" type="long" />
+		<field name="userName" type="String" />
+		<field name="createDate" type="Date" />
+		<field name="modifiedDate" type="Date" />
+		<field name="nome" type="String" />
+		<field name="dataInizio" type="Date" />
+		<field name="dataFine" type="Date" />
+		<field name="parentId" type="long" />
+		<field name="allertaValangheId" type="long" />
 		<field name="statoId" type="long" />
 		<field name="eventoId" type="long" />
 		<field name="areaId" type="long" />

@@ -195,6 +195,20 @@ public interface RubricaGruppoModel extends BaseModel<RubricaGruppo> {
 	 */
 	public void setDISABLED(boolean DISABLED);
 
+	/**
+	 * Returns the fk_categoria of this rubrica gruppo.
+	 *
+	 * @return the fk_categoria of this rubrica gruppo
+	 */
+	public long getFK_CATEGORIA();
+
+	/**
+	 * Sets the fk_categoria of this rubrica gruppo.
+	 *
+	 * @param FK_CATEGORIA the fk_categoria of this rubrica gruppo
+	 */
+	public void setFK_CATEGORIA(long FK_CATEGORIA);
+
 	@Override
 	public boolean isNew();
 

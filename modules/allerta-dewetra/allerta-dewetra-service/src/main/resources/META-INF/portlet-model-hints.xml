@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+
+<model-hints>
+	<model name="allerta.dewetra.model.HRW">
+		<field name="id" type="long" />
+		<field name="comune" type="String" />
+		<field name="timestamp" type="Date" />
+		<field name="HRI" type="double" />
+		<field name="SSI" type="double" />
+		<field name="SRI" type="double" />
+		<field name="VMI" type="double" />
+		<field name="VIL" type="double" />
+		<field name="POH" type="double" />
+		<field name="ETM" type="double" />
+		<field name="TOP" type="double" />
+		<field name="LGT" type="double" />
+		<field name="Pers" type="double" />
+		<field name="SRT" type="double" />
+		<field name="SRT_3" type="double" />
+		<field name="SRT_6" type="double" />
+		<field name="Vel" type="double" />
+		<field name="Dir" type="double" />
+	</model>
+</model-hints>

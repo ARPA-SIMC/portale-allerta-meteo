@@ -177,7 +177,6 @@ if (mappeRischioArticle != null)
 									<%=previsioniDatiDisplay.getContent()%>
 								</div>
 								<div class="col-12 col-md-6">
-									<%=mappeRischioDisplay.getContent()%>
 								</div>
 							</div>
 						</section>

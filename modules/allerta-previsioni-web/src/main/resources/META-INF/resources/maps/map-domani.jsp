@@ -4,6 +4,21 @@
 	
 	MapModelBean mapModelBean = (MapModelBean) renderRequest.getAttribute("MapModelBean");
 
+	
+	boolean qualcosa =  mapModelBean.getAllertaDomaniTitolo() != null || mapModelBean.getValangheDomaniTitolo() != null;
+	boolean tutto =  mapModelBean.getAllertaDomaniTitolo() != null && mapModelBean.getValangheDomaniTitolo() != null;
+	
+	String spiegazione = tutto?"Previsioni emesse con ":(qualcosa?"Previsione emessa con ":null);
+	
+	String tipoAllerta, tipoValanghe;
+	
+	tipoAllerta = mapModelBean.getAllertaDomaniTipo();
+	if ("Allerta".equals(tipoAllerta)) tipoAllerta = "Allerta meteo";
+	if ("Bollettino".equals(tipoAllerta)) tipoAllerta = "Bollettino meteo";
+	tipoValanghe = mapModelBean.getValangheDomaniTipo();
+	if ("AllertaValanghe".equals(tipoValanghe)) tipoValanghe = "Allerta valanghe";
+	if ("BollettinoValanghe".equals(tipoValanghe)) tipoValanghe = "Bollettino valanghe";
+
 %>			
 			
 <div 
@@ -13,21 +28,35 @@
 	id="tab--domani">
 
 
-	<div class="map-section__emitted" style="">
-		<small>
-			Previsione emessa con 
-			<a href="<%=mapModelBean.getAllertaDomaniLink() %>">
-				<span class="icon i-warning-o" title="Allerta"></span>
-				<%=mapModelBean.getAllertaDomaniTitolo() %>
-			</a>
-		</small>
-	</div>
+	<% if( spiegazione!=null) { %>
+				<div class="map-section__emitted" style="">
+					<small>
+						<%=spiegazione %>
+						<% if( mapModelBean.getAllertaDomaniTitolo()!=null) { %>
+						<a href="<%=mapModelBean.getAllertaDomaniLink()%>">
+							<span class="icon i-warning-o" title="Meteo"></span>
+							<%=tipoAllerta %>
+						</a>
+						<% } %>
+						<% if (tutto) { %> , 
+						<% } %>
+						<% if( mapModelBean.getValangheDomaniTitolo()!=null) { %>
+						<a href="<%=mapModelBean.getValangheDomaniLink()%>">
+							<span class="icon i-warning-o" title="Valanghe"></span>
+							<%=tipoValanghe %>
+						</a>
+						<% } %>
+					</small>
+				</div>
+<%} %>
 
 	<div
 		class="map-component map-component--forecast map-component--domani"
 		id="map-component--domani" 
 		data-toggle="forecast-map"
 		data-context="domani"
+		<%=mapModelBean.getSiteName().equals("")?"":"style=\"height:auto\"" %>
+		data-versione="2"
 		data-comune="<%=mapModelBean.getSiteName() %>">
 
 		<div class="map-component__panel">

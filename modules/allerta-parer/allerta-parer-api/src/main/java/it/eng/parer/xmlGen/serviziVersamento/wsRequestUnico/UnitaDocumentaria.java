@@ -104,7 +104,8 @@ import javax.xml.bind.annotation.XmlType;
 	it.eng.parer.xmlGen.allerta.bollettino.DatiSpecificiTypeBollettino.class, it.eng.parer.xmlGen.allerta.sms.DatiSpecificiTypeSms.class,
 	it.eng.parer.xmlGen.monitoraggio.DatiSpecificiTypeMonitoraggio.class, it.eng.parer.xmlGen.monitoraggio.mail.DatiSpecificiTypeMonitoraggioMail.class,
 	it.eng.parer.xmlGen.monitoraggio.sms.DatiSpecificiTypeMonitoraggioSms.class, it.eng.parer.xmlGen.superamento.mail.DatiSpecificiTypeSuperamentoMail.class,
-	it.eng.parer.xmlGen.superamento.sms.DatiSpecificiTypeSuperamentoSms.class})
+	it.eng.parer.xmlGen.superamento.sms.DatiSpecificiTypeSuperamentoSms.class,it.eng.parer.xmlGen.valanghe.DatiSpecificiTypeValanghe.class,
+	it.eng.parer.xmlGen.valanghe.sms.DatiSpecificiTypeValangheSms.class,it.eng.parer.xmlGen.valanghe.mail.DatiSpecificiTypeValangheMail.class})
 public class UnitaDocumentaria {
 
     @XmlElement(name = "Intestazione", required = true)

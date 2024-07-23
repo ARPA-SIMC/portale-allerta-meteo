@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.osgi.service.component.annotations.Component;
 
 import it.eng.allerter.allerta.AllertaBean;
+import it.eng.allerter.allerta.AllertaValangheBean;
 import it.eng.allerter.allerta.BollettinoBean;
 
 @Component (
@@ -37,6 +38,16 @@ public class DocumentoRefreshListener extends BaseMessageListener {
 			ab.setThreadUserPermission();
 			
 			ab.creaReport(false);
+			message.setResponse("ok");
+			return;
+		}
+		
+		if ("refreshValanghe".equals(servizio)) {
+			Long l = (Long)message.get("parametro");
+			AllertaValangheBean ab = new AllertaValangheBean(l, (HttpServletRequest)null);
+			ab.setThreadUserPermission();
+			
+			ab.creaReport();
 			message.setResponse("ok");
 			return;
 		}

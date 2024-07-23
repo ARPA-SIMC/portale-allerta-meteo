@@ -30,6 +30,7 @@ Il portale è online e raggiungibile su https://allertameteo.regione.emilia-roma
 - modules: progetti che producono moduli .jar con le funzionalità del sistema
 - war: come i moduli, ma producono file .war invece che .jar e forniscono temi e template di pagina.
 
+
 # Requisiti
 Valgono i requisiti di Liferay 7.2. consultabili nel dettaglio https://www.liferay.com/it/product/tech-specs . In breve:
 - sistemi operativi Linux (tutte le distribuzioni con JVM) o Windows
@@ -48,10 +49,25 @@ Valgono i requisiti di Liferay 7.2. consultabili nel dettaglio https://www.lifer
     PostgreSQL,
     SQL Server,
     Sybase)
+
     
-Un'installazione di produzione richiede un'istanza separata del software ElasticSearch: https://www.elastic.co/ . In sviluppo è invece sufficiente l'istanza fornita all'interno dello stesso Liferay.
+Un'installazione di produzione richiede un'istanza separata del software ElasticSearch: https://www.elastic.co/ . In sviluppo è invece sufficiente l'istanza fornita all'interno dello stesso Liferay. In produzione dovranno essere installate le seguenti estensioni di ElasticSearch:
+
+- analysis-icu
+- analysis-kuromoji
+- analysis-smartcn
+- analysis-stempel
+
+Si consiglia di disabilitare gli aggiornamenti automatici di ElasticSearch, in quanto le estensioni non vengono aggiornate, e la differenza tra le versioni potrebbe impedire del tutto l'avvio di ElasticSearch.
 
 Il sistema non ha alcuna dipendenza da software che non siano *open source*.
+
+Il sistema è stato utilizzato con le seguenti specifiche:
+
+- web server Tomcat 9.0.17
+- database PostgreSQL 9.6.24
+- librerie OpenJDK 11
+- ElasticSearch 6
 
 # Stato del progetto
 Il progetto è rilasciato come stabile.
@@ -71,6 +87,10 @@ Per l'installazione di Liferay 7 Community fare riferimento alla documentazione 
 Terminata l'installazione di Liferay vanno installati i moduli del Portale. Questo richiede un tool di sviluppo: è fortemente consigliato l'uso di Liferay Developer Studio, una versione personalizzata dell'IDE Eclipse. Tutte le informazioni su https://help.liferay.com/hc/en-us/articles/360017885052-Installing-Liferay-Dev-Studio-DXP
 
 L'intero contenuto del repository può essere importato massivamente come progetti nel Developer Studio. Il builder gradle contenuto nell'IDE provvederà a creare i moduli .jar e .war, disponibili nelle directory /build/libs di ciascun modulo. Questi file possono essere deployati in una qualunque istanza Liferay 7 trascinandoli o copiandoli nella directory /deploy di Liferay. In alternativa, un'istanza di Liferay collegata all'IDE Liferay Developer Studio è automaticamente sincronizzata con l'ambiente di sviluppo.
+
+Una volta deployati tutti i pacchetti contenuti nelle directory "modules" e "wars" di questo repository e riavviato il sistema, se tutti i collegamenti (al database, a ElasticSearch, alle directory documentali, ...) sono presenti, il sistema provvederà a creare in autonomia le tabelle sul database.
+
+Per le funzionalità specifiche dell'allertamento meteo sono inoltre necessarie alcune viste che non vengono create in automatico. Il codice SQL per crearle si trova sul repository al path /configs/common/db/allerta_views.sql .
 
 I workflow, se desiderati, vanno creati copiando i contenuti della directory kaleo e creando nuovi workflow con quei testi dal pannello di controllo Liferay.
 
@@ -118,6 +138,8 @@ L'identità del sito, intesa come struttura delle pagine, non è inclusa nel rep
 - **Preferenze Monitoraggio**: preferenze per la creazione del documento di monitoraggio (i sensori che possono essere inclusi nel documento)
 - **Report Invii analitico**: pannello con dettagli sui singoli SMS spediti e il loro stato di ricezione
 - **Strumenti Sindaco**: pulsanti per accedere alle funzionalità di amministrazione di un comune
+- **Verifica Allerte**: back-office per valutare la corrispondenza tra il documento di allerta emesso e gli eventi poi verificatisi
+- **Catasto delle Segnalazioni**: strumento per gestire un database di segnalazioni provenienti dal territorio
 
 
 

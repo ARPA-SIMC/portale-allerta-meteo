@@ -84,6 +84,7 @@ public class JasperUtils {
 			} else
 				params.put("PIOGGIA", meteo); 
 
+
 			InputStream stream = this.getClass().getResourceAsStream(template);
 			if (b!=null) params.put("title", "Documento di monitoraggio "+b.getNumero());
 
@@ -116,6 +117,52 @@ public class JasperUtils {
 
 			String pathReports = "/report/";
 			String templateName = "Allerta.jasper";
+
+			// ../riepilogoCosti/riepilogoCosti.jasper
+			String template = pathReports + templateName;
+			String dirSubReport = pathReports;
+
+			params.put("SUBREPORT_DIR", dirSubReport);
+			System.out.println("SUBREPORT_DIR -> " + dirSubReport);
+
+			params.put("ID_RICHIESTA", new BigDecimal(idAllerta));
+			System.out.println("ID_RICHIESTA -> " + idAllerta);
+			params.put("MAPPA1", mappa1);
+			System.out.println("MAPPA1 -> " + mappa1);
+			params.put("MAPPA2", mappa2);
+			System.out.println("MAPPA2 -> " + mappa2);
+
+			params.putAll(p);
+
+			InputStream stream = this.getClass().getResourceAsStream(template);
+
+			pdfasbytes = getReportAsPDF(stream, params, connection);
+
+		} catch (Exception e) {
+			//LogInternoLocalServiceUtil.log("JasperUtils", "generateReportAllerta", e, "");
+			_log.error(e);
+			return null;
+		} finally {
+			if (connection != null)
+				connection.close();
+		}
+
+		return pdfasbytes;
+	}
+	
+	public byte[] generateReportAllertaNuovo(String mappa1, String mappa2, long idAllerta, Map<String, String> p)
+			throws NamingException, JRException, SQLException {
+		Connection connection = null;
+		HashMap<String, Object> params = new HashMap<String, Object>();
+		byte[] pdfasbytes;
+
+		try {
+
+			DataSource ds = InfrastructureUtil.getDataSource();
+			connection = ds.getConnection();
+
+			String pathReports = "/report/";
+			String templateName = "Allerta2.jasper";
 
 			// ../riepilogoCosti/riepilogoCosti.jasper
 			String template = pathReports + templateName;
@@ -207,7 +254,7 @@ public class JasperUtils {
 		return byteArrayOutput.toByteArray();
 	}
 
-	private byte[] getReportAsPDF(InputStream stream, HashMap<String, Object> params, Connection connection)
+	public byte[] getReportAsPDF(InputStream stream, HashMap<String, Object> params, Connection connection)
 			throws JRException {
 		
 		JasperReportsContext jasperReportsContext = DefaultJasperReportsContext.getInstance();
@@ -242,6 +289,46 @@ public class JasperUtils {
 
 		return byteArrayOutput.toByteArray();
 	}
+	
+	public byte[] generateReportAllertaValanghe(String mappa1, String mappa2, long idAllerta, Map<String, String> p) throws NamingException, JRException, SQLException {
+		Connection connection = null;
+		HashMap<String, Object> params = new HashMap<String, Object>();
+		byte[] pdfasbytes;
+
+		try {
+			DataSource ds = InfrastructureUtil.getDataSource();
+			connection = ds.getConnection();
+
+			String pathReports = "/report/";
+			String templateName = "Valanghe.jasper";
+
+			// ../riepilogoCosti/riepilogoCosti.jasper
+			String template = pathReports + templateName;
+			String dirSubReport = pathReports;
+
+			params.put("SUBREPORT_DIR", dirSubReport);
+			_log.debug("SUBREPORT_DIR -> " + dirSubReport);
+			params.put("ID_RICHIESTA", new BigDecimal(idAllerta));
+			_log.debug("ID_RICHIESTA -> " + idAllerta);
+			params.put("MAPPA1", mappa1);
+			_log.debug("MAPPA1 -> " + mappa1);
+			params.put("MAPPA2", mappa2);
+			params.putAll(p);
+
+			InputStream stream = this.getClass().getResourceAsStream(template);
+			pdfasbytes = getReportAsPDF(stream, params, connection);
+		} catch (Exception e) {
+			//LogInternoLocalServiceUtil.log("JasperUtils", "generateReportAllerta", e, "");
+			_log.error(e);
+			return null;
+		} finally {
+			if (connection != null)
+				connection.close();
+		}
+
+		return pdfasbytes;
+	}
+
 
 	private Log _log = LogFactoryUtil.getLog(JasperUtils.class);
 

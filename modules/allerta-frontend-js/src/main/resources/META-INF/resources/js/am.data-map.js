@@ -59,7 +59,11 @@ am.DataMap = (function ($) {
 
     	if( 
     		this.mapContainerId != "map--animazione--radar" &&
+    		this.mapContainerId != "map--animazione--nowcasting" &&
     		this.mapContainerId != "map--dato-osservato--pressione" &&
+    		this.mapContainerId != "map--dato-osservato--livellomare" &&
+    		this.mapContainerId != "map--dato-osservato--altezzaonda" &&
+    		this.mapContainerId != "map--dato-osservato--direzioneonda" &&
     		this.mapContainerId != "map--dato-osservato--umidita" &&
     		this.mapContainerId != "map--dato-osservato--vento" &&
     		this.mapContainerId != "map--dato-osservato--temperatura" &&
@@ -364,7 +368,8 @@ am.DataMap = (function ($) {
         }
 
 
-        if (this.dtp) { // If we have a Date Time Picker
+        //if (this.dtp) { // If we have a Date Time Picker
+        if (false) { // If we have a Date Time Picker
 
             // @fixme: se aggiorniamo il date time picker, questo non può più essere il punto di riferimento da cui calcolare 
             // perché cambia ad ogni reload. Da capire se dobbiamo mantere così
@@ -481,6 +486,7 @@ am.DataMap = (function ($) {
      * @method getDateTimePickerTS
      */
     DataMap.prototype.getDateTimePickerTS = function () {
+    	if (!this.dtp) return 0;
         var d = this.dtp.data("DateTimePicker").date();
         return d.valueOf(); // return the timestamp
     }
@@ -503,7 +509,21 @@ am.DataMap = (function ($) {
         var label
         var now = +new Date
         var inputDateTime = new Date(ts);
+        
         this.wheelSwiper.removeAllSlides();
+        var steps = 12*60/this.stepping;
+        var index=steps*2-1;
+        var x = 0;
+        var offset = new Date().getTimezoneOffset() * MINUTES
+        for (var k=-steps; k<steps; k++) {
+        	var lab = (-k*this.stepping)+"min";
+        	if (k==0) x = index;
+            this.wheelSwiper.prependSlide(
+            		'<div class="swiper-slide"><a href="#" data-val="'+(offset+moment(inputDateTime).subtract(k*this.stepping, 'minute').valueOf())+'" data-slide="'+index+'">' + moment(inputDateTime).subtract(k*this.stepping, 'minute').format(RT_DATA_DATE_LABEL_FORMAT) + '</a></div>');
+        	index--;
+        }
+        this.wheelSwiper.slideTo(x);
+        if (1==1) return;
         
         var step = this.stepping
         var label2 = ""+(2*step)+"min"

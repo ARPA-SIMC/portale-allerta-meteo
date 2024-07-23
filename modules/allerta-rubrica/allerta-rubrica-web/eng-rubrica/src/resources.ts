@@ -8,8 +8,10 @@ const host = ""
 const baseUrl = "/api/jsonws/rubrica."
 
 const endpoints = {
-//groups:
-//`${host + baseUrl}rubricagruppo/groups`,
+
+  categoryGet:
+  `${host + baseUrl}rubricacategoria/get-categorie`,
+
   groupsGet:
   `${host + baseUrl}rubricagruppo/get-groups`,
   groupsInsert:
@@ -84,7 +86,13 @@ const endpoints = {
   logs:
     `${host + baseUrl}rubricalog/get-logs`,
   loggedUser:
-    `${host + baseUrl}rubricaruolopermessi/get-user-info`
+    `${host + baseUrl}rubricaruolopermessi/get-user-info`,
+  rubriche:
+    `${host + baseUrl}rubricaruolorubrica/get-sites`,
+  cambiaRubrica:
+    `${host + baseUrl}rubricaruolorubrica/update-site`,
+  rubricaAttuale:
+    `${host + baseUrl}rubricaruolorubrica/get-current-site`
 }
 
 const headers = new Headers()
@@ -103,10 +111,10 @@ const getFetch = async (url: string, params?: string) => {
   })
 
   const data = await res.json()
-  data.timestamp = ts
+  if (typeof data === 'object' && data && data.code) data.timestamp = ts
   
 
-  if (data.code !== 200) {
+  if (data.code && data.code !== 200) {
     console.error('api error:', data.error)
     throw new Error(data.error)
   }
@@ -129,7 +137,7 @@ const postFetch = async (url: string, obj: any, params?: string) => {
   })
 
   const data = await res.json()
-  if (data.code >= 300) {
+  if (data && data.code >= 300) {
     console.error('api error:', data.error)
     throw new Error(data.error)
   }
@@ -185,16 +193,31 @@ const deleteFetch = async (url: string, params: string, obj?: any) => {
 
 const getGroups = async (
   name: string = "",
+  categoria: number | string = -1,
   limit: number | string = 10000,
   offset: number | string = 0
 ) => {
   const params = new URLSearchParams()
   params.append("name", name)
+  params.append("categoria",(categoria&&categoria>=0?categoria.toString():"-1"))
   params.append("limit", limit.toString())
   params.append("offset", offset.toString())
 
   try {
     const data = await getFetch(endpoints.groupsGet, params.toString())
+    console.log(data)
+    return data
+  } catch(e) {
+    throw e
+  }
+}
+
+const getCategorie = async (
+) => {
+  const params = new URLSearchParams()
+
+  try {
+    const data = await getFetch(endpoints.categoryGet, params.toString())
     console.log(data)
     return data
   } catch(e) {
@@ -482,6 +505,32 @@ const removeSubgroups = async (id: number | string, subgroupIds: number[] | stri
   return data
 }
 
+const getRubriche = async () => {
+  try {
+    const data = await getFetch(endpoints.rubriche)
+    return data
+  } catch(e) {
+    throw e
+  }
+}
+
+const getRubricaAttuale = async () => {
+  try {
+    const data = await getFetch(endpoints.rubricaAttuale)
+    return data
+  } catch(e) {
+    throw e
+  }
+}
+
+const aggiornaRubrica = async (rub) => {
+const params = new URLSearchParams()
+  params.append('sito', rub)
+  const data = await postFetch(endpoints.cambiaRubrica, "", params.toString())
+  return data
+}
+
+
 const client = {
   groups: {
     setNominativeRole,
@@ -533,7 +582,13 @@ const client = {
   logs: {
     all: getLogs
   },
-  loggedUser: getLoggedUser
+  category: {
+    all: getCategorie
+  },
+  loggedUser: getLoggedUser,
+  getRubricaAttuale: getRubricaAttuale,
+  getRubriche: getRubriche,
+  aggiornaRubrica: aggiornaRubrica
 }
 
 export default endpoints

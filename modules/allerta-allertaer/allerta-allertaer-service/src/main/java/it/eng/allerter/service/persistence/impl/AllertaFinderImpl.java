@@ -75,7 +75,8 @@ public class AllertaFinderImpl extends AllertaFinderBaseImpl implements AllertaF
 		String timestamp = (giorni==0? "current_timestamp" : "current_timestamp + interval '"+giorni+" days'");
 		
 	
-		String query = "select areaid, string_agg('' || eventoid || ':' || statoid,',') as eventi "
+		String query = "select abs(x.areaid) as areaid,x.eventi from ("+
+				"select allertaid, areaid, string_agg('' || eventoid || ':' || statoid,',') as eventi "
 				+ " from allerter_allertastato ass where allertaid = "
 						+ "(select allertaid from allerter_allerta a where datainizio<"+timestamp+" "
 						+ "	and datafine>"+timestamp+" and stato=0 "
@@ -83,7 +84,11 @@ public class AllertaFinderImpl extends AllertaFinderBaseImpl implements AllertaF
 						+ " a2.stato=0 and a2.dataemissione>a.dataemissione "
 						+ " and a2.datainizio<="+timestamp
 						+ " and a2.datafine>="+timestamp+") order by dataemissione desc limit 1) " 
-						+ " group by areaid  order by areaid";
+						+ " group by allertaid, areaid  order by areaid) x "
+						+ " join allerter_allerta aa on aa.allertaid=x.allertaid "
+						+ " where aa.parentid=0 or (date("+timestamp+")=date(aa.datainizio) and x.areaid<0) "
+						+ " or (date("+timestamp+")<>date(aa.datainizio) and x.areaid>0)";
+						;
 		/*** Non capisco, rimuovo il filtro exists****/
 		
 		/*
@@ -120,11 +125,26 @@ public class AllertaFinderImpl extends AllertaFinderBaseImpl implements AllertaF
 		
 		String timestamp = (giorni==0? "current_timestamp" : "current_timestamp + interval '"+giorni+" days'");
 		
-		String query = "select areaid, string_agg('' || eventoid || ':' || statoid,',') as eventi from allerter_allertastato ass where allertaid = " +
+		/*String query = "select areaid, string_agg('' || eventoid || ':' || statoid,',') as eventi from allerter_allertastato ass where allertaid = " +
 		"(select allertaid from allerter_allerta a where datainizio<"+timestamp+" and datafine>"+timestamp+" and eventoid<4 and stato=0 "+
 				"and not exists (select allertaid from allerter_allerta a2 where a2.stato=0 and a2.dataemissione>a.dataemissione "+
 		" and a2.datafine<="+timestamp+") order by dataemissione desc limit 1) " +
-		"group by areaid  order by areaid";
+		"group by areaid  order by areaid";*/
+		
+		String query = "select y.areaid, string_agg('' || y.eventoid || ':' || y.statoid,',') as eventi from " + 
+				"(select x.eventoid,abs(x.areaid) as areaid, x.statoid from " + 
+				"(select allertaid,eventoid,abs(areaid-areaid%10)*sign(areaid) as areaid,max(statoid) as statoid " + 
+				"from allerter_allertastato where allertaid=(select allertaid from allerter_allerta a " + 
+				"where datainizio<"+timestamp+" " + 
+				"and datafine>"+timestamp+" and stato=0 " + 
+				"and not exists (select allertaid from allerter_allerta a2 where " + 
+				"a2.stato=0 and a2.dataemissione>a.dataemissione " + 
+				"and a2.datainizio<="+timestamp+" " + 
+				"and a2.datafine>="+timestamp+") order by dataemissione desc limit 1) and statoid<>1000 and eventoid<4 " + 
+				"group by allertaid,eventoid,abs(areaid-areaid%10)*sign(areaid) " + 
+				") x join allerter_allerta a on a.allertaid=x.allertaid and " + 
+				"(a.parentid=0 or (date("+timestamp+")=date(a.datainizio) and x.areaid<0) " + 
+				"or (date("+timestamp+")<>date(a.datainizio) and x.areaid>0))) y group by areaid";
 		
 		  Session session = null;
 		    try {

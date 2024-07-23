@@ -27,6 +27,21 @@ pUrl.setParameter("mvcRenderCommandName", new String[]{"/allerta/animazione/graf
 </portlet:resourceURL>
 
 
+<portlet:actionURL var="tuoiComuni" name="/allertaer/sensori/tuoi-comuni">
+		<portlet:param name="solotuoicomuni" value="<%=sensori.isSoloTuoiComuni()?"false":"true" %>"/>		
+</portlet:actionURL>
+
+<portlet:actionURL var="aggiornaSensori" name="/allertaer/sensori/carica">
+</portlet:actionURL>
+
+<c:if test="${sensori.canVedeTutto == false }">
+<style>
+ .dettagli {
+ 	display: none;
+ }
+ </style>
+</c:if>
+
 <c:set value="<%=sensori%>" var="regole" scope="request"></c:set>
 
 	<style>
@@ -51,6 +66,38 @@ pUrl.setParameter("mvcRenderCommandName", new String[]{"/allerta/animazione/graf
 		<aui:form method="post" name="fmSensori">
 		
 			<div class="row">
+				<div class="col form-group">
+					<button
+						type="button" 
+						
+						class="btn btn-primary" 
+						onclick="window.open('/o/report/sc/sensori');"
+						
+						>Scarica Excel sensori-Comuni</button>
+					<button
+						type="button" 
+						
+						class="btn btn-primary" 
+						onclick="window.open('/o/report/sc/comuni');"
+						
+						>Scarica Excel Comuni-sensori</button> 
+					</div>
+					
+					<c:if test="${sensori.canModifica }">
+					<div class="col form-group">
+					<button
+						type="button" 
+						
+						class="btn btn-primary" id="aggiornaManuale2" 
+						name="aggiornaManuale2"
+						onclick="<portlet:namespace/>aggiornaSens();"
+						
+						>Aggiornamento manuale sensori</button>
+					</div>
+				</c:if>
+			</div>
+		
+			<div class="row">
 			
 				<div class="col-12">
 			
@@ -60,7 +107,29 @@ pUrl.setParameter("mvcRenderCommandName", new String[]{"/allerta/animazione/graf
 			    			<span><%= SessionErrors.get(request, Exception.class)%></span>
 			  			</div>
 					</c:if>	
+					
+					<% if (sensori.isCanModifica()) {
+						if (sensori.userRicarica!=0 && sensori.userRicarica==themeDisplay.getUserId()) {
+						
+						%><div><%=sensori.esitoRicarica %></div>
+					<% 
+						sensori.userRicarica = 0;
+						sensori.esitoRicarica = "";
+						}} %>
 				</div>
+				
+				<c:if test="${regole.comuniInteresse != null }">
+					<div class="col form-group">
+					<button
+						type="button" 
+						
+						class="btn btn-primary" id="solotuoicomuni" 
+						name="solotuoicomuni"
+						onclick="<portlet:namespace/>aggiornaTuoiComuni($('#solotuoicomuni')[0].checked);"
+						
+						><%=sensori.isSoloTuoiComuni()?"Mostra tutti i sensori":"Mostra solo sensori dei tuoi Comuni" %></button>
+					</div>
+				</c:if>
 				
 				<div class="col-12">
 				    <ul class="nav nav-tabs" role="tablist">
@@ -97,8 +166,11 @@ pUrl.setParameter("mvcRenderCommandName", new String[]{"/allerta/animazione/graf
 										<th>Bacino</th>
 										<th >Fiume</th>
 										<th >Comuni associati</th>
-										<c:if test="${sensori.canModifica }">
-										<th >Soglia spike</th>
+										<c:if test="${sensori.canVede }">
+										<th >Soglia 1</th>
+										<th >Soglia 2</th>
+										<th >Soglia 3</th>
+										<th class="dettagli" >Soglia spike</th>
 										</c:if>
 										<th >Riceve Dati</th>
 										<th >Notifica Attiva</th>
@@ -119,19 +191,30 @@ pUrl.setParameter("mvcRenderCommandName", new String[]{"/allerta/animazione/graf
 										<td> ${regola.basin}</td>
 										<td> ${regola.subbasin}</td>
 										<td> ${regola.comuni}</td>
-										<c:if test="${sensori.canModifica }">
+										<c:if test="${sensori.canVede }">
 										<td>
+											<c:if test="${regola.soglia1 ne 0.0 }">${regola.soglia1}</c:if>
+										</td>
+										<td>
+											<c:if test="${regola.soglia2 ne 0.0 }">${regola.soglia2}</c:if>
+										</td>
+										<td>
+											<c:if test="${regola.soglia3 ne 0.0 }">${regola.soglia3}</c:if>
+										</td>
+										<td class="dettagli">
 											<input 
 												style="width:4em""
 												type="text"
 												id="soglia_${sid}_${vid}"
 												value="${regola.sogliaSpike }"
 												/>
+											<c:if test="${sensori.canModifica }">
 											<button 
 												type="button" 
 												onclick="<portlet:namespace/>salvaSoglia('${regola.idStazione}', '${regola.idVariabile}', 'soglia_${sid}_${vid}')"
 												class="btn btn-primary">Salva
 											</button>
+											</c:if>
 										</td>
 										</c:if>
 										<td style='${regola.style}'>
@@ -196,10 +279,13 @@ pUrl.setParameter("mvcRenderCommandName", new String[]{"/allerta/animazione/graf
 										<th>Bacino</th>
 										<th >Sottobacino</th>
 										<th >Comuni associati</th>
-										<th >Riceve Dati</th>
-										<c:if test="${sensori.canModifica }">
-										<th >Notifica Attiva</th>
+										<c:if test="${sensori.canVede }">
+										<th >Soglia 1h</th>
+										<th >Soglia 3h</th>
+										<th class="dettagli">Soglia 12h</th>
 										</c:if>
+										<th >Riceve Dati</th>
+										<th >Notifica Attiva</th>
 										<th >Vai al Grafico</th>
 									</tr>
 		
@@ -217,6 +303,17 @@ pUrl.setParameter("mvcRenderCommandName", new String[]{"/allerta/animazione/graf
 										<td> ${regola.basin}</td>
 										<td> ${regola.subbasin}</td>
 										<td> ${regola.comuni}</td>
+										<c:if test="${sensori.canVede }">
+										<td>
+											<c:if test="${regola.soglia1 ne 0.0 }">${regola.soglia1}</c:if>
+										</td>
+										<td>
+											<c:if test="${regola.soglia2 ne 0.0 }">${regola.soglia2}</c:if>
+										</td>
+										<td class="dettagli">
+											<c:if test="${regola.soglia3 ne 0.0 }">${regola.soglia3}</c:if>
+										</td>
+										</c:if>
 										<td style='${regola.style}'>
 											<c:choose>
 											    <c:when test="${regola.attivo}">
@@ -266,8 +363,37 @@ pUrl.setParameter("mvcRenderCommandName", new String[]{"/allerta/animazione/graf
 				</div>
 				
 			</div>
-			
-			
+					
+					<div class="col form-group">
+					<button
+						type="button" 
+						
+						class="btn btn-primary" 
+						onclick="window.open('/o/report/sc/sensori');"
+						
+						>Scarica Excel sensori-Comuni</button>
+					<button
+						type="button" 
+						
+						class="btn btn-primary" 
+						onclick="window.open('/o/report/sc/comuni');"
+						
+						>Scarica Excel Comuni-sensori</button> 
+					</div>
+					
+					<c:if test="${sensori.canModifica }">
+					<div class="col form-group">
+					<button
+						type="button" 
+						
+						class="btn btn-primary" id="aggiornaManuale" 
+						name="aggiornaManuale"
+						onclick="<portlet:namespace/>aggiornaSens();"
+						
+						>Aggiornamento manuale sensori</button>
+					</div>
+				</c:if>
+					
 			<script>
 			
 				ita = {
@@ -332,9 +458,30 @@ pUrl.setParameter("mvcRenderCommandName", new String[]{"/allerta/animazione/graf
 					
 				}
 				
+				function <portlet:namespace/>aggiornaTuoiComuni(solotuoicomuni) {
+					
+					var opUrl = '<%=tuoiComuni.toString()%>';
+					//opUrl += '&<portlet:namespace/>solotuoicomuni=' + solotuoicomuni;
+					
+					document.forms.<portlet:namespace/>fmSensori.action = opUrl;
+					document.forms.<portlet:namespace/>fmSensori.submit();
+					
+				}
+				
+				function <portlet:namespace/>aggiornaSens() {
+					
+					var opUrl = '<%=aggiornaSensori.toString()%>';
+					//opUrl += '&<portlet:namespace/>solotuoicomuni=' + solotuoicomuni;
+					
+					document.forms.<portlet:namespace/>fmSensori.action = opUrl;
+					document.forms.<portlet:namespace/>fmSensori.submit();
+					
+				}
+				
 				function <portlet:namespace/>salvaStato(id, idStazione, idVariabile, stato) {
 					
 					var opUrl = '<%=salvaStato.toString()%>';
+					
 					opUrl += '&<portlet:namespace/>idStazione=' + idStazione;
 					opUrl += '&<portlet:namespace/>idVariabile=' + idVariabile;
 					opUrl += '&<portlet:namespace/>attivo=' + jQuery('#stato_' + id).val();
@@ -362,7 +509,12 @@ pUrl.setParameter("mvcRenderCommandName", new String[]{"/allerta/animazione/graf
 						"scrollX": true,
 		                "order": [[ 0, "asc" ]],
 		                'columnDefs': [ {
-		                    'targets': [3,4,6,7], // column index (start from 0)
+		                	<c:if test="${sensori.canVede }">
+		                	'targets': [3,7,10], // column index (start from 0)
+							</c:if>
+		                	<c:if test="${not sensori.canVede }">
+		                	'targets': [3,6], // column index (start from 0)
+							</c:if>
 		                    'orderable': false, // set orderable false for selected columns
 		                 }
 		                	  
@@ -374,7 +526,12 @@ pUrl.setParameter("mvcRenderCommandName", new String[]{"/allerta/animazione/graf
 						"scrollX": true,
 		                "order": [[ 1, "desc" ]],
 		                'columnDefs': [ {
-		                    'targets': [3,4,6], // column index (start from 0)
+		                	<c:if test="${sensori.canVede }">
+		                	'targets': [3,9], // column index (start from 0)
+							</c:if>
+		                	<c:if test="${not sensori.canVede }">
+		                	'targets': [3,6], // column index (start from 0)
+							</c:if>
 		                    'orderable': false, // set orderable false for selected columns
 		                 }
 		                	  

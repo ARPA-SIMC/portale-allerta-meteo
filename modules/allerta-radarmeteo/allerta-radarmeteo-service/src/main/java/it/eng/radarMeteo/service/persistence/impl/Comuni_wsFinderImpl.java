@@ -14,6 +14,7 @@ import it.eng.radarMeteo.service.persistence.Comuni_wsFinder;
 public class Comuni_wsFinderImpl extends Comuni_wsFinderBaseImpl implements Comuni_wsFinder{
 	private String GET_Meteomont = Comuni_wsFinderImpl.class.getName() + ".getMeteomont";
 	private String GET_StatoAllerta = Comuni_wsFinderImpl.class.getName() + ".getStatoAllerta";
+	private String GET_StatoAllertaForCap = Comuni_wsFinderImpl.class.getName() + ".getAllertaForCap";
 	private String GET_BollettinoMonitoraggio = Comuni_wsFinderImpl.class.getName() + 
 			".getBollettinoMonitoraggio";
 
@@ -35,6 +36,23 @@ public class Comuni_wsFinderImpl extends Comuni_wsFinderBaseImpl implements Comu
 	public List<Object[]> getStatoAllerta(java.sql.Timestamp data) {
 		Session session = openSession();
 		String sql = customSQL.get(this.getClass(), GET_StatoAllerta);
+		SQLQuery query = session.createSQLQuery(sql);
+		query.setCacheable(true);
+		QueryPos qPos = QueryPos.getInstance(query);
+		qPos.add(data);
+		qPos.add(data);
+		qPos.add(data);
+		qPos.add(data);
+
+		List<Object[]> list = (List<Object[]>)QueryUtil.list(query, getDialect(), -1, -1);
+		
+		closeSession(session);
+		return list;
+	}
+	
+	public List<Object[]> getStatoAllertaForCap(java.sql.Timestamp data) {
+		Session session = openSession();
+		String sql = customSQL.get(this.getClass(), GET_StatoAllertaForCap);
 		SQLQuery query = session.createSQLQuery(sql);
 		query.setCacheable(true);
 		QueryPos qPos = QueryPos.getInstance(query);

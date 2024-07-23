@@ -6,7 +6,7 @@
 	            <h1 class="col-12 col-lg-12">Allerte e bollettini</h1>
 	            <p class="col-12 lead">
 	            	Tutti i documenti di allerta meteo idrogeologica e idraulica e i bollettini di vigilanza
-	            </p>
+	            </p> 
 	        </div>
 	    </div>
 	    
@@ -25,6 +25,15 @@
 	        <div class="col-12 col-lg-8 page__content" id="page-content">
 
 				<h2>Lista di allerte e bollettini di vigilanza</h2>
+
+				<p style="font-size: 1.35rem">Vai all'<a href="/archivio-meteo" >archivio completo di allerte e bollettini meteo</a>.</p>
+				
+				<div>
+				  	<a href="/compila-allerta-portlet/feed?feed=allerte-bollettini" target="_blank" class="btn btn-transparent" title="RSS Allerte e Bollettini">
+				     	<span class="icon i-rss" title="Icona RSS"></span> <span>RSS</span> 
+				     	<span class="icon i-external-link-square u-open-external" title="RSS Allerte e Bollettini"></span>
+				 	</a>
+				</div>
                 
 				${processor.processColumn("column-2", "portlet-column-content portlet-column-content-only")}
                         

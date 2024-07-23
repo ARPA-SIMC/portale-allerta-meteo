@@ -2,13 +2,16 @@ package it.eng.previsioni;
 
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -16,9 +19,6 @@ import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathFactory;
 
 
 import org.w3c.dom.Document;
@@ -26,6 +26,9 @@ import org.xml.sax.InputSource;
 
 import com.liferay.counter.kernel.service.CounterLocalService;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.messaging.BaseMessageListener;
@@ -66,11 +69,16 @@ public class BollettinoScheduler extends BaseMessageListener {
 
 	private Log logger = LogFactoryUtil.getLog(BollettinoScheduler.class);
 
-	private static final String bollettinoURL  = "https://www.arpae.it/smr/external/bollettino/bollettino_previ_provinciali.php?t=xml";
+	/*private static final String bollettinoURL  = "https://www.arpae.it/smr/external/bollettino/bollettino_previ_provinciali.php?t=xml";
 	private static final String bollettinoJSON  = "https://www.arpae.it/smr/external/bollettino/?t=json";
 	private static final String imageURL  = "https://www.arpae.it/sim/datiiningresso/Bollettino/";
 	private static final String nowcastURL ="https://www.arpae.it/sim/";
 	private static final String tendenzaURL ="https://www.arpae.it/sim/datiiningresso/bollettino/tendenza.xml";
+	*/
+	//private static final String nowcastURL ="https://www.arpae.it/sim/";
+	private static final String nowcastURL = "https://apps.arpae.it/REST/meteo_radar_nowcasting?sort=-data_validita&max_results=1";
+	
+	private static final String globalUrl = "https://apps.arpae.it/REST/meteo_bollettini/?sort=-_id&max_results=1";
 	//private final String tendenza3g = "https://www.arpae.it/smr/datiiningresso/bollettino/tendenza3g.txt";
 
 	@Reference(cardinality=ReferenceCardinality.MANDATORY)
@@ -102,9 +110,9 @@ public class BollettinoScheduler extends BaseMessageListener {
 	private static final List<String> parti ;
 	static {
 		parti = new ArrayList<String>();
-		parti.add("Mattina");
-		parti.add("Pomeriggio");
-		parti.add("Sera_Notte");
+		parti.add("mattina");
+		parti.add("pomeriggio");
+		parti.add("sera_notte");
 	}
 
 	private static final List<String> names;
@@ -118,33 +126,39 @@ public class BollettinoScheduler extends BaseMessageListener {
 	public static final Map<String, String> nowcastMap;
 	static {
 		nowcastMap = new HashMap<String,String>();
-		nowcastMap.put("immagineRadar","datiiningresso/Immagini/Radar/nowcast.png");
-		nowcastMap.put("Lretevie","archivio/Radar/nowcast_layer_rete_vie.png");
-		nowcastMap.put("Lamministrativi","archivio/Radar/nowcast_layer_amministrativi.png");
-		nowcastMap.put("Lidro","archivio/Radar/nowcast_layer_idro.png");
+		//nowcastMap.put("immagineRadar","datiiningresso/Immagini/Radar/nowcast.png");
+		nowcastMap.put("Lretevie","nowcast_layer_rete_vie.png");
+		nowcastMap.put("Lamministrativi","nowcast_layer_amministrativi.png");
+		nowcastMap.put("Lidro","nowcast_layer_idro.png");
 	}
 
 	private static final List<String> tendenzaImgList;
 	static {
 		tendenzaImgList = new ArrayList<String>();
-		tendenzaImgList.add("tend_meteo_1");
+		/*tendenzaImgList.add("tend_meteo_1");
 		tendenzaImgList.add("tend_meteo_2");
 		tendenzaImgList.add("tend_meteo_3");
 		tendenzaImgList.add("tend_meteo_4");
 		tendenzaImgList.add("tend_temp_1");
 		tendenzaImgList.add("tend_temp_2");
 		tendenzaImgList.add("tend_temp_3");
-		tendenzaImgList.add("tend_temp_4");
+		tendenzaImgList.add("tend_temp_4");*/
+		tendenzaImgList.add("meteo");
+		tendenzaImgList.add("temp");
 	}
 
 	@Override
 	protected void doReceive(Message message) throws Exception {
 		// TODO Auto-generated method stub
-		
-		getXml();
-		getImages();
+		logger.warn("Inizio scheduler");
+		JSONObject d = getXml();
+		logger.warn("Passo images");
+		getImages(d);
+		logger.warn("Passo nowcasting");
 		getNowcastingImg();
-		getTendenzaImg();
+		logger.warn("Passo tendenza");
+		getTendenzaImg(d);
+		logger.warn("Fine scheduler");
 
 	}
 	
@@ -156,19 +170,25 @@ public class BollettinoScheduler extends BaseMessageListener {
 		return baos.toByteArray();
 	}
 
-	private void getXml(){
+	private JSONObject getXml(){
 		Bollettino bollettino = null;
 		InputStream input = null;
 		try {
-			input = getInputStreaWithTimeout(bollettinoURL);
-			String content = new String(fromStreamtoByteArray(input), "utf-8"); 
-			input = getInputStreaWithTimeout(bollettinoJSON);
+			/*input = getInputStreaWithTimeout(bollettinoURL);
+			String content = new String(fromStreamtoByteArray(input), "utf-8"); */
+			//input = getInputStreaWithTimeout(bollettinoJSON);
+			input = getInputStreaWithTimeout(globalUrl);
 			String json = new String(fromStreamtoByteArray(input),"utf-8");
 			bollettino = getBollettino("completo");
 			bollettino.setTimestamp(Calendar.getInstance().getTimeInMillis());
-			bollettino.setXml_content(content);
-			bollettino.setJson(json);
+			bollettino.setXml_content("");
+			
+			JSONArray ja = JSONFactoryUtil.createJSONObject(json).getJSONArray("_items");
+			bollettino.setJson(ja.getJSONObject(0).toJSONString());
+			bollettino.setValidita(ja.getJSONObject(0).getJSONObject("oggi").getJSONObject("bollettino").getString("validita"));
+			bollettino.setEmissione(ja.getJSONObject(0).getJSONObject("oggi").getJSONObject("bollettino").getString("emissione"));
 			bollettinoLocalService.updateBollettino(bollettino);
+			return ja.getJSONObject(0);
 		}
 		catch (NullPointerException e) {
 			logger.error(e);
@@ -176,14 +196,7 @@ public class BollettinoScheduler extends BaseMessageListener {
 		catch (Exception e) {
 			logger.error("Pevisioni_Meteo [ERROR]: Can't save XML: "+e);
 		}
-		finally {
-			try {
-				input.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				logger.error(e);
-			}
-		}
+		return null;
 		//x la tendenza a 3 giorni
 
 		/*
@@ -222,30 +235,32 @@ public class BollettinoScheduler extends BaseMessageListener {
 		return builder.parse(is);
 	}
 
-	private void getImages(){
+	private void getImages(JSONObject d){
 		InputStream stream = null;
 		Calendar cal = Calendar.getInstance(Locale.ITALY);
 		try{
 			for(String giorno:giorni){
 				for(String parte:parti){
-					stream = getInputStreaWithTimeout(imageURL+giorno+"_"+parte+".png");
+					//stream = getInputStreaWithTimeout(imageURL+giorno+"_"+parte+".png");
 					Img img = getImg(parte, giorno, "ND");
 
 					img.setDay(giorno);
 					img.setDaypart(parte);
 					img.setProvincia("ND");
 					img.setInserted(cal.getTime());
-					img.setData(Base64.encode(fromStreamtoByteArray(stream)));
+					//img.setData(Base64.encode(fromStreamtoByteArray(stream)));
+					img.setData(d.getJSONObject(giorno).getJSONObject("bollettino").getJSONObject("regionale").getJSONObject("immagini").getString(parte));
 					imgLocalService.updateImg(img);
 
 					for(String provincia:province){
-						stream = getInputStreaWithTimeout(imageURL+provincia+"_"+giorno+"_"+parte+".png");
+						//stream = getInputStreaWithTimeout(imageURL+provincia+"_"+giorno+"_"+parte+".png");
 						img = getImg(parte, giorno, provincia);
 						img.setDay(giorno);
 						img.setDaypart(parte);
 						img.setProvincia(provincia);
 						img.setInserted(cal.getTime());
-						img.setData(Base64.encode(fromStreamtoByteArray(stream)));
+						//img.setData(Base64.encode(fromStreamtoByteArray(stream)));
+						img.setData(d.getJSONObject(giorno).getJSONObject("bollettino").getJSONObject("provinciale").getJSONObject(provincia).getJSONObject("immagini").getString(parte));
 						imgLocalService.updateImg(img);
 					}
 				}
@@ -292,18 +307,33 @@ public class BollettinoScheduler extends BaseMessageListener {
 	private void getNowcastingImg(){
 		InputStream stream = null;
 		try{
-			for (Map.Entry<String, String> entry : nowcastMap.entrySet()){
+			Img img = getImg("immagineRadar","Nowcasting","ND");
+			stream = getInputStreaWithTimeout(nowcastURL);
+			String json = new String(fromStreamtoByteArray(stream),"utf-8");
+			String imageData = JSONFactoryUtil.createJSONObject(json).getJSONArray("_items").getJSONObject(0).getJSONObject("mappa").getString("image_data");
+			img.setProvincia("ND");
+			img.setDay("Nowcasting");
+			img.setDaypart("immagineRadar");
+			img.setData(imageData);
+			Date d = new Date(Instant.parse(JSONFactoryUtil.createJSONObject(json).getJSONArray("_items").getJSONObject(0).getString("data_validita")).getEpochSecond()*1000);
+			img.setInserted(d);
+			imgLocalService.updateImg(img);
+			stream.close();
+			
+			/*for (Map.Entry<String, String> entry : nowcastMap.entrySet()){
 
-				Img img = getImg(entry.getKey(),"Nowcasting","ND");
+				img = getImg(entry.getKey(),"Nowcasting","ND");
 				//				url = new URL(nowcastURL+entry.getValue());
 				//				stream = url.openStream();
-				stream = getInputStreaWithTimeout(nowcastURL+entry.getValue());
+				stream = new FileInputStream(getClass().getClassLoader().getResource("/images/"+entry.getValue()).getPath());
+				//stream = getInputStreaWithTimeout(nowcastURL+entry.getValue());
 				img.setProvincia("ND");
 				img.setDay("Nowcasting");
 				img.setDaypart(entry.getKey());
 				img.setData(Base64.encode(fromStreamtoByteArray(stream)));
 				imgLocalService.updateImg(img);
-			}
+				stream.close();
+			}*/
 		}
 		catch (Exception e) {
 			logger.error("Pevisioni_Meteo [ERROR]: Can't save Nowcasting images: "+e.getCause());
@@ -318,49 +348,52 @@ public class BollettinoScheduler extends BaseMessageListener {
 		}
 	}
 
-	private void getTendenzaImg(){
+	private void getTendenzaImg(JSONObject o){
 		Bollettino bollettino = getBollettino("tendenza");
-		InputStream input = null;
-		InputStream stream = null;
+		//InputStream input = null;
+		//InputStream stream = null;
 		try {
-			input = getInputStreaWithTimeout(tendenzaURL);
+			/*input = getInputStreaWithTimeout(tendenzaURL);
 			String content = new String(fromStreamtoByteArray(input), "utf-8"); 
 			input.close();
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder builder = factory.newDocumentBuilder();
 			InputSource is = new InputSource(new StringReader(content));
 			Document doc = builder.parse(is);
-			XPath xPath =  XPathFactory.newInstance().newXPath();
-			bollettino.setTimestamp(Long.parseLong((String) xPath.compile("bollettino//@timestamp").evaluate(doc, XPathConstants.STRING)));
+			XPath xPath =  XPathFactory.newInstance().newXPath();*/
+			/*bollettino.setTimestamp(Long.parseLong((String) xPath.compile("bollettino//@timestamp").evaluate(doc, XPathConstants.STRING)));
 			bollettino.setEmissione((String) xPath.compile("bollettino//@emissione").evaluate(doc, XPathConstants.STRING));
 			bollettino.setValidita((String) xPath.compile("bollettino//@validita").evaluate(doc, XPathConstants.STRING));
-			bollettino.setXml_content(content);
+			*/
+			bollettino.setTimestamp(o.getJSONObject("tendenza").getJSONObject("bollettino").getLong("timestamp"));
+			bollettino.setEmissione(o.getJSONObject("tendenza").getJSONObject("bollettino").getString("emissione"));
+			bollettino.setValidita(o.getJSONObject("tendenza").getJSONObject("bollettino").getString("validita"));
+			
+			bollettino.setJson(o.getJSONObject("tendenza").toJSONString());
+			bollettino.setXml_content("");
 			bollettinoLocalService.updateBollettino(bollettino);
 
-			for (String entry : tendenzaImgList){
+			for (int k=1; k<=4; k++){
+				
+				for (String ss : tendenzaImgList) {
 
-				Img img = getImg(entry,"Tendenza","ND");
-
-				stream = getInputStreaWithTimeout(imageURL+entry+".png");
-				img.setProvincia("ND");
-				img.setDay("Tendenza");
-				img.setDaypart(entry);
-				img.setData(Base64.encode(fromStreamtoByteArray(stream)));
-				imgLocalService.updateImg(img);
+					String entry = "tend_"+ss+"_"+k;
+					Img img = getImg(entry,"Tendenza","ND");
+	
+					//stream = getInputStreaWithTimeout(imageURL+entry+".png");
+					img.setProvincia("ND");
+					img.setDay("Tendenza");
+					img.setDaypart(entry);
+					img.setData(o.getJSONObject("tendenza").getJSONObject("bollettino").getJSONObject("giorno"+k).getJSONObject("immagini").getString(ss));
+					imgLocalService.updateImg(img);
+				}
 			}
 		} 		
 		catch (Exception e) {
 			logger.error("Pevisioni_Meteo [ERROR]: Can't save Tendenza images: "+e);
 		}
 		finally {
-			try {
-				input.close();
-				if(stream!=null)
-					stream.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				logger.error(e);
-			}
+
 		}
 	}
 
@@ -402,6 +435,8 @@ public class BollettinoScheduler extends BaseMessageListener {
 		
 		System.out.println("scheduling at " + configuration.schedulerBollettinoMinutes());
 
+		if (configuration.schedulerBollettinoMinutes()<1) return;
+		
 		Trigger trigger = 
 				_triggerFactory.createTrigger(className, className, null, null, configuration.schedulerBollettinoMinutes(), TimeUnit.MINUTE);
 

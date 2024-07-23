@@ -27,6 +27,9 @@ public interface Comuni_wsFinder {
 
 	public java.util.List<Object[]> getStatoAllerta(java.sql.Timestamp data);
 
+	public java.util.List<Object[]> getStatoAllertaForCap(
+		java.sql.Timestamp data);
+
 	public java.util.List<Object[]> getBollettinoMonitoraggio();
 
 }

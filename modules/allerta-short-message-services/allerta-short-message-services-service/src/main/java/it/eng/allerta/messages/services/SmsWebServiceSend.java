@@ -6,12 +6,17 @@ import com.liferay.portal.kernel.dao.orm.ORMException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
+import com.liferay.sites.kernel.util.SitesUtil;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
@@ -43,6 +48,9 @@ import it.eng.allerta.messages.services.scheduler.SmsSchedulerContextConstants;
 import it.eng.allerta.messages.services.service.SmsSchedulerContextLocalService;
 import it.eng.allerta.messages.services.service.SmsSchedulerContextLocalServiceUtil;
 import it.eng.allerta.utils.AllertaTracker;
+import it.eng.allerte.model.RubricaNominativo;
+import it.eng.allerte.service.RubricaNominativoLocalServiceUtil;
+import it.eng.allerte.service.impl.RubricaNominativoLocalServiceImpl;
 import it.eng.allerter.model.AllertaParametro;
 import it.eng.allerter.model.SMS;
 import it.eng.allerter.service.AllertaParametroLocalServiceUtil;
@@ -148,12 +156,13 @@ public class SmsWebServiceSend implements Runnable {
 			int prevState = (int) sms.getStato();
 			String prevDescrizione = sms.getDescrizioneErrore();
 					
-			try {
+			try { 
 				
-				if (AllertaTracker.getAllertaBaseConfiguration().disableSms()) {
+				if (AllertaTracker.getAllertaBaseConfiguration().disableSms()) { 
 					sms.setDataAck(new Date());
 					sms.setDataRicevuta(new Date());
 					putInDB(sms, 4, "TEST - invio simulato");
+					System.out.println("TEST");
 					return new SmsSendTask.Result(4, "TEST - invio simulato");
 				}
 								
@@ -195,8 +204,33 @@ public class SmsWebServiceSend implements Runnable {
 				if (validateNumber(numero)) {
 					// se il numero Ã¨ valido lo utilizza
 					MSISDN = numero;
-					// prepara la chiamata al servizio telecom
-					httpPost = prepareHttpPostForService(USERNAME, PASSWORD, TOKEN, ALIAS, MSISDN, sms.getTesto());
+					// prepara la chiamata al servizio telecom. Se viene dal portale (numeroda="AllerteER") usa le credenziali della protezione civile.
+					if (sms.getNumeroDa()!=null && sms.getNumeroDa().equals(ALIAS))
+						httpPost = prepareHttpPostForService(USERNAME, PASSWORD, TOKEN, ALIAS, MSISDN, sms.getTesto());
+					else {
+						//viene da un sito del sindaco?
+						if (sms.getNumeroDa()!=null && sms.getDestinatario()>0) {
+							RubricaNominativo rn = RubricaNominativoLocalServiceUtil.fetchRubricaNominativo(sms.getDestinatario());
+							//potrebbe non esistere, se il destinatario è un id utente Liferay e non un nominativo di rubrica. In questo
+							//caso nessun problema, perché questi non dovremmo nemmeno mandarli con un account del sindaco.
+							//controlliamo però che il sito della rubrica abbia un alias Telecom che fa match con il numeroDa.
+							if (rn!=null) {
+								long sito = rn.getFK_SITO_PROPRIETARIO();
+								Group g = GroupLocalServiceUtil.fetchGroup(sito);
+								if (g!=null) {
+									Map<String,Serializable> m = g.getExpandoBridge().getAttributes();
+									String user = (String)m.get("Telecom Username");
+									String pass = (String)m.get("Telecom Password");
+									String token = (String)m.get("Telecom Token");
+									String alias = (String)m.get("Telecom Alias");
+									if (alias!=null && alias.equals(sms.getNumeroDa())) {
+										//alias identico, possiamo spedire
+										httpPost = prepareHttpPostForService(user, pass, token, alias, MSISDN, sms.getTesto());
+									}
+								}
+							}
+						}
+					}
 				} else {
 					// se il numero non Ã¨ valido scrive a DB il nuovo stato del SMS
 					stato = 5;
@@ -257,6 +291,12 @@ public class SmsWebServiceSend implements Runnable {
 						sms.setDataAck(now);
 						sms.setCodiceErrore(String.valueOf(response.getStatusLine().getStatusCode()));
 						sms.setDescrizioneErrore(getStatus(content, MESSAGE, 0));
+						try {
+							if (sms.getDescrizioneErrore()!=null && sms.getDescrizioneErrore().length()>197) {
+								sms.setDescrizioneErrore(sms.getDescrizioneErrore().substring(0, 195));
+							}
+						} catch (Exception exx) {}
+						
 						sms.setTimestamp(sms.getDescrizioneErrore().substring(sms.getDescrizioneErrore().lastIndexOf("CODE:") + 5));
 						
 						stato = 3;
@@ -378,7 +418,8 @@ public class SmsWebServiceSend implements Runnable {
 					addTextBody("alias", alias).
 					addTextBody("msisdn", msisdn).
 					addTextBody("testo",testo).
-					addTextBody("sr", "1");
+					addTextBody("sr", "1").
+					addTextBody("vp", "1440"); //validity period 
 			
 			return builder;
 		}
@@ -728,6 +769,9 @@ public class SmsWebServiceSend implements Runnable {
 		
 		try {
 			sms.setStato(stato);
+			if (sms.getDescrizioneErrore()!=null && sms.getDescrizioneErrore().length()>195)
+				sms.setDescrizioneErrore(sms.getDescrizioneErrore().substring(0, 194));
+			
 			smsLocalService.updateSMS(sms);
 			
 			if (logger.isDebugEnabled()) {

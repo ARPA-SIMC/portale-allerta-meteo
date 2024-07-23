@@ -41,10 +41,11 @@ am.MapDataScenarioCumulata = (function($){
                 pid = moment(data[id]._fineCumulazione, "MMM DD, YYYY h:mm:ss A", "en").valueOf()
                 this.imgKeys.push(pid);
                 this.imgData[pid] = data[id];
-                this.imgData[pid].label = this.options.label
+                this.imgData[pid].label = '';
+                	//this.options.label
                 // NOTE: in the api, the field is actually "inzio" instead of "inizio"
-                + ' dal '+ moment( this.imgData[ this.imgKeys[this.imgKeys.length - 1] ]._inzioCumulazione, "MMM DD, YYYY h:mm:ss A", "en").format("DD/MM/YYYY HH:mm") 
-                + ' al ' + moment( this.imgData[ this.imgKeys[this.imgKeys.length - 1] ]._fineCumulazione, "MMM DD, YYYY h:mm:ss A", "en").format("DD/MM/YYYY HH:mm");
+                //+ ' dal '+ moment( this.imgData[ this.imgKeys[this.imgKeys.length - 1] ]._inzioCumulazione, "MMM DD, YYYY h:mm:ss A", "en").format("DD/MM/YYYY HH:mm") 
+                //+ ' al ' + moment( this.imgData[ this.imgKeys[this.imgKeys.length - 1] ]._fineCumulazione, "MMM DD, YYYY h:mm:ss A", "en").format("DD/MM/YYYY HH:mm");
             }
             this.imgKeys.sort();
 

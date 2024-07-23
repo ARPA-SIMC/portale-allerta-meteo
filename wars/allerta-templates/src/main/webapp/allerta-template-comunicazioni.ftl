@@ -3,9 +3,9 @@
 	<div class="page__head">
 	   <div class="container d-flex">
 	        <div class="row w-100 justify-content-between">
-	            <h1 class="col-12 col-lg-12">Comunicazioni</h1>
+	            <h1 class="col-12 col-lg-12">Notizie</h1>
 	            <p class="col-12 lead">
-					Tutte le comunicazioni pubblicate dalla Protezione Civile Regionale
+					
 	            </p>
 	        </div>
 	    </div>
@@ -19,7 +19,7 @@
                             <a href="/">Home</a>
                         </li>
         
-                        <li class="breadcrumb-item active" aria-current="page">Comunicazioni</li>
+                        <li class="breadcrumb-item active" aria-current="page">Notizie</li>
         
                     </ol>
                 </nav>

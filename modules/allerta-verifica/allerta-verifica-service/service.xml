@@ -1,0 +1,161 @@
+<?xml version="1.0"?>
+<!DOCTYPE service-builder PUBLIC "-//Liferay//DTD Service Builder 7.1.0//EN" "http://www.liferay.com/dtd/liferay-service-builder_7_1_0.dtd">
+
+<service-builder  package-path="allerta.verifica">
+	<namespace>VERIFICA</namespace>
+	<!--<entity data-source="sampleDataSource" local-service="true" name="Foo" remote-service="false" session-factory="sampleSessionFactory" table="foo" tx-manager="sampleTransactionManager uuid="true"">-->
+	<entity local-service="true" name="Verifica" remote-service="true" uuid="true">
+
+		<!-- PK fields -->
+
+		<column name="id" primary="true" type="long" />
+
+		<!-- Group instance -->
+
+		<column name="groupId" type="long" />
+
+		<!-- Audit fields -->
+
+		<column name="companyId" type="long" />
+		<column name="userId" type="long" />
+		<column name="userName" type="String" />
+		<column name="createDate" type="Date" />
+		<column name="modifiedDate" type="Date" />
+
+		<!-- Other fields -->
+
+		<column name="documento" type="long" />
+		<column name="stato" type="int" />
+		<column name="titolo" type="String" />
+		<column name="fenomeni" type="String" />
+		<column name="fenomeniDescritti" type="String" />
+		<column name="note" type="String" />
+		<column name="dataInizio" type="Date" />
+		<column name="dataFine" type="Date" />
+		
+		<column name="link" type="String" />
+		<column name="hash" type="String" />
+
+		<!-- Order -->
+
+		<order by="desc">
+			<order-column name="dataInizio" />
+		</order>
+
+		<!-- Finder methods -->
+
+		<finder name="Documento" return-type="Collection">
+			<finder-column name="documento" />
+		</finder>
+
+		<!-- References -->
+
+		<reference entity="AssetEntry" package-path="com.liferay.portlet.asset" />
+		<reference entity="AssetTag" package-path="com.liferay.portlet.asset" />
+	</entity>
+	
+	<entity local-service="true" name="VerificaDato" remote-service="true">
+
+		<!-- PK fields -->
+		<column name="id" primary="true" type="long" />
+		<column name="documento" type="long" />
+		<column name="giorno" type="Date" />
+		<column name="zona" type="String" />
+		<column name="evento" type="long" />
+		<column name="nomeDato" type="String" />
+		<column name="progressivo" type="int" />
+		
+
+		<!-- Other fields -->
+
+		<column name="datoInserito" type="String" />
+		<column name="datoCalcolato" type="String" />
+
+		<!-- Order -->
+
+		<order by="asc">
+			<order-column name="documento" />
+			<order-column name="giorno" />
+			<order-column name="zona" />
+			<order-column name="evento" />
+			<order-column name="nomeDato" />
+			<order-column name="progressivo" />
+		</order>
+
+		<!-- Finder methods -->
+
+		<finder name="Documento" return-type="Collection">
+			<finder-column name="documento" />
+		</finder>
+		
+		<finder name="DocumentoGiorno" return-type="Collection">
+			<finder-column name="documento" />
+			<finder-column name="giorno" />
+		</finder>
+		
+		<finder name="DocumentoGiornoEvento" return-type="Collection">
+			<finder-column name="documento" />
+			<finder-column name="giorno" />
+			<finder-column name="evento" />
+		</finder>
+		
+		<finder name="DocumentoGiornoZona" return-type="Collection">
+			<finder-column name="documento" />
+			<finder-column name="giorno" />
+			<finder-column name="zona" />
+		</finder>
+		
+		<finder name="DocumentoGiornoZonaEvento" return-type="Collection">
+			<finder-column name="documento" />
+			<finder-column name="giorno" />
+			<finder-column name="zona" />
+			<finder-column name="evento" />
+		</finder>
+		
+		<finder name="Giorno" return-type="Collection">
+			<finder-column name="giorno" />
+		</finder>
+		
+		<finder name="GiornoZona" return-type="Collection">
+			<finder-column name="giorno" />
+			<finder-column name="zona" />
+		</finder>
+		
+		<finder name="GiornoEvento" return-type="Collection">
+			<finder-column name="giorno" />
+			<finder-column name="evento" />
+		</finder>
+		
+		<finder name="GiornoZonaEvento" return-type="Collection">
+			<finder-column name="giorno" />
+			<finder-column name="zona" />
+			<finder-column name="evento" />
+		</finder>
+
+	
+	</entity>
+	
+	<entity local-service="true" name="UtenteLavoro" remote-service="true">
+
+		<!-- PK fields -->
+		<column name="id" primary="true" type="long" />
+		<column name="documento" type="long" />
+		<column name="utente" type="String" />
+		<column name="ts" type="Date" />
+		<column name="attivita" type="String" />
+
+		<!-- Order -->
+
+		<order by="desc">
+			<order-column name="ts" />
+		</order>
+
+		<!-- Finder methods -->
+
+		<finder name="Documento" return-type="Collection">
+			<finder-column name="documento" />
+		</finder>
+
+	
+	</entity>
+</service-builder>

@@ -71,7 +71,8 @@ export interface GroupDetail {
 }
 
 export interface GroupInput {
-  name: string
+  name: string,
+  categoria: number
 }
 
 export interface ContactInput {

@@ -98,8 +98,16 @@ am.MapDataScenarioRadar = (function($){
         }
         this.dataLayers = [];
 
+        if (!this.bounds) {
+        	let corner1 = new L.latLng(43.4, 8.5);
+            let corner2 = new L.latLng(46.001, 13.2058);
+            this.bounds = L.latLngBounds(corner1, corner2);
+        }
+        
         // draw radar img
-        let l = L.imageOverlay( "data:image/png;base64,"+data.img, this.bounds);
+        let l = L.imageOverlay( "data:image/png;base64,"+data.img, this.bounds, {
+			opacity: 0.7});
+        l._bounds = this.bounds
         l.addTo(this.map);
         this.dataLayers.push(l);
         

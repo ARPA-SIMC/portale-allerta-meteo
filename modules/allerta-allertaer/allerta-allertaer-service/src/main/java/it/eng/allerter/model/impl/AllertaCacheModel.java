@@ -64,7 +64,7 @@ public class AllertaCacheModel implements CacheModel<Allerta>, Externalizable {
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(61);
+		StringBundler sb = new StringBundler(63);
 
 		sb.append("{uuid=");
 		sb.append(uuid);
@@ -126,6 +126,8 @@ public class AllertaCacheModel implements CacheModel<Allerta>, Externalizable {
 		sb.append(tipoAllerta);
 		sb.append(", hash=");
 		sb.append(hash);
+		sb.append(", sintesiBriefing=");
+		sb.append(sintesiBriefing);
 		sb.append("}");
 
 		return sb.toString();
@@ -281,6 +283,13 @@ public class AllertaCacheModel implements CacheModel<Allerta>, Externalizable {
 			allertaImpl.setHash(hash);
 		}
 
+		if (sintesiBriefing == null) {
+			allertaImpl.setSintesiBriefing("");
+		}
+		else {
+			allertaImpl.setSintesiBriefing(sintesiBriefing);
+		}
+
 		allertaImpl.resetOriginalValues();
 
 		return allertaImpl;
@@ -330,6 +339,7 @@ public class AllertaCacheModel implements CacheModel<Allerta>, Externalizable {
 
 		tipoAllerta = objectInput.readBoolean();
 		hash = objectInput.readUTF();
+		sintesiBriefing = objectInput.readUTF();
 	}
 
 	@Override
@@ -442,6 +452,13 @@ public class AllertaCacheModel implements CacheModel<Allerta>, Externalizable {
 		else {
 			objectOutput.writeUTF(hash);
 		}
+
+		if (sintesiBriefing == null) {
+			objectOutput.writeUTF("");
+		}
+		else {
+			objectOutput.writeUTF(sintesiBriefing);
+		}
 	}
 
 	public String uuid;
@@ -474,5 +491,6 @@ public class AllertaCacheModel implements CacheModel<Allerta>, Externalizable {
 	public String titolo;
 	public boolean tipoAllerta;
 	public String hash;
+	public String sintesiBriefing;
 
 }

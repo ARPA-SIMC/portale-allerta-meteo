@@ -44,6 +44,7 @@ int canApprove = ParamUtil.getInteger(request,"canApprove");
 		
 	<c:if test="<%= statoId != 1 && canModify == 1 %>">
 		<liferay-ui:icon message="Modifica" url="<%= compilaUrl.toString() %>"/>
+		<liferay-ui:icon message="Elimina" url="<%= deleteUrl.toString() %>"/>
 	</c:if>
 	
 	<c:if test="<%= statoId == 1 && canApprove == 1 %>">

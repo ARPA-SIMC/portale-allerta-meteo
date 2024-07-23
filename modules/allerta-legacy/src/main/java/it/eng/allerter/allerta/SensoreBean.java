@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.portlet.PortletRequest;
@@ -11,9 +12,12 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Role;
+import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.model.UserGroupRole;
 import com.liferay.portal.kernel.security.auth.AuthTokenUtil;
+import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
 import com.liferay.portal.kernel.service.RoleLocalServiceUtil;
 import com.liferay.portal.kernel.service.UserGroupRoleLocalServiceUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
@@ -22,9 +26,14 @@ import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 
 import it.eng.allerter.service.LogInternoLocalServiceUtil;
+import it.eng.allerter.service.SMSLocalServiceUtil;
+import it.eng.bollettino.cron.RisultatiAggiornamento;
 import it.eng.bollettino.model.BollettinoParametro;
+import it.eng.bollettino.model.StazioneVariabile;
 import it.eng.bollettino.service.BollettinoLocalServiceUtil;
 import it.eng.bollettino.service.BollettinoParametroLocalServiceUtil;
+import it.eng.bollettino.service.StazioneLocalServiceUtil;
+import it.eng.bollettino.service.StazioneVariabileLocalServiceUtil;
 
 public class SensoreBean implements Serializable {
 	
@@ -33,6 +42,11 @@ public class SensoreBean implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	private boolean canModifica = false;
+	private boolean canVede = false;
+	private boolean canVedeTutto = false;
+	
+	public static String esitoRicarica = "";
+	public static long userRicarica = -1;
 
 	public class SensoreManager implements Serializable {
 		/**
@@ -51,6 +65,7 @@ public class SensoreBean implements Serializable {
 		String url;
 		String variabileVera;
 		float sogliaSpike;
+		double soglia1, soglia2, soglia3;
 		public String getIdStazione() {
 			return idStazione;
 		}
@@ -102,6 +117,24 @@ public class SensoreBean implements Serializable {
 		
 		
 		
+		public double getSoglia1() {
+			return soglia1;
+		}
+		public void setSoglia1(double soglia1) {
+			this.soglia1 = soglia1;
+		}
+		public double getSoglia2() {
+			return soglia2;
+		}
+		public void setSoglia2(double soglia2) {
+			this.soglia2 = soglia2;
+		}
+		public double getSoglia3() {
+			return soglia3;
+		}
+		public void setSoglia3(double soglia3) {
+			this.soglia3 = soglia3;
+		}
 		public float getSogliaSpike() {
 			return sogliaSpike;
 		}
@@ -174,13 +207,21 @@ public class SensoreBean implements Serializable {
 	boolean soloTuoiComuni = true;
 	
 	public SensoreBean(HttpServletRequest req2) {
+		new SensoreBean(req2,true);
+		
+	}
+	
+	public SensoreBean(HttpServletRequest req2, boolean soloTuoi) {
+		soloTuoiComuni = soloTuoi;
 		init(req2);
+		
 	}
 	
 	public void caricaRegole() {
+		
 		regole = new ArrayList<SensoreManager>();
 		List ll = BollettinoLocalServiceUtil.eseguiQueryGenericaLista("select * from sensori_comuni_vw");
-		
+		LogInternoLocalServiceUtil.log("SensoreBean", "caricaRegole", ""+ll.size(), "");
 		Calendar cal = Calendar.getInstance();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		String dataFine = sdf.format(cal.getTime());
@@ -201,6 +242,11 @@ public class SensoreBean implements Serializable {
 			if (o2[8]!=null) rm.setVariabileVera(o2[8].toString());
 			if (o2[9]!=null) rm.setFunzionante((Boolean)o2[9]);
 			if (o2[10]!=null) rm.setSogliaSpike((Float)o2[10]);
+			if (o2.length>=14) {
+				if (o2[11]!=null) rm.setSoglia1((Double)o2[11]);
+				if (o2[12]!=null) rm.setSoglia2((Double)o2[12]);
+				if (o2[13]!=null) rm.setSoglia3((Double)o2[13]);
+			}
 			
 			String url = "&r=" + rm.getIdStazione() + "/" + (rm.getVariabileVera()!=null?rm.getVariabileVera():rm.getIdVariabile())
 							   + "/" + dataInizio + "/" + dataFine + "&stazione=" + 
@@ -249,9 +295,10 @@ public class SensoreBean implements Serializable {
 				//mostra solo i sensori dei tuoi comuni
 				boolean trovato = false;
 				for (String com : comuniInteresse) {
-					String com2 = "_"+com+"_";
-				
-					if (rm.idComuni.contains(com2)) trovato = true;
+					String com2 = com.toUpperCase()+"(";
+					String com3 = ", "+com2;
+					if (rm.comuni.contains(com3)) trovato = true;
+					else if (rm.comuni.startsWith(com2)) trovato = true;
 				}
 				if (!trovato) includi = false;
 			}
@@ -290,13 +337,16 @@ public class SensoreBean implements Serializable {
 					for (UserGroupRole rol : r) {
 						if (ruo.equals(""+rol.getRoleId())) {
 							if (comuniInteresse==null) comuniInteresse = new ArrayList<String>();
-							String group = (""+rol.getGroupId()).intern();
+							Group g = GroupLocalServiceUtil.fetchGroup(rol.getGroupId());
+							String group = g.getName();
 							boolean trovato = comuniInteresse.contains(group);
 							if (!trovato) comuniInteresse.add(group);
 						}
 					}
 				}
+				
 			}
+			
 			
 			can = BollettinoParametroLocalServiceUtil.fetchBollettinoParametro("RUOLI_ATTIVA_SENSORI");
 			if (can!=null) {
@@ -304,7 +354,35 @@ public class SensoreBean implements Serializable {
 				String ruoli[] = can.getValore().split(",");
 				for (String ruo : ruoli) {
 					for (Role rol : rr) {
-						if (ruo.equals(""+rol.getRoleId())) canModifica = true;
+						if (ruo.equals(""+rol.getRoleId())) {
+							canModifica = true;
+							canVede = true;
+						}
+					}
+				}
+			}
+			
+			can = BollettinoParametroLocalServiceUtil.fetchBollettinoParametro("RUOLI_VEDE_SOGLIE");
+			if (can!=null) {
+				
+				String ruoli[] = can.getValore().split(",");
+				for (String ruo : ruoli) {
+					for (Role rol : rr) {
+						if (ruo.equals(""+rol.getRoleId())) canVede = true;
+					}
+				}
+			}
+			
+			can = BollettinoParametroLocalServiceUtil.fetchBollettinoParametro("RUOLI_VEDE_SOGLIE_TUTTO");
+			if (can!=null) {
+				
+				String ruoli[] = can.getValore().split(",");
+				for (String ruo : ruoli) {
+					for (Role rol : rr) {
+						if (ruo.equals(""+rol.getRoleId())) {
+							canVede = true;
+							canVedeTutto = true;
+						}
 					}
 				}
 			}
@@ -314,7 +392,8 @@ public class SensoreBean implements Serializable {
 			
 		} catch (Exception e) {
 			e.printStackTrace();
-			//LogInternoLocalServiceUtil.log("sensoreBean", "init", e, "");
+			LogInternoLocalServiceUtil.log("sensoreBean", "init", e, "");
+			
 		}
 		
 		
@@ -363,6 +442,8 @@ public class SensoreBean implements Serializable {
 
 	public void setSoloTuoiComuni(boolean soloTuoiComuni) {
 		this.soloTuoiComuni = soloTuoiComuni;
+		
+		
 	}
 
 	public boolean isCanModifica() {
@@ -449,6 +530,81 @@ public class SensoreBean implements Serializable {
 
 	public void setPluvio(List<SensoreManager> pluvio) {
 		this.pluvio = pluvio;
+	}
+
+	public boolean isCanVede() {
+		return canVede;
+	}
+
+	public void setCanVede(boolean canVede) {
+		this.canVede = canVede;
+	}
+
+	public boolean isCanVedeTutto() {
+		return canVedeTutto;
+	}
+
+	public void setCanVedeTutto(boolean canVedeTutto) {
+		this.canVedeTutto = canVedeTutto;
+	}
+	
+	public String aggiornaSensori(User u) {
+		String out ="";
+		
+		RisultatiAggiornamento ra = StazioneLocalServiceUtil.aggiornaStazioni();
+		RisultatiAggiornamento ra2 = StazioneVariabileLocalServiceUtil.aggiornaSensori();
+		
+		out = "Risultati aggiornamento stazioni: "+ra.toString()+"<br/><br/>"+
+				"Risultati aggiornamento variabili: "+ra2.toString()+"<br/><br/>";
+				
+				
+		esitoRicarica=out;
+		userRicarica = u.getUserId();
+		
+		String risultati = "";
+		if (ra.aggiunti>0 || ra.modificati>0 || ra.rimossi>0 || ra.errore!=null) {
+			if (ra.errore!=null) LogInternoLocalServiceUtil.log("dati osservati", "Aggiornamento stazioni", "Errore: "+ra.errore, "");
+			else {
+				risultati += "MODIFICHE ALLE STAZIONI - "+ra.toString()+" ";
+				String ris = "Aggiunti "+ra.aggiunti+", modificati "+ra.modificati+", rimossi "+ra.rimossi;
+				LogInternoLocalServiceUtil.log("dati osservati", "Aggiornamento stazioni", ris, "");
+			}
+		}
+		if (ra2.aggiunti>0 || ra2.modificati>0 || ra2.rimossi>0 || ra2.errore!=null) {
+			if (ra2.errore!=null) LogInternoLocalServiceUtil.log("dati osservati", "Aggiornamento sensori", "Errore: "+ra.errore, "");
+			else {
+				risultati += "MODIFICHE A SOGLIE O VARIABILI DEI SENSORI - "+ra2.toString()+" ";
+				String ris = "Aggiunti "+ra2.aggiunti+", modificati "+ra2.modificati+", rimossi "+ra2.rimossi;
+				LogInternoLocalServiceUtil.log("dati osservati", "Aggiornamento sensori", ris, "");
+			}
+		}
+		
+		try {
+			if (risultati!=null && !risultati.equals("")) {
+				BollettinoParametro gruppo = BollettinoParametroLocalServiceUtil.fetchBollettinoParametro("GRUPPO_ACCENSIONE_MAPPA");
+				if (gruppo!=null) {
+					try {
+						
+						
+						
+						long ts = new Date().getTime();
+						long canaleMail[] = new long[1];
+						canaleMail[0] = 1;
+						SMSLocalServiceUtil.creaNotificaGruppoRubrica(canaleMail, "AllerteER", "Notifica variazioni stazioni Portale Allerte", "automatismo", "aggStazioni", ts, 20181, gruppo.getValore(), true, null);
+						SMSLocalServiceUtil.eliminaDuplicatiEmail("automatismo", "aggStazioni", ts);
+						SMSLocalServiceUtil.inviaEmail("automatismo", "aggStazioni", ts,
+								"Notifica variazioni stazioni Portale Allerte", "Si comunicano le seguenti variazioni alle stazioni sul Portale Allerte Emilia-Romagna. "+risultati, "no-reply@regione.emilia-romagna.it");
+									} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}	
+		
+		return out;
 	}
 	
 	

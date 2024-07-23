@@ -130,6 +130,7 @@ AllarmeBean allarme = (AllarmeBean) request.getAttribute("allarme");
 								<th>Stazione</th>
 								<th>Soglia</th>
 								<th>Elimina</th>
+								<th>Problemi</th>
 							</tr>
 						</thead>
 						
@@ -188,6 +189,17 @@ AllarmeBean allarme = (AllarmeBean) request.getAttribute("allarme");
 								        </c:otherwise>
 									</c:choose>
 									
+								</td>
+								<td>
+								 <c:choose>
+										<c:when test = "${condizione.problemi}">
+											<span style="font-size:xx-large">&#9888;</span>
+								           ${condizione.stazione} - ${condizione.nomeStaz}
+										</c:when>
+										<c:otherwise>
+								           
+								        </c:otherwise>
+									</c:choose>
 								</td>
 							</tr>
 							

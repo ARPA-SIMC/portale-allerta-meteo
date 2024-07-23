@@ -271,9 +271,9 @@ function beccaVentoColore(velocita) {
     else if (velocita<5.5) {colore="#00FF00"; scale='.6'}
     else if (velocita<8) {colore="#6BA531"; scale='.65'}
     else if (velocita<10.8) {colore="#008C30"; scale='.7'}
-    else if (velocita<13.9) {colore="#FF0000"; scale='.75'}
+    else if (velocita<13.9) {colore="#FFFF00"; scale='.75'}
     else if (velocita<17.2) {colore="#FF7F00"; scale='.8'}
-    else if (velocita<20.8) {colore="#FFFF00"; scale='.85'}
+    else if (velocita<20.8) {colore="#FF0000"; scale='.85'}
     else if (velocita<24.5) {colore="#BF9213"; scale='.9'}
     else if (velocita<28.5) {colore="#FF00FF"; scale='.95'}
     else if (velocita<32.7) {colore="#7A11B2"; scale='1'}
@@ -290,9 +290,9 @@ function sventolaBarba(velocita, direzione/*, Rvelocita, Rdirezione*/) {
     else if (velocita<5.5) {colore="#00FF00"; scale='.6'}
     else if (velocita<8) {colore="#6BA531"; scale='.65'}
     else if (velocita<10.8) {colore="#008C30"; scale='.7'}
-    else if (velocita<13.9) {colore="#FF0000"; scale='.75'}
+    else if (velocita<13.9) {colore="#FFFF00"; scale='.75'}
     else if (velocita<17.2) {colore="#FF7F00"; scale='.8'}
-    else if (velocita<20.8) {colore="#FFFF00"; scale='.85'}
+    else if (velocita<20.8) {colore="#FF0000"; scale='.85'}
     else if (velocita<24.5) {colore="#BF9213"; scale='.9'}
     else if (velocita<28.5) {colore="#FF00FF"; scale='.95'}
     else if (velocita<32.7) {colore="#7A11B2"; scale='1'}

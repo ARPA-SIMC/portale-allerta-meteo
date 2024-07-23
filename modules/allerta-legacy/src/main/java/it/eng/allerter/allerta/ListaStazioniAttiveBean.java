@@ -10,8 +10,10 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 
 import it.eng.bollettino.model.Bacino;
 import it.eng.bollettino.model.Stazione;
+import it.eng.bollettino.model.StazioneVariabile;
 import it.eng.bollettino.service.BacinoLocalServiceUtil;
 import it.eng.bollettino.service.StazioneLocalServiceUtil;
+import it.eng.bollettino.service.StazioneVariabileLocalServiceUtil;
 
 
 public class ListaStazioniAttiveBean implements Serializable {
@@ -72,6 +74,7 @@ public class ListaStazioniAttiveBean implements Serializable {
 				
 			
 			List<Stazione> tutte = StazioneLocalServiceUtil.getStaziones(QueryUtil.ALL_POS, QueryUtil.ALL_POS);
+			List<StazioneVariabile> svv = StazioneVariabileLocalServiceUtil.getStazioneVariabiles(QueryUtil.ALL_POS, QueryUtil.ALL_POS);
 			boolean aggiunto;
 			
 			for (Stazione s : tutte) {
@@ -79,6 +82,19 @@ public class ListaStazioniAttiveBean implements Serializable {
 				
 				
 				if (s.getProgressivo()<=0) continue;
+				if (s.getProgressivo()==9999) continue;
+				
+				if (!s.isAttivo()) continue;
+				
+				boolean trovato = false;
+				for (StazioneVariabile stazvar : svv) {
+					if (s.getId().equals(stazvar.getIdStazione()) && stazvar.getIdVariabile().contains("13215")) {
+						trovato = true;
+						break;
+					}
+				}
+				
+				if (!trovato) continue;
 				
 				//System.out.println("Stazione "+s.getProgressivo());
 				

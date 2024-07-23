@@ -2,10 +2,12 @@ package it.eng.allerter.allerta.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.mail.internet.AddressException;
 
@@ -99,7 +101,12 @@ public class ChannelSendUtils {
 		boolean send=false;
 		try {
 			//			smsLocalService.creaOnlySMSOrganization("AllerteER", testo, tipo, sottotipo, 0L, organizationId);
-			smsLocalService.creaOnlySMSGroup("AllerteER", testo, tipo, String.valueOf(sottotipo), 0L, group.getGroupId());
+			Map<String, Serializable> expando = group.getExpandoBridge().getAttributes();
+			if (expando==null || !expando.containsKey("Telecom Alias") || expando.get("Telecom Alias")==null) {
+				logger.error("Gruppo "+group.getName()+" non contiene un alias per SMS");
+				return false;
+			}
+			smsLocalService.creaOnlySMSGroup((String)expando.get("Telecom Alias"), testo, tipo, String.valueOf(sottotipo), 0L, group.getGroupId());
 			smsLocalService.eliminaDuplicati(tipo, String.valueOf(sottotipo), 0);
 			smsLocalService.inviaSMS(tipo, String.valueOf(sottotipo), 0);
 			send=true;

@@ -10,7 +10,9 @@ public class CellaManager implements Serializable {
 	int colonna;
 	int sottoriga;
 	int valore = 1000;
+	int valoreSecondoGiorno = 1000;
 	AllertaStato stato;
+	AllertaStato statoSecondoGiorno;
 
 	public AllertaStato getStato() {
 		return stato;
@@ -66,5 +68,38 @@ public class CellaManager implements Serializable {
 			return "ROSSO";
 		return "";
 	}
+	
+	public String getStringaColoreSecondoGiorno() {
+
+		if (valoreSecondoGiorno == 1000)
+			return "";
+		if (valoreSecondoGiorno == 0)
+			return "VERDE";
+		if (valoreSecondoGiorno == 1)
+			return "GIALLO";
+		if (valoreSecondoGiorno == 2)
+			return "ARANCIONE";
+		if (valoreSecondoGiorno == 3)
+			return "ROSSO";
+		return "";
+	}
+
+	public int getValoreSecondoGiorno() {
+		return valoreSecondoGiorno;
+	}
+
+	public void setValoreSecondoGiorno(int valoreSecondoGiorno) {
+		this.valoreSecondoGiorno = valoreSecondoGiorno;
+	}
+
+	public AllertaStato getStatoSecondoGiorno() {
+		return statoSecondoGiorno;
+	}
+
+	public void setStatoSecondoGiorno(AllertaStato statoSecondoGiorno) {
+		this.statoSecondoGiorno = statoSecondoGiorno;
+	}
+	
+	
 
 }

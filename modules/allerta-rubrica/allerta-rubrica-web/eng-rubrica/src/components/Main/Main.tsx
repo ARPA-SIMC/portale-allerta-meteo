@@ -17,11 +17,14 @@ type MainState = {
   channels: any[]
   roles: any[]
   permissions: any[]
+  categories: any[]
   rolesPermission: any[]
   focusedIndex: number | string
   panels: IPanel[]
   loggedUser: any,
   cache: any,
+  rubriche: any,
+  rubricaAttuale: any
 }
 
 export class Main extends Component<{}, MainState> {
@@ -30,12 +33,15 @@ export class Main extends Component<{}, MainState> {
     channels: [],
     roles: [],
     permissions: [],
+    categories: [],
     rolesPermission: [],  
     focusedIndex: '',
     cache: {},
     panels: new Array<IPanel>(
       {id: genID(), type: PanelType.GROUPS, history: []},
     ),
+    rubriche: null,
+    rubricaAttuale: null
   };
 
   setCache = (panel: string, key: string, value: object) => {
@@ -133,18 +139,38 @@ export class Main extends Component<{}, MainState> {
     const {data: roles} = await client.roles.all();
     const {data: permissions} = await client.permission.all();
     const {data: rolesPermission} = await client.rolesPermission.all();
+    const {data: categories} = await client.category.all();
     const {data: loggedUser} = await client.loggedUser();
-    this.setState(p => ({...p, channels, roles, loggedUser, permissions, rolesPermission}));
+    const rubriche = await client.getRubriche();
+    console.log(rubriche);
+    console.log(Object.keys(rubriche));
+    const rubricaAttuale = await client.getRubricaAttuale();
+    this.setState(p => ({...p, channels, roles, categories, loggedUser, permissions, rolesPermission, rubriche, rubricaAttuale}));
+  }
+
+  async handleRubricaChange(e) {
+     await client.aggiornaRubrica(e.target.value)
+     window.location.reload(false);
   }
 
   render() {
-    const {panels, channels, roles, loggedUser, focusedIndex, permissions, rolesPermission, cache} = this.state;
+    const {panels, channels, roles, loggedUser, focusedIndex, permissions, rolesPermission, cache, categories, rubriche} = this.state;
     console.log('Main.render')
     console.log(HTML5Backend)
+    if (!this.state.rubriche) return <div/>
     return (
       <DndProvider backend={HTML5Backend}>
       <main className={`${styles.mainWrapper}`}>
 	<Timer />
+        {this.state.rubriche && this.state.rubricaAttuale && <div>
+             Rubriche disponibili: <span>
+                      <select onChange={this.handleRubricaChange} defaultValue={this.state.rubricaAttuale} style={{marginLeft: 'auto'}}>
+                        {Object.keys(this.state.rubriche).map(role => <option key={role} value={role}>{this.state.rubriche[role]}</option>)}
+                      </select>
+                      </span>
+             <br/>
+             <br/>
+        </div>}
         <section className={`${styles.panelsGrid} ${styles[`grid${panels.length}`]}`}>
           <PanelContext.Provider value={{
             loggedUser,
@@ -153,7 +179,9 @@ export class Main extends Component<{}, MainState> {
             panels,
             focusedIndex,	
             permissions,
+            categories,
             rolesPermission,
+            rubriche,
             getCache: this.getCache,
             setCache: this.setCache,
             onGoBack: this.onGoBack,

@@ -1,3 +1,7 @@
+<%@page import="com.liferay.portal.kernel.model.Role"%>
+<%@page import="java.util.List"%>
+<%@page import="com.liferay.portal.kernel.service.RoleLocalServiceUtil"%>
+<%@page import="com.liferay.portal.kernel.service.UserLocalServiceUtil"%>
 <%@page import="com.liferay.portal.kernel.util.PortalUtil"%>
 <%@page import="it.eng.allerta.utils.AllertaKeys"%>
 <%@page import="it.eng.sms.search.EventiHelper"%>
@@ -19,6 +23,22 @@ long dettaglioPlid = PortalUtil.getPlidFromPortletId( themeDisplay.getScopeGroup
 
 <style>
 	td, th { padding: 5px !important; font-size: 90% !important}
+	
+	<% 
+	
+	  boolean nascondi = false;
+	  List<Role> roles = RoleLocalServiceUtil.getUserRoles(themeDisplay.getUserId());
+	  if (roles!=null) {
+		  for (Role r : roles)
+			  if (r!=null && r.getRoleId()==2059543)
+				  nascondi=true;
+	  }
+	  
+	  if (nascondi) {
+		  %> .nascondi { display:none; } <%
+	  }
+	  
+	%>
 </style>
 
 <div class="container">
@@ -135,7 +155,7 @@ long dettaglioPlid = PortalUtil.getPlidFromPortletId( themeDisplay.getScopeGroup
 						<liferay-ui:search-container-column-text property="percSuccesso" name="Perc Successo" />
 						<liferay-ui:search-container-column-text property="ultimoAggiornamento" name="Ultimo Aggiornamento" />
 						<liferay-ui:search-container-column-text>
-							<a href='javascript:goToDetails("<%= evt.getId()%>", "<%=evt.getTipoEvento()%>")'>Vai</a>
+							<a class="nascondi" href='javascript:goToDetails("<%= evt.getId()%>", "<%=evt.getTipoEvento()%>")'>Vai</a>
 						</liferay-ui:search-container-column-text>
 						
 						

@@ -96,7 +96,7 @@ public class Comuni_bacini_wsServiceImpl
 
 			SottoBacinoMonitoraggioBean sottoBacinoMonitoraggioBean =  new SottoBacinoMonitoraggioBean();
 			sottoBacinoMonitoraggioBean.setNomeSottobacino((String)value[5]);
-			Double double1 = (double) value[6];
+			Object double1 = value[6]!=null?value[6]:"";
 			sottoBacinoMonitoraggioBean.setOsservazione(new InfoValoreBean(double1.toString(),(String)value[7]));
 			sottoBacinoMonitoraggioBean.setColmo_previsto(new InfoValoreBean((String)value[9],(String)value[10]));
 			bacinoMonitoraggioBean.getSottobacino().add(sottoBacinoMonitoraggioBean);

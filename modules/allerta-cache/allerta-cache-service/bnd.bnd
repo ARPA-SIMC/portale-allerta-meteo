@@ -1,0 +1,14 @@
+Bundle-Name: allerta-cache-service
+Bundle-SymbolicName: it.eng.cache.service
+Bundle-Version: 1.0.0
+Liferay-Require-SchemaVersion: 1.0.5
+Liferay-Service: true
+-dsannotations-options: inherit
+Export-Package:\
+	it.eng.cache.upgrade,\
+	it.eng.cache.service.persistence.impl,\
+	it.eng.cache.service.impl,\
+	it.eng.cache.service.http,\
+	it.eng.cache.service.base,\
+	it.eng.cache.model.impl,\
+	it.eng.cache.service.util

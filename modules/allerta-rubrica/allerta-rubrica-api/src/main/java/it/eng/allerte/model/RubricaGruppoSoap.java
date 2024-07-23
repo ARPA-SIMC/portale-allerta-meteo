@@ -43,6 +43,7 @@ public class RubricaGruppoSoap implements Serializable {
 		soapModel.setFK_UTENTE_MODIFICA(model.getFK_UTENTE_MODIFICA());
 		soapModel.setDATA_MODIFICA(model.getDATA_MODIFICA());
 		soapModel.setDISABLED(model.isDISABLED());
+		soapModel.setFK_CATEGORIA(model.getFK_CATEGORIA());
 
 		return soapModel;
 	}
@@ -172,6 +173,14 @@ public class RubricaGruppoSoap implements Serializable {
 		_DISABLED = DISABLED;
 	}
 
+	public long getFK_CATEGORIA() {
+		return _FK_CATEGORIA;
+	}
+
+	public void setFK_CATEGORIA(long FK_CATEGORIA) {
+		_FK_CATEGORIA = FK_CATEGORIA;
+	}
+
 	private long _ID_GRUPPO;
 
 	private String _NOME;
@@ -189,5 +198,7 @@ public class RubricaGruppoSoap implements Serializable {
 	private Date _DATA_MODIFICA;
 
 	private boolean _DISABLED;
+
+	private long _FK_CATEGORIA;
 
 }

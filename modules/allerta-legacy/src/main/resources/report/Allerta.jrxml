@@ -5407,7 +5407,7 @@
 			</textField>
 			<textField>
 				<reportElement x="0" y="21" width="251" height="35" uuid="1013a7cb-0600-4d9a-a344-13eab2778573">
-					<printWhenExpression><![CDATA[new Boolean($F{protcognome}!=null)]]></printWhenExpression>
+					<printWhenExpression><![CDATA[new Boolean($F{arpacognome}!=null)]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Top">
 					<font isBold="false"/>
@@ -5435,6 +5435,15 @@
 				</textElement>
 				<text><![CDATA[Firma autografa omessa ai sensi dell'art.3, c.2, D.Lgs. 12/02/1993, n.39]]></text>
 			</staticText>
+			<textField>
+				<reportElement x="300" y="4" width="251" height="16" uuid="41921a61-d1bb-4016-ade6-b7d4fc8c8376">
+					<printWhenExpression><![CDATA[new Boolean($F{protcognome}!=null)]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{direttore}.booleanValue()==true?"IL DIRETTORE":"PER IL DIRETTORE"]]></textFieldExpression>
+			</textField>
 		</band>
 	</detail>
 </jasperReport>

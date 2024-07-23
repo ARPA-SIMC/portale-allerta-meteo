@@ -273,7 +273,7 @@ $(document).ready( function(){
 	
 	$('#<portlet:namespace/>backTo').click( function(){
 		
-		location.href="<%= dettaglioDisplayTerm.getBackTo()%>";
+		location.href="/web/guest/sms2";
 	});
 	
 	

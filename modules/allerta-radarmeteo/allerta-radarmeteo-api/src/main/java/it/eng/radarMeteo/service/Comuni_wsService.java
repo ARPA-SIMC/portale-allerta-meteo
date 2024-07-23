@@ -27,6 +27,7 @@ import com.liferay.portal.kernel.transaction.Transactional;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -74,5 +75,8 @@ public interface Comuni_wsService extends BaseService {
 
 	@Transactional
 	public Map<String, Object> getStatoAllerta(java.sql.Timestamp timestamp);
+
+	@Transactional
+	public List<Object[]> getStatoAllertaCap(java.sql.Timestamp timestamp);
 
 }

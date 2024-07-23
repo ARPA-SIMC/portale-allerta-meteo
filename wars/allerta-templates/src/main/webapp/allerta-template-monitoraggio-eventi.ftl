@@ -25,7 +25,20 @@
 
 				<h2>Documenti di monitoraggio</h2>
                                 
-				<p>Documenti di Monitoraggio meteo, idrologico e idraulico, emessi periodicamente dal Centro Funzionale di Arpae , contenenti un aggiornamento sulle caratteristiche, localizzazione ed evoluzione a breve termine dei fenomeni di pioggia e dei fenomeni di piena in atto</p>
+				<p>Documenti di Monitoraggio meteo, idrologico e idraulico, emessi periodicamente dal Centro Funzionale di Arpae , contenenti un aggiornamento sulle caratteristiche, localizzazione ed evoluzione a breve termine dei fenomeni di pioggia e dei fenomeni di piena in atto.</p>
+                
+                <p></p>
+                
+                <p style="font-size: 1.35rem">Vai all'<a href="/archivio-monitoraggi" >archivio completo dei documenti di monitoraggio</a>.</p>
+                
+				
+				<div>
+				  	<a href="/compila-allerta-portlet/feed?feed=monitoraggi" target="_blank" class="btn btn-transparent" title="RSS Documenti di monitoraggio">
+				     	<span class="icon i-rss" title="Icona RSS"></span> <span>RSS</span> 
+				     	<span class="icon i-external-link-square u-open-external" title="RSS Documenti di monitoraggio"></span>
+				 	</a>
+				</div>
+                
                 
 				${processor.processColumn("column-2", "portlet-column-content portlet-column-content-only")}
                         

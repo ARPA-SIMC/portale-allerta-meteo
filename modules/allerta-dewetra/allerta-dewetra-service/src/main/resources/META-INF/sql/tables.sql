@@ -1,0 +1,20 @@
+create table DEWETRA_HRW (
+	id_ LONG not null primary key,
+	comune VARCHAR(75) null,
+	timestamp DATE null,
+	HRI DOUBLE,
+	SSI DOUBLE,
+	SRI DOUBLE,
+	VMI DOUBLE,
+	VIL DOUBLE,
+	POH DOUBLE,
+	ETM DOUBLE,
+	TOP DOUBLE,
+	LGT DOUBLE,
+	Pers DOUBLE,
+	SRT DOUBLE,
+	SRT_3 DOUBLE,
+	SRT_6 DOUBLE,
+	Vel DOUBLE,
+	Dir DOUBLE
+);

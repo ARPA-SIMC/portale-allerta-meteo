@@ -1,0 +1,918 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="AllertaGriglia" pageWidth="595" pageHeight="842" columnWidth="595" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="3dcb3485-5003-43ce-8eec-ce058ac80373">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="S1" mode="Opaque" backcolor="#CCCCCC">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("V".equals($F{e1}))]]></conditionExpression>
+			<style backcolor="#99CC00"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("G".equals($F{e1}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FFFF00"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("A".equals($F{e1}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FF9900"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("R".equals($F{e1}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FF0000"/>
+		</conditionalStyle>
+	</style>
+	<style name="S2" mode="Opaque" backcolor="#CCCCCC">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("V".equals($F{e2}))]]></conditionExpression>
+			<style backcolor="#99CC00"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("G".equals($F{e2}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FFFF00"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("A".equals($F{e2}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FF9900"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("R".equals($F{e2}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FF0000"/>
+		</conditionalStyle>
+	</style>
+	<style name="S3" mode="Opaque" backcolor="#CCCCCC">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("V".equals($F{e3}))]]></conditionExpression>
+			<style backcolor="#99CC00"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("G".equals($F{e3}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FFFF00"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("A".equals($F{e3}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FF9900"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("R".equals($F{e3}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FF0000"/>
+		</conditionalStyle>
+	</style>
+	<style name="S4" mode="Opaque" backcolor="#CCCCCC">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("V".equals($F{e4}))]]></conditionExpression>
+			<style backcolor="#99CC00"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("G".equals($F{e4}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FFFF00"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("A".equals($F{e4}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FF9900"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("R".equals($F{e4}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FF0000"/>
+		</conditionalStyle>
+	</style>
+	<style name="S5" mode="Opaque" backcolor="#CCCCCC">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("V".equals($F{e5}))]]></conditionExpression>
+			<style backcolor="#99CC00"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("G".equals($F{e5}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FFFF00"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("A".equals($F{e5}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FF9900"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("R".equals($F{e5}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FF0000"/>
+		</conditionalStyle>
+	</style>
+	<style name="S6" mode="Opaque" backcolor="#CCCCCC">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("V".equals($F{e6}))]]></conditionExpression>
+			<style backcolor="#99CC00"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("G".equals($F{e6}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FFFF00"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("A".equals($F{e6}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FF9900"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("R".equals($F{e6}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FF0000"/>
+		</conditionalStyle>
+	</style>
+	<style name="S7" mode="Opaque" backcolor="#CCCCCC">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("V".equals($F{e7}))]]></conditionExpression>
+			<style backcolor="#99CC00"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("G".equals($F{e7}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FFFF00"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("A".equals($F{e7}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FF9900"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("R".equals($F{e7}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FF0000"/>
+		</conditionalStyle>
+	</style>
+	<style name="S8" mode="Opaque" backcolor="#CCCCCC">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("V".equals($F{e8}))]]></conditionExpression>
+			<style backcolor="#99CC00"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("G".equals($F{e8}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FFFF00"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("A".equals($F{e8}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FF9900"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("R".equals($F{e8}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FF0000"/>
+		</conditionalStyle>
+	</style>
+	<style name="S9" mode="Opaque" backcolor="#CCCCCC">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("V".equals($F{e9}))]]></conditionExpression>
+			<style backcolor="#99CC00"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("G".equals($F{e9}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FFFF00"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("A".equals($F{e9}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FF9900"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("R".equals($F{e9}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FF0000"/>
+		</conditionalStyle>
+	</style>
+	<style name="X1" mode="Opaque" backcolor="#CCCCCC">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("V".equals($F{x1}))]]></conditionExpression>
+			<style backcolor="#99CC00"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("G".equals($F{x1}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FFFF00"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("A".equals($F{x1}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FF9900"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("R".equals($F{x1}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FF0000"/>
+		</conditionalStyle>
+	</style>
+	<style name="X2" mode="Opaque" backcolor="#CCCCCC">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("V".equals($F{x2}))]]></conditionExpression>
+			<style backcolor="#99CC00"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("G".equals($F{x2}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FFFF00"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("A".equals($F{x2}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FF9900"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("R".equals($F{x2}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FF0000"/>
+		</conditionalStyle>
+	</style>
+	<style name="X3" mode="Opaque" backcolor="#CCCCCC">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("V".equals($F{x3}))]]></conditionExpression>
+			<style backcolor="#99CC00"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("G".equals($F{x3}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FFFF00"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("A".equals($F{x3}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FF9900"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("R".equals($F{x3}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FF0000"/>
+		</conditionalStyle>
+	</style>
+	<style name="X4" mode="Opaque" backcolor="#CCCCCC">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("V".equals($F{x4}))]]></conditionExpression>
+			<style backcolor="#99CC00"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("G".equals($F{x4}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FFFF00"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("A".equals($F{x4}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FF9900"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("R".equals($F{x4}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FF0000"/>
+		</conditionalStyle>
+	</style>
+	<style name="X5" mode="Opaque" backcolor="#CCCCCC">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("V".equals($F{x5}))]]></conditionExpression>
+			<style backcolor="#99CC00"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("G".equals($F{x5}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FFFF00"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("A".equals($F{x5}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FF9900"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("R".equals($F{x5}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FF0000"/>
+		</conditionalStyle>
+	</style>
+	<style name="X6" mode="Opaque" backcolor="#CCCCCC">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("V".equals($F{x6}))]]></conditionExpression>
+			<style backcolor="#99CC00"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("G".equals($F{x6}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FFFF00"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("A".equals($F{x6}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FF9900"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("R".equals($F{x6}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FF0000"/>
+		</conditionalStyle>
+	</style>
+	<style name="X7" mode="Opaque" backcolor="#CCCCCC">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("V".equals($F{x7}))]]></conditionExpression>
+			<style backcolor="#99CC00"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("G".equals($F{x7}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FFFF00"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("A".equals($F{x7}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FF9900"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("R".equals($F{x7}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FF0000"/>
+		</conditionalStyle>
+	</style>
+	<style name="X8" mode="Opaque" backcolor="#CCCCCC">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("V".equals($F{x8}))]]></conditionExpression>
+			<style backcolor="#99CC00"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("G".equals($F{x8}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FFFF00"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("A".equals($F{x8}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FF9900"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("R".equals($F{x8}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FF0000"/>
+		</conditionalStyle>
+	</style>
+	<style name="X9" mode="Opaque" backcolor="#CCCCCC">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("V".equals($F{x9}))]]></conditionExpression>
+			<style backcolor="#99CC00"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("G".equals($F{x9}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FFFF00"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("A".equals($F{x9}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FF9900"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean("R".equals($F{x9}))]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FF0000"/>
+		</conditionalStyle>
+	</style>
+	<parameter name="ALLERTA" class="java.math.BigDecimal"/>
+	<parameter name="SECONDOGIORNO" class="java.lang.Boolean">
+		<defaultValueExpression><![CDATA[new Boolean(false)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="FASE" class="java.lang.Integer"/>
+	<queryString>
+		<![CDATA[select area, secondogiorno, eventi[1] as e1, eventi[2] as e2, eventi[3] as e3,
+eventi[4] as e4, eventi[5] as e5, eventi[6] as e6,
+eventi[7] as e7, eventi[8] as e8, eventi[9] as e9,
+eventi2[1] as x1, eventi2[2] as x2, eventi2[3] as x3,
+eventi2[4] as x4, eventi2[5] as x5, eventi2[6] as x6,
+eventi2[7] as x7, eventi2[8] as x8, eventi2[9] as x9
+from (
+select a.areaid<0 as secondogiorno, CHR((64+abs(a.areaid)/10)::int) || (abs(a.areaid)%10) as area,
+array_agg(''||
+(case when a.statoid=0 then 'V' when a.statoid=1 then 'G' when a.statoid=2 then 'A'
+		   when a.statoid=3 then 'R' else '' end) order by a.eventoid asc) as eventi,
+array_agg(''||
+(case when a2.statoid=0 then 'V' when a2.statoid=1 then 'G' when a2.statoid=2 then 'A'
+		   when a2.statoid=3 then 'R' else '' end) order by a2.eventoid asc) as eventi2
+from allerter_allertastato a left join allerter_allertastatoversione a2
+	on a2.allertaid=a.allertaid and a2.fase=$P{FASE} and a2.eventoid=a.eventoid and a2.areaid=a.areaid
+	where a.allertaid=$P{ALLERTA} group by a.areaid order by abs(a.areaid) asc) x
+where secondogiorno=$P{SECONDOGIORNO}]]>
+	</queryString>
+	<field name="area" class="java.lang.String"/>
+	<field name="secondogiorno" class="java.lang.Boolean"/>
+	<field name="e1" class="java.lang.String"/>
+	<field name="e2" class="java.lang.String"/>
+	<field name="e3" class="java.lang.String"/>
+	<field name="e4" class="java.lang.String"/>
+	<field name="e5" class="java.lang.String"/>
+	<field name="e6" class="java.lang.String"/>
+	<field name="e7" class="java.lang.String"/>
+	<field name="e8" class="java.lang.String"/>
+	<field name="e9" class="java.lang.String"/>
+	<field name="x1" class="java.lang.String"/>
+	<field name="x2" class="java.lang.String"/>
+	<field name="x3" class="java.lang.String"/>
+	<field name="x4" class="java.lang.String"/>
+	<field name="x5" class="java.lang.String"/>
+	<field name="x6" class="java.lang.String"/>
+	<field name="x7" class="java.lang.String"/>
+	<field name="x8" class="java.lang.String"/>
+	<field name="x9" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="40">
+			<textField>
+				<reportElement mode="Opaque" x="170" y="0" width="25" height="40" forecolor="#FFFFFF" backcolor="#999999" uuid="ffeae3f7-4804-40d8-b302-58dab25b524f"/>
+				<box>
+					<pen lineWidth="1.0" lineColor="#000000"/>
+					<topPen lineWidth="1.0" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["P. CHE GELA"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="120" y="0" width="25" height="40" forecolor="#FFFFFF" backcolor="#999999" uuid="aee7175d-a498-471e-adea-cc0383dc2fe0"/>
+				<box>
+					<pen lineWidth="1.0" lineColor="#000000"/>
+					<topPen lineWidth="1.0" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["TEMP. ESTR. "]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="45" y="0" width="25" height="40" forecolor="#FFFFFF" backcolor="#999999" uuid="3c0a1978-5aae-4338-bd68-86198e141bf7"/>
+				<box>
+					<pen lineWidth="1.0" lineColor="#000000"/>
+					<topPen lineWidth="1.0" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["IDROGEO"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="195" y="0" width="25" height="40" forecolor="#FFFFFF" backcolor="#999999" uuid="6bfc4802-b93e-420e-8af4-76f45338b711"/>
+				<box>
+					<pen lineWidth="1.0" lineColor="#000000"/>
+					<topPen lineWidth="1.0" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["ST. MARE"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="220" y="0" width="25" height="40" forecolor="#FFFFFF" backcolor="#999999" uuid="6574459f-5d91-49d6-9df0-44ec6beb1bf0"/>
+				<box>
+					<pen lineWidth="1.0" lineColor="#000000"/>
+					<topPen lineWidth="1.0" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["C. COST."]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="145" y="0" width="25" height="40" forecolor="#FFFFFF" backcolor="#999999" uuid="47c56037-37ab-45b7-bacd-0a9a6202dda8"/>
+				<box>
+					<pen lineWidth="1.0" lineColor="#000000"/>
+					<topPen lineWidth="1.0" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["NEVE"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="95" y="0" width="25" height="40" forecolor="#FFFFFF" backcolor="#999999" uuid="83cb665b-4fcd-4c36-91eb-67eb2f659098"/>
+				<box>
+					<pen lineWidth="1.0" lineColor="#000000"/>
+					<topPen lineWidth="1.0" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["VENTO"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="20" y="0" width="25" height="40" forecolor="#FFFFFF" backcolor="#999999" uuid="3c39a7cb-fe4c-460d-bd6e-603a7ffaa2bd"/>
+				<box>
+					<pen lineWidth="1.0" lineColor="#000000"/>
+					<topPen lineWidth="1.0" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["IDRO"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="70" y="0" width="25" height="40" forecolor="#FFFFFF" backcolor="#999999" uuid="8e5b90ca-550e-45c1-ad7e-138d528e247d"/>
+				<box>
+					<pen lineWidth="1.0" lineColor="#000000"/>
+					<topPen lineWidth="1.0" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["TEMPORALI"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="519" y="0" width="25" height="40" forecolor="#FFFFFF" backcolor="#999999" uuid="832129b3-d55f-4605-b8b6-25c12d0ce702"/>
+				<box>
+					<pen lineWidth="1.0" lineColor="#000000"/>
+					<topPen lineWidth="1.0" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["C. COST."]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="494" y="0" width="25" height="40" forecolor="#FFFFFF" backcolor="#999999" uuid="d08f4274-6099-48d2-b57c-4335d0ede062"/>
+				<box>
+					<pen lineWidth="1.0" lineColor="#000000"/>
+					<topPen lineWidth="1.0" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["ST. MARE"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="469" y="0" width="25" height="40" forecolor="#FFFFFF" backcolor="#999999" uuid="ae47141e-bebc-4893-a300-fa467e2b7995"/>
+				<box>
+					<pen lineWidth="1.0" lineColor="#000000"/>
+					<topPen lineWidth="1.0" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["P. CHE GELA"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="444" y="0" width="25" height="40" forecolor="#FFFFFF" backcolor="#999999" uuid="1d392dd9-d913-4b75-842a-6f813d631101"/>
+				<box>
+					<pen lineWidth="1.0" lineColor="#000000"/>
+					<topPen lineWidth="1.0" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["NEVE"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="419" y="0" width="25" height="40" forecolor="#FFFFFF" backcolor="#999999" uuid="3a6efbc0-7011-450a-a010-902aa196a99b"/>
+				<box>
+					<pen lineWidth="1.0" lineColor="#000000"/>
+					<topPen lineWidth="1.0" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["TEMP. ESTR. "]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="394" y="0" width="25" height="40" forecolor="#FFFFFF" backcolor="#999999" uuid="96c9e11a-2e96-493f-ab10-8ff2cd5d915b"/>
+				<box>
+					<pen lineWidth="1.0" lineColor="#000000"/>
+					<topPen lineWidth="1.0" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["VENTO"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="369" y="0" width="25" height="40" forecolor="#FFFFFF" backcolor="#999999" uuid="3dd89ffd-c2b8-4132-a172-713a3b220a70"/>
+				<box>
+					<pen lineWidth="1.0" lineColor="#000000"/>
+					<topPen lineWidth="1.0" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["TEMPORALI"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="344" y="0" width="25" height="40" forecolor="#FFFFFF" backcolor="#999999" uuid="3e4d295c-1758-40db-bb90-06f5377764cb"/>
+				<box>
+					<pen lineWidth="1.0" lineColor="#000000"/>
+					<topPen lineWidth="1.0" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["IDROGEO"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="319" y="0" width="25" height="40" forecolor="#FFFFFF" backcolor="#999999" uuid="7f8598a5-f24b-47b9-ae12-341b63d1931c"/>
+				<box>
+					<pen lineWidth="1.0" lineColor="#000000"/>
+					<topPen lineWidth="1.0" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["IDRO"]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement style="X7" mode="Opaque" x="170" y="0" width="25" height="20" forecolor="#000000" uuid="d0582080-c211-4c58-a493-af93bad52c76"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{x7}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement style="X3" mode="Opaque" x="70" y="0" width="25" height="20" forecolor="#000000" uuid="60fdfc27-fee9-4331-8009-258cfbafc1c6"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{x3}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement style="X8" mode="Opaque" x="195" y="0" width="25" height="20" forecolor="#000000" uuid="3e6ae90b-f03e-41ca-bdf3-9853193d2465"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{x8}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement style="X5" mode="Opaque" x="120" y="0" width="25" height="20" forecolor="#000000" uuid="05dc7d23-db9d-422d-b687-713fa23e854c"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{x5}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement style="X6" mode="Opaque" x="145" y="0" width="25" height="20" forecolor="#000000" uuid="44297174-c944-45a3-9589-2ef956ac55fd"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{x6}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement style="X2" mode="Opaque" x="45" y="0" width="25" height="20" forecolor="#000000" uuid="5038416a-ac18-4e1d-996a-72a4b94056e2"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{x2}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement style="X1" mode="Opaque" x="20" y="0" width="25" height="20" forecolor="#000000" uuid="f8dfd163-886b-4219-a472-d76ab50bb2e8"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{x1}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement style="X4" mode="Opaque" x="95" y="0" width="25" height="20" forecolor="#000000" uuid="3d44410a-2510-4db8-814d-3c1d9bce3a3a"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{x4}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement style="X9" mode="Opaque" x="220" y="0" width="25" height="20" forecolor="#000000" uuid="1b90ba9b-d1b2-458b-bcc5-27c86eb918bb"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{x9}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement mode="Opaque" x="0" y="0" width="20" height="20" forecolor="#FFFFFF" backcolor="#999999" uuid="3c52f887-9536-4e3d-85b9-0eedd958f659"/>
+				<box>
+					<pen lineWidth="1.0" lineColor="#000000"/>
+					<topPen lineWidth="1.0" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{area}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement mode="Opaque" x="299" y="0" width="20" height="20" forecolor="#FFFFFF" backcolor="#999999" uuid="f02dff2c-20a5-4453-9172-1966880d6453"/>
+				<box>
+					<pen lineWidth="1.0" lineColor="#000000"/>
+					<topPen lineWidth="1.0" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{area}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement style="S9" mode="Opaque" x="519" y="0" width="25" height="20" forecolor="#000000" uuid="d6dd2f44-e4f9-4d9b-b54c-ff1ffaa49394"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{e9}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement style="S1" mode="Opaque" x="319" y="0" width="25" height="20" forecolor="#000000" uuid="ab3e22b3-36b4-4ccf-9007-1fc2543fb526"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{e1}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement style="S2" mode="Opaque" x="344" y="0" width="25" height="20" forecolor="#000000" uuid="a86fed81-fff7-4089-a1ca-fc17c09cdca1"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{e2}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement style="S3" mode="Opaque" x="369" y="0" width="25" height="20" forecolor="#000000" uuid="32803f00-113f-4780-8deb-682ca52e2749"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{e3}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement style="S4" mode="Opaque" x="394" y="0" width="25" height="20" forecolor="#000000" uuid="0b18e058-97c0-4746-af40-c5e1c702acb8"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{e4}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement style="S5" mode="Opaque" x="419" y="0" width="25" height="20" forecolor="#000000" uuid="c81b0911-75a2-4510-81c1-58bbb851a065"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{e5}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement style="S6" mode="Opaque" x="444" y="0" width="25" height="20" forecolor="#000000" uuid="3fcadae7-8be1-4909-b403-1a0eee4372f3"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{e6}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement style="S7" mode="Opaque" x="469" y="0" width="25" height="20" forecolor="#000000" uuid="da897a33-d1fc-4fb9-bec8-f9557858faef"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{e7}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement style="S8" mode="Opaque" x="494" y="0" width="25" height="20" forecolor="#000000" uuid="cefe200a-ec04-4606-be2d-6686d53fcf75"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{e8}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

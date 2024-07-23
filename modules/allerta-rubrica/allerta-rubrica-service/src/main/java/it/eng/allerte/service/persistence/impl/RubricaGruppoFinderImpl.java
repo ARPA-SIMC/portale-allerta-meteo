@@ -26,6 +26,9 @@ public class RubricaGruppoFinderImpl extends RubricaGruppoFinderBaseImpl impleme
 		private String GET_GRUPPY_BY_NAME = RubricaGruppoFinderImpl.class.getName()
 				+ ".getGruppiByName";
 		
+		private String GET_GRUPPY_BY_NAME_CATEGORY = RubricaGruppoFinderImpl.class.getName()
+				+ ".getGruppiByNameCategory";
+		
 		private String GET_GRUPPI_BY_OWNER_AND_NAME = RubricaGruppoFinderImpl.class.getName()
 				+ ".getGruppoForOwnerAndName";
 	
@@ -37,6 +40,9 @@ public class RubricaGruppoFinderImpl extends RubricaGruppoFinderBaseImpl impleme
 		
 		private String AGGIORNA_TUTTO_GRUPPO = RubricaGruppoFinderImpl.class.getName()
 				+ ".aggiornaTuttoGruppo";
+		
+		private String GET_GERARCHIA = RubricaGruppoFinderImpl.class.getName()
+				+ ".getGerarchia";
 		
 		public void aggiornaTuttoGruppo(Long gruppo) {
 			Session session = null;
@@ -124,6 +130,99 @@ public class RubricaGruppoFinderImpl extends RubricaGruppoFinderBaseImpl impleme
 			return null;
 		}
 		
+		public ArrayList<Object[]> getGruppiByNameCategory(Long site, String groupName, Long category, Long limit, Long offset) {
+			Session session = null;
+			try{
+				session = openSession();
+				int start = -1;
+				int end = -1;
+				
+				String sql = customSQL.get(this.getClass(), GET_GRUPPY_BY_NAME_CATEGORY);
+				
+				SQLQuery query = session.createSQLQuery(sql);
+				query.setCacheable(false);
+
+				query.addScalar("ID_GRUPPO", Type.LONG);
+				query.addScalar("NOME", Type.STRING);
+				query.addScalar("FK_SITO_PROPRIETARIO", Type.LONG);
+				query.addScalar("NOTE", Type.STRING);
+				query.addScalar("FK_UTENTE_CREAZIONE", Type.LONG);
+				query.addScalar("DATA_CREAZIONE", Type.DATE);
+				query.addScalar("FK_UTENTE_MODIFICA", Type.LONG);
+				query.addScalar("DATA_MODIFICA", Type.DATE);
+				query.addScalar("DISABLED", Type.BOOLEAN);
+
+
+				QueryPos qPos = QueryPos.getInstance(query);
+
+				groupName = "%"+groupName+"%";
+				qPos.add(site);
+				qPos.add(groupName);
+				qPos.add(category);
+				
+				//Gestisco per la paginazione
+				start = RubricaUtil.calcolaStart(offset.intValue(), limit.intValue());
+
+				end = RubricaUtil.calcolaEnd(start, limit.intValue());
+				
+				ArrayList<Object[]> lista = new ArrayList<Object[]>();
+				lista.addAll((List<Object[]>)QueryUtil.list(query, getDialect(), start, end));
+				return lista; 
+			}
+			catch(Exception e){
+				try{
+					throw new SystemException(e);
+				}
+				catch(SystemException se){
+					se.printStackTrace();
+				}
+			}
+			finally{
+				closeSession(session);
+			}
+			return null;
+		}
+		
+		public ArrayList<Object[]> getGerarchia(Long site) {
+			Session session = null;
+			try{
+				session = openSession();
+				int start = -1;
+				int end = -1;
+				
+				String sql = customSQL.get(this.getClass(), GET_GERARCHIA);
+				
+				SQLQuery query = session.createSQLQuery(sql);
+				query.setCacheable(false);
+
+				query.addScalar("ID_GRUPPO", Type.LONG);
+				query.addScalar("NOME", Type.STRING);
+				query.addScalar("FK_SITO_PROPRIETARIO", Type.LONG);
+				query.addScalar("SOTTOGRUPPI", Type.STRING);
+				query.addScalar("NOMINATIVI", Type.STRING);
+
+
+				QueryPos qPos = QueryPos.getInstance(query);
+
+				qPos.add(site);
+
+				ArrayList<Object[]> lista = new ArrayList<Object[]>();
+				lista.addAll((List<Object[]>)QueryUtil.list(query, getDialect(), start, end));
+				return lista; 
+			}
+			catch(Exception e){
+				try{
+					throw new SystemException(e);
+				}
+				catch(SystemException se){
+					se.printStackTrace();
+				}
+			}
+			finally{
+				closeSession(session);
+			}
+			return null;
+		}
 		
 		@SuppressWarnings("unchecked")
 		public Object[] getGruppiByOwnerAndName(Long idOwner, String groupName) {

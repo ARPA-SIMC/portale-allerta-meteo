@@ -144,7 +144,8 @@ public class RubricaGruppoServiceHttp {
 	}
 
 	public static java.util.Map<String, Object> getGroups(
-		HttpPrincipal httpPrincipal, String name, int limit, int offset) {
+		HttpPrincipal httpPrincipal, String name, Long categoria, int limit,
+		int offset) {
 
 		try {
 			MethodKey methodKey = new MethodKey(
@@ -152,7 +153,7 @@ public class RubricaGruppoServiceHttp {
 				_getGroupsParameterTypes3);
 
 			MethodHandler methodHandler = new MethodHandler(
-				methodKey, name, limit, offset);
+				methodKey, name, categoria, limit, offset);
 
 			Object returnObj = null;
 
@@ -303,7 +304,7 @@ public class RubricaGruppoServiceHttp {
 		Long.class
 	};
 	private static final Class<?>[] _getGroupsParameterTypes3 = new Class[] {
-		String.class, int.class, int.class
+		String.class, Long.class, int.class, int.class
 	};
 	private static final Class<?>[] _getGroupsParameterTypes4 = new Class[] {};
 	private static final Class<?>[] _addGroupParameterTypes5 = new Class[] {

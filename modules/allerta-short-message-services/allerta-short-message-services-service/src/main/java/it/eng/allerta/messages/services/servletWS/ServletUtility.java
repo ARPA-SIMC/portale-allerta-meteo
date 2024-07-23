@@ -92,7 +92,7 @@ public class ServletUtility {
 		try {
 			String hostIp_port = SmsSchedulerContextUtility.getHostIPAndPortOfCurrentScheduler();
 			String hostIp = hostIp_port.substring(0, hostIp_port.indexOf(":"));			
-			URL = hostIp_port + "/sms-service-portlet/ServletRestWS?callback=a&method_name=" + methodName + "&node_ip=" + hostIp + "&token=X";
+			URL = hostIp_port + "/sms-service-portlet/ServletRestWS?callback=a&method_name=" + methodName + "&node_ip=" + hostIp + "&token=XG8ub2SNXoil5LWmdWUu";
 			
 			return callServletURL(URL);			
 		} catch (UnknownHostException e1) {
@@ -112,7 +112,7 @@ public class ServletUtility {
 		try {
 			String hostIp_port = smsSchedulerContextLocalService.getHostIPAndPortOfCurrentScheduler();
 			String hostIp = hostIp_port.substring(0, hostIp_port.indexOf(":"));			
-			URL = hostIp_port + "/o/ServletRestWS?callback=a&method_name=" + methodName + "&node_ip=" + hostIp + "&token=X";
+			URL = hostIp_port + "/o/ServletRestWS?callback=a&method_name=" + methodName + "&node_ip=" + hostIp + "&token=XG8ub2SNXoil5LWmdWUu";
 			
 			return ServletUtility.callServletURL(URL);			
 		} catch (UnknownHostException e1) {

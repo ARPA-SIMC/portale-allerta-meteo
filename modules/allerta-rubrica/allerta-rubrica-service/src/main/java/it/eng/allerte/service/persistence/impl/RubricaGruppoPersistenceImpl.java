@@ -638,6 +638,251 @@ public class RubricaGruppoPersistenceImpl
 		_FINDER_COLUMN_RUBRICAGRUPPOFOROWNERANDNAME_DISABLED_2 =
 			"rubricaGruppo.DISABLED = ?";
 
+	private FinderPath _finderPathFetchByRubricaGruppoCategoria;
+	private FinderPath _finderPathCountByRubricaGruppoCategoria;
+
+	/**
+	 * Returns the rubrica gruppo where FK_CATEGORIA = &#63; and FK_SITO_PROPRIETARIO = &#63; or throws a <code>NoSuchRubricaGruppoException</code> if it could not be found.
+	 *
+	 * @param FK_CATEGORIA the fk_categoria
+	 * @param FK_SITO_PROPRIETARIO the fk_sito_proprietario
+	 * @return the matching rubrica gruppo
+	 * @throws NoSuchRubricaGruppoException if a matching rubrica gruppo could not be found
+	 */
+	@Override
+	public RubricaGruppo findByRubricaGruppoCategoria(
+			long FK_CATEGORIA, long FK_SITO_PROPRIETARIO)
+		throws NoSuchRubricaGruppoException {
+
+		RubricaGruppo rubricaGruppo = fetchByRubricaGruppoCategoria(
+			FK_CATEGORIA, FK_SITO_PROPRIETARIO);
+
+		if (rubricaGruppo == null) {
+			StringBundler msg = new StringBundler(6);
+
+			msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+			msg.append("FK_CATEGORIA=");
+			msg.append(FK_CATEGORIA);
+
+			msg.append(", FK_SITO_PROPRIETARIO=");
+			msg.append(FK_SITO_PROPRIETARIO);
+
+			msg.append("}");
+
+			if (_log.isDebugEnabled()) {
+				_log.debug(msg.toString());
+			}
+
+			throw new NoSuchRubricaGruppoException(msg.toString());
+		}
+
+		return rubricaGruppo;
+	}
+
+	/**
+	 * Returns the rubrica gruppo where FK_CATEGORIA = &#63; and FK_SITO_PROPRIETARIO = &#63; or returns <code>null</code> if it could not be found. Uses the finder cache.
+	 *
+	 * @param FK_CATEGORIA the fk_categoria
+	 * @param FK_SITO_PROPRIETARIO the fk_sito_proprietario
+	 * @return the matching rubrica gruppo, or <code>null</code> if a matching rubrica gruppo could not be found
+	 */
+	@Override
+	public RubricaGruppo fetchByRubricaGruppoCategoria(
+		long FK_CATEGORIA, long FK_SITO_PROPRIETARIO) {
+
+		return fetchByRubricaGruppoCategoria(
+			FK_CATEGORIA, FK_SITO_PROPRIETARIO, true);
+	}
+
+	/**
+	 * Returns the rubrica gruppo where FK_CATEGORIA = &#63; and FK_SITO_PROPRIETARIO = &#63; or returns <code>null</code> if it could not be found, optionally using the finder cache.
+	 *
+	 * @param FK_CATEGORIA the fk_categoria
+	 * @param FK_SITO_PROPRIETARIO the fk_sito_proprietario
+	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @return the matching rubrica gruppo, or <code>null</code> if a matching rubrica gruppo could not be found
+	 */
+	@Override
+	public RubricaGruppo fetchByRubricaGruppoCategoria(
+		long FK_CATEGORIA, long FK_SITO_PROPRIETARIO,
+		boolean retrieveFromCache) {
+
+		Object[] finderArgs = new Object[] {FK_CATEGORIA, FK_SITO_PROPRIETARIO};
+
+		Object result = null;
+
+		if (retrieveFromCache) {
+			result = finderCache.getResult(
+				_finderPathFetchByRubricaGruppoCategoria, finderArgs, this);
+		}
+
+		if (result instanceof RubricaGruppo) {
+			RubricaGruppo rubricaGruppo = (RubricaGruppo)result;
+
+			if ((FK_CATEGORIA != rubricaGruppo.getFK_CATEGORIA()) ||
+				(FK_SITO_PROPRIETARIO !=
+					rubricaGruppo.getFK_SITO_PROPRIETARIO())) {
+
+				result = null;
+			}
+		}
+
+		if (result == null) {
+			StringBundler query = new StringBundler(4);
+
+			query.append(_SQL_SELECT_RUBRICAGRUPPO_WHERE);
+
+			query.append(_FINDER_COLUMN_RUBRICAGRUPPOCATEGORIA_FK_CATEGORIA_2);
+
+			query.append(
+				_FINDER_COLUMN_RUBRICAGRUPPOCATEGORIA_FK_SITO_PROPRIETARIO_2);
+
+			String sql = query.toString();
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				Query q = session.createQuery(sql);
+
+				QueryPos qPos = QueryPos.getInstance(q);
+
+				qPos.add(FK_CATEGORIA);
+
+				qPos.add(FK_SITO_PROPRIETARIO);
+
+				List<RubricaGruppo> list = q.list();
+
+				if (list.isEmpty()) {
+					finderCache.putResult(
+						_finderPathFetchByRubricaGruppoCategoria, finderArgs,
+						list);
+				}
+				else {
+					if (list.size() > 1) {
+						Collections.sort(list, Collections.reverseOrder());
+
+						if (_log.isWarnEnabled()) {
+							_log.warn(
+								"RubricaGruppoPersistenceImpl.fetchByRubricaGruppoCategoria(long, long, boolean) with parameters (" +
+									StringUtil.merge(finderArgs) +
+										") yields a result set with more than 1 result. This violates the logical unique restriction. There is no order guarantee on which result is returned by this finder.");
+						}
+					}
+
+					RubricaGruppo rubricaGruppo = list.get(0);
+
+					result = rubricaGruppo;
+
+					cacheResult(rubricaGruppo);
+				}
+			}
+			catch (Exception e) {
+				finderCache.removeResult(
+					_finderPathFetchByRubricaGruppoCategoria, finderArgs);
+
+				throw processException(e);
+			}
+			finally {
+				closeSession(session);
+			}
+		}
+
+		if (result instanceof List<?>) {
+			return null;
+		}
+		else {
+			return (RubricaGruppo)result;
+		}
+	}
+
+	/**
+	 * Removes the rubrica gruppo where FK_CATEGORIA = &#63; and FK_SITO_PROPRIETARIO = &#63; from the database.
+	 *
+	 * @param FK_CATEGORIA the fk_categoria
+	 * @param FK_SITO_PROPRIETARIO the fk_sito_proprietario
+	 * @return the rubrica gruppo that was removed
+	 */
+	@Override
+	public RubricaGruppo removeByRubricaGruppoCategoria(
+			long FK_CATEGORIA, long FK_SITO_PROPRIETARIO)
+		throws NoSuchRubricaGruppoException {
+
+		RubricaGruppo rubricaGruppo = findByRubricaGruppoCategoria(
+			FK_CATEGORIA, FK_SITO_PROPRIETARIO);
+
+		return remove(rubricaGruppo);
+	}
+
+	/**
+	 * Returns the number of rubrica gruppos where FK_CATEGORIA = &#63; and FK_SITO_PROPRIETARIO = &#63;.
+	 *
+	 * @param FK_CATEGORIA the fk_categoria
+	 * @param FK_SITO_PROPRIETARIO the fk_sito_proprietario
+	 * @return the number of matching rubrica gruppos
+	 */
+	@Override
+	public int countByRubricaGruppoCategoria(
+		long FK_CATEGORIA, long FK_SITO_PROPRIETARIO) {
+
+		FinderPath finderPath = _finderPathCountByRubricaGruppoCategoria;
+
+		Object[] finderArgs = new Object[] {FK_CATEGORIA, FK_SITO_PROPRIETARIO};
+
+		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+
+		if (count == null) {
+			StringBundler query = new StringBundler(3);
+
+			query.append(_SQL_COUNT_RUBRICAGRUPPO_WHERE);
+
+			query.append(_FINDER_COLUMN_RUBRICAGRUPPOCATEGORIA_FK_CATEGORIA_2);
+
+			query.append(
+				_FINDER_COLUMN_RUBRICAGRUPPOCATEGORIA_FK_SITO_PROPRIETARIO_2);
+
+			String sql = query.toString();
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				Query q = session.createQuery(sql);
+
+				QueryPos qPos = QueryPos.getInstance(q);
+
+				qPos.add(FK_CATEGORIA);
+
+				qPos.add(FK_SITO_PROPRIETARIO);
+
+				count = (Long)q.uniqueResult();
+
+				finderCache.putResult(finderPath, finderArgs, count);
+			}
+			catch (Exception e) {
+				finderCache.removeResult(finderPath, finderArgs);
+
+				throw processException(e);
+			}
+			finally {
+				closeSession(session);
+			}
+		}
+
+		return count.intValue();
+	}
+
+	private static final String
+		_FINDER_COLUMN_RUBRICAGRUPPOCATEGORIA_FK_CATEGORIA_2 =
+			"rubricaGruppo.FK_CATEGORIA = ? AND ";
+
+	private static final String
+		_FINDER_COLUMN_RUBRICAGRUPPOCATEGORIA_FK_SITO_PROPRIETARIO_2 =
+			"rubricaGruppo.FK_SITO_PROPRIETARIO = ?";
+
 	public RubricaGruppoPersistenceImpl() {
 		setModelClass(RubricaGruppo.class);
 	}
@@ -667,6 +912,14 @@ public class RubricaGruppoPersistenceImpl
 			new Object[] {
 				rubricaGruppo.getFK_SITO_PROPRIETARIO(),
 				rubricaGruppo.getNOME(), rubricaGruppo.isDISABLED()
+			},
+			rubricaGruppo);
+
+		finderCache.putResult(
+			_finderPathFetchByRubricaGruppoCategoria,
+			new Object[] {
+				rubricaGruppo.getFK_CATEGORIA(),
+				rubricaGruppo.getFK_SITO_PROPRIETARIO()
 			},
 			rubricaGruppo);
 
@@ -771,6 +1024,18 @@ public class RubricaGruppoPersistenceImpl
 		finderCache.putResult(
 			_finderPathFetchByRubricaGruppoForOwnerAndName, args,
 			rubricaGruppoModelImpl, false);
+
+		args = new Object[] {
+			rubricaGruppoModelImpl.getFK_CATEGORIA(),
+			rubricaGruppoModelImpl.getFK_SITO_PROPRIETARIO()
+		};
+
+		finderCache.putResult(
+			_finderPathCountByRubricaGruppoCategoria, args, Long.valueOf(1),
+			false);
+		finderCache.putResult(
+			_finderPathFetchByRubricaGruppoCategoria, args,
+			rubricaGruppoModelImpl, false);
 	}
 
 	protected void clearUniqueFindersCache(
@@ -830,6 +1095,33 @@ public class RubricaGruppoPersistenceImpl
 				_finderPathCountByRubricaGruppoForOwnerAndName, args);
 			finderCache.removeResult(
 				_finderPathFetchByRubricaGruppoForOwnerAndName, args);
+		}
+
+		if (clearCurrent) {
+			Object[] args = new Object[] {
+				rubricaGruppoModelImpl.getFK_CATEGORIA(),
+				rubricaGruppoModelImpl.getFK_SITO_PROPRIETARIO()
+			};
+
+			finderCache.removeResult(
+				_finderPathCountByRubricaGruppoCategoria, args);
+			finderCache.removeResult(
+				_finderPathFetchByRubricaGruppoCategoria, args);
+		}
+
+		if ((rubricaGruppoModelImpl.getColumnBitmask() &
+			 _finderPathFetchByRubricaGruppoCategoria.getColumnBitmask()) !=
+				 0) {
+
+			Object[] args = new Object[] {
+				rubricaGruppoModelImpl.getOriginalFK_CATEGORIA(),
+				rubricaGruppoModelImpl.getOriginalFK_SITO_PROPRIETARIO()
+			};
+
+			finderCache.removeResult(
+				_finderPathCountByRubricaGruppoCategoria, args);
+			finderCache.removeResult(
+				_finderPathFetchByRubricaGruppoCategoria, args);
 		}
 	}
 
@@ -1462,6 +1754,22 @@ public class RubricaGruppoPersistenceImpl
 				Long.class.getName(), String.class.getName(),
 				Boolean.class.getName()
 			});
+
+		_finderPathFetchByRubricaGruppoCategoria = new FinderPath(
+			RubricaGruppoModelImpl.ENTITY_CACHE_ENABLED,
+			RubricaGruppoModelImpl.FINDER_CACHE_ENABLED,
+			RubricaGruppoImpl.class, FINDER_CLASS_NAME_ENTITY,
+			"fetchByRubricaGruppoCategoria",
+			new String[] {Long.class.getName(), Long.class.getName()},
+			RubricaGruppoModelImpl.FK_CATEGORIA_COLUMN_BITMASK |
+			RubricaGruppoModelImpl.FK_SITO_PROPRIETARIO_COLUMN_BITMASK);
+
+		_finderPathCountByRubricaGruppoCategoria = new FinderPath(
+			RubricaGruppoModelImpl.ENTITY_CACHE_ENABLED,
+			RubricaGruppoModelImpl.FINDER_CACHE_ENABLED, Long.class,
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
+			"countByRubricaGruppoCategoria",
+			new String[] {Long.class.getName(), Long.class.getName()});
 	}
 
 	public void destroy() {

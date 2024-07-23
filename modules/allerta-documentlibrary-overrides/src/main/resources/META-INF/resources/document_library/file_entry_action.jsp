@@ -25,9 +25,9 @@ FileShortcut fileShortcut = null;
 if (row != null) {
 	Object result = row.getObject();
 	
-	HashMap hm = row.getData();
-	String actions = hm.get("actions");
-	%><%=actions %><%
+	Map hm = row.getData();
+	String actions = (hm.get("actions")!=null? hm.get("actions").toString():"");
+
 
 	if (result instanceof AssetEntry) {
 		AssetEntry assetEntry = (AssetEntry)result;

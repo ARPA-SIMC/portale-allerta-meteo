@@ -26,10 +26,11 @@ am.MapPhenomenonScenario = (function($){
         this.scenario[level] = this.scenario[level].concat(comuni);
     }
     MapPhenomenonScenario.prototype.getComuneLevel = function(comune){
-        for(var i=0;i<5;++i){
+        for(var i=4;i>=0;--i){
         if( this.scenario[i].indexOf(comune) > -1 )
             return i;
         }
+        return 0;
     }
     MapPhenomenonScenario.prototype.setAccessibilityLevelForArea = function(areaName, level){
         this.accessibilita[areaName] = level;

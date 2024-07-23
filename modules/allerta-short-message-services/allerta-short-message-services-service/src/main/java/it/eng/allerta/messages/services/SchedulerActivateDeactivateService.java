@@ -17,6 +17,7 @@ import it.eng.allerta.messages.services.action.StartupAction;
 import it.eng.allerta.messages.services.scheduler.SmsSchedulerContextException;
 import it.eng.allerta.messages.services.scheduler.SmsSchedulerContextUtility;
 import it.eng.allerta.messages.services.service.SmsSchedulerContextLocalService;
+import it.eng.allerta.utils.AllertaTracker;
 import it.eng.allerter.service.SMSLocalService;
 
 @Component(
@@ -43,6 +44,12 @@ public class SchedulerActivateDeactivateService {
 	public void start(BundleContext context) throws Exception {
 		logger.info("start SchedulerActivateDeactivateService begin");
 		logger.info("lo stato del bundle " + context.getBundle().getSymbolicName() + " è " + toState(context.getBundle().getState()));
+		
+		try {
+		if (AllertaTracker.getAllertaBaseConfiguration().disableSms()) return;
+		} catch (Exception e) {
+			logger.error(e);
+		}
 		
 		doStart(context);
 		
@@ -86,6 +93,11 @@ public class SchedulerActivateDeactivateService {
 					   "Node IP:Port = " + hostIp + ":" + port + System.lineSeparator();
 			
 			logger.info(infoHost);
+			
+			if (PortalUtil.getComputerName().contains("vm668lnx")) {
+				logger.info("Non sono io il nodo prescelto per gli sms");
+				return;
+			}
 		} catch (SystemException e) {
 			String errMsg = "Startup Service - Activate terminato con fallimento : non è stato possibile recuperare info sul host";
 			logger.error(errMsg, e);

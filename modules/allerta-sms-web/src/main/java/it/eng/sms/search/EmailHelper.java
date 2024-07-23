@@ -16,6 +16,7 @@ public class EmailHelper {
 									displayTerms.getTipo(), 
 									displayTerms.getSottoTipo(), 
 									displayTerms.getDestinatario(), 
+									displayTerms.getEmail(),
 									displayTerms.getDataInvioDa(),
 									displayTerms.getDataInvioA(),
 									start, 
@@ -29,6 +30,7 @@ public class EmailHelper {
 				(int) SMSLocalServiceUtil.searchEmailCount(displayTerms.getTipo(), 
 														  displayTerms.getSottoTipo(), 
 														  displayTerms.getDestinatario(), 
+														  displayTerms.getEmail(),
 														  displayTerms.getDataInvioDa(),
 														  displayTerms.getDataInvioA());
 	}

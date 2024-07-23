@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+<custom-sql>
+	<sql
+		id="it.eng.cache.service.persistence.DatoFinder.getMultiDati">
+		
+		 <![CDATA[
+		 	SELECT * FROM cache_dato where chiave like ?
+		 ]]>
+		
+	</sql>
+	
+</custom-sql>

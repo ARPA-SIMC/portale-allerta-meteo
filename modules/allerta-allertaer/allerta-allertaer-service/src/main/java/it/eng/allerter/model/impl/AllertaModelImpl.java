@@ -89,7 +89,8 @@ public class AllertaModelImpl
 		{"utenteFirmaProtId", Types.BIGINT}, {"dataFirmaProt", Types.TIMESTAMP},
 		{"parentId", Types.BIGINT}, {"sintesi", Types.VARCHAR},
 		{"link", Types.VARCHAR}, {"titolo", Types.VARCHAR},
-		{"tipoAllerta", Types.BOOLEAN}, {"hash", Types.VARCHAR}
+		{"tipoAllerta", Types.BOOLEAN}, {"hash", Types.VARCHAR},
+		{"sintesiBriefing", Types.VARCHAR}
 	};
 
 	public static final Map<String, Integer> TABLE_COLUMNS_MAP =
@@ -126,10 +127,11 @@ public class AllertaModelImpl
 		TABLE_COLUMNS_MAP.put("titolo", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("tipoAllerta", Types.BOOLEAN);
 		TABLE_COLUMNS_MAP.put("hash", Types.VARCHAR);
+		TABLE_COLUMNS_MAP.put("sintesiBriefing", Types.VARCHAR);
 	}
 
 	public static final String TABLE_SQL_CREATE =
-		"create table ALLERTER_Allerta (uuid_ VARCHAR(75) null,allertaId LONG not null primary key,groupId LONG,companyId LONG,userId LONG,userName VARCHAR(75) null,creatorName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,stato INTEGER,numero VARCHAR(75) null,progressivo INTEGER,anno INTEGER,dataEmissione DATE null,dataInizio DATE null,dataFine DATE null,descrizioneMeteo TEXT null,tendenza INTEGER,note TEXT null,riferimenti TEXT null,utenteFirmaArpaId LONG,dataFirmaArpa DATE null,utenteFirmaProtId LONG,dataFirmaProt DATE null,parentId LONG,sintesi TEXT null,link VARCHAR(256) null,titolo TEXT null,tipoAllerta BOOLEAN,hash VARCHAR(75) null)";
+		"create table ALLERTER_Allerta (uuid_ VARCHAR(75) null,allertaId LONG not null primary key,groupId LONG,companyId LONG,userId LONG,userName VARCHAR(75) null,creatorName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,stato INTEGER,numero VARCHAR(75) null,progressivo INTEGER,anno INTEGER,dataEmissione DATE null,dataInizio DATE null,dataFine DATE null,descrizioneMeteo TEXT null,tendenza INTEGER,note TEXT null,riferimenti TEXT null,utenteFirmaArpaId LONG,dataFirmaArpa DATE null,utenteFirmaProtId LONG,dataFirmaProt DATE null,parentId LONG,sintesi TEXT null,link VARCHAR(256) null,titolo TEXT null,tipoAllerta BOOLEAN,hash VARCHAR(75) null,sintesiBriefing VARCHAR(75) null)";
 
 	public static final String TABLE_SQL_DROP = "drop table ALLERTER_Allerta";
 
@@ -210,6 +212,7 @@ public class AllertaModelImpl
 		model.setTitolo(soapModel.getTitolo());
 		model.setTipoAllerta(soapModel.isTipoAllerta());
 		model.setHash(soapModel.getHash());
+		model.setSintesiBriefing(soapModel.getSintesiBriefing());
 
 		return model;
 	}
@@ -936,6 +939,26 @@ public class AllertaModelImpl
 				}
 
 			});
+		attributeGetterFunctions.put(
+			"sintesiBriefing",
+			new Function<Allerta, Object>() {
+
+				@Override
+				public Object apply(Allerta allerta) {
+					return allerta.getSintesiBriefing();
+				}
+
+			});
+		attributeSetterBiConsumers.put(
+			"sintesiBriefing",
+			new BiConsumer<Allerta, Object>() {
+
+				@Override
+				public void accept(Allerta allerta, Object sintesiBriefing) {
+					allerta.setSintesiBriefing((String)sintesiBriefing);
+				}
+
+			});
 
 		_attributeGetterFunctions = Collections.unmodifiableMap(
 			attributeGetterFunctions);
@@ -1400,6 +1423,22 @@ public class AllertaModelImpl
 		_hash = hash;
 	}
 
+	@JSON
+	@Override
+	public String getSintesiBriefing() {
+		if (_sintesiBriefing == null) {
+			return "";
+		}
+		else {
+			return _sintesiBriefing;
+		}
+	}
+
+	@Override
+	public void setSintesiBriefing(String sintesiBriefing) {
+		_sintesiBriefing = sintesiBriefing;
+	}
+
 	@Override
 	public StagedModelType getStagedModelType() {
 		return new StagedModelType(
@@ -1468,6 +1507,7 @@ public class AllertaModelImpl
 		allertaImpl.setTitolo(getTitolo());
 		allertaImpl.setTipoAllerta(isTipoAllerta());
 		allertaImpl.setHash(getHash());
+		allertaImpl.setSintesiBriefing(getSintesiBriefing());
 
 		allertaImpl.resetOriginalValues();
 
@@ -1724,6 +1764,14 @@ public class AllertaModelImpl
 			allertaCacheModel.hash = null;
 		}
 
+		allertaCacheModel.sintesiBriefing = getSintesiBriefing();
+
+		String sintesiBriefing = allertaCacheModel.sintesiBriefing;
+
+		if ((sintesiBriefing != null) && (sintesiBriefing.length() == 0)) {
+			allertaCacheModel.sintesiBriefing = null;
+		}
+
 		return allertaCacheModel;
 	}
 
@@ -1833,6 +1881,7 @@ public class AllertaModelImpl
 	private String _titolo;
 	private boolean _tipoAllerta;
 	private String _hash;
+	private String _sintesiBriefing;
 	private long _columnBitmask;
 	private Allerta _escapedModel;
 

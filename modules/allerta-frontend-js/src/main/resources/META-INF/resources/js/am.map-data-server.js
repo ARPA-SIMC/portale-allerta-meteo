@@ -38,13 +38,25 @@ const MapDataServer = (function(){
         'pressione': _root+'/api/allerta/get-sensor-values', //getsensorvaluesnotime
         'vento': _root+'/api/allerta/get-sensor-values',
         'vento-direzione': _root+'/api/allerta/get-sensor-values',
+        'altezzaonda': _root+'/api/allerta/get-sensor-values',
+        'direzioneonda': _root+'/api/allerta/get-sensor-values',
+        'livellomare': _root+'/api/allerta/get-sensor-values',
         
         // Querystring per i dati via jpg/base64
         'cumulata-6h':  _root + '/api/allerta/get-pioggia-cumulata-6',
+        'cumulata-24h':  _root + '/api/allerta/get-pioggia-cumulata-24',
         'cumulata-48h': _root + '/api/allerta/get-pioggia-cumulata-48', //_root+'?q=cumulata-48h',
         
         // Radar @CHECKME
-        'radar': _root + '/api/allerta/get-all-radar-images'//_root + '/api/allerta/getlastimages' //+'?q=radar-getlastimages'    
+        'radar': _root + '/api/allerta/get-all-radar-images',//_root + '/api/allerta/getlastimages' //+'?q=radar-getlastimages'    
+        'nowcasting': _root + '/api/allerta/get-nowcasting',
+        
+        'animeteo-preci': _root + '/api/allerta/get-all-animeteo-preci',
+        'animeteo-nuv': _root + '/api/allerta/get-all-animeteo-nuv',
+        'animeteo-wind': _root + '/api/allerta/get-all-animeteo-wind',
+        'animeteo-mare': _root + '/api/allerta/get-altezza-onda',
+        'animeteo-swanita': _root + '/api/allerta/get-altezza-onda-swanita',
+        'animeteo-adriac': _root + '/api/allerta/get-altezza-onda-adriac'
     };
 
     // pivate method
@@ -173,10 +185,34 @@ const MapDataServer = (function(){
         			url += '?variabile=254,0,0/1,-,-,-/B13215';
         			break;
         			
+        		case 'livellomare' :
+        			if( !queryParam.latestAvailableTimeIsKnown)
+        				url += '-no-time';
+        			url += '?variabile=254,0,0/101,-,-,-/B22037';
+        			break;	
+        			
         		case 'pressione' :
         			if( !queryParam.latestAvailableTimeIsKnown)
         				url += '-no-time';
         			url += '?variabile=254,0,0/1,-,-,-/B10004';
+        			break;
+        			
+        		case 'livellomare' :
+        			if( !queryParam.latestAvailableTimeIsKnown)
+        				url += '-no-time';
+        			url += '?variabile=254,0,0/101,-,-,-/B22037';
+        			break;
+        			
+        		case 'altezzaonda' :
+        			if( !queryParam.latestAvailableTimeIsKnown)
+        				url += '-no-time';
+        			url += '?variabile=0,0,1800/1,-,-,-/M00002';
+        			break;
+        			
+        		case 'direzioneonda' :
+        			if( !queryParam.latestAvailableTimeIsKnown)
+        				url += '-no-time';
+        			url += '?variabile=200,0,1800/1,-,-,-/M00001';
         			break;
         			
         		case 'umidita' :
@@ -219,6 +255,8 @@ const MapDataServer = (function(){
             switch(what){
                 
                 case 'anim-mare':
+                case 'swanita':
+                case 'adriac':
                     if( altezzaOndaImg ){
                         callback(altezzaOndaImg, callbackArgs, queryParam)
                     } else {

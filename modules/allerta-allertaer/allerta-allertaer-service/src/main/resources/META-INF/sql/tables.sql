@@ -28,7 +28,8 @@ create table ALLERTER_Allerta (
 	link VARCHAR(256) null,
 	titolo TEXT null,
 	tipoAllerta BOOLEAN,
-	hash VARCHAR(75) null
+	hash VARCHAR(75) null,
+	sintesiBriefing VARCHAR(75) null
 );
 
 create table ALLERTER_AllertaParametro (
@@ -50,6 +51,57 @@ create table ALLERTER_AllertaStato (
 	dataFine DATE null,
 	parentId LONG,
 	allertaId LONG,
+	statoId LONG,
+	eventoId LONG,
+	areaId LONG
+);
+
+create table ALLERTER_AllertaValanghe (
+	uuid_ VARCHAR(75) null,
+	allertaValangheId LONG not null primary key,
+	groupId LONG,
+	companyId LONG,
+	userId LONG,
+	userName VARCHAR(75) null,
+	creatorName VARCHAR(75) null,
+	createDate DATE null,
+	modifiedDate DATE null,
+	dataEmissione DATE null,
+	dataInizio DATE null,
+	dataFine DATE null,
+	numero VARCHAR(75) null,
+	progressivo INTEGER,
+	anno INTEGER,
+	titolo VARCHAR(75) null,
+	descrizioneFenomeni VARCHAR(75) null,
+	note VARCHAR(75) null,
+	riferimenti VARCHAR(75) null,
+	sintesi VARCHAR(75) null,
+	utenteFirmaArpaId LONG,
+	dataFirmaArpa DATE null,
+	utenteFirmaProtId LONG,
+	dataFirmaProt DATE null,
+	parentId LONG,
+	link VARCHAR(75) null,
+	stato INTEGER,
+	tipoAllerta BOOLEAN,
+	hash VARCHAR(75) null
+);
+
+create table ALLERTER_AllertaValangheStato (
+	uuid_ VARCHAR(75) null,
+	allertaValangheStatoId LONG not null primary key,
+	groupId LONG,
+	companyId LONG,
+	userId LONG,
+	userName VARCHAR(75) null,
+	createDate DATE null,
+	modifiedDate DATE null,
+	nome VARCHAR(75) null,
+	dataInizio DATE null,
+	dataFine DATE null,
+	parentId LONG,
+	allertaValangheId LONG,
 	statoId LONG,
 	eventoId LONG,
 	areaId LONG

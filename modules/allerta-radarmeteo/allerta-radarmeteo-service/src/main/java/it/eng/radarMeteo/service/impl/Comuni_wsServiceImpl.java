@@ -73,17 +73,20 @@ public class Comuni_wsServiceImpl extends Comuni_wsServiceBaseImpl {
 		List<Object[]> getStatoAllerta = comuni_wsFinder.getStatoAllerta(javaSqlDate);
 		_log.info("db array: "+getStatoAllerta.size()+"  "+javaSqlDate);
 		Object[] next = getStatoAllerta.iterator().next();
+		
 		result.put("dataEmissione", next[1]);
-		result.put("dataFine", next[2]);
-		result.put("titolo",next[12]);
-		result.put("descrizionemeteo",next[13]);
-		result.put("link",next[14]);
+		result.put("dataInizio", next[2]);
+		result.put("dataFine", next[3]);
+		result.put("titolo",next[13]);
+		result.put("descrizionemeteo",next[14]);
+		result.put("link",next[15]);
+		if (next.length>=16 && next[16]!=null && !"".equals(next[16])) result.put("tendenza", next[16]);
 		for(Object[] value:getStatoAllerta){
 			StatoAllertaBean statoAllertaBean = new StatoAllertaBean( 
-					(String) value[3],(String) value[4], 
-					(String)value[5], (String)value[6], (String)value[7], 
-					(String)value[8], (String)value[9], 
-					(String)value[10],(String) value[11]);
+					(String) value[4],(String) value[5], 
+					(String)value[6], (String)value[7], (String)value[8], 
+					(String)value[9], (String)value[10], 
+					(String)value[11],(String) value[12]);
 			List<Comuni_ws> findByZonaallerta = null;
 			try{
 				if(((String)value[0]).equalsIgnoreCase("F1"))				
@@ -115,19 +118,39 @@ public class Comuni_wsServiceImpl extends Comuni_wsServiceBaseImpl {
 		Map<String,Object> result = new HashMap<String, Object>();
 		java.sql.Timestamp javaSqlDate = timestamp;
 		List<Object[]> getStatoAllerta = comuni_wsFinder.getStatoAllerta(javaSqlDate);
+		if (getStatoAllerta==null || getStatoAllerta.size()==0) return result;
 		Object[] next = getStatoAllerta.iterator().next();
 		result.put("dataEmissione", next[1]);
-		result.put("dataFine", next[2]);
-		result.put("titolo",next[12]);
-		result.put("descrizionemeteo",next[13]);
-		result.put("link",next[14]);
+		result.put("dataInizio", next[2]);
+		result.put("dataFine", next[3]);
+		
+		result.put("titolo",next[13]);
+		result.put("descrizionemeteo",next[14]);
+		result.put("link",next[15]);
+		if (next.length>=16 && next[16]!=null && !"".equals(next[16])) result.put("tendenza", next[16]);
+
+		
+		boolean nuovo = false;
+		for(Object[] value:getStatoAllerta){
+			String areaid = (String)value[0];
+			int id = Integer.parseInt(areaid);
+			if (id<0 || id%10==3) nuovo=true;
+		}
+		
 		for(Object[] value:getStatoAllerta){
 			StatoAllertaBean statoAllertaBean = new StatoAllertaBean( 
-					(String) value[3],(String) value[4], 
-					(String)value[5], (String)value[6], (String)value[7], 
-					(String)value[8], (String)value[9], 
-					(String)value[10],(String) value[11]);
+					(String) value[4],(String) value[5], 
+					(String)value[6], (String)value[7], (String)value[8], 
+					(String)value[9], (String)value[10], 
+					(String)value[11],(String) value[12]);
 			List<Comuni_ws> findByZonaallerta = null;
+			
+			String areaid = (String)value[0];
+			int id = Integer.parseInt(areaid);
+			char lettera = (char)('A'+(id/10)-1);
+			char numero = (char)('0'+(id%10));
+			value[0] = ""+lettera+(numero=='0'?"":numero);
+			
 			try{
 				if(((String)value[0]).equalsIgnoreCase("F1"))				
 					findByZonaallerta = comuni_wsPersistence.findByZonaallerta("F");
@@ -150,6 +173,15 @@ public class Comuni_wsServiceImpl extends Comuni_wsServiceBaseImpl {
 			result.put((String) value[0], statoAllertaBean);
 		}
 		return result;
+	}
+	
+	@Transactional
+	public List<Object[]> getStatoAllertaCap(java.sql.Timestamp timestamp){
+		Map<String,Object> result = new HashMap<String, Object>();
+		java.sql.Timestamp javaSqlDate = timestamp;
+		List<Object[]> getStatoAllerta = comuni_wsFinder.getStatoAllertaForCap(javaSqlDate);
+		return getStatoAllerta;
+		
 	}
 
 }

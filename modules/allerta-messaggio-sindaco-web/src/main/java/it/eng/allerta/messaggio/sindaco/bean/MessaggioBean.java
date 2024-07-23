@@ -68,9 +68,9 @@ public class MessaggioBean implements Serializable{
 	private Set<FacebookAccount> credenziali = new HashSet<FacebookAccount>();
 
 	// DATI DEL SINDACO
-	private Boolean sindaco;
+	public Boolean sindaco;
 	private Boolean advancedAdmin = false;
-	private Map<Long, String> comuneDelSindaco = new HashMap<>();
+	public Map<Long, String> comuneDelSindaco = new HashMap<>();
 	private List<String> selectTownHall = new ArrayList<>();
 
 	// Dati legati all allerta
@@ -294,6 +294,8 @@ public class MessaggioBean implements Serializable{
 	public void dispatchMessage(ThemeDisplay themeDisplay) throws AddressException, SystemException, 
 		IOException, Exception {
 		
+		logger.warn("dispatchMessage");
+		
 		ChannelSendUtils channelSendUtils = AllertaTracker.getService(ChannelSendUtils.class);
 		
 		if (this.telefono.equalsIgnoreCase(keyOn)) {
@@ -304,12 +306,12 @@ public class MessaggioBean implements Serializable{
 		smsChannel[0] = 2;
 		smsChannel[1] = 3;
 		BollettinoParametro bp = BollettinoParametroLocalServiceUtil.fetchBollettinoParametro("SMS_FROM_ALLARME");
-		String fromSMS = "AllertaER";
+		String fromSMS = "AllerteER";
 		if (bp!=null) fromSMS = bp.getValore();
 
 		if (this.sms.equalsIgnoreCase(keyOn)) {
 			
-			if (selectTownHall!=null && selectTownHall.size()>0) {
+			/*if (selectTownHall!=null && selectTownHall.size()>0) {
 				for (String v : selectTownHall) {
 					Group group = null;
 					try {
@@ -320,13 +322,32 @@ public class MessaggioBean implements Serializable{
 						logger.error(e);
 					}
 				}
-			} 
+			} */
+			logger.warn("invio SMS selezionato");
+			logger.warn("selectedOrganizations: "+(getSelectedOrganization()!=null?getSelectedOrganization().size():0));
 			if (getSelectedOrganization()!=null && getSelectedOrganization().size()>0) {
 				Long time = new Date().getTime();
 				for (String o : getSelectedOrganization()) {
-					RubricaGruppo rg = RubricaGruppoLocalServiceUtil.fetchRubricaGruppo(Long.parseLong(o));
-					if (rg!=null) SMSLocalServiceUtil.creaNotificaGruppoRubrica(smsChannel, fromSMS, getSubject(), "comunicazione", ""+time, 0, 20181, rg.getNOME(), true, null);
-					
+					Long o2 = Long.parseLong(o);
+					if (o2<0) {
+						/*Group group = GroupLocalServiceUtil.getGroup(-o2);
+						if (group!=null) channelSendUtils.sendSms(group, getSubject(), "comunicazioneSindaco",
+								new Date().getTime());*/
+					} else {
+						RubricaGruppo rg = RubricaGruppoLocalServiceUtil.fetchRubricaGruppo(Long.parseLong(o));
+						if (rg!=null) {
+							if (rg.getFK_SITO_PROPRIETARIO()!=20181) {
+								Group g = GroupLocalServiceUtil.fetchGroup(rg.getFK_SITO_PROPRIETARIO());
+								if (g==null) continue;
+								Map<String,Serializable> m = g.getExpandoBridge().getAttributes();
+								String alias = (String)m.get("Telecom Alias");
+								if (alias==null) continue;
+								fromSMS = alias;
+							} else fromSMS = "AllerteER";
+
+							SMSLocalServiceUtil.creaNotificaGruppoRubrica(smsChannel, fromSMS, getSubject(), "comunicazione", ""+time, 0, 20181, rg.getNOME(), true, null);
+						}
+					}
 				}
 					//channelSendUtils.sendSmsPrepare(Long.parseLong(o), getSubject(), "comunicazione",
 						//	time);
@@ -346,6 +367,7 @@ public class MessaggioBean implements Serializable{
 		}
 
 		if (this.getMail().equalsIgnoreCase(keyOn)) {
+			logger.warn("invio mail selezionato");
 			this.prepareMail(user, themeDisplay);
 		}
 	}
@@ -366,7 +388,7 @@ public class MessaggioBean implements Serializable{
 		logger.info("SONO NEL SUBMIT DEL MESSAGGIO");
 		
 		BollettinoParametro bp = BollettinoParametroLocalServiceUtil.fetchBollettinoParametro("SMS_FROM_ALLARME");
-		String fromSMS = "AllertaER";
+		String fromSMS = "AllerteER";
 		if (bp!=null) fromSMS = bp.getValore();
 	
 		String oggetto = getObj_mail();
@@ -496,14 +518,14 @@ public class MessaggioBean implements Serializable{
 				paginaVento, paginaNeve, paginaMareggiate, paginaGhiaccio, paginaOndateCalore, paginaIncendio,
 				paginaTerremoto, paginaAllerta);
 		
-		String sottotipo = new Date().getTime() + "";
+		
 		
 		MessaggioMailUtils messaggioMailUtils = AllertaTracker.getService(MessaggioMailUtils.class);
 		
 		long[] emailChannel = new long[1];
 		emailChannel[0] = 1;
 		
-		if (selectTownHall!=null && selectTownHall.size()>0) {
+		/*if (selectTownHall!=null && selectTownHall.size()>0) {
 			for (String v : selectTownHall) {
 				Group group = null;
 				try {
@@ -526,19 +548,39 @@ public class MessaggioBean implements Serializable{
 						"Comunicazione da parte del comune di " + group.getName(), body,
 						getUploadedFiles());
 			}
-		}
+		}*/
+		logger.info("organizations: "+getSelectedOrganization().size());
 		if (getSelectedOrganization()!=null && getSelectedOrganization().size()>0) {
 		for (String o : getSelectedOrganization()) {
 				try {
+					logger.info("mando a: "+o);
+					Long o2 = Long.parseLong(o);
+					String sottotipo = new Date().getTime() + "";
+					if (user!=null) sottotipo = ""+o2+"_"+sottotipo;
+					String body = "";
+					
 					RubricaGruppo rg = RubricaGruppoLocalServiceUtil.fetchRubricaGruppo(Long.parseLong(o));
-					if (rg!=null) SMSLocalServiceUtil.creaNotificaGruppoRubrica(emailChannel, fromSMS, "", "comunicazione", sottotipo, 0, 20181, rg.getNOME(), true, null);
+					Group group = GroupLocalServiceUtil.getGroup(rg.getFK_SITO_PROPRIETARIO());
+					if (rg!=null) {
+						int x = SMSLocalServiceUtil.creaNotificaGruppoRubrica(emailChannel, fromSMS, "", "comunicazione", sottotipo, 0, rg.getFK_SITO_PROPRIETARIO(), rg.getNOME(), true, null);
+						logger.info("email da spedire: "+x);
+					}
+					if (group!=null && sindaco) oggetto = "Comunicazione da parte del comune di "+group.getName();
+					body = messaggioMailUtils.prepareMessageBodyMail(sindaco, user, group, messaggio_pc,
+								paginaPieneFiumi, paginaFrane, paginaTemporali, paginaVento, paginaNeve, paginaMareggiate,
+								paginaGhiaccio, paginaOndateCalore, paginaIncendio, paginaTerremoto, paginaAllerta, 
+								"https://allertameteo.regione.emilia-romagna.it");
+					
+					logger.info("BODY: "+body);
+					
 					//SMSLocalServiceUtil.creaEmailOrganization("comunicazione", sottotipo, 0, Long.parseLong(o));
-				} catch (Exception e) {
+					channelSendUtils.sendMail("comunicazione", sottotipo, sindaco, oggetto, body,
+							getUploadedFiles());
+				} catch (Exception e) { 
 					logger.error(e);
 				}
 			}
-			channelSendUtils.sendMail("comunicazione", sottotipo, sindaco, oggetto, messaggio_pc,
-					getUploadedFiles());
+			
 		}
 	}
 
@@ -729,8 +771,9 @@ public class MessaggioBean implements Serializable{
 	}
 
 	public void setSelectedOrganization(List<String> selectedOrganization) {
+		logger.info("Gruppi selezionati: " + selectedOrganization.toString());
 		this.selectedOrganization = selectedOrganization;
-	}
+	} 
 	
 	public String getTelefono() {
 		return telefono;
@@ -796,12 +839,16 @@ public class MessaggioBean implements Serializable{
 	}
 	
 	public boolean hasOrganization(String key) {
+		logger.error("comparing Organization "+key);
 		for (String org :selectedOrganization) {
+			logger.error("with Organization "+org);
 			if (org.equals(key)) {
+				logger.error("ritorno true");
 				return true;
 			}
 		}
 		
+		logger.error("ritorno false");
 		return false;
 	}
 

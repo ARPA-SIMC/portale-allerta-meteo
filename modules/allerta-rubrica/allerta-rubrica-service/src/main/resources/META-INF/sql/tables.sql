@@ -5,6 +5,11 @@ create table rubrica_RubricaCanale (
 	REGEX VARCHAR(75) null
 );
 
+create table rubrica_RubricaCategoria (
+	ID_CATEGORIA LONG not null primary key,
+	DESCRIZIONE VARCHAR(75) null
+);
+
 create table rubrica_RubricaContatto (
 	ID_CONTATTO LONG not null primary key,
 	FK_NOMINATIVO LONG,
@@ -28,7 +33,8 @@ create table rubrica_RubricaGruppo (
 	DATA_CREAZIONE DATE null,
 	FK_UTENTE_MODIFICA LONG,
 	DATA_MODIFICA DATE null,
-	DISABLED BOOLEAN
+	DISABLED BOOLEAN,
+	FK_CATEGORIA LONG
 );
 
 create table rubrica_RubricaGruppoGruppi (

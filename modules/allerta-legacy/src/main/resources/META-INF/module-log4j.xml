@@ -15,7 +15,7 @@
 	</appender>
 
     <category name="it.eng.allerter.allerta" >
-        <priority value="INFO" />
+        <priority value="WARN" />
         <appender-ref ref="LegacyAppender" />
     </category>
 </log4j:configuration>

@@ -28,6 +28,11 @@ public interface RubricaGruppoFinder {
 	public java.util.ArrayList<Object[]> getGruppiByName(
 		Long site, String groupName, Long limit, Long offset);
 
+	public java.util.ArrayList<Object[]> getGruppiByNameCategory(
+		Long site, String groupName, Long category, Long limit, Long offset);
+
+	public java.util.ArrayList<Object[]> getGerarchia(Long site);
+
 	public Object[] getGruppiByOwnerAndName(Long idOwner, String groupName);
 
 	public java.util.ArrayList<Object[]> getAllGruppi(Long limit, Long offset);

@@ -61,6 +61,8 @@ if (menuItems.size() == 0)
 
     <ul class="nav flex-column ">
     
+       
+    
 		<li class="nav-item">
             <a class="nav-link active" href="/" title="Home">
                 <span class="icon i-home" aria-hidden="true"></span>
@@ -269,6 +271,8 @@ if (menuItems.size() == 0)
                     <%
                     }
             		%>
+            		
+            		
                     </ul> 
 				</c:if>
 				
@@ -277,7 +281,7 @@ if (menuItems.size() == 0)
         <%
         }
         %>
-       
+
     </ul>
 </nav>
 

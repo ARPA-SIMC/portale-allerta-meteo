@@ -155,6 +155,21 @@ public interface DatiSpecificiInvioLocalService
 		List<DocumentiCollegati> documentiCollegati,
 		List<ComponentiInvio> componentiInvio);
 
+	public String comunicaDatiSpecificiInvioValanghe(
+		DatiSpecificiInvio datiSpecifici,
+		List<DocumentiCollegati> documentiCollegati,
+		List<ComponentiInvio> componentiInvio);
+
+	public String comunicaDatiSpecificiInvioValangheMail(
+		DatiSpecificiInvio datiSpecifici,
+		List<DocumentiCollegati> documentiCollegati,
+		List<ComponentiInvio> componentiInvio);
+
+	public String comunicaDatiSpecificiInvioValangheSms(
+		DatiSpecificiInvio datiSpecifici,
+		List<DocumentiCollegati> documentiCollegati,
+		List<ComponentiInvio> componentiInvio);
+
 	/**
 	 * Creates a new dati specifici invio with the primary key. Does not add the dati specifici invio to the database.
 	 *

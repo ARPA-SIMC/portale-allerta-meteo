@@ -22,6 +22,13 @@
 	<portlet:param name="mvcRenderCommandName" value="/allertaer/allerta/compila"/>	
 </portlet:renderURL>
 
+<portlet:actionURL var="webserviceUrl" name="/allertaer/allerta/webservice"/>	
+
+<liferay-ui:error key="erroreSalvataggio" message="errore-salvataggio-allerta" />
+<liferay-ui:error key="nonAggiornato" message="non-aggiornato-allerta" />
+<liferay-ui:error key="erroreAccesso" message="errore-accesso-allerta" />
+<liferay-ui:error key="incompleto" message="incompleto-allerta" />
+
 <div class="row">
 	<div class="col-12">
 		<h2>Strumenti di area riservata</h2>
@@ -29,7 +36,11 @@
 			<div class="col-4">
 				<a href="<%=compilaUrl %>"
 					class="btn btn-primary"><i class="icon i-pencil"></i>Compila allerta o bollettino</a>
-				</div>
+			</div>
+			<div class="col-4">
+				<a href="<%=webserviceUrl %>"
+					class="btn btn-primary"><i class="icon i-download"></i>Genera da schema di pre-briefing</a>
+			</div>
 		</div>
 			
 	</div>

@@ -14,8 +14,13 @@
     </entity>
     
     <entity name="RubricaUtenteSito" local-service="true" cache-enabled="false">
-        <column name="ID_UTENTE" type="long" primary="true" id-type="increment"></column>
+        <column name="ID_UTENTE" type="long" primary="true"></column>
         <column name="ID_SITO" type="long"></column>
+    </entity>
+    
+    <entity name="RubricaCategoria" local-service="true" cache-enabled="false">
+        <column name="ID_CATEGORIA" type="long" primary="true"></column>
+        <column name="DESCRIZIONE" type="String"></column>
     </entity>
    
     <entity name="RubricaNominativo" local-service="true" cache-enabled="false">
@@ -109,6 +114,7 @@
         <column name="FK_UTENTE_MODIFICA" type="long"></column>
         <column name="DATA_MODIFICA" type="Date"></column>
         <column name="DISABLED" type="boolean"></column>
+        <column name="FK_CATEGORIA" type="long"></column>
         <finder name="RubricaGruppoSitoProprietario" return-type="RubricaGruppo">
         	<finder-column name="ID_GRUPPO" />
 			<finder-column name="FK_SITO_PROPRIETARIO" />
@@ -117,6 +123,10 @@
 			<finder-column name="FK_SITO_PROPRIETARIO" />
 			<finder-column name="NOME" />
 			<finder-column name="DISABLED"/>
+		</finder>
+		<finder name="RubricaGruppoCategoria" return-type="RubricaGruppo">
+        	<finder-column name="FK_CATEGORIA" />
+			<finder-column name="FK_SITO_PROPRIETARIO" />
 		</finder>
     </entity>
     

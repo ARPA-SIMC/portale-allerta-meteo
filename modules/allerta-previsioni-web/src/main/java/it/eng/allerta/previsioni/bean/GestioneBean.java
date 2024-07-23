@@ -9,17 +9,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathFactory;
+//import javax.xml.xpath.XPath;
+//import javax.xml.xpath.XPathConstants;
+//import javax.xml.xpath.XPathFactory;
 
 import org.osgi.service.component.annotations.Reference;
-import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 
@@ -43,10 +42,19 @@ public class GestioneBean implements Serializable  {
 		types.add("domani");
 		types.add("dopodomani");
 	}
+	
+	static final HashMap<String,String> typesIeri;
+	static {
+		typesIeri = new HashMap<String,String>();
+		typesIeri.put("oggi","domani");
+		typesIeri.put("domani","dopodomani");
+		typesIeri.put("dopodomani","quartogiorno");
+	}
 	private static HashMap<String, Giorno> previsioni = new HashMap<String, Giorno>();
 	private HashMap<String,String> previsioniRegione =  new HashMap<String, String>();
 	private	HashMap<String,String> previsioniProvincia = new HashMap<String, String>();
 	private HashMap<String,String> nowcastMap = new HashMap<String, String>();
+
 
 	public GestioneBean() {
 		
@@ -61,7 +69,10 @@ public class GestioneBean implements Serializable  {
 			
 			Bollettino bollettino = BollettinoLocalServiceUtil.findByTipo("completo");
 			
-			String xmlString = bollettino.getXml_content();
+			String xmlString = bollettino.getJson();
+			JSONObject doc = loadXMLFromString(xmlString);
+			
+
 			
 			for(String currentType:types){
 				
@@ -71,15 +82,18 @@ public class GestioneBean implements Serializable  {
 				Giorno giorno = new Giorno();
 				giorno.setNome(new SimpleDateFormat("EEEE", Locale.ITALY).format(cal.getTime()));
 				
-				Document doc = loadXMLFromString(xmlString);
 				
-				XPath xPath =  XPathFactory.newInstance().newXPath();
 				
-				String cielo = (String) xPath.compile("bollettinoCompleto/"+currentType+"/bollettino/regionale/testo/cielo").evaluate(doc, XPathConstants.STRING);
-				String temperatura = (String) xPath.compile("bollettinoCompleto/"+currentType+"/bollettino/regionale/testo/temperatura").evaluate(doc, XPathConstants.STRING);
-				String vento =  (String) xPath.compile("bollettinoCompleto/"+currentType+"/bollettino/regionale/testo/vento").evaluate(doc, XPathConstants.STRING);
-				String mare =  (String) xPath.compile("bollettinoCompleto/"+currentType+"/bollettino/regionale/testo/mare").evaluate(doc, XPathConstants.STRING);
-
+				//XPath xPath =  XPathFactory.newInstance().newXPath();
+				
+			
+				
+				JSONObject jo = doc.getJSONObject(currentType).getJSONObject("bollettino").getJSONObject("regionale").getJSONObject("testo");
+				String cielo = jo.getString("cielo");
+				String temperatura = jo.getString("temperatura");
+				String vento =  jo.getString("vento");
+				String mare =  jo.getString("mare");
+				
 				giorno.setCielo(cielo);
 				giorno.setTemperatura(temperatura);
 				giorno.setVento(vento);
@@ -98,22 +112,29 @@ public class GestioneBean implements Serializable  {
 		
 		try {
 			
-			String xmlString = BollettinoLocalServiceUtil.findByTipo("completo").getXml_content();
+			String xmlString = BollettinoLocalServiceUtil.findByTipo("completo").getJson();
 			
-			Document doc = loadXMLFromString(xmlString);
-			XPath xPath =  XPathFactory.newInstance().newXPath();	
+			JSONObject doc = loadXMLFromString(xmlString);
+			//XPath xPath =  XPathFactory.newInstance().newXPath();	
 
-			String cielo = (String) xPath.compile("bollettinoCompleto/"+giorno+"/bollettino/provinciale/"+provincia).evaluate(doc, XPathConstants.STRING);
+			/*String cielo = (String) xPath.compile("bollettinoCompleto/"+giorno+"/bollettino/provinciale/"+provincia).evaluate(doc, XPathConstants.STRING);
 			String temperaturaMin = (String) xPath.compile("bollettinoCompleto/"+giorno+"/bollettino/dati/temperatura_minima").evaluate(doc, XPathConstants.STRING);
 			String temperaturaMax = (String) xPath.compile("bollettinoCompleto/"+giorno+"/bollettino/dati/temperatura_massima").evaluate(doc, XPathConstants.STRING);
 			String vento = (String) xPath.compile("bollettinoCompleto/"+giorno+"/bollettino/dati/vento_massimo").evaluate(doc, XPathConstants.STRING);
 			String precipitazioni = (String) xPath.compile("bollettinoCompleto/"+giorno+"/bollettino/dati/precipitazioni").evaluate(doc, XPathConstants.STRING);
-		
-			previsioniProvincia.put("cielo",cielo);
-			previsioniProvincia.put("temperaturaMin",temperaturaMin);
-			previsioniProvincia.put("temperaturaMax",temperaturaMax);
-			previsioniProvincia.put("vento",vento);
-			previsioniProvincia.put("precipitazioni",precipitazioni);
+			 */
+			JSONObject cielo = doc.getJSONObject(giorno).getJSONObject("bollettino").getJSONObject("provinciale").getJSONObject(provincia);
+			JSONObject temperaturaMin = doc.getJSONObject(giorno).getJSONObject("bollettino").getJSONObject("dati").getJSONObject("temperatura_minima");
+			JSONObject temperaturaMax = doc.getJSONObject(giorno).getJSONObject("bollettino").getJSONObject("dati").getJSONObject("temperatura_massima");
+			JSONObject vento = doc.getJSONObject(giorno).getJSONObject("bollettino").getJSONObject("dati").getJSONObject("vento_massimo");
+			JSONObject precipitazioni = doc.getJSONObject(giorno).getJSONObject("bollettino").getJSONObject("dati").getJSONObject("precipitazioni");
+			
+			
+			previsioniProvincia.put("cielo",cielo.toJSONString());
+			previsioniProvincia.put("temperaturaMin",temperaturaMin.toJSONString());
+			previsioniProvincia.put("temperaturaMax",temperaturaMax.toJSONString());
+			previsioniProvincia.put("vento",vento.toJSONString());
+			previsioniProvincia.put("precipitazioni",precipitazioni.toJSONString());
 
 
 		} catch (Exception e) {
@@ -153,12 +174,13 @@ public class GestioneBean implements Serializable  {
 		}
 	}
 	
-	private static Document loadXMLFromString(String xml) throws Exception {
+	private static JSONObject loadXMLFromString(String xml) throws Exception {
 		
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder builder = factory.newDocumentBuilder();
+		/*JSONObjectBuilderFactory factory = JSONObjectBuilderFactory.newInstance();
+		JSONObjectBuilder builder = factory.newJSONObjectBuilder();
 		InputSource is = new InputSource(new StringReader(xml));
-		return builder.parse(is);
+		return builder.parse(is);*/
+		return JSONFactoryUtil.createJSONObject(xml);
 	}
 	
 	public HashMap<String, String> getTendenza(){
@@ -169,11 +191,13 @@ public class GestioneBean implements Serializable  {
 		
 		try {
 			
-			String xmlString = BollettinoLocalServiceUtil.findByTipo("tendenza").getXml_content();
+			String xmlString = BollettinoLocalServiceUtil.findByTipo("tendenza").getJson();
 			
-			Document doc = loadXMLFromString(xmlString);
-			XPath xPath =  XPathFactory.newInstance().newXPath();	
-			String previsioneTendenza = (String) xPath.compile("bollettino/testo").evaluate(doc, XPathConstants.STRING);
+			JSONObject doc = loadXMLFromString(xmlString);
+			//XPath xPath =  XPathFactory.newInstance().newXPath();	
+			//String previsioneTendenza = (String) xPath.compile("bollettino/testo").evaluate(doc, XPathConstants.STRING);
+			String previsioneTendenza = doc.getJSONObject("bollettino").getString("testo");
+			
 			tendenzaMap.put("previsione", previsioneTendenza);
 			
 			Calendar cal = Calendar.getInstance();

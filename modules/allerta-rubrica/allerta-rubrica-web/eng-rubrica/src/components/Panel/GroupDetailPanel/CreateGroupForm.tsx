@@ -15,6 +15,7 @@ export class CreateGroupForm extends Component<any, any> {
 
   generateValidationSchema = () => yup.object().shape({
     name: yup.string().required(),
+    categoria: yup.number().required()
   })
 
   onSubmitGroup = async (values: GroupInput) => {
@@ -32,18 +33,29 @@ export class CreateGroupForm extends Component<any, any> {
     }
   }
 
+renderOptions = (channels) => {
+    const options = channels.map(channel => <option key={channel.ID_CATEGORIA} value={channel.ID_CATEGORIA}>{channel.DESCRIZIONE}</option>)
+    return options
+  }
+
+ onChange = (setFieldValue) => (event) => {
+    console.log('nuova categoria '+event.target.value)
+    setFieldValue('categoria', event.target.value)
+  }
+
   render() {
     return (
     <>
       <div className={styles.detailForm}>
       <Formik
         initialValues={{
-          name: ''
+          name: '',
+          categoria: -1
         }}
         validationSchema={this.generateValidationSchema()}
         onSubmit={this.onSubmitGroup}
       >
-        {({isValid}) => (
+        {({isValid, setFieldValue}) => (
           <Form>
             <div className={cStyles.field}>
               <label>
@@ -51,7 +63,17 @@ export class CreateGroupForm extends Component<any, any> {
                 <Field type="text" name="name" />
               </label>
             </div>
-
+           <div className={cStyles.field}>
+	     <label>
+                <span>Categoria</span>
+                <select name="categoria" id="categoria" onChange={this.onChange(setFieldValue)}>
+                <>
+                  <option value={-1}> NESSUNA </option>
+                  {this.renderOptions(this.props.categories)}
+                </>
+                </select>
+              </label>
+              </div>
             <button
               className={`${cStyles.button} ${cStyles.actionButton}`}
               disabled={!isValid} type="submit"> Crea </button>

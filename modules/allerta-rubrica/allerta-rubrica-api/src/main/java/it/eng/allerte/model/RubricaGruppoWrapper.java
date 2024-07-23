@@ -67,6 +67,7 @@ public class RubricaGruppoWrapper
 		attributes.put("FK_UTENTE_MODIFICA", getFK_UTENTE_MODIFICA());
 		attributes.put("DATA_MODIFICA", getDATA_MODIFICA());
 		attributes.put("DISABLED", isDISABLED());
+		attributes.put("FK_CATEGORIA", getFK_CATEGORIA());
 
 		return attributes;
 	}
@@ -127,6 +128,12 @@ public class RubricaGruppoWrapper
 		if (DISABLED != null) {
 			setDISABLED(DISABLED);
 		}
+
+		Long FK_CATEGORIA = (Long)attributes.get("FK_CATEGORIA");
+
+		if (FK_CATEGORIA != null) {
+			setFK_CATEGORIA(FK_CATEGORIA);
+		}
 	}
 
 	@Override
@@ -172,6 +179,16 @@ public class RubricaGruppoWrapper
 	@Override
 	public ExpandoBridge getExpandoBridge() {
 		return _rubricaGruppo.getExpandoBridge();
+	}
+
+	/**
+	 * Returns the fk_categoria of this rubrica gruppo.
+	 *
+	 * @return the fk_categoria of this rubrica gruppo
+	 */
+	@Override
+	public long getFK_CATEGORIA() {
+		return _rubricaGruppo.getFK_CATEGORIA();
 	}
 
 	/**
@@ -334,6 +351,16 @@ public class RubricaGruppoWrapper
 	@Override
 	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
 		_rubricaGruppo.setExpandoBridgeAttributes(serviceContext);
+	}
+
+	/**
+	 * Sets the fk_categoria of this rubrica gruppo.
+	 *
+	 * @param FK_CATEGORIA the fk_categoria of this rubrica gruppo
+	 */
+	@Override
+	public void setFK_CATEGORIA(long FK_CATEGORIA) {
+		_rubricaGruppo.setFK_CATEGORIA(FK_CATEGORIA);
 	}
 
 	/**

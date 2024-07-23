@@ -36,9 +36,12 @@ public class CompilaMonitoraggioMVCRenderCommand implements MVCRenderCommand{
 		
 		if( bollettinoId > 0)
 			bollettinoBean = new BollettinoBean(bollettinoId, PortalUtil.getHttpServletRequest(renderRequest));
-		else
+		else {
 			bollettinoBean = new BollettinoBean(PortalUtil.getHttpServletRequest(renderRequest));
-		
+			bollettinoId = bollettinoBean.getBollettino().getBollettinoId();
+			bollettinoBean = new BollettinoBean(bollettinoId, PortalUtil.getHttpServletRequest(renderRequest));
+			
+		}
 		renderRequest.getPortletSession().setAttribute(AllertaKeys.RequestBollettinoBean, bollettinoBean);
 		
 		return "/bollettino/compila.jsp";

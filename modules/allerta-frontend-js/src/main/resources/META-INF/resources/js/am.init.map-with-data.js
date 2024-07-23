@@ -6,7 +6,7 @@
     $(document).ready(function () {
 
         // Init areas and get basic data layer
-        MapDataServer.init();
+        MapDataServer2.init();
 
         // Init all map components
         var mapComponents = [];
@@ -24,14 +24,14 @@
                 // create the controller
                 var map = new DataMap({
                     dataScenarios: rtdata, // key of data, Note: this should be one element, but we let the code generic
-                    center: TERRITORY.REGION_LAT_LNG,
-                    territory: TERRITORY,
+                    center: TERRITORY2.REGION_LAT_LNG,
+                    territory: TERRITORY2,
                     container: mapComponent,
                     mapContainer: $(".map-component__map", mapComponent),
                     refreshTool: false,
                     searchTool: true,
                     key: rtdata[0],
-                    terrainLayer: ( rtdata[0]!= 'cumulata-6h' && rtdata[0]!= 'cumulata-48h' && rtdata[0]!= 'anim-mare'),
+                    terrainLayer: ( rtdata[0]!= 'cumulata-6h' && rtdata[0]!= 'cumulata-48h' && rtdata[0]!= 'cumulata-24h' && rtdata[0]!= 'anim-mare' && rtdata[0]!= 'swanita' && rtdata[0]!= 'adriac'),
                     renderScenarioOnLoad: true
                 });
                 

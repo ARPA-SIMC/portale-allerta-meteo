@@ -28,6 +28,8 @@ import com.liferay.portal.kernel.theme.ThemeDisplay;
 
 import it.eng.allerter.service.AllertaLocalService;
 import it.eng.allerter.service.AllertaServiceUtil;
+import it.eng.allerter.service.AllertaValangheLocalServiceUtil;
+import it.eng.allerter.service.AllertaValangheServiceUtil;
 import it.eng.bollettino.model.BollettinoParametro;
 import it.eng.bollettino.service.BollettinoLocalService;
 import it.eng.bollettino.service.BollettinoParametroLocalServiceUtil;
@@ -101,6 +103,16 @@ public class MapModelBean  {
 
 	private boolean existDomani = true;
 	private boolean existOggi = true;
+	
+	private String valangheOggiTitolo;
+	private String valangheOggiLink;
+	private String valangheOggiNumero;
+	private String valangheOggiTipo;
+	
+	private String valangheDomaniTitolo;
+	private String valangheDomaniLink;
+	private String valangheDomaniNumero;
+	private String valangheDomaniTipo;
 
 	/*
 	 * VARIABILI PASSATE DAL BEAN ALLA VIEW 
@@ -111,6 +123,9 @@ public class MapModelBean  {
 	//private Boolean monitoraggioOn;
 	private String infoAllerta;
 	private String infoAllertaDomani;
+	
+	private Boolean nuovaMappaOggi;
+	private Boolean nuovaMappaDomani;
 
 	private final SimpleDateFormat timeformatter = new SimpleDateFormat("HH:mm");
 	private final SimpleDateFormat dayformatter = new SimpleDateFormat("dd MMMM YYYY", Locale.ITALY);
@@ -121,6 +136,8 @@ public class MapModelBean  {
 
 	private Map<String,Object> mappaInfoAllerta;
 	private Map<String,Object> mappaInfoAllertaDomani;
+	private Map<String,Object> mappaInfoValanghe;
+	private Map<String,Object> mappaInfoValangheDomani;
 	private ThemeDisplay _themeDisplay;
 
 	public MapModelBean( ThemeDisplay themeDisplay) throws PortalException, SystemException {
@@ -189,6 +206,18 @@ public class MapModelBean  {
 		this.allertaOggiTitolo     ="";
 
 		this.mappaInfoAllerta      = AllertaServiceUtil.getInfoAllerta();
+		this.mappaInfoValanghe = AllertaValangheLocalServiceUtil.getInfoValanghe();
+		
+		
+		this.nuovaMappaOggi = false;
+		
+		if (this.mappaInfoValanghe!=null) {
+			this.valangheOggiTipo       = (String) this.mappaInfoValanghe.get(KEY_TIPO_VALORE);
+			this.valangheOggiLink       = (String) this.mappaInfoValanghe.get(KEY_LINK_VALORE);
+			this.valangheOggiNumero     = (String) this.mappaInfoValanghe.get(KEY_NUMERO_VALORE);
+			this.valangheOggiTitolo	=(String) this.mappaInfoValanghe.get(KEY_TITOLO_VALORE);
+		}
+		
 
 		if(this.mappaInfoAllerta!=null){		 
 //				logger.info("RECUPERO I DATI DALLA HASHMAP ALLERTA ");
@@ -199,6 +228,12 @@ public class MapModelBean  {
 				ts = (Timestamp)this.mappaInfoAllerta.get(KEY_DATA_INIZIO_VALORE);
 				this.allertaOggiDataInizio = timeformatter.format((java.util.Date) ts);
 				this.allertaOggiDataInizioNoTime = dayformatter.format((java.util.Date) ts);
+			
+				//mappa con nuove aree o vecchie?
+				List<Map<String,String>> m = AllertaServiceUtil.getStatoAllerta();
+				for (Map<String,String> area : m)
+					if ("F2".equals(area.get("area"))) this.nuovaMappaOggi = true;
+			
 			}
 			else{
 				existOggi = false;
@@ -229,9 +264,19 @@ public class MapModelBean  {
 		this.allertaDomaniLink       ="";
 		this.allertaDomaniNumero     ="";
 		this.allertaDomaniTitolo     ="";
+		
+		this.nuovaMappaDomani = false;
 
 		this.mappaInfoAllertaDomani      = AllertaServiceUtil.getInfoAllertaDomani();
 		//allertaLocalService
+		this.mappaInfoValangheDomani = AllertaValangheLocalServiceUtil.getInfoValangheDomani();
+
+		if (this.mappaInfoValangheDomani!=null) {
+			this.valangheDomaniTipo       = (String) this.mappaInfoValangheDomani.get(KEY_TIPO_VALORE);
+			this.valangheDomaniLink       = (String) this.mappaInfoValangheDomani.get(KEY_LINK_VALORE);
+			this.valangheDomaniNumero     = (String) this.mappaInfoValangheDomani.get(KEY_NUMERO_VALORE);
+			this.valangheDomaniTitolo	=(String) this.mappaInfoValangheDomani.get(KEY_TITOLO_VALORE);
+		}
 
 		if(this.mappaInfoAllertaDomani!=null){
 			this.infoAllertaDomani =" info Allerta domani ";
@@ -241,6 +286,13 @@ public class MapModelBean  {
 				ts = (Timestamp)this.mappaInfoAllertaDomani.get(KEY_DATA_INIZIO_VALORE);
 				this.allertaDomaniDataInizio = timeformatter.format((java.util.Date) ts);
 				this.allertaDomaniDataInizioNoTime = dayformatter.format((java.util.Date) ts);
+			
+				//mappa con nuove aree o vecchie?
+				List<Map<String,String>> m = AllertaServiceUtil.getStatoAllertaDomani();
+				for (Map<String,String> area : m)
+					if ("F2".equals(area.get("area"))) this.nuovaMappaDomani = true;
+			
+			
 			}
 			else{
 				existDomani = false;
@@ -579,8 +631,96 @@ public class MapModelBean  {
 		
 		return now.after(start)	&& now.before(end);
 	}
+	
+	
 
 	
+	public Boolean getNuovaMappaOggi() {
+		return nuovaMappaOggi;
+	}
+
+	public void setNuovaMappaOggi(Boolean nuovaMappaOggi) {
+		this.nuovaMappaOggi = nuovaMappaOggi;
+	}
+
+	public Boolean getNuovaMappaDomani() {
+		return nuovaMappaDomani;
+	}
+
+	public void setNuovaMappaDomani(Boolean nuovaMappaDomani) {
+		this.nuovaMappaDomani = nuovaMappaDomani;
+	}
+
+	
+
+
+	public String getValangheOggiTitolo() {
+		return valangheOggiTitolo;
+	}
+
+	public void setValangheOggiTitolo(String valangheOggiTitolo) {
+		this.valangheOggiTitolo = valangheOggiTitolo;
+	}
+
+	public String getValangheOggiLink() {
+		return valangheOggiLink;
+	}
+
+	public void setValangheOggiLink(String valangheOggiLink) {
+		this.valangheOggiLink = valangheOggiLink;
+	}
+
+	public String getValangheOggiNumero() {
+		return valangheOggiNumero;
+	}
+
+	public void setValangheOggiNumero(String valangheOggiNumero) {
+		this.valangheOggiNumero = valangheOggiNumero;
+	}
+
+	public String getValangheOggiTipo() {
+		return valangheOggiTipo;
+	}
+
+	public void setValangheOggiTipo(String valangheOggiTipo) {
+		this.valangheOggiTipo = valangheOggiTipo;
+	}
+
+	public String getValangheDomaniTitolo() {
+		return valangheDomaniTitolo;
+	}
+
+	public void setValangheDomaniTitolo(String valangheDomaniTitolo) {
+		this.valangheDomaniTitolo = valangheDomaniTitolo;
+	}
+
+	public String getValangheDomaniLink() {
+		return valangheDomaniLink;
+	}
+
+	public void setValangheDomaniLink(String valangheDomaniLink) {
+		this.valangheDomaniLink = valangheDomaniLink;
+	}
+
+	public String getValangheDomaniNumero() {
+		return valangheDomaniNumero;
+	}
+
+	public void setValangheDomaniNumero(String valangheDomaniNumero) {
+		this.valangheDomaniNumero = valangheDomaniNumero;
+	}
+
+	public String getValangheDomaniTipo() {
+		return valangheDomaniTipo;
+	}
+
+	public void setValangheDomaniTipo(String valangheDomaniTipo) {
+		this.valangheDomaniTipo = valangheDomaniTipo;
+	}
+
+
+
+
 	@Reference
 	private AllertaLocalService allertaLocalService;
 

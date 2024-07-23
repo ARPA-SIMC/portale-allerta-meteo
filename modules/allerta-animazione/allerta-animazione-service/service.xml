@@ -37,6 +37,51 @@
 		</order>
 		<!-- Finder methods -->
 	</entity>
+	<entity name="altezzaOndaSwanita" local-service="true"
+		remote-service="false">
+		<!-- PK fields -->
+		<column name="id" type="long" primary="true"></column>
+		<!-- Other fields -->
+		<column name="im" type="String"></column>
+		<column name="text_LOC" type="String" ></column>
+		<column name="ts_UTC" db-name="timestamp"  type="long"></column>
+		<column name="imgData" type="String"></column>
+		<!-- Order -->
+		<order by="desc">
+			<order-column name="id"></order-column>
+		</order>
+		<!-- Finder methods -->
+	</entity>
+	<entity name="altezzaOndaAdriac" local-service="true"
+		remote-service="false">
+		<!-- PK fields -->
+		<column name="id" type="long" primary="true"></column>
+		<!-- Other fields -->
+		<column name="im" type="String"></column>
+		<column name="text_LOC" type="String" ></column>
+		<column name="ts_UTC" db-name="timestamp"  type="long"></column>
+		<column name="imgData" type="String"></column>
+		<!-- Order -->
+		<order by="desc">
+			<order-column name="id"></order-column>
+		</order>
+		<!-- Finder methods -->
+	</entity>
+	<entity name="elevazione" local-service="true"
+		remote-service="false">
+		<!-- PK fields -->
+		<column name="id" type="long" primary="true"></column>
+		<!-- Other fields -->
+		<column name="im" type="String"></column>
+		<column name="text_LOC" type="String" ></column>
+		<column name="ts_UTC" db-name="timestamp"  type="long"></column>
+		<column name="imgData" type="String"></column>
+		<!-- Order -->
+		<order by="desc">
+			<order-column name="id"></order-column>
+		</order>
+		<!-- Finder methods -->
+	</entity>
 	<entity name="Parametro" local-service="true" remote-service="false">
 		<column name="key" type="String" primary="true" ></column>
 		<column name="value" type="String"></column>

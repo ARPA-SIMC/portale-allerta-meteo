@@ -53,6 +53,10 @@ AllertaBean allBean = new AllertaBean(allertaId, request);
 		function <portlet:namespace/>getAllertaDefaults(field, serviceUrl){
 			
 			$('#generaField').val(field);
+			
+			serviceUrl += "&allerta=" + isAllerta();
+			
+			console.log(serviceUrl);
 		
 			$.ajax({
 			      url: serviceUrl,
@@ -260,17 +264,17 @@ AllertaBean allBean = new AllertaBean(allertaId, request);
 						<tr class="rf-dt-shdr">
 							<th scope="col"></th>
 							<th scope="col"></th>
-							<th class="rf-dt-shdr-c" onclick="toggleColonna(1);" scope="col">${allBean.eventi[0]}</th>
-							<th class="rf-dt-shdr-c" onclick="toggleColonna(2);" scope="col">${allBean.eventi[1]}</th>
-							<th class="rf-dt-shdr-c bordodestro" onclick="toggleColonna(3);"
+							<th class="rf-dt-shdr-c" <% if (!sintesi) { %>onclick="toggleColonna(1);"<% } %> scope="col">${allBean.eventi[0]}</th>
+							<th class="rf-dt-shdr-c" <% if (!sintesi) { %>onclick="toggleColonna(2);"<% } %> scope="col">${allBean.eventi[1]}</th>
+							<th class="rf-dt-shdr-c bordodestro" <% if (!sintesi) { %>onclick="toggleColonna(3);"<% } %>
 								scope="col">${allBean.eventi[2]}</th>
-							<th class="rf-dt-shdr-c" onclick="toggleColonna(4);" scope="col">${allBean.eventi[3]}</th>
-							<th class="rf-dt-shdr-c" onclick="toggleColonna(5);" scope="col">${allBean.eventi[4]}</th>
-							<th class="rf-dt-shdr-c" onclick="toggleColonna(6);" scope="col">${allBean.eventi[5]}</th>
-							<th class="rf-dt-shdr-c bordodestro" onclick="toggleColonna(7);"
+							<th class="rf-dt-shdr-c" <% if (!sintesi) { %>onclick="toggleColonna(4);"<% } %> scope="col">${allBean.eventi[3]}</th>
+							<th class="rf-dt-shdr-c" <% if (!sintesi) { %>onclick="toggleColonna(5);"<% } %> scope="col">${allBean.eventi[4]}</th>
+							<th class="rf-dt-shdr-c" <% if (!sintesi) { %>onclick="toggleColonna(6);"<% } %> scope="col">${allBean.eventi[5]}</th>
+							<th class="rf-dt-shdr-c bordodestro" <% if (!sintesi) { %>onclick="toggleColonna(7);"<% } %>
 								scope="col">${allBean.eventi[6]}</th>
-							<th class="rf-dt-shdr-c" onclick="toggleColonna(8);" scope="col">${allBean.eventi[7]}</th>
-							<th class="rf-dt-shdr-c" onclick="toggleColonna(9);" scope="col">${allBean.eventi[8]}</th>
+							<th class="rf-dt-shdr-c" <% if (!sintesi) { %>onclick="toggleColonna(8);"<% } %> scope="col">${allBean.eventi[7]}</th>
+							<th class="rf-dt-shdr-c" <% if (!sintesi) { %>onclick="toggleColonna(9);"<% } %> scope="col">${allBean.eventi[8]}</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -282,7 +286,9 @@ AllertaBean allBean = new AllertaBean(allertaId, request);
 								<td rowspan="${riga.rowspan}" class="rf-dt-shdr-c">
 									${riga.rowspan eq '1' ? '1' : ''}</td>
 								<c:forEach items="${riga.celle}" var="cella">
-									<td onclick="toggleAllerta(${cella.riga},${cella.colonna},1);"
+									<td 
+									
+									<% if (!sintesi) { %>onclick="toggleAllerta(${cella.riga},${cella.colonna},1);"<% } %>
 										id="cella${cella.riga}-${cella.colonna}-1"
 										rowspan="${cella.rowspan}" class="rf-dt-c ${cella.style1}">
 
@@ -301,7 +307,7 @@ AllertaBean allBean = new AllertaBean(allertaId, request);
 								<c:forEach items="${riga.celle}" var="cella">
 									<c:if test="${cella.rowspan eq '1'}">
 
-										<td onclick="toggleAllerta(${cella.riga},${cella.colonna},2);"
+										<td <% if (!sintesi) { %>onclick="toggleAllerta(${cella.riga},${cella.colonna},2);"<% } %>
 											id="cella${cella.riga}-${cella.colonna}-2"
 											rowspan="${cella.rowspan}" class="rf-dt-c ${cella.style2}">
 

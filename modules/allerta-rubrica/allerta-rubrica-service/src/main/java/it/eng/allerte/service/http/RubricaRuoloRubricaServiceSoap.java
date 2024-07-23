@@ -16,9 +16,16 @@ package it.eng.allerte.service.http;
 
 import aQute.bnd.annotation.ProviderType;
 
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+
+import it.eng.allerte.service.RubricaRuoloRubricaServiceUtil;
+
+import java.rmi.RemoteException;
+
 /**
  * Provides the SOAP utility for the
- * <code>it.eng.allerte.service.RubricaRuoloRubricaServiceUtil</code> service
+ * <code>RubricaRuoloRubricaServiceUtil</code> service
  * utility. The static methods of this class call the same methods of the
  * service utility. However, the signatures are different because it is
  * difficult for SOAP to support certain types.
@@ -57,4 +64,32 @@ import aQute.bnd.annotation.ProviderType;
  */
 @ProviderType
 public class RubricaRuoloRubricaServiceSoap {
+
+	public static void updateSite(Long sito) throws RemoteException {
+		try {
+			RubricaRuoloRubricaServiceUtil.updateSite(sito);
+		}
+		catch (Exception e) {
+			_log.error(e, e);
+
+			throw new RemoteException(e.getMessage());
+		}
+	}
+
+	public static Long getCurrentSite() throws RemoteException {
+		try {
+			Long returnValue = RubricaRuoloRubricaServiceUtil.getCurrentSite();
+
+			return returnValue;
+		}
+		catch (Exception e) {
+			_log.error(e, e);
+
+			throw new RemoteException(e.getMessage());
+		}
+	}
+
+	private static Log _log = LogFactoryUtil.getLog(
+		RubricaRuoloRubricaServiceSoap.class);
+
 }

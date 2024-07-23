@@ -49,6 +49,10 @@ public class RadarBean implements Serializable {
 		variables.put("vento", "/254,0,0/103,10000,-,-/B11002");
 		variables.put("livello-idrometrico", "/254,0,0/1,-,-,-/B13215");
 		variables.put("precipitazioni", "/1,0,3600/1,-,-,-/B13011");
+		
+		variables.put("livellomare", "/254,0,0/101,-,-,-/B22037");
+		variables.put("altezzaonda", "/0,0,1800/1,-,-,-/M00002");
+		variables.put("direzioneonda", "/200,0,1800/1,-,-,-/M00001");
 	}
 	
 	public RadarBean(ThemeDisplay themeDisplay) {

@@ -1,0 +1,10 @@
+Bundle-Name: allerta-verifica-api
+Bundle-SymbolicName: allerta.verifica.api
+Bundle-Version: 1.0.0
+Export-Package:\
+	allerta.verifica.exception,\
+	allerta.verifica.model,\
+	allerta.verifica.service,\
+	allerta.verifica.service.persistence
+-check: EXPORTS
+-includeresource: META-INF/service.xml=../allerta-verifica-service/service.xml

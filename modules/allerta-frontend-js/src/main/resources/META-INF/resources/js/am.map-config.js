@@ -5,7 +5,8 @@ var am = {};
 var TERRITORY = {  
     // Coordinate centrali della regione
     REGION_LAT_LNG: [44.2655, 11.00214], //  [44.4655, 11.00214],
-    RETION_LAT_LNG_FOR_RTDATA: [ 44.437616940601565, 10.445251464843752],
+    //RETION_LAT_LNG_FOR_RTDATA: [ 44.437616940601565, 10.445251464843752],
+    RETION_LAT_LNG_FOR_RTDATA: [ 44.5655, 11.00214],
   
     areaMarkerPosition: {
       'A' : [43.996352, 11.910119], // A
@@ -108,7 +109,7 @@ var TERRITORY = {
     ],
     featureOnMouseOver: { fillOpacity: 1, weight:3 },
     featureOnMouseOut: { fillOpacity: fillOpacity, weight: lineWeight},
-    areaAllertamento:  { weight: 5, color: '#000000', fillOpacity: 0 },
+    areaAllertamento:  { weight: 3, color: '#000000', fillOpacity: 0 },
     selectedStyle: {
       // color: '#415e80', fillColor: '#415e80', 
       weight: 5, fillOpacity: 1
@@ -124,6 +125,27 @@ var TERRITORY = {
       "verde": imagesPath+"/accessibilita-verde.png",
       "nullo": imagesPath+"/accessibilita-nullo.png",
     },
+    accesibiliyIconLarge:{
+        "rossa": imagesPath+"/accessibilita-rossa-largo2.png",
+        "arancione": imagesPath+"/accessibilita-arancione-largo2.png",
+        "gialla": imagesPath+"/accessibilita-gialla-largo2.png",
+        "verde": imagesPath+"/accessibilita-verde-largo2.png",
+        "nullo": imagesPath+"/accessibilita-nullo-largo2.png",
+      },
+      accesibiliyIconLargeAlt:{
+          "rossa": imagesPath+"/accessibilita-rossa-largo3.png",
+          "arancione": imagesPath+"/accessibilita-arancione-largo3.png",
+          "gialla": imagesPath+"/accessibilita-gialla-largo3.png",
+          "verde": imagesPath+"/accessibilita-verde-largo3.png",
+          "nullo": imagesPath+"/accessibilita-nullo-largo3.png",
+        },
+        accesibiliyIconLargeAlt2:{
+            "rossa": imagesPath+"/accessibilita-rossa-largo4.png",
+            "arancione": imagesPath+"/accessibilita-arancione-largo4.png",
+            "gialla": imagesPath+"/accessibilita-gialla-largo4.png",
+            "verde": imagesPath+"/accessibilita-verde-largo4.png",
+            "nullo": imagesPath+"/accessibilita-nullo-largo4.png",
+          },
     markerIcon: {
       // @fixme L'url del marker
       //iconUrl: '/weballerte-theme/images/allerta/marker-icon.png',
@@ -231,6 +253,9 @@ var TERRITORY = {
   "vento": "254,0,0/103,10000,-,-/B11002",
   "umidita": "254,0,0/103,2000,-,-/B13003",
   "pressione": "254,0,0/1,-,-,-/B10004",
+  "livellomare":"254,0,0/101,-,-,-/B22037",
+  "altezzaonda":"0,0,1800/1,-,-,-/M00002",
+  "direzioneonda":"200,0,1800/1,-,-,-/M00001",
 
 }
   var SENSOR_GRAPH_URL_PREFIX = "https://allertameteo.regione.emilia-romagna.it/";
@@ -242,4 +267,8 @@ var TERRITORY = {
   "vento":          "vento?p_auth="+SENSOR_GRAPH_URL_AUTH+"&p_p_id=rt_dati_WAR_datiTempoRealeprevPiogportlet_INSTANCE_XXvymfyKJ7aj&p_p_lifecycle=1&p_p_state=exclusive&p_p_mode=view&p_p_col_id=column-1&p_p_col_count=1&_rt_dati_WAR_datiTempoRealeprevPiogportlet_INSTANCE_XXvymfyKJ7aj__facesViewIdRender=%2FWEB-INF%2Fviews%2Fgrafico.xhtml",
   "umidita":        "umidita?p_auth="+SENSOR_GRAPH_URL_AUTH+"&p_p_id=rt_dati_WAR_datiTempoRealeprevPiogportlet_INSTANCE_OwEpGfSrLcQO&p_p_lifecycle=1&p_p_state=exclusive&p_p_mode=view&p_p_col_id=column-1&p_p_col_count=1&_rt_dati_WAR_datiTempoRealeprevPiogportlet_INSTANCE_OwEpGfSrLcQO__facesViewIdRender=%2FWEB-INF%2Fviews%2Fgrafico.xhtml",
   "pressione":      "pressione?p_auth="+SENSOR_GRAPH_URL_AUTH+"&p_p_id=rt_dati_WAR_datiTempoRealeprevPiogportlet_INSTANCE_wuBims5NpnDt&p_p_lifecycle=1&p_p_state=exclusive&p_p_mode=view&p_p_col_id=column-1&p_p_col_count=1&_rt_dati_WAR_datiTempoRealeprevPiogportlet_INSTANCE_wuBims5NpnDt__facesViewIdRender=%2FWEB-INF%2Fviews%2Fgrafico.xhtml",
-}
+  "livellomare":"livellomare?p_auth="+SENSOR_GRAPH_URL_AUTH+"&p_p_id=rt_dati_WAR_datiTempoRealeprevPiogportlet_INSTANCE_wuBims5NpnDt&p_p_lifecycle=1&p_p_state=exclusive&p_p_mode=view&p_p_col_id=column-1&p_p_col_count=1&_rt_dati_WAR_datiTempoRealeprevPiogportlet_INSTANCE_wuBims5NpnDt__facesViewIdRender=%2FWEB-INF%2Fviews%2Fgrafico.xhtml",
+  "altezzaonda":"altezzaonda?p_auth="+SENSOR_GRAPH_URL_AUTH+"&p_p_id=rt_dati_WAR_datiTempoRealeprevPiogportlet_INSTANCE_wuBims5NpnDt&p_p_lifecycle=1&p_p_state=exclusive&p_p_mode=view&p_p_col_id=column-1&p_p_col_count=1&_rt_dati_WAR_datiTempoRealeprevPiogportlet_INSTANCE_wuBims5NpnDt__facesViewIdRender=%2FWEB-INF%2Fviews%2Fgrafico.xhtml",
+  "direzioneonda":"direzioneonda?p_auth="+SENSOR_GRAPH_URL_AUTH+"&p_p_id=rt_dati_WAR_datiTempoRealeprevPiogportlet_INSTANCE_wuBims5NpnDt&p_p_lifecycle=1&p_p_state=exclusive&p_p_mode=view&p_p_col_id=column-1&p_p_col_count=1&_rt_dati_WAR_datiTempoRealeprevPiogportlet_INSTANCE_wuBims5NpnDt__facesViewIdRender=%2FWEB-INF%2Fviews%2Fgrafico.xhtml",
+
+  }

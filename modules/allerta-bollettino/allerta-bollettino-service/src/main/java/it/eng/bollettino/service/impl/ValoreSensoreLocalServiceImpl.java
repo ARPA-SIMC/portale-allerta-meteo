@@ -101,15 +101,16 @@ public class ValoreSensoreLocalServiceImpl
 				 Double v = (o.get("v")!=null?Double.parseDouble(o.get("v").toString()):null);
 				 Date dat = atom.parse(dt);
 				 
-				 DynamicQuery dq = DynamicQueryFactoryUtil
-							.forClass(ValoreSensore.class, getClassLoader())
-					.add(PropertyFactoryUtil.forName("idStazione").eq(stazione))
-					.add(PropertyFactoryUtil.forName("idVariabile").eq(variabile))
-					.add(PropertyFactoryUtil.forName("datetime").eq(dat));
 				 
-				 List<ValoreSensore> valori = dynamicQuery(dq);
 				 
 				 if (v==null) {
+					 DynamicQuery dq = DynamicQueryFactoryUtil
+								.forClass(ValoreSensore.class, getClassLoader())
+						.add(PropertyFactoryUtil.forName("idStazione").eq(stazione))
+						.add(PropertyFactoryUtil.forName("idVariabile").eq(variabile))
+						.add(PropertyFactoryUtil.forName("datetime").eq(dat));
+					 
+					 List<ValoreSensore> valori = dynamicQuery(dq);
 					 //annullamento valore
 					 for (ValoreSensore vs : valori) deleteValoreSensore(vs);
 					 continue;
@@ -119,21 +120,21 @@ public class ValoreSensoreLocalServiceImpl
 				 if (variabile.contains("B13011")) pluvio = true;
 				 
 				 
-				 if (valori.size()==0) {
+				 //if (valori.size()==0) {
 					 //inserimento
 					 ValoreSensore vs = ValoreSensoreLocalServiceUtil.createValoreSensore(0);
 					 vs.setIdStazione(stazione);
-					 vs.setIdVariabile(variabile);
+					 vs.setIdVariabile(variabile); 
 					 vs.setDatetime(dat);
-					 vs.setValue(v);
+					 vs.setValue(v); 
 					 ValoreSensoreLocalServiceUtil.updateValoreSensore(vs);
-				 } else {
+				 /*} else {
 					 //se ce n'è più di uno cancellali
 					 for (int i=0; i<valori.size()-1; i++) deleteValoreSensore(valori.get(i));
 					 ValoreSensore vs = valori.get(valori.size()-1);
 					 vs.setValue(v);
 					 ValoreSensoreLocalServiceUtil.updateValoreSensore(vs);
-				 }
+				 }*/
 				 
 				 //aggiorna ultima data sensore
 				 DynamicQuery dq2 = DynamicQueryFactoryUtil.forClass(StazioneVariabile.class,getClassLoader())
@@ -155,8 +156,12 @@ public class ValoreSensoreLocalServiceImpl
 			 
 		 }
 		 
-		 String query = "delete from bollettino_valoresensore where datetime < cast(now() as timestamp) - cast('7 days' as interval)";
-		 BollettinoLocalServiceUtil.eseguiQueryGenericaLista(query);
+		 try {
+			 String query = "delete from bollettino_valoresensore where datetime < cast(now() as timestamp) - cast('7 days' as interval)";
+			 BollettinoLocalServiceUtil.eseguiQueryGenericaLista(query);
+		 } catch (Exception e) {
+			 logger.error(e);
+		 }
 			
 		 
 		 m.put("valori", al.size());

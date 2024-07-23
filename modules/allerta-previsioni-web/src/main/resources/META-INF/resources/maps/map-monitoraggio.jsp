@@ -32,17 +32,14 @@ while (roles.hasNext()) {
 		<div class="tab-pane" role="tabpanel"
 				aria-labelledby="tab--monitoraggio" id="tab--monitoraggio">
 
-				<div class="map-section__emitted" style="">
-					<small>Dati aggiornati in tempo reale di precipitazione,
-						livello idrometrico e immagini radar di stima della pioggia, per
-						il monitoraggio delle pioggie e delle piene dei fiumi in corso sul
-						territorio regionale</small>
+				<div class="map-section__emitted map-section__emitted-top" style="text-align:center">
+					<small>Dati aggiornati in tempo reale per il monitoraggio della piogge e delle piene dei fiumi in corso</small>
 				</div>
 
 				<div
 					class="map-component map-component--monitoring map-component--monitoraggio"
 					id="map-component--monitoraggio" data-toggle="monitoring-map"
-					data-scenarios="radar|idrometrico|precipitazioni|cumulata-6h">
+					data-scenarios="radar|idrometrico|precipitazioni|cumulata-6h|cumulata-48h">
 
 					<div class="map-component__panel">
 
@@ -60,7 +57,10 @@ while (roles.hasNext()) {
 								data-filter="precipitazioni"> Precipitazioni </a></li>
 							<li class="nav-item"><a class="nav-link"
 								href="#map--monitoraggio" data-trigger="rtdata-filter"
-								data-filter="cumulata-6h"> Pioggia cumulata </a></li>
+								data-filter="cumulata-6h"> Pioggia cumulata 6h</a></li>
+							<li class="nav-item"><a class="nav-link"
+								href="#map--monitoraggio" data-trigger="rtdata-filter"
+								data-filter="cumulata-48h"> Pioggia cumulata 48h</a></li>
 						</ul>
 
 						<c:if test="<%=isAdministrator || isCompilatore_monitoraggio%>">
@@ -74,7 +74,7 @@ while (roles.hasNext()) {
 									</a> 
 									<a href="/preferenze-monitoraggio" class="btn btn-secondary">
 										<span class="icon i-edit" aria-hidden="true"></span> 
-										Compila	monitoraggio
+										Preferenze monitoraggio
 									</a>
 								</div>
 								<!-- / Comandi di gestione visibili solo all'operatore -->
@@ -95,8 +95,16 @@ while (roles.hasNext()) {
 						...
 						<p></p>
 					</div>
+					
+					
+				</div>
+				
+				<div class="map-section__emitted map-section__emitted-bottom" style="text-align:center">
+					<small>Dati aggiornati in tempo reale per il monitoraggio della piogge e delle piene dei fiumi in corso</small>
 				</div>
 			</div>
+			
+			
 			
 			<script>
 			jQuery('[aria-controls=tab--monitoraggio]').click(function(){

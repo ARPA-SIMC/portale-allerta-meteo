@@ -17,6 +17,13 @@
 	<bean class="it.eng.allerter.service.impl.AllertaStatoLocalServiceImpl" id="it.eng.allerter.service.AllertaStatoLocalService" />
 	<bean class="it.eng.allerter.service.impl.AllertaStatoServiceImpl" id="it.eng.allerter.service.AllertaStatoService" />
 	<bean class="it.eng.allerter.service.persistence.impl.AllertaStatoPersistenceImpl" id="it.eng.allerter.service.persistence.AllertaStatoPersistence" parent="basePersistence" />
+	<bean class="it.eng.allerter.service.impl.AllertaValangheLocalServiceImpl" id="it.eng.allerter.service.AllertaValangheLocalService" />
+	<bean class="it.eng.allerter.service.impl.AllertaValangheServiceImpl" id="it.eng.allerter.service.AllertaValangheService" />
+	<bean class="it.eng.allerter.service.persistence.impl.AllertaValanghePersistenceImpl" id="it.eng.allerter.service.persistence.AllertaValanghePersistence" parent="basePersistence" />
+	<bean class="it.eng.allerter.service.persistence.impl.AllertaValangheFinderImpl" id="it.eng.allerter.service.persistence.AllertaValangheFinder" parent="basePersistence" />
+	<bean class="it.eng.allerter.service.impl.AllertaValangheStatoLocalServiceImpl" id="it.eng.allerter.service.AllertaValangheStatoLocalService" />
+	<bean class="it.eng.allerter.service.impl.AllertaValangheStatoServiceImpl" id="it.eng.allerter.service.AllertaValangheStatoService" />
+	<bean class="it.eng.allerter.service.persistence.impl.AllertaValangheStatoPersistenceImpl" id="it.eng.allerter.service.persistence.AllertaValangheStatoPersistence" parent="basePersistence" />
 	<bean class="it.eng.allerter.service.impl.AreaLocalServiceImpl" id="it.eng.allerter.service.AreaLocalService" />
 	<bean class="it.eng.allerter.service.impl.AreaServiceImpl" id="it.eng.allerter.service.AreaService" />
 	<bean class="it.eng.allerter.service.persistence.impl.AreaPersistenceImpl" id="it.eng.allerter.service.persistence.AreaPersistence" parent="basePersistence" />

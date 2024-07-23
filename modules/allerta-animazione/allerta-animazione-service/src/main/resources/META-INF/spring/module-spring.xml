@@ -9,6 +9,12 @@
 >
 	<bean class="it.eng.animazione.image.service.impl.altezzaOndaLocalServiceImpl" id="it.eng.animazione.image.service.altezzaOndaLocalService" />
 	<bean class="it.eng.animazione.image.service.persistence.impl.altezzaOndaPersistenceImpl" id="it.eng.animazione.image.service.persistence.altezzaOndaPersistence" parent="basePersistence" />
+	<bean class="it.eng.animazione.image.service.impl.altezzaOndaAdriacLocalServiceImpl" id="it.eng.animazione.image.service.altezzaOndaAdriacLocalService" />
+	<bean class="it.eng.animazione.image.service.persistence.impl.altezzaOndaAdriacPersistenceImpl" id="it.eng.animazione.image.service.persistence.altezzaOndaAdriacPersistence" parent="basePersistence" />
+	<bean class="it.eng.animazione.image.service.impl.altezzaOndaSwanitaLocalServiceImpl" id="it.eng.animazione.image.service.altezzaOndaSwanitaLocalService" />
+	<bean class="it.eng.animazione.image.service.persistence.impl.altezzaOndaSwanitaPersistenceImpl" id="it.eng.animazione.image.service.persistence.altezzaOndaSwanitaPersistence" parent="basePersistence" />
+	<bean class="it.eng.animazione.image.service.impl.elevazioneLocalServiceImpl" id="it.eng.animazione.image.service.elevazioneLocalService" />
+	<bean class="it.eng.animazione.image.service.persistence.impl.elevazionePersistenceImpl" id="it.eng.animazione.image.service.persistence.elevazionePersistence" parent="basePersistence" />
 	<bean class="it.eng.animazione.image.service.impl.ParametroLocalServiceImpl" id="it.eng.animazione.image.service.ParametroLocalService" />
 	<bean class="it.eng.animazione.image.service.persistence.impl.ParametroPersistenceImpl" id="it.eng.animazione.image.service.persistence.ParametroPersistence" parent="basePersistence" />
 	<bean class="it.eng.animazione.image.service.impl.PioggiaCumulativaLocalServiceImpl" id="it.eng.animazione.image.service.PioggiaCumulativaLocalService" />

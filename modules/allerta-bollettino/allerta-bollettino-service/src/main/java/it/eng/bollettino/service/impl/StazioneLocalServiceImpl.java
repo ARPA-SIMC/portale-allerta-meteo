@@ -124,6 +124,7 @@ public class StazioneLocalServiceImpl extends StazioneLocalServiceBaseImpl {
 						s.setAttivo(true);
 						logger.info("Creazione stazione "+id);
 						out.aggiunti++;
+						out.aggiungi(id+" ("+o.get("name")+")");
 					}
 					
 					for (Stazione ss : staz2) {
@@ -141,6 +142,7 @@ public class StazioneLocalServiceImpl extends StazioneLocalServiceBaseImpl {
 					s.setAttivo(true);
 					logger.info("Riattivazione stazione "+id);
 					out.modificati++;
+					out.modifica("reinserito "+id+" ("+o.get("name")+")");
 				}
 				
 				if (o.get("height") != null)
@@ -225,6 +227,7 @@ public class StazioneLocalServiceImpl extends StazioneLocalServiceBaseImpl {
 				if (rimasto.getAttivo()) {
 					logger.info("Disattivo stazione "+rimasto.getId());
 					out.rimossi++;
+					out.rimuovi(rimasto.getId()+" ("+rimasto.getName()+")");
 				}
 				rimasto.setAttivo(false);
 				StazioneLocalServiceUtil.updateStazione(rimasto);

@@ -14,6 +14,22 @@
 
 <%
 	Map<Long, String> organizationIds = msgService.getOrganizations(sindacoConfiguration.organization());
+	
+	MessaggioBean messaggioBean = (MessaggioBean)renderRequest.getAttribute("messaggioBean");
+
+	if (messaggioBean.sindaco) {
+		organizationIds.clear();
+		for (Long sito : messaggioBean.comuneDelSindaco.keySet()) {
+			String com = messaggioBean.comuneDelSindaco.get(sito);
+			Map<Long, String> cids = msgService.getOrganizations(sito);
+			
+			for (Long grp : cids.keySet()) {
+				organizationIds.put(grp,com+" - "+cids.get(grp));
+			}
+		}
+	}
+
+
 	String canaleSms = sindacoConfiguration.canaleSms(); //si -  no
 	String canaleSmsSindaco = sindacoConfiguration.canaleSmsSindaco(); //si -  no
 	
@@ -27,14 +43,16 @@
 	<div class="col-12"></div>
 </div>
 
-<c:if test="${not messaggioBean.sindaco }">
 	<h2>A chi &egrave; diretta la comunicazione ?</h2>
+	<style>
+	.input-checkbox-wrapper {display:inline}
+	</style>
 	<div class="row">
 		<div class="col-12">
 			<ul class="list-group">
 			<c:forEach items="<%=organizationIds.keySet() %>" var="key">		
 				<li class="list-group-item">
-				<aui:input type="checkbox" value="${key }" cssClass="form-check-input"
+				<aui:input type="checkbox"  value="${key}" cssClass="form-check-input organizzazioni ${messaggioBean.hasOrganization(key)?'addChecked':'' }"
 					name="selectedOrganization[]" label=""
 					checked="${messaggioBean.hasOrganization(key) }"></aui:input>
 					<label class="form-check-label">${organizationIds.get(key)}</label>
@@ -45,24 +63,25 @@
 	</div>
 
 
-</c:if>
+
 
 
 <liferay-util:include page="/parts/header.jsp" servletContext="<%=getServletContext() %>"></liferay-util:include>
 
-<c:if test="${not messaggioBean.sindaco }">
 
+<c:if test="${not messaggioBean.sindaco }">
 	<div class="row">
 		<div class="col-12">
 			<h2>Scrivi l'oggetto della comunicazione</h2>
 		</div>
 		<div class="col-12">
 			<aui:input name="obj_mail" cssClass="form-control" label=""
-				value="${messaggioBean.subject }" required="true"
+				value="${messaggioBean.obj_mail }"
 				placeholder="Inserisci l'oggetto della comunicazione"></aui:input>
 		</div>
 	</div>
 </c:if>
+
 
 
 <div class="row">
@@ -71,7 +90,7 @@
 	</div>
 	<div class="col-9">
 		<aui:input name="mex_pc" type="textarea" cssClass="form-control"
-			label="" value="${messaggioBean.mex_pc }" required="true"
+			label="" value="${messaggioBean.mex_pc }" 
 			placeholder="Scrivi in modo chiaro e sintetico cosa succede e le azioni da intraprendere..."></aui:input>
 	</div>
 	<div class="col-3">
@@ -100,7 +119,7 @@
 		</div>
 		<div class="col-9">
 		<aui:input name="subject" type="textarea" cssClass="form-control inputSubject"
-			label="" value="${messaggioBean.subject }" required="true"
+			label="" value="${messaggioBean.subject }" 
 			placeholder="Massimo 160 caratteri. Es. «Attesi forti temporali fino alle 24 di oggi. Attivata fase di attenzione.»"></aui:input>
 			<br/>
 			<span class="icon i-pencil-square-o"></i> Caratteri rimanenti <label id="inputSubject">160</label>

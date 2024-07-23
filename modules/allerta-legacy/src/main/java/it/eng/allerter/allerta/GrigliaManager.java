@@ -78,6 +78,16 @@ public class GrigliaManager implements Serializable  {
 
 		return s;
 	}
+	
+	public String getStyleSecondoGiorno() {
+		String s = "";
+		if (colonna == 3 || colonna == 7)
+			s += "bordodestro ";
+		if (valori != null && valori.size() > 0)
+			s += "cellaAllerta" + valori.get(0).valoreSecondoGiorno;
+
+		return s;
+	}
 
 	public String getStyle2() {
 		String s = "";
@@ -100,5 +110,10 @@ public class GrigliaManager implements Serializable  {
 			return valori.get(1).getStringaColore();
 		return " ";
 	}
-
+	
+	public String getStringaColoreSecondoGiorno() {
+		if (valori != null && valori.size() > 0)
+			return valori.get(0).getStringaColoreSecondoGiorno();
+		return " ";
+	}
 }

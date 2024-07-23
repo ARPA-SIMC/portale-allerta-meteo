@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.6.0.final utlizzo versione della libreria JasperReports6.6.0  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Email" pageWidth="2500" pageHeight="595" orientation="Landscape" columnWidth="2460" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isIgnorePagination="true" uuid="4c1ddc39-61f8-4923-b3c7-bf457e367b71">
 	<property name="ireport.zoom" value="1.0"/>
-	<property name="ireport.x" value="1395"/>
+	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<property name="net.sf.jasperreports.print.keep.full.text" value="true"/>
 	<parameter name="TIPO" class="java.lang.String"/>
@@ -22,45 +21,26 @@
 AND ($P{SOTTOTIPO} is null or $P{SOTTOTIPO}::character varying = '' or $P{SOTTOTIPO}::character varying = sottotipo)
 AND ($P{DESTINATARIO} is null or $P{DESTINATARIO}::character varying = '' or upper(nomedestinatario) like '%' || upper($P{DESTINATARIO}) || '%')
 AND ($P{DATADA} is null or $P{DATADA}::character varying = '' or datainvio >= $P{DATADA}::timestamp without time zone)
-AND ($P{DATAA} is null or $P{DATAA}::character varying = '' or datainvio <= $P{DATAA}::timestamp without time zone)]]>
+AND ($P{DATAA} is null or $P{DATAA}::character varying = '' or datainvio <= $P{DATAA}::timestamp without time zone) limit 50000]]>
 	</queryString>
-	<field name="id_" class="java.lang.Long">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="tipo" class="java.lang.String">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="sottotipo" class="java.lang.String">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="destinatario" class="java.lang.Long">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="indirizzo" class="java.lang.String">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="nomedestinatario" class="java.lang.String">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="stato" class="java.lang.Long">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="datainvio" class="java.sql.Timestamp">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="testo" class="java.lang.String">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="oggetto" class="java.lang.String">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
+	<field name="id_" class="java.lang.Long"/>
+	<field name="tipo" class="java.lang.String"/>
+	<field name="sottotipo" class="java.lang.String"/>
+	<field name="param" class="java.lang.Long"/>
+	<field name="destinatario" class="java.lang.Long"/>
+	<field name="indirizzo" class="java.lang.String"/>
+	<field name="nomedestinatario" class="java.lang.String"/>
+	<field name="stato" class="java.lang.Long"/>
+	<field name="datainvio" class="java.sql.Timestamp"/>
+	<field name="testo" class="java.lang.String"/>
+	<field name="oggetto" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
 	<pageHeader>
 		<band height="20" splitType="Stretch">
 			<staticText>
-				<reportElement x="0" y="0" width="101" height="20" uuid="ee6943d8-528b-4a2e-937e-db24a092a73b"/>
+				<reportElement x="0" y="0" width="111" height="20" uuid="ee6943d8-528b-4a2e-937e-db24a092a73b"/>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -74,7 +54,7 @@ AND ($P{DATAA} is null or $P{DATAA}::character varying = '' or datainvio <= $P{D
 				<text><![CDATA[Tipo]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="101" y="0" width="170" height="20" uuid="8beecf08-de4b-4972-bab9-6b4bba3de3ec"/>
+				<reportElement x="111" y="0" width="160" height="20" uuid="8beecf08-de4b-4972-bab9-6b4bba3de3ec"/>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -162,12 +142,12 @@ AND ($P{DATAA} is null or $P{DATAA}::character varying = '' or datainvio <= $P{D
 	<detail>
 		<band height="20" splitType="Stretch">
 			<textField isBlankWhenNull="true">
-				<reportElement x="0" y="0" width="101" height="20" uuid="2374d4d4-dad1-43cd-985f-37899181ce78"/>
+				<reportElement x="0" y="0" width="111" height="20" uuid="2374d4d4-dad1-43cd-985f-37899181ce78"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{tipo}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="101" y="0" width="170" height="20" uuid="5eb8ddc4-5a48-4bc8-906e-fb83b2fda15f"/>
+				<reportElement x="111" y="0" width="160" height="20" uuid="5eb8ddc4-5a48-4bc8-906e-fb83b2fda15f"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{sottotipo}]]></textFieldExpression>
 			</textField>

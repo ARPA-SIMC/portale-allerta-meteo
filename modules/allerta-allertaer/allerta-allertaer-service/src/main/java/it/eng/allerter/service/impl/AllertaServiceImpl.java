@@ -24,6 +24,7 @@ import com.liferay.portal.kernel.jsonwebservice.JSONWebService;
 import com.liferay.portal.kernel.security.access.control.AccessControlled;
 
 import it.eng.allerter.model.AllertaParametro;
+import it.eng.allerter.service.AllertaValangheLocalServiceUtil;
 import it.eng.allerter.service.base.AllertaServiceBaseImpl;
 
 /**
@@ -75,6 +76,7 @@ public class AllertaServiceImpl extends AllertaServiceBaseImpl {
 		try {
 
 			Map<Long, String> zone = new HashMap<Long, String>();
+			Map<Long, String> zoneV = new HashMap<Long, String>();
 
 			zone.put(10L, "A");
 			zone.put(11L, "A1");
@@ -88,55 +90,88 @@ public class AllertaServiceImpl extends AllertaServiceBaseImpl {
 			zone.put(40L, "D");
 			zone.put(41L, "D1");
 			zone.put(42L, "D2");
+			zone.put(43L, "D3");
 			zone.put(50L, "E");
 			zone.put(51L, "E1");
 			zone.put(52L, "E2");
 			zone.put(60L, "F");
 			zone.put(61L, "F1");
+			zone.put(62L, "F2");
+			zone.put(63L, "F3");
 			zone.put(70L, "G");
 			zone.put(71L, "G1");
 			zone.put(72L, "G2");
 			zone.put(80L, "H");
 			zone.put(81L, "H1");
 			zone.put(82L, "H2");
+			
+			zoneV.put(10L, "V1");
+			zoneV.put(20L, "V2");
+			zoneV.put(30L, "V3");
 
 			List<Object> aree = allertaFinder.getMacroareeAllerta(giorni);
+			
+			List<Object> areeValanghe = allertaValangheFinder.getMacroareeAllertaValanghe(giorni);
 
 			ArrayList<Map<String, String>> out = new ArrayList<Map<String, String>>();
 
-			if (aree == null)
-				return out;
-
-			// String out = "[";
-			// int index = 0;
-
-			for (Object ae : aree) {
-
-				Object ae2[] = (Object[]) ae;
-
-				Long l = Long.parseLong(ae2[0].toString());
-				String s = ae2[1].toString();
-
-				for (int k = 1; k <= eventi.length; k++)
-					s = s.replace("" + k + ":", eventi[k - 1] + ":");
-
-				s = s.replace(":1000", ":white");
-				s = s.replace(":0", ":green");
-				s = s.replace(":1", ":yellow");
-				s = s.replace(":2", ":orange");
-				s = s.replace(":3", ":red");
-
-				Map<String, String> m = new HashMap<String, String>();
-				m.put("area", zone.get(l));
-				m.put("eventi", s);
-
-				out.add(m);
-
-				// if (index!=aree.size()-1) out+=", ";
-
-				// index++;
+			if (aree!=null) {
+				for (Object ae : aree) {
+	
+					Object ae2[] = (Object[]) ae;
+	
+					Long l = Long.parseLong(ae2[0].toString().replace(".0", ""));
+					String s = ae2[1].toString();
+	
+					for (int k = 1; k <= eventi.length; k++)
+						s = s.replace("" + k + ":", eventi[k - 1] + ":");
+	
+					s = s.replace(":1000", ":white");
+					s = s.replace(":0", ":green");
+					s = s.replace(":1", ":yellow");
+					s = s.replace(":2", ":orange");
+					s = s.replace(":3", ":red");
+	
+					Map<String, String> m = new HashMap<String, String>();
+					m.put("area", zone.get(l));
+					m.put("eventi", s);
+	
+					out.add(m);
+	
+					// if (index!=aree.size()-1) out+=", ";
+	
+					// index++;
+				}
 			}
-
+			
+			if (areeValanghe!=null) {
+				for (Object ae : areeValanghe) {
+	
+					Object ae2[] = (Object[]) ae;
+	
+					Long l = Long.parseLong(ae2[0].toString().replace(".0", ""));
+					String s = ae2[1].toString();
+	
+					
+					s = s.replace("1:", "valanghe:");
+	
+					s = s.replace(":1000", ":white");
+					s = s.replace(":0", ":green");
+					s = s.replace(":1", ":yellow");
+					s = s.replace(":2", ":orange");
+					s = s.replace(":3", ":red");
+	
+					Map<String, String> m = new HashMap<String, String>();
+					m.put("area", zoneV.get(l));
+					m.put("eventi", s);
+	
+					out.add(m);
+	
+					// if (index!=aree.size()-1) out+=", ";
+	
+					// index++;
+				}
+			}
 			// out +="]";
 
 			return out;
@@ -186,7 +221,7 @@ public class AllertaServiceImpl extends AllertaServiceBaseImpl {
 
 				Object ae2[] = (Object[]) ae;
 
-				Long l = Long.parseLong(ae2[0].toString());
+				Long l = Long.parseLong(ae2[0].toString().replace(".0", ""));
 				String s = ae2[1].toString();
 
 				for (int k = 1; k <= eventi.length; k++)

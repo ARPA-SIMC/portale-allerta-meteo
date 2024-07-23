@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="SMS" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="SMS" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="90b9641a-b98f-4aeb-9d9b-b6d337c5ede3">
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
@@ -66,7 +66,7 @@ AND ($P{DATAA} is null or $P{DATAA}::character varying = '' or datainvio <= $P{D
 	<pageHeader>
 		<band height="20" splitType="Stretch">
 			<staticText>
-				<reportElement x="0" y="0" width="76" height="20"/>
+				<reportElement x="0" y="0" width="76" height="20" uuid="bb354074-25af-421f-8cb3-a08c53173ec7"/>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -80,7 +80,7 @@ AND ($P{DATAA} is null or $P{DATAA}::character varying = '' or datainvio <= $P{D
 				<text><![CDATA[Tipo]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="76" y="0" width="101" height="20"/>
+				<reportElement x="76" y="0" width="101" height="20" uuid="4c14617e-1e00-49cf-aee5-8001a398f661"/>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -94,7 +94,7 @@ AND ($P{DATAA} is null or $P{DATAA}::character varying = '' or datainvio <= $P{D
 				<text><![CDATA[Sottotipo]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="177" y="0" width="253" height="20"/>
+				<reportElement x="177" y="0" width="253" height="20" uuid="0699ddb5-bb35-42a1-95ef-e54bc43f5208"/>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -108,7 +108,7 @@ AND ($P{DATAA} is null or $P{DATAA}::character varying = '' or datainvio <= $P{D
 				<text><![CDATA[Destinatario]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="559" y="0" width="77" height="20"/>
+				<reportElement x="559" y="0" width="77" height="20" uuid="46ab42e6-8301-46aa-a769-85e276fade0f"/>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -122,7 +122,7 @@ AND ($P{DATAA} is null or $P{DATAA}::character varying = '' or datainvio <= $P{D
 				<text><![CDATA[Generato]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="430" y="0" width="129" height="20"/>
+				<reportElement x="430" y="0" width="129" height="20" uuid="1a41415b-3020-4b2b-81cc-74f21241d7e4"/>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -136,7 +136,7 @@ AND ($P{DATAA} is null or $P{DATAA}::character varying = '' or datainvio <= $P{D
 				<text><![CDATA[Indirizzo]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="636" y="0" width="166" height="20"/>
+				<reportElement x="636" y="0" width="166" height="20" uuid="453fc116-8203-4357-a903-223bc1682b81"/>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -154,46 +154,46 @@ AND ($P{DATAA} is null or $P{DATAA}::character varying = '' or datainvio <= $P{D
 	<detail>
 		<band height="20" splitType="Stretch">
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="0" y="0" width="76" height="20"/>
+				<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="0" y="0" width="76" height="20" uuid="05e01c2d-9be0-4bdb-8e55-ee6f610d58c6"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{tipo}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{tipo}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="76" y="0" width="101" height="20"/>
+				<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="76" y="0" width="101" height="20" uuid="cf7d2ae9-9331-4832-8884-a85e8222ca8c"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{sottotipo}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{sottotipo}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="177" y="0" width="253" height="20"/>
+				<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="177" y="0" width="253" height="20" uuid="4197e32c-54c4-4218-92c6-72857ebec62d"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{nomedestinatario}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{nomedestinatario}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy HH:mm" isBlankWhenNull="true">
-				<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="559" y="0" width="77" height="20"/>
+				<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="559" y="0" width="77" height="20" uuid="f10b0bf2-d621-46d6-ba40-c15eb2944126"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression class="java.util.Date"><![CDATA[$F{datainvio}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{datainvio}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="430" y="0" width="129" height="20"/>
+				<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="430" y="0" width="129" height="20" uuid="a48a0af2-95fd-4ed0-992c-fd67f99ca49a"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{indirizzo}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{indirizzo}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="636" y="0" width="166" height="20" isPrintWhenDetailOverflows="true"/>
+				<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="636" y="0" width="166" height="20" isPrintWhenDetailOverflows="true" uuid="75dec485-66a9-4701-a45b-ea26126eb7af"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{oggetto}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{oggetto}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

@@ -47,6 +47,7 @@ public class ImageUtility {
 	public static int[] BIANCO = {255,255,255,255};
 	
 	public static int[] GRIGIO = {25,25,25,255};
+	public static int[] GRIGIO_VALANGHE = {204,204,204,255};
 	public static int[] BORDO_COMUNE = {85,85,85,96};
 	
 	public static int[] TRASPARENTE = {0,0,0,0};
@@ -64,12 +65,24 @@ public class ImageUtility {
 	public static int DIMENSIONE_TESTO = 24;
 	public static int DIMENSIONE_OUTLINE = 4;
 	
+	public static float[] X_AREE = {0.75f,0.77f,0.83f,0.83f,0.51f,0.61f,0.65f,0.83f,0.72f,0.36f,0.4f,0.50f,0.39f,0.36f,0.12f,0.16f,0.19f,0.2f};
+	public static float[] Y_AREE = {0.91f,0.79f,0.73f,0.59f,0.72f,0.58f,0.41f,0.3f,0.28f,0.61f,0.48f,0.3f,0.31f,0.23f,0.49f,0.4f,0.27f,0.15f};
+	
+	
 	public static double[] bbox;
 	public static double sizex, sizey;
 	
 	
 	public static int[] colorePerStato(int stato, int[] verd, int[] gial, int[] aran, int[] ross) {
 		if (stato==-1) return BIANCO;
+		if (stato==0) return verd;
+		if (stato==1) return gial;
+		if (stato==2) return aran;
+		return ross;
+	}
+	
+	public static int[] colorePerStatoValanghe(int stato, int[] verd, int[] gial, int[] aran, int[] ross) {
+		if (stato==-1) return GRIGIO_VALANGHE;
 		if (stato==0) return verd;
 		if (stato==1) return gial;
 		if (stato==2) return aran;
@@ -251,6 +264,73 @@ public class ImageUtility {
 		
 		
 		return img;
+		
+	}
+	
+public static BufferedImage makeMappaValanghe(int[] stati, int x, int y) {
+		
+		String[] area1 = {"FERRIERE","OTTONE","ZERBA","ALBARETO","BARDI","BEDONIA","BERCETO","BORGO VAL DI TARO","CORNIGLIO","MONCHIO DELLE CORTI","TORNOLO"};
+		String[] area2 = {"VENTASSO","VILLA MINOZZO","FANANO","FIUMALBO","FRASSINORO","MONTECRETO","PIEVEPELAGO","RIOLUNATO","SESTOLA","ALTO RENO TERME","LIZZANO IN BELVEDERE"};
+		String[] area3 = {"SANTA SOFIA","VERGHERETO","MONTECOPIOLO","BAGNO DI ROMAGNA"};
+		
+		try {
+			
+			EntityCacheUtil.removeCache(AllertaParametro.class.getName());
+			FinderCacheUtil.removeCache(AllertaParametro.class.getName());
+			
+			AllertaParametro ap = AllertaParametroLocalServiceUtil.fetchAllertaParametro("MAPPA_BOUNDING_BOX");
+			if (ap!=null) {
+				String ss[] = ap.getValore().split(",");
+				bbox = new double[ss.length];
+				for (int k=0; k<ss.length; k++) bbox[k] = Double.parseDouble(ss[k]);
+				sizex = x;
+				sizey = y;
+			}
+		} catch (Exception e) {
+			
+		}
+		
+		
+		
+		BufferedImage img = new BufferedImage(x,y,BufferedImage.TYPE_4BYTE_ABGR);
+		Graphics2D g = img.createGraphics();
+		
+		g.setClip(0,0,x,y);
+		
+		int[] VE = getParametroArrayInteri("ALLERTA_COLORE_VERDE", VERDE);
+		int[] GI = getParametroArrayInteri("ALLERTA_COLORE_GIALLO", GIALLO);
+		int[] AR = getParametroArrayInteri("ALLERTA_COLORE_ARANCIONE", ARANCIONE);
+		int[] RO = getParametroArrayInteri("ALLERTA_COLORE_ROSSO", ROSSO);
+		
+
+			List<Geografia> geo = GeografiaLocalServiceUtil.findByAreaComplessita("comune", "simple");
+			
+			for (Geografia gg : geo) {
+				int index = -1;
+				for (String ss : area1) if (ss.equals(gg.getGeografiaId())) index = 0;
+				for (String ss : area2) if (ss.equals(gg.getGeografiaId())) index = 1;
+				for (String ss : area3) if (ss.equals(gg.getGeografiaId())) index = 2;
+				int stato = (index>=0?stati[index]:-1);
+				drawArea(gg.getGeometria(),index<0?BIANCO:colorePerStatoValanghe(stato,VE,GI,AR,RO),BORDO_COMUNE,3.0f,g);
+			}
+						
+
+			
+			String[] testi = getParametroArrayStringhe("ALLERTA_TESTI_MACROAREE", TESTI_MACROAREE);
+			float[] xx = getParametroArrayFloat("ALLERTA_X_MACROAREE", X_MACROAREE);
+			float[] yy = getParametroArrayFloat("ALLERTA_Y_MACROAREE", Y_MACROAREE);
+			int size = getParametroIntero("ALLERTA_TESTI_DIMENSIONE", DIMENSIONE_TESTO);
+			int outline = getParametroIntero("ALLERTA_OUTLINE_DIMENSIONE", DIMENSIONE_OUTLINE);
+			int[] coloreTesto = getParametroArrayInteri("ALLERTA_TESTI_COLORE", COLORE_TESTO);
+			int[] coloreOutline = getParametroArrayInteri("ALLERTA_OUTLINE_COLORE", COLORE_OUTLINE);
+			String font = getParametroStringa("ALLERTA_TESTI_FONT", null);
+			
+			
+			return img;
+
+		
+		
+
 		
 	}
 	
@@ -667,5 +747,101 @@ public static BufferedImage getImage(String f) {
 		
 	}
 	
+	
+	public static BufferedImage makeMappaAreeNuove(int[] stati, int x, int y, String[] aree) {
+				
+		try {
+			
+			EntityCacheUtil.removeCache(AllertaParametro.class.getName());
+			FinderCacheUtil.removeCache(AllertaParametro.class.getName());
+			
+			AllertaParametro ap = AllertaParametroLocalServiceUtil.fetchAllertaParametro("MAPPA_BOUNDING_BOX");
+			if (ap!=null) {
+				String ss[] = ap.getValore().split(",");
+				bbox = new double[ss.length];
+				for (int k=0; k<ss.length; k++) bbox[k] = Double.parseDouble(ss[k]);
+				sizex = x;
+				sizey = y;
+			}
+		} catch (Exception e) {
+			
+		}
+
+		BufferedImage img = new BufferedImage(x,y,BufferedImage.TYPE_4BYTE_ABGR);
+		Graphics2D g = img.createGraphics();
+		
+		g.setClip(0,0,x,y);
+		
+		int[] VE = getParametroArrayInteri("ALLERTA_COLORE_VERDE", VERDE);
+		int[] GI = getParametroArrayInteri("ALLERTA_COLORE_GIALLO", GIALLO);
+		int[] AR = getParametroArrayInteri("ALLERTA_COLORE_ARANCIONE", ARANCIONE);
+		int[] RO = getParametroArrayInteri("ALLERTA_COLORE_ROSSO", ROSSO);
+		
+		for (int k=0; k<stati.length; k++) {
+			drawArea(aree[k],"simple",colorePerStato(stati[k],VE,GI,AR,RO),null,2.0f,g);
+		}
+		
+		drawAree("comune","simple",null,BORDO_COMUNE,0.5f,g);
+		
+		for (int k=0; k<stati.length; k++) {
+			drawArea(aree[k],"simple",null,GRIGIO,3.0f,g);
+		}
+
+		float[] xx = getParametroArrayFloat("ALLERTA_X_TESTI", X_AREE);
+		float[] yy = getParametroArrayFloat("ALLERTA_Y_TESTI", Y_AREE);
+		int size = getParametroIntero("ALLERTA_TESTI_DIMENSIONE", DIMENSIONE_TESTO);
+		int outline = getParametroIntero("ALLERTA_OUTLINE_DIMENSIONE", DIMENSIONE_OUTLINE);
+		int[] coloreTesto = getParametroArrayInteri("ALLERTA_TESTI_COLORE", COLORE_TESTO);
+		int[] coloreOutline = getParametroArrayInteri("ALLERTA_OUTLINE_COLORE", COLORE_OUTLINE);
+		String font = getParametroStringa("ALLERTA_TESTI_FONT", null);
+			
+		disegnaTesti(g, aree, xx, yy, x, y, size, outline, coloreTesto, coloreOutline, font);
+			
+		return img;
+		
+	}
+	
+	public static BufferedImage makeMappaAreeNuoveNoTesto(int[] stati, int x, int y, String[] aree) {
+		
+		try {
+			
+			EntityCacheUtil.removeCache(AllertaParametro.class.getName());
+			FinderCacheUtil.removeCache(AllertaParametro.class.getName());
+			
+			AllertaParametro ap = AllertaParametroLocalServiceUtil.fetchAllertaParametro("MAPPA_BOUNDING_BOX");
+			if (ap!=null) {
+				String ss[] = ap.getValore().split(",");
+				bbox = new double[ss.length];
+				for (int k=0; k<ss.length; k++) bbox[k] = Double.parseDouble(ss[k]);
+				sizex = x;
+				sizey = y;
+			}
+		} catch (Exception e) {
+			
+		}
+
+		BufferedImage img = new BufferedImage(x,y,BufferedImage.TYPE_4BYTE_ABGR);
+		Graphics2D g = img.createGraphics();
+		
+		g.setClip(0,0,x,y);
+		
+		int[] VE = getParametroArrayInteri("ALLERTA_COLORE_VERDE", VERDE);
+		int[] GI = getParametroArrayInteri("ALLERTA_COLORE_GIALLO", GIALLO);
+		int[] AR = getParametroArrayInteri("ALLERTA_COLORE_ARANCIONE", ARANCIONE);
+		int[] RO = getParametroArrayInteri("ALLERTA_COLORE_ROSSO", ROSSO);
+		
+		for (int k=0; k<stati.length; k++) {
+			drawArea(aree[k],"simple",colorePerStato(stati[k],VE,GI,AR,RO),null,2.0f,g);
+		}
+		
+		drawAree("comune","simple",null,BORDO_COMUNE,0.5f,g);
+		
+		for (int k=0; k<stati.length; k++) {
+			drawArea(aree[k],"simple",null,GRIGIO,3.0f,g);
+		}
+
+		return img;
+		
+	}
 
 }

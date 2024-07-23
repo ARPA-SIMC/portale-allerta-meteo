@@ -114,6 +114,40 @@ public class ParerService implements IJavaToXMLParerConstants {
 		}
 		return esitoInvio;
 	}
+	
+	public String comunicaDatiSpecificiInvioValanghe(DatiSpecificiBean datiSpecificiBean) throws IOException {
+
+		// Esito di default
+		String esitoInvio = ESITO_INVIO_IN_INVIO;
+
+		// Estraggo le info dal bean
+		DatiSpecificiInvio datiSpecifici = datiSpecificiBean.getDatiSpecifici();
+		List<DocumentiCollegati> documentiCollegati = datiSpecificiBean.getDocumentiCollegati();
+		List<ComponentiInvio> componentiInvio = datiSpecificiBean.getComponenti();
+
+		try {
+			// costruisci xml per l'invio
+			String xmlAllerta = generaFileXml(datiSpecifici, documentiCollegati, componentiInvio,
+					TipoDatoDaInviare.VALANGHE.getTipoDatoDaInviare());
+
+			// inserisco con esito invio = "in invio"
+			// Serve per lo scheduler
+			datiSpecifici.setESITO_INVIO(esitoInvio);
+
+			// Inserimento in DatiSpecificiInvio e Documenti Collegati
+			insertDatiSpecificiInvio(datiSpecifici, documentiCollegati, componentiInvio,
+					TipoDatoDaInviare.VALANGHE.getTipoDatoDaInviare());
+
+			// Carico i file (componenti) da inviare
+			List<File> listaFileComponenti = caricaFileComponenti(componentiInvio);
+
+			esitoInvio = invioDatiParer(datiSpecifici, esitoInvio, xmlAllerta, listaFileComponenti);
+
+		} catch (SystemException | DatatypeConfigurationException | PortalException e) {
+			logger.error(e);
+		}
+		return esitoInvio;
+	}
 
 	/**
 	 * 
@@ -155,6 +189,41 @@ public class ParerService implements IJavaToXMLParerConstants {
 		}
 		return esitoInvio;
 	}
+	
+	public String comunicaDatiSpecificiInvioValangheSms(DatiSpecificiBean datiSpecificiBean) throws IOException {
+
+		// Esito di default
+		String esitoInvio = ESITO_INVIO_IN_INVIO;
+
+		// Estraggo le info dal bean
+		DatiSpecificiInvio datiSpecifici = datiSpecificiBean.getDatiSpecifici();
+		List<DocumentiCollegati> documentiCollegati = datiSpecificiBean.getDocumentiCollegati();
+		List<ComponentiInvio> componentiInvio = datiSpecificiBean.getComponenti();
+
+		try {
+
+			// costruisci xml per l'invio
+			String xmlAllerta = generaFileXml(datiSpecifici, documentiCollegati, componentiInvio,
+					TipoDatoDaInviare.VALANGHE_SMS.getTipoDatoDaInviare());
+
+			// inserisco con esito invio = "in invio"
+			// Serve per lo scheduler
+			datiSpecifici.setESITO_INVIO(esitoInvio);
+
+			// Inserimento in DatiSpecificiInvio e Documenti Collegati
+			insertDatiSpecificiInvio(datiSpecifici, documentiCollegati, componentiInvio,
+					TipoDatoDaInviare.VALANGHE_SMS.getTipoDatoDaInviare());
+
+			// Carico i file (componenti) da inviare
+			List<File> listaFileComponenti = caricaFileComponenti(componentiInvio);
+
+			esitoInvio = invioDatiParer(datiSpecifici, esitoInvio, xmlAllerta, listaFileComponenti);
+
+		} catch (SystemException | DatatypeConfigurationException | PortalException e) {
+			logger.error(e);
+		}
+		return esitoInvio;
+	}
 
 	/**
 	 * 
@@ -184,6 +253,40 @@ public class ParerService implements IJavaToXMLParerConstants {
 			// Inserimento in DatiSpecificiInvio e Documenti Collegati
 			insertDatiSpecificiInvio(datiSpecifici, documentiCollegati, componentiInvio,
 					TipoDatoDaInviare.ALLERTA_MAIL.getTipoDatoDaInviare());
+
+			// Carico i file (componenti) da inviare
+			List<File> listaDocumenti = caricaFileComponenti(componentiInvio);
+
+			esitoInvio = invioDatiParer(datiSpecifici, esitoInvio, xmlAllerta, listaDocumenti);
+
+		} catch (SystemException | DatatypeConfigurationException | PortalException e) {
+			logger.error(e);
+		}
+		return esitoInvio;
+	}
+	
+	public String comunicaDatiSpecificiInvioValangheMail(DatiSpecificiBean datiSpecificiBean) throws IOException {
+
+		// Esito di default
+		String esitoInvio = ESITO_INVIO_IN_INVIO;
+
+		// Estraggo le info dal bean
+		DatiSpecificiInvio datiSpecifici = datiSpecificiBean.getDatiSpecifici();
+		List<DocumentiCollegati> documentiCollegati = datiSpecificiBean.getDocumentiCollegati();
+		List<ComponentiInvio> componentiInvio = datiSpecificiBean.getComponenti();
+
+		try {
+			// costruisci xml per l'invio
+			String xmlAllerta = generaFileXml(datiSpecifici, documentiCollegati, componentiInvio,
+					TipoDatoDaInviare.VALANGHE_MAIL.getTipoDatoDaInviare());
+
+			// inserisco con esito invio = "in invio"
+			// Serve per lo scheduler
+			datiSpecifici.setESITO_INVIO(esitoInvio);
+
+			// Inserimento in DatiSpecificiInvio e Documenti Collegati
+			insertDatiSpecificiInvio(datiSpecifici, documentiCollegati, componentiInvio,
+					TipoDatoDaInviare.VALANGHE_MAIL.getTipoDatoDaInviare());
 
 			// Carico i file (componenti) da inviare
 			List<File> listaDocumenti = caricaFileComponenti(componentiInvio);

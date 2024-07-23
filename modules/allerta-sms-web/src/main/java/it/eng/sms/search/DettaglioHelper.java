@@ -14,7 +14,7 @@ public class DettaglioHelper {
 		
 		end = 10000;
 		int num = end - start;
-		String q = "select * from sms_dettaglio_vw where id='" + displayTerms.getId() + "' ";
+		String q = "select * from (select * from sms_dettaglio_vw where id='" + displayTerms.getId() + "' offset 0) x where 1=1 ";
 		
 		if( Validator.isNotNull( displayTerms.getFiltro())) {
 			
@@ -66,7 +66,7 @@ public class DettaglioHelper {
 	
 	public static int getDettagliCount(DettaglioDisplayTerm displayTerms) {
 		
-		String q = "select count(*) from sms_dettaglio_vw where id='" + displayTerms.getId() + "' ";
+		String q = "select count(*) from (select * from sms_dettaglio_vw where id='" + displayTerms.getId() + "' offset 0) x where 1=1 ";
 		
 		if( Validator.isNotNull( displayTerms.getFiltro())) {
 			

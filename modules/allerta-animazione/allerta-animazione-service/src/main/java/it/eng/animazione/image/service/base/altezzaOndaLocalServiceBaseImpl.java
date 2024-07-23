@@ -46,7 +46,10 @@ import it.eng.animazione.image.model.altezzaOnda;
 import it.eng.animazione.image.service.altezzaOndaLocalService;
 import it.eng.animazione.image.service.persistence.ParametroPersistence;
 import it.eng.animazione.image.service.persistence.PioggiaCumulativaPersistence;
+import it.eng.animazione.image.service.persistence.altezzaOndaAdriacPersistence;
 import it.eng.animazione.image.service.persistence.altezzaOndaPersistence;
+import it.eng.animazione.image.service.persistence.altezzaOndaSwanitaPersistence;
+import it.eng.animazione.image.service.persistence.elevazionePersistence;
 
 import java.io.Serializable;
 
@@ -369,6 +372,135 @@ public abstract class altezzaOndaLocalServiceBaseImpl
 	}
 
 	/**
+	 * Returns the altezza onda adriac local service.
+	 *
+	 * @return the altezza onda adriac local service
+	 */
+	public it.eng.animazione.image.service.altezzaOndaAdriacLocalService
+		getaltezzaOndaAdriacLocalService() {
+
+		return altezzaOndaAdriacLocalService;
+	}
+
+	/**
+	 * Sets the altezza onda adriac local service.
+	 *
+	 * @param altezzaOndaAdriacLocalService the altezza onda adriac local service
+	 */
+	public void setaltezzaOndaAdriacLocalService(
+		it.eng.animazione.image.service.altezzaOndaAdriacLocalService
+			altezzaOndaAdriacLocalService) {
+
+		this.altezzaOndaAdriacLocalService = altezzaOndaAdriacLocalService;
+	}
+
+	/**
+	 * Returns the altezza onda adriac persistence.
+	 *
+	 * @return the altezza onda adriac persistence
+	 */
+	public altezzaOndaAdriacPersistence getaltezzaOndaAdriacPersistence() {
+		return altezzaOndaAdriacPersistence;
+	}
+
+	/**
+	 * Sets the altezza onda adriac persistence.
+	 *
+	 * @param altezzaOndaAdriacPersistence the altezza onda adriac persistence
+	 */
+	public void setaltezzaOndaAdriacPersistence(
+		altezzaOndaAdriacPersistence altezzaOndaAdriacPersistence) {
+
+		this.altezzaOndaAdriacPersistence = altezzaOndaAdriacPersistence;
+	}
+
+	/**
+	 * Returns the altezza onda swanita local service.
+	 *
+	 * @return the altezza onda swanita local service
+	 */
+	public it.eng.animazione.image.service.altezzaOndaSwanitaLocalService
+		getaltezzaOndaSwanitaLocalService() {
+
+		return altezzaOndaSwanitaLocalService;
+	}
+
+	/**
+	 * Sets the altezza onda swanita local service.
+	 *
+	 * @param altezzaOndaSwanitaLocalService the altezza onda swanita local service
+	 */
+	public void setaltezzaOndaSwanitaLocalService(
+		it.eng.animazione.image.service.altezzaOndaSwanitaLocalService
+			altezzaOndaSwanitaLocalService) {
+
+		this.altezzaOndaSwanitaLocalService = altezzaOndaSwanitaLocalService;
+	}
+
+	/**
+	 * Returns the altezza onda swanita persistence.
+	 *
+	 * @return the altezza onda swanita persistence
+	 */
+	public altezzaOndaSwanitaPersistence getaltezzaOndaSwanitaPersistence() {
+		return altezzaOndaSwanitaPersistence;
+	}
+
+	/**
+	 * Sets the altezza onda swanita persistence.
+	 *
+	 * @param altezzaOndaSwanitaPersistence the altezza onda swanita persistence
+	 */
+	public void setaltezzaOndaSwanitaPersistence(
+		altezzaOndaSwanitaPersistence altezzaOndaSwanitaPersistence) {
+
+		this.altezzaOndaSwanitaPersistence = altezzaOndaSwanitaPersistence;
+	}
+
+	/**
+	 * Returns the elevazione local service.
+	 *
+	 * @return the elevazione local service
+	 */
+	public it.eng.animazione.image.service.elevazioneLocalService
+		getelevazioneLocalService() {
+
+		return elevazioneLocalService;
+	}
+
+	/**
+	 * Sets the elevazione local service.
+	 *
+	 * @param elevazioneLocalService the elevazione local service
+	 */
+	public void setelevazioneLocalService(
+		it.eng.animazione.image.service.elevazioneLocalService
+			elevazioneLocalService) {
+
+		this.elevazioneLocalService = elevazioneLocalService;
+	}
+
+	/**
+	 * Returns the elevazione persistence.
+	 *
+	 * @return the elevazione persistence
+	 */
+	public elevazionePersistence getelevazionePersistence() {
+		return elevazionePersistence;
+	}
+
+	/**
+	 * Sets the elevazione persistence.
+	 *
+	 * @param elevazionePersistence the elevazione persistence
+	 */
+	public void setelevazionePersistence(
+		elevazionePersistence elevazionePersistence) {
+
+		this.elevazionePersistence = elevazionePersistence;
+	}
+
+	/**
 	 * Returns the parametro local service.
 	 *
 	 * @return the parametro local service
@@ -641,6 +773,33 @@ public abstract class altezzaOndaLocalServiceBaseImpl
 
 	@BeanReference(type = altezzaOndaPersistence.class)
 	protected altezzaOndaPersistence altezzaOndaPersistence;
+
+	@BeanReference(
+		type = it.eng.animazione.image.service.altezzaOndaAdriacLocalService.class
+	)
+	protected it.eng.animazione.image.service.altezzaOndaAdriacLocalService
+		altezzaOndaAdriacLocalService;
+
+	@BeanReference(type = altezzaOndaAdriacPersistence.class)
+	protected altezzaOndaAdriacPersistence altezzaOndaAdriacPersistence;
+
+	@BeanReference(
+		type = it.eng.animazione.image.service.altezzaOndaSwanitaLocalService.class
+	)
+	protected it.eng.animazione.image.service.altezzaOndaSwanitaLocalService
+		altezzaOndaSwanitaLocalService;
+
+	@BeanReference(type = altezzaOndaSwanitaPersistence.class)
+	protected altezzaOndaSwanitaPersistence altezzaOndaSwanitaPersistence;
+
+	@BeanReference(
+		type = it.eng.animazione.image.service.elevazioneLocalService.class
+	)
+	protected it.eng.animazione.image.service.elevazioneLocalService
+		elevazioneLocalService;
+
+	@BeanReference(type = elevazionePersistence.class)
+	protected elevazionePersistence elevazionePersistence;
 
 	@BeanReference(
 		type = it.eng.animazione.image.service.ParametroLocalService.class

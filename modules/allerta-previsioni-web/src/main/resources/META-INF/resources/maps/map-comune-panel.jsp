@@ -7,7 +7,7 @@
 <!-- Solo se si è sulla pagina del singolo comune -->
  <div class="map-component__panel__situation" id="mcps--oggi">
      <div class="pb-2">
-         <h3>Livelli di criticità a <%=mapModelBean.getSiteName() %></h3>
+         <h3>Livelli di allerta a <%=mapModelBean.getSiteName() %></h3>
          <div class="map-component__panel__area-allertamento"></div>
          <div class="map-component__panel__situation__phenomena"></div>
      </div>

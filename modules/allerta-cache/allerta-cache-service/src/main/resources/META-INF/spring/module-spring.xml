@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+
+<beans
+	default-destroy-method="destroy"
+	default-init-method="afterPropertiesSet"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
+>
+
+	<bean class="it.eng.cache.service.impl.DatiLocalServiceImpl" id="it.eng.cache.service.DatiLocalService" />
+	<bean class="it.eng.cache.service.impl.DatiServiceImpl" id="it.eng.cache.service.DatiService" />
+	<bean class="it.eng.cache.service.persistence.impl.DatiPersistenceImpl" id="it.eng.cache.service.persistence.DatiPersistence" parent="basePersistence" />
+</beans>

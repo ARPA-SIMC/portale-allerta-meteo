@@ -7,6 +7,10 @@
 		<field name="ICONA" type="String" />
 		<field name="REGEX" type="String" />
 	</model>
+	<model name="it.eng.allerte.model.RubricaCategoria">
+		<field name="ID_CATEGORIA" type="long" />
+		<field name="DESCRIZIONE" type="String" />
+	</model>
 	<model name="it.eng.allerte.model.RubricaContatto">
 		<field name="ID_CONTATTO" type="long" />
 		<field name="FK_NOMINATIVO" type="long" />
@@ -36,6 +40,7 @@
 		<field name="FK_UTENTE_MODIFICA" type="long" />
 		<field name="DATA_MODIFICA" type="Date" />
 		<field name="DISABLED" type="boolean" />
+		<field name="FK_CATEGORIA" type="long" />
 	</model>
 	<model name="it.eng.allerte.model.RubricaGruppoGruppi">
 		<field name="FK_GRUPPO_PADRE" type="long" />

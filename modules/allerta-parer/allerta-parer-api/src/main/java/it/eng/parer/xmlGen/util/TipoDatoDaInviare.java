@@ -10,7 +10,10 @@ public enum TipoDatoDaInviare {
 	MONITORAGGIO_MAIL("M_M"),
 	MONITORAGGIO_SMS("M_S"),
 	SUPERAMENTO_MAIL("S_M"),
-	SUPERAMENTO_SMS("S_S");
+	SUPERAMENTO_SMS("S_S"),
+	VALANGHE("V"),
+	VALANGHE_MAIL("V_M"),
+	VALANGHE_SMS("V_S");
 	
 	public String tipoDatoDaInviare;
 	

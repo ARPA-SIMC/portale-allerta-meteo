@@ -70,9 +70,9 @@ public class RubricaGruppoServiceUtil {
 	}
 
 	public static java.util.Map<String, Object> getGroups(
-		String name, int limit, int offset) {
+		String name, Long categoria, int limit, int offset) {
 
-		return getService().getGroups(name, limit, offset);
+		return getService().getGroups(name, categoria, limit, offset);
 	}
 
 	/**

@@ -91,18 +91,30 @@ public class SMSLocalServiceWrapper
 	}
 
 	/**
-	 * @param canale - elenco dei canali sui quali creare la notifica, o NULL per indicare tutti i canali
-	 * @param from - il numero o id di provenienza della notifica
-	 * @param testo - il testo della notifica
-	 * @param tipo - il tipo della notifica (primo elemento della gerarchia tipo/sottotipo/param)
-	 * @param sottotipo il sottotipo della notifica (secondo elemento della gerarchia tipo/sottotipo/param)
-	 * @param param - il parametro della notifica (terzo elemento della gerarchia tipo/sottotipo/param. questo � un numero che pu� funzionare da chiave esterna)
-	 * @param groupOwner - l'id del proprietario della rubrica in cui cercare il gruppo
-	 * @param nomeGruppo - il nome del gruppo da invocare
-	 * @param ricorsivo - se true, l'invio � ricorsivo, cio� tutti i path non specificati nel parametro successivo ricevono la notifica
-	 * @param sottogruppi - una mappa String che dice a quali sottogruppi (indicati con notazione "path/con/wildcard->TRUE" con wildcard e supporto per regex) mandare la notifica; si guarda
-	 il booleano del primo path che fa match; per quelli che non fanno match con nessun path indicato qui, si usa il parametro "ricorsivo"
-	 * @return il numero di notifiche create. NOTA: questo metodo NON spedisce le notifiche, le crea solo.
+	 * @param canale      - elenco dei canali sui quali creare la notifica, o NULL
+	 per indicare tutti i canali
+	 * @param from        - il numero o id di provenienza della notifica
+	 * @param testo       - il testo della notifica
+	 * @param tipo        - il tipo della notifica (primo elemento della gerarchia
+	 tipo/sottotipo/param)
+	 * @param sottotipo   il sottotipo della notifica (secondo elemento della
+	 gerarchia tipo/sottotipo/param)
+	 * @param param       - il parametro della notifica (terzo elemento della
+	 gerarchia tipo/sottotipo/param. questo � un numero che pu�
+	 funzionare da chiave esterna)
+	 * @param groupOwner  - l'id del proprietario della rubrica in cui cercare il
+	 gruppo
+	 * @param nomeGruppo  - il nome del gruppo da invocare
+	 * @param ricorsivo   - se true, l'invio � ricorsivo, cio� tutti i path non
+	 specificati nel parametro successivo ricevono la notifica
+	 * @param sottogruppi - una mappa String che dice a quali sottogruppi (indicati
+	 con notazione "path/con/wildcard->TRUE" con wildcard e
+	 supporto per regex) mandare la notifica; si guarda il
+	 booleano del primo path che fa match; per quelli che non
+	 fanno match con nessun path indicato qui, si usa il
+	 parametro "ricorsivo"
+	 * @return il numero di notifiche create. NOTA: questo metodo NON spedisce le
+	 notifiche, le crea solo.
 	 * @throws Exception
 	 */
 	@Override
@@ -620,12 +632,31 @@ public class SMSLocalServiceWrapper
 	}
 
 	@Override
+	public java.util.List<it.eng.allerter.model.Email> searchEmail(
+		String tipo, String sottotipo, String destinatario, String email,
+		String dataInvioDa, String dataInvioA, int start, int end) {
+
+		return _smsLocalService.searchEmail(
+			tipo, sottotipo, destinatario, email, dataInvioDa, dataInvioA,
+			start, end);
+	}
+
+	@Override
 	public long searchEmailCount(
 		String tipo, String sottotipo, String destinatario, String dataInvioDa,
 		String dataInvioA) {
 
 		return _smsLocalService.searchEmailCount(
 			tipo, sottotipo, destinatario, dataInvioDa, dataInvioA);
+	}
+
+	@Override
+	public long searchEmailCount(
+		String tipo, String sottotipo, String destinatario, String email,
+		String dataInvioDa, String dataInvioA) {
+
+		return _smsLocalService.searchEmailCount(
+			tipo, sottotipo, destinatario, email, dataInvioDa, dataInvioA);
 	}
 
 	@Override

@@ -68,7 +68,7 @@ am.MapDataScenarioVento = (function($){
 					
 				if( dataDirections[ dataValues[a].idstazione ] ){ // just if we have the direction value
 
-					htm = "<div class='divSVG'><svg style='overflow:visible' xmlns='http://www.w3.org/2000/svg' version='1.1'>" 
+					htm = "<div class='divSVG'><svg style='overflow:visible;position:relative;top:-16px;left:-16px' xmlns='http://www.w3.org/2000/svg' version='1.1'>" 
 						+ this.sventolaBarba(dataValues[a].value || 0, dataDirections[dataValues[a].idstazione].value || 0) 
 						+ "</svg></div>"
 					vl = dataValues[a].value;
@@ -180,7 +180,7 @@ am.MapDataScenarioVento = (function($){
 	
 			//disegnamo le linee lunghe
 			for (i=0; i<lineeLunghe; i++) {
-					theSVG=theSVG+ "<g transform='rotate(-17 32 "+(lAltezza+(i*2.5))+")'><line x1='32' y1='"+(lAltezza+(i*2.5))+"' x2='26' y2='"+(lAltezza+(i*2.5))+"' style='stroke:black;stroke-width:2;' /></g>";
+					theSVG=theSVG+ "<g transform='rotate(-17 32 "+(lAltezza+(i*2.5))+")'><line x1='32' y1='"+(lAltezza+(i*2.5))+"' x2='42' y2='"+(lAltezza+(i*2.5))+"' style='stroke:black;stroke-width:2;' /></g>";
 	
 			}
 			lAltezza=lAltezza+(2.5*(lineeLunghe-1));
@@ -191,7 +191,7 @@ am.MapDataScenarioVento = (function($){
 			//disegnamo le linee corte
 			lAltezza=lAltezza+3+offset;
 			for (i=0; i<lineaCorta; i++) {
-				theSVG=theSVG+ "<g transform='rotate(-17 32 "+(lAltezza+(i*2.5))+")'><line x1='32' y1='"+(lAltezza+(i*2.5))+"' x2='23' y2='"+(lAltezza+(i*2.5))+"' style='stroke:black;stroke-width:1.5;' /></g>";
+				theSVG=theSVG+ "<g transform='rotate(-17 32 "+(lAltezza+(i*2.5))+")'><line x1='32' y1='"+(lAltezza+(i*2.5))+"' x2='39' y2='"+(lAltezza+(i*2.5))+"' style='stroke:black;stroke-width:1.5;' /></g>";
 			}
 	
 	

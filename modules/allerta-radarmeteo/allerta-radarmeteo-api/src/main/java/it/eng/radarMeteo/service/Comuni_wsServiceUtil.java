@@ -65,6 +65,12 @@ public class Comuni_wsServiceUtil {
 		return getService().getStatoAllerta(timestamp);
 	}
 
+	public static java.util.List<Object[]> getStatoAllertaCap(
+		java.sql.Timestamp timestamp) {
+
+		return getService().getStatoAllertaCap(timestamp);
+	}
+
 	public static Comuni_wsService getService() {
 		return _serviceTracker.getService();
 	}

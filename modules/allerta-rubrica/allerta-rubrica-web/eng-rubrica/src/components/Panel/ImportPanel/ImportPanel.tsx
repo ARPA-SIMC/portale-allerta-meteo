@@ -71,7 +71,7 @@ export class ImportPanel extends PureComponent<any, any> {
 
 	const data = await res.json()
         console.log(data)
-        this.setState({comandi:data,note:null,risultato:null,warning:this.trovaNominativiMultipli(data)})
+        this.setState({comandi:data.comandi,note:data.note,risultato:null,warning:this.trovaNominativiMultipli(data.comandi)})
     }; 
 
      trovaNominativiMultipli = (dati) => {
@@ -167,7 +167,10 @@ export class ImportPanel extends PureComponent<any, any> {
                    {cmd.indirizzo}</td>
                <td>
                   {cmd.contatti.map(cont => <div>
-                         <span>{cont.nomeCanale} {cont.oldContatto} {cont.decisione!='NOTHING' && <span className={`${this.stileDecisione(cont.decisione)}` }> {cont.decisione}</span>}</span>
+                         <span>{cont.nomeCanale} {cont.oldContatto} {cont.decisione!='NOTHING' && <span className={`${this.stileDecisione(cont.decisione)}` }> {cont.decisione} 
+{cont.nomeCanale=='EMAIL' && cont.oldContatto && !cont.oldContatto.includes('@') && cont.decisione!='DELETE' && <span className={`${this.stileDecisione('DELETE')}` }>NON SEMBRA UNA EMAIL</span>}
+{cont.nomeCanale!='EMAIL' && cont.oldContatto && cont.oldContatto.includes('@') && cont.decisione!='DELETE' && <span className={`${this.stileDecisione('DELETE')}` }>NON SEMBRA UN TELEFONO</span>}
+</span>}</span>
                          <br/>
                      </div> )}
                </td>

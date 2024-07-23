@@ -68,6 +68,11 @@ am.MapDataScenarioSensore = (function($){
                 this.baseLayers.regione.addTo(this.map);
 
         }
+        
+        if (sessionStorage.getItem('mapZoom') && map && map.setView)
+        	map.setView(new L.LatLng(sessionStorage.getItem('mapLat'), sessionStorage.getItem('mapLng')), sessionStorage.getItem('mapZoom'));
+        	
+        
     
         // Chiedo i dati aggiornati
         var param = {
@@ -86,6 +91,15 @@ am.MapDataScenarioSensore = (function($){
                 this.openSensorGraph(id, variabile);
             }
         }).bind(this));
+    	
+    	this.map.on('zoomend moveend', (function(e){
+                //console.log('zoom '+this.map.getZoom())
+                //console.log(this.map.getCenter())
+                sessionStorage.setItem('mapZoom',this.map.getZoom())
+                sessionStorage.setItem('mapLat',this.map.getCenter().lat)
+                sessionStorage.setItem('mapLng',this.map.getCenter().lng)
+            
+        }).bind(this));
     
     }
     
@@ -95,7 +109,7 @@ am.MapDataScenarioSensore = (function($){
      */
     MapDataScenarioSensore.prototype.renderData = function(data, asyncUpdateCallback, queryParams){
         var tsOriginal = data[0].time;
-        var ts = data.shift().time;
+        var ts = (data[0].time?data.shift().time:null);
         var vl, htm, cls, ic;
         
         //if (this.rendering) return

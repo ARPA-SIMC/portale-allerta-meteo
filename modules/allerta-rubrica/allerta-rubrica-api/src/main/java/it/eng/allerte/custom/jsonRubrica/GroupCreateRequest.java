@@ -4,6 +4,7 @@ public class GroupCreateRequest {
 
     private String name;
     private Long ownerId;
+    private Long categoria;
     // per il momento non inseriamo le note
     //private String note; 
     
@@ -20,6 +21,13 @@ public class GroupCreateRequest {
 	public void setOwnerId(Long ownerId) {
 		this.ownerId = ownerId;
 	}
+	public Long getCategoria() {
+		return categoria;
+	}
+	public void setCategoria(Long categoria) {
+		this.categoria = categoria;
+	}
+	
 	
 //	public String getNote() {
 //		return note;

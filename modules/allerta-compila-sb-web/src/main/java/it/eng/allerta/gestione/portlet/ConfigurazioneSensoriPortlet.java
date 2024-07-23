@@ -2,9 +2,13 @@ package it.eng.allerta.gestione.portlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.portlet.Portlet;
 import javax.portlet.PortletException;
+import javax.portlet.PortletRequest;
+import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.ResourceRequest;
@@ -12,9 +16,12 @@ import javax.portlet.ResourceResponse;
 
 import org.osgi.service.component.annotations.Component;
 
+import com.liferay.portal.kernel.portlet.PortletURLFactoryUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
+import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.portal.kernel.util.WebKeys;
 
 import it.eng.allerta.utils.AllertaKeys;
 import it.eng.allerter.allerta.SensoreBean;
@@ -44,11 +51,17 @@ public class ConfigurazioneSensoriPortlet extends MVCPortlet {
 			RenderRequest renderRequest, RenderResponse renderResponse)
 		throws IOException, PortletException {
 		
+		String s = renderRequest.getParameter("solotuoicomuni");
+		
+		boolean soloTuoi = true;
+		if (s!=null) soloTuoi = Boolean.parseBoolean(s);
+		
 		SensoreBean sensori = new SensoreBean( 
 								PortalUtil.getOriginalServletRequest( 
 										PortalUtil.getHttpServletRequest(renderRequest)
-								)
+								), soloTuoi
 							);
+
 				
 		renderRequest.setAttribute("sensori", sensori);
 		

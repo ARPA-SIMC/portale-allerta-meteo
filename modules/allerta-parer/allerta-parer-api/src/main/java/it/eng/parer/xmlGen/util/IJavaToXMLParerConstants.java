@@ -37,6 +37,9 @@ public interface IJavaToXMLParerConstants {
 	public static final String TIPO_REGISTRO_MONITORAGGIO_MAIL= "MONITORAGGIO MAIL";
 	public static final String TIPO_REGISTRO_SUPERAMENTO_MAIL= "SUPERAMENTI MAIL";
 	public static final String TIPO_REGISTRO_SUPERAMENTO_SMS= "SUPERAMENTI SMS";
+	public static final String TIPO_REGISTRO_VALANGHE = "METEOMONT";
+	public static final String TIPO_REGISTRO_VALANGHE_SMS = "METEOMONT SMS";
+	public static final String TIPO_REGISTRO_VALANGHE_MAIL = "METEOMONT MAIL";
 
 	//TIPOLOGIOA UNITA DOCUMENTARIA
 	public static final String TIPOLOGIA_UNITA_DOCUMENTARIA_BOLLETTINO = "BOLLETTINO";
@@ -48,7 +51,11 @@ public interface IJavaToXMLParerConstants {
 	public static final String TIPOLOGIA_UNITA_DOCUMENTARIA_MONITORAGGI_MAIL = "AVVISI MAIL";
 	public static final String TIPOLOGIA_UNITA_DOCUMENTARIA_SUPERAMENTI_MAIL = "SUPERAMENTO MAIL";
 	public static final String TIPOLOGIA_UNITA_DOCUMENTARIA_SUPERAMENTI_SMS = "SUPERAMENTO SMS";
-
+	public static final String TIPOLOGIA_UNITA_DOCUMENTARIA_VALANGHE = "BOLLETTINO VALANGHE";
+	public static final String TIPOLOGIA_UNITA_DOCUMENTARIA_VALANGHE_SMS = "AVVISI SMS";
+	public static final String TIPOLOGIA_UNITA_DOCUMENTARIA_VALANGHE_MAIL = "AVVISI MAIL";
+	
+	
 	//DOCUMENTO PRINCIPALE CONSTANTS
 	public static final String TIPO_DOCUMENTO_BOLLETTINO = "BOLLETTINO";
 	public static final String TIPO_DOCUMENTO_ALLERTA = "ALLERTA";
@@ -59,6 +66,9 @@ public interface IJavaToXMLParerConstants {
 	public static final String TIPO_DOCUMENTO_MONITORAGGIO_SMS = "AVVISI SMS";
 	public static final String TIPO_DOCUMENTO_SUPERAMENTO_MAIL = "SUPERAMENTO MAIL";
 	public static final String TIPO_DOCUMENTO_SUPERAMENTO_SMS = "SUPERAMENTO SMS";
+	public static final String TIPO_DOCUMENTO_VALANGHE = "BOLLETTINO VALANGHE";
+	public static final String TIPO_DOCUMENTO_VALANGHE_SMS = "AVVISI SMS";
+	public static final String TIPO_DOCUMENTO_VALANGHE_MAIL = "AVVISI MAIL";
 
 	//STRUTTURA CONSTANTS
 	public static final String TIPO_STRUTTURA = "DocumentoGenerico";
@@ -75,7 +85,9 @@ public interface IJavaToXMLParerConstants {
 	public static final String DESCR_COLLEGAMENTO_MONITORAGGIO_SMS = "Monitoraggio trasmesso con invio SMS";
 	public static final String DESCR_COLLEGAMENTO_MONITORAGGIO_MAIL = "Monitoraggio trasmesso con invio MAIL";
 	public static final String DESCR_COLLEGAMENTO_SUPERAMENTO = "Avvisi riferiti al medesimo superamento trasmessi con diverso mezzo (invio mail o sms)";
-
+	public static final String DESCR_COLLEGAMENTO_VALANGHE_MAIL = "Documento valanghe trasmesso con invio MAIL";
+	public static final String DESCR_COLLEGAMENTO_VALANGHE_SMS = "Documento valanghe trasmesso con invio SMS";
+	
 	//TIPO FILE
 	public static final String TIPO_FILE_PDF = "PDF";
 	public static final String TIPO_FILE_CSV = "CSV";
@@ -92,4 +104,5 @@ public interface IJavaToXMLParerConstants {
 	public static final String TIPO_COMUNICAZIONE_ALLERTA = "Allerta";
 	public static final String TIPO_COMUNICAZIONE_MONITORAGGIO = "Monitoraggio";
 	public static final String TIPO_COMUNICAZIONE_SUPERAMENTO = "Superamento";
+	public static final String TIPO_COMUNICAZIONE_VALANGHE = "Valanghe";
 }

@@ -10,6 +10,9 @@
 	<bean class="it.eng.allerte.service.impl.RubricaCanaleLocalServiceImpl" id="it.eng.allerte.service.RubricaCanaleLocalService" />
 	<bean class="it.eng.allerte.service.impl.RubricaCanaleServiceImpl" id="it.eng.allerte.service.RubricaCanaleService" />
 	<bean class="it.eng.allerte.service.persistence.impl.RubricaCanalePersistenceImpl" id="it.eng.allerte.service.persistence.RubricaCanalePersistence" parent="basePersistence" />
+	<bean class="it.eng.allerte.service.impl.RubricaCategoriaLocalServiceImpl" id="it.eng.allerte.service.RubricaCategoriaLocalService" />
+	<bean class="it.eng.allerte.service.impl.RubricaCategoriaServiceImpl" id="it.eng.allerte.service.RubricaCategoriaService" />
+	<bean class="it.eng.allerte.service.persistence.impl.RubricaCategoriaPersistenceImpl" id="it.eng.allerte.service.persistence.RubricaCategoriaPersistence" parent="basePersistence" />
 	<bean class="it.eng.allerte.service.impl.RubricaContattoLocalServiceImpl" id="it.eng.allerte.service.RubricaContattoLocalService" />
 	<bean class="it.eng.allerte.service.impl.RubricaContattoServiceImpl" id="it.eng.allerte.service.RubricaContattoService" />
 	<bean class="it.eng.allerte.service.persistence.impl.RubricaContattoPersistenceImpl" id="it.eng.allerte.service.persistence.RubricaContattoPersistence" parent="basePersistence" />

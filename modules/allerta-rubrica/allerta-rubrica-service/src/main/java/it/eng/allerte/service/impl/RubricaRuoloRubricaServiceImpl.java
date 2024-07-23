@@ -50,6 +50,28 @@ public class RubricaRuoloRubricaServiceImpl
 	 *
 	 * Never reference this class directly. Always use <code>it.eng.allerte.service.RubricaRuoloRubricaServiceUtil</code> to access the rubrica ruolo rubrica remote service.
 	 */
+	
+	@JSONWebService
+	@AccessControlled(guestAccessEnabled = true)
+	public Map<Long,String> getSites() {
+		Long userId = 0L; try { userId = this.getUserId(); } catch (Exception e) {}
+		return GestioneRubricaCustomService.getSitiUtente(userId);
+	}
+	
+	@JSONWebService
+	@AccessControlled(guestAccessEnabled = true)
+	public void updateSite(Long sito) {
+		Long userId = 0L; try { userId = this.getUserId(); } catch (Exception e) {}
+		GestioneRubricaCustomService.updateIdSitoUtente(userId, sito);
+	}
+	
+	@JSONWebService
+	@AccessControlled(guestAccessEnabled = true)
+	public Long getCurrentSite() {
+		Long userId = 0L; try { userId = this.getUserId(); } catch (Exception e) {}
+		return GestioneRubricaCustomService.getIdSitoUtente(userId);
+	}
+	
 	@JSONWebService
 	@AccessControlled(guestAccessEnabled = true)
 	public Map<String,Object> getAddressBookRoles(){

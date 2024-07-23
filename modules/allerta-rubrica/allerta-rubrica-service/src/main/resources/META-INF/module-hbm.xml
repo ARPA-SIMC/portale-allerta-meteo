@@ -3,6 +3,7 @@
 
 <hibernate-mapping auto-import="false" default-lazy="false">
 	<import class="it.eng.allerte.model.RubricaCanale" />
+	<import class="it.eng.allerte.model.RubricaCategoria" />
 	<import class="it.eng.allerte.model.RubricaContatto" />
 	<import class="it.eng.allerte.model.RubricaGruppo" />
 	<import class="it.eng.allerte.model.RubricaGruppoGruppi" />
@@ -22,6 +23,12 @@
 		<property name="NOME" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 		<property name="ICONA" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 		<property name="REGEX" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+	</class>
+	<class name="it.eng.allerte.model.impl.RubricaCategoriaImpl" table="rubrica_RubricaCategoria">
+		<id name="ID_CATEGORIA" type="long">
+			<generator class="assigned" />
+		</id>
+		<property name="DESCRIZIONE" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 	</class>
 	<class name="it.eng.allerte.model.impl.RubricaContattoImpl" table="rubrica_RubricaContatto">
 		<id name="ID_CONTATTO" type="long">
@@ -50,6 +57,7 @@
 		<property name="FK_UTENTE_MODIFICA" type="com.liferay.portal.dao.orm.hibernate.LongType" />
 		<property name="DATA_MODIFICA" type="org.hibernate.type.TimestampType" />
 		<property name="DISABLED" type="com.liferay.portal.dao.orm.hibernate.BooleanType" />
+		<property name="FK_CATEGORIA" type="com.liferay.portal.dao.orm.hibernate.LongType" />
 	</class>
 	<class name="it.eng.allerte.model.impl.RubricaGruppoGruppiImpl" table="rubrica_RubricaGruppoGruppi">
 		<composite-id class="it.eng.allerte.service.persistence.RubricaGruppoGruppiPK" name="primaryKey">
@@ -127,7 +135,7 @@
 	</class>
 	<class name="it.eng.allerte.model.impl.RubricaUtenteSitoImpl" table="rubrica_RubricaUtenteSito">
 		<id name="ID_UTENTE" type="long">
-			<generator class="increment" />
+			<generator class="assigned" />
 		</id>
 		<property name="ID_SITO" type="com.liferay.portal.dao.orm.hibernate.LongType" />
 	</class>

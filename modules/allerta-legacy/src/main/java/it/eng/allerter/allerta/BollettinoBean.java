@@ -69,6 +69,7 @@ import com.liferay.portal.kernel.workflow.WorkflowInstanceManagerUtil;
 import it.eng.allerta.utils.AllertaKeys;
 import it.eng.allerta.utils.AllertaTracker;
 import it.eng.allerter.model.Allerta;
+import it.eng.allerter.service.LogInternoLocalServiceUtil;
 //import it.eng.allerter.service.//LogInternoLocalServiceUtil;
 import it.eng.bollettino.model.Bacino;
 import it.eng.bollettino.model.Bollettino;
@@ -92,7 +93,22 @@ import it.eng.bollettino.service.ValoreSensoreLocalServiceUtil;
  */
 
 public class BollettinoBean implements Serializable {
-
+	
+	String queryUltimoPubblicato= "select bollettinoid, numero from bollettino_bollettino where stato=0 order by dataemissione desc limit 1";
+	String queryCopiaColmiOsservati =
+			"update bollettino_bollettinosensore bs set osservato=(select osservato from bollettino_bollettinosensore bs2 " + 
+			"where bs2.idstazione=bs.idstazione and bs2.idbollettino=IDB limit 1), " + 
+			"colmoprevisto=(select colmoprevisto from bollettino_bollettinosensore bs2 " + 
+			"where bs2.idstazione=bs.idstazione and bs2.idbollettino=IDB limit 1), " + 
+			"oraprevista=(select oraprevista from bollettino_bollettinosensore bs2 " + 
+			"where bs2.idstazione=bs.idstazione and bs2.idbollettino=IDB limit 1), " + 
+			"giornoprevisto=(select giornoprevisto from bollettino_bollettinosensore bs2 " + 
+			"where bs2.idstazione=bs.idstazione and bs2.idbollettino=IDB limit 1), " + 
+			"tendenza=(select tendenza from bollettino_bollettinosensore bs2 " + 
+			"where bs2.idstazione=bs.idstazione and bs2.idbollettino=IDB limit 1) " + 
+			"			   where bs.idbollettino=IDN and exists(select * from bollettino_bollettinosensore bs2 " + 
+			"where bs2.idstazione=bs.idstazione and bs2.idbollettino=IDB limit 1)";
+	String queryCopiaNote = "update bollettino_bollettinobacino bb set note = (select note from bollettino_bollettinobacino bb2 where bb2.idbacino=bb.idbacino and bb2.idbollettino=IDB limit 1) where bb.idbollettino=IDN and exists(select * from bollettino_bollettinobacino bb2 where bb2.idbacino=bb.idbacino and bb2.idbollettino=IDB limit 1)";
 	/**
 	 * 
 	 */
@@ -108,8 +124,8 @@ public class BollettinoBean implements Serializable {
 	private BacinoManager bacinoParam;
 	private String noteMeteo;
 	private String numero;
-	Date dataInizio = new Date();
-	Date dataFine = new Date();
+	Date dataInizio = null;
+	Date dataFine = null;
 	private boolean ultimo = false;
 	private long bollettinoId = 0;
 
@@ -131,6 +147,7 @@ public class BollettinoBean implements Serializable {
 	HttpServletRequest request;
 	
 	String sfondoImageName = "trascinata6h.png";
+	String sfondoImageName2 = "trascinata48h.png";
 	
 	public BollettinoBean(long bollettinoId, HttpServletRequest request) {
 		
@@ -146,9 +163,16 @@ public class BollettinoBean implements Serializable {
 
 	public BollettinoBean(HttpServletRequest request) {
 		
-		this.request = request;
-
-		initBean();
+		try {
+			this.request = request;
+			ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
+			ServiceContext sc = ServiceContextFactory.getInstance(Bollettino.class.getName(), request);
+			createBollettino2(themeDisplay, sc);
+			LogInternoLocalServiceUtil.log("monitoraggio", "creaMonitoraggio", ""+bollettino.getBollettinoId(), "");
+		} catch (Exception e) {
+			LogInternoLocalServiceUtil.log("monitoraggio", "creaMonitoraggio", e, "");
+		}
+		//initBean();
 	}
 	
 	public void setRequest( HttpServletRequest request) {
@@ -293,7 +317,12 @@ public class BollettinoBean implements Serializable {
 				bm.bac = BacinoLocalServiceUtil.fetchBacino(bbb.getIdBacino());
 				bm.note = bbb.getNote();
 				bm.ore = bbb.getOreOsservazione();
-				bm.note = ParamUtil.getString(this.request, "note", null);
+				//String xyz = ParamUtil.getString(this.request, "note", null);
+				String xyz = ParamUtil.getString(this.request, "note_" + bbb.getIdBacino(), null);
+				if (xyz!=null) {
+					bm.note = xyz;
+					bm.getBacino().setNote(xyz);
+				}
 
 				DynamicQuery dyn2 = BollettinoSensoreLocalServiceUtil.dynamicQuery()
 						.add(PropertyFactoryUtil.forName("idBollettinoBacino").eq(bbb.getId()))
@@ -356,8 +385,11 @@ public class BollettinoBean implements Serializable {
 							else if (tendenza.equals("?"))
 								sss.setTendenza(2);
 							
-							bm.getBacino().setNote(note);
-							bm.note = note;
+							/*if (note!=null) {
+								bm.getBacino().setNote(note);
+								bm.note = note;
+							}*/
+							 
 							sss.setColmoPrevisto(ParamUtil.getString(this.request, "livelloprevisto_" + sm.stazione.getId(), null));
 							sss.setOraPrevista(ParamUtil.getString(this.request, "oraprevista_" + sm.stazione.getId(), null));
 							sss.setGiornoPrevisto(ParamUtil.getString(this.request, "giornoprevisto_" + sm.stazione.getId(), null));
@@ -432,6 +464,7 @@ public class BollettinoBean implements Serializable {
 							StandardCopyOption.REPLACE_EXISTING);
 					file.delete();
 				}
+				
 
 			} catch (Exception e) {
 				//LogInternoLocalServiceUtil.log("BollettinoBean", "getCarica", e, "");
@@ -736,6 +769,9 @@ public class BollettinoBean implements Serializable {
 
 		if (bollettino == null)
 			return;
+		
+		if (bollettino.getStato()==0) return;
+		if (bollettino.getStato()==1) return;
 
 		boolean reinvio = bollettino.getStato() == WorkflowConstants.STATUS_DENIED;
 
@@ -874,18 +910,20 @@ public class BollettinoBean implements Serializable {
 				List<Stazione> sv = StazioneLocalServiceUtil.dynamicQuery(dyn);
 
 				for (Stazione s : sv) {
-					StazioneManager sm = new StazioneManager();
-					bm.stazioni.add(sm);
-					sm.parent = bm;
+					
 
 					dyn = StazioneVariabileLocalServiceUtil.dynamicQuery()
 							.add(PropertyFactoryUtil.forName("idStazione").eq(s.getId()))
 							.add(PropertyFactoryUtil.forName("idVariabile").eq("254,0,0/1,-,-,-/B13215"));
 					List<StazioneVariabile> ssvv = StazioneVariabileLocalServiceUtil.dynamicQuery(dyn);
 
+					if (ssvv.size()==0) continue;
+					StazioneManager sm = new StazioneManager();
+					bm.stazioni.add(sm);
+					sm.parent = bm;
 					sm.setStazione(s);
-					if (ssvv.size() > 0)
-						sm.setStazioneVariabile(ssvv.get(0));
+					
+					sm.setStazioneVariabile(ssvv.get(0));
 				}
 
 			}
@@ -1010,13 +1048,20 @@ public class BollettinoBean implements Serializable {
 	public void createBollettino( ThemeDisplay themeDisplay, ServiceContext sc ) {
 		
 		long inc = CounterLocalServiceUtil.increment(Bollettino.class.getName());
+		
 		bollettino = BollettinoLocalServiceUtil.createBollettino(inc);
+		this.bollettinoId = inc;
+		
 		bollettino.setCreateDate(new Date());
 		bollettino.setUserId(themeDisplay.getRealUserId());
 		bollettino.setGroupId(themeDisplay.getScopeGroupId());
 		bollettino.setUserName(themeDisplay.getRealUser().getFullName());
 		bollettino.setCompanyId(themeDisplay.getCompanyId());
 		bollettino.setStato(WorkflowConstants.STATUS_DRAFT);
+		
+		rigeneraNumero();
+		
+		bollettino.setNumero(numero);
 		
 		if (!dryRun) BollettinoLocalServiceUtil.updateBollettino(bollettino);
 
@@ -1040,6 +1085,8 @@ public class BollettinoBean implements Serializable {
 			if (!dryRun) BollettinoBacinoLocalServiceUtil.updateBollettinoBacino(bb.bacino);
 
 			for (StazioneManager sm : bb.stazioni) {
+				
+				if (sm.stazioneVariabile==null) continue;
 
 				inc = CounterLocalServiceUtil.increment(BollettinoSensore.class.getName());
 				sm.sensore = BollettinoSensoreLocalServiceUtil.createBollettinoSensore(inc);
@@ -1089,6 +1136,130 @@ public class BollettinoBean implements Serializable {
 
 			}
 
+		}
+		
+		if (!dryRun) copiaColmiOsservati();
+
+	}
+	
+	public void createBollettino2( ThemeDisplay themeDisplay, ServiceContext sc ) {
+		
+		long inc = CounterLocalServiceUtil.increment(Bollettino.class.getName());
+		
+		bollettino = BollettinoLocalServiceUtil.createBollettino(inc);
+		this.bollettinoId = inc;
+		
+		bollettino.setCreateDate(new Date());
+		bollettino.setUserId(themeDisplay.getRealUserId());
+		bollettino.setGroupId(themeDisplay.getScopeGroupId());
+		bollettino.setUserName(themeDisplay.getRealUser().getFullName());
+		bollettino.setCompanyId(themeDisplay.getCompanyId());
+		bollettino.setStato(WorkflowConstants.STATUS_DRAFT);
+		
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
+		cal.set(Calendar.MILLISECOND, 0);
+		cal.add(Calendar.HOUR, 1);
+		bollettino.setDataInizio(cal.getTime());
+		cal.add(Calendar.HOUR, 6);
+		bollettino.setDataFine(cal.getTime());
+		
+		rigeneraNumero();
+		
+		bollettino.setNumero(numero);
+		bollettino.setIdApprovatore(20198);
+		
+		BollettinoLocalServiceUtil.updateBollettino(bollettino);
+
+		createFolder("bollettino-" + inc, "File per bollettino " + inc, sc);
+		
+		this.bacini = new ArrayList<BacinoManager>();
+		this.riempiBollettino();
+		
+		
+
+		for (BacinoManager bb : this.bacini) {
+
+			inc = CounterLocalServiceUtil.increment(BollettinoBacino.class.getName());
+			//this.bollettinoId = inc;
+			bb.bacino = BollettinoBacinoLocalServiceUtil.createBollettinoBacino(inc);
+			bb.bacino.setIdBacino(bb.bac.getId());
+			bb.bacino.setIdBollettino(bollettino.getBollettinoId());
+			bb.bacino.setNomeBacino(bb.bac.getNome());
+			bb.bacino.setProgressivo(bb.bac.getProgressivo());
+			
+			BollettinoBacinoLocalServiceUtil.updateBollettinoBacino(bb.bacino);
+
+			for (StazioneManager sm : bb.stazioni) {
+				
+				if (sm.stazioneVariabile==null) continue;
+
+				inc = CounterLocalServiceUtil.increment(BollettinoSensore.class.getName());
+				sm.sensore = BollettinoSensoreLocalServiceUtil.createBollettinoSensore(inc);
+				sm.sensore.setIdBollettino(bollettino.getBollettinoId());
+				sm.sensore.setIdBollettinoBacino(bb.bacino.getId());
+				sm.sensore.setIdStazione(sm.stazioneVariabile.getId());
+				sm.sensore.setColmoPrevisto(sm.getLivelloPrevisto());
+				sm.sensore.setNomeStazione(sm.stazione.getName());
+				sm.sensore.setProgressivo(sm.stazione.getProgressivo());
+				sm.sensore.setSoglia1(sm.stazioneVariabile.getSoglia1());
+				sm.sensore.setSoglia2(sm.stazioneVariabile.getSoglia2());
+				sm.sensore.setSoglia3(sm.stazioneVariabile.getSoglia3());
+				sm.sensore.setOraPrevista(null);
+				sm.sensore.setGiornoPrevisto(null);
+				sm.sensore.setTendenza(-100);
+				sm.selezionata = false;
+				
+				// ricarica gli ultimi due valori osservati (il penultimo serve per la tendenza)
+				DynamicQuery dyn = ValoreSensoreLocalServiceUtil.dynamicQuery()
+						.add(PropertyFactoryUtil.forName("idStazione").eq(sm.stazione.getId()))
+						.add(PropertyFactoryUtil.forName("idVariabile").eq("254,0,0/1,-,-,-/B13215"))
+						.addOrder(OrderFactoryUtil.desc("datetime"));
+				List<ValoreSensore> sv = ValoreSensoreLocalServiceUtil.dynamicQuery(dyn, 0, 2);
+
+				if (sv.size() > 0) {
+					sm.ultimoLivello = sv.get(0).getValue();
+					sm.sensore.setOsservazione(sm.ultimoLivello);
+					sm.oraUltimoLivello = sm.getOraLivelloOsservato(sv.get(0));
+					sm.sensore.setOreOsservazione(sm.oraUltimoLivello);
+				}
+				if (sv.size() > 1)
+					sm.penultimoLivello = sv.get(1).getValue();
+				sm.setTendenza(sm.calcolaTendenza());
+				/*String ten = sm.getTendenza();
+				int tendenza = -100;
+				if (ten.equals("+"))
+					tendenza = 1;
+				else if (ten.equals("-"))
+					tendenza = -1;
+				else if (ten.equals("="))
+					tendenza = 0;
+				else
+					tendenza = 0;*/
+				sm.sensore.setTendenza(-100);
+				
+				BollettinoSensoreLocalServiceUtil.updateBollettinoSensore(sm.sensore);
+
+			}
+
+		}
+		
+		List<Object> l = BollettinoLocalServiceUtil.eseguiQueryGenericaLista(queryUltimoPubblicato);
+		if (l!=null && l.size()>0) {
+			Object[] o = (Object[])l.get(0);
+			if (o==null || o[0]==null || o[1]==null) return;
+			String nome = o[1].toString().toUpperCase().trim();
+			if (nome.endsWith("U") || nome.endsWith("ULTIMO")) {
+				return;
+			}
+			String q = queryCopiaColmiOsservati.replaceAll("IDB", o[0].toString());
+			q = q.replaceAll("IDN", ""+bollettino.getBollettinoId());
+			BollettinoLocalServiceUtil.eseguiQueryGenerica(q);
+			
+			q = queryCopiaNote.replaceAll("IDB", o[0].toString());
+			q = q.replaceAll("IDN", ""+bollettino.getBollettinoId());
+			BollettinoLocalServiceUtil.eseguiQueryGenerica(q);
 		}
 
 	}
@@ -1201,9 +1372,32 @@ public class BollettinoBean implements Serializable {
 					sm.sensore.setIdBollettino(bollettino.getBollettinoId());
 					sm.sensore.setIdBollettinoBacino(bb.bacino.getPrimaryKey());
 					sm.sensore.setNomeStazione(sm.stazione.getName());
+					if (sm.stazioneVariabile!=null) {
 					sm.sensore.setSoglia1(sm.stazioneVariabile.getSoglia1());
 					sm.sensore.setSoglia2(sm.stazioneVariabile.getSoglia2());
 					sm.sensore.setSoglia3(sm.stazioneVariabile.getSoglia3());
+					} else 
+					{
+						try {
+							
+							DynamicQuery dyn = StazioneVariabileLocalServiceUtil.dynamicQuery()
+									.add(PropertyFactoryUtil.forName("idStazione").eq(sm.stazione.getId()))
+									.add(PropertyFactoryUtil.forName("idVariabile").eq("254,0,0/1,-,-,-/B13215"));
+							List<StazioneVariabile> ssvv = StazioneVariabileLocalServiceUtil.dynamicQuery(dyn);
+
+							if (ssvv.size() > 0)
+								sm.stazioneVariabile = ssvv.get(0);
+							
+							if (sm.stazioneVariabile!=null) {
+								sm.sensore.setSoglia1(sm.stazioneVariabile.getSoglia1());
+								sm.sensore.setSoglia2(sm.stazioneVariabile.getSoglia2());
+								sm.sensore.setSoglia3(sm.stazioneVariabile.getSoglia3());
+							}
+							
+						} catch (Exception ee) {
+							LogInternoLocalServiceUtil.log("salvaBollettino", "", ee, "");
+						}
+					}
 					
 					if( !sm.selezionata) {
 						
@@ -1290,7 +1484,11 @@ public class BollettinoBean implements Serializable {
 				BollettinoLocalServiceUtil.fileUploadByApp(
 						trascinata, "bollettino-" + bollettino.getBollettinoId(), sfondoImageName,
 						"Trascinata piogge ultime 6 ore", "image/png", serviceContext);
+				
+
 			}
+			
+
 			BufferedImage meteo = ImageUtility.componiImmagine(sfondo, icone, bollettino.getStringaMeteo());
 			File f = FileUtil.createTempFile("png");
 			ImageUtility.saveImage(meteo, f, "PNG");
@@ -1377,12 +1575,14 @@ public class BollettinoBean implements Serializable {
 	
 	public String getDataInizioString() {
 
+		if (dataInizio==null) return "";
 		return AllertaKeys.WebDateTimeFormat.format(dataInizio);
 		
 	}
 	
 	public String getDataFineString() {
 		
+		if (dataFine==null) return "";
 		return AllertaKeys.WebDateTimeFormat.format(dataFine);
 		
 	}
@@ -1799,6 +1999,63 @@ public class BollettinoBean implements Serializable {
 		}
 		
 		return content;
+	}
+	
+	public void copiaColmiOsservati() {
+		List<Object> l = BollettinoLocalServiceUtil.eseguiQueryGenericaLista(queryUltimoPubblicato);
+		if (l!=null && l.size()>0) {
+			Object[] o = (Object[])l.get(0);
+			if (o==null || o[0]==null || o[1]==null) return;
+			String nome = o[1].toString().toUpperCase().trim();
+			if (nome.endsWith("U") || nome.endsWith("ULTIMO")) {
+				return;
+			}
+			String q = queryCopiaColmiOsservati.replaceAll("IDB", o[0].toString());
+			q = q.replaceAll("IDN", ""+bollettino.getBollettinoId());
+			BollettinoLocalServiceUtil.eseguiQueryGenerica(q);
+			
+			q = queryCopiaNote.replaceAll("IDB", o[0].toString());
+			q = q.replaceAll("IDN", ""+bollettino.getBollettinoId());
+			BollettinoLocalServiceUtil.eseguiQueryGenerica(q);
+			
+			for (BacinoManager bm : bacini) {
+				DynamicQuery dyn2 = BollettinoBacinoLocalServiceUtil.dynamicQuery()
+						.add(PropertyFactoryUtil.forName("idBacino").eq(bm.bac.getId()))
+						.add(PropertyFactoryUtil.forName("idBollettino").eq(bollettino.getBollettinoId()));
+				List<BollettinoBacino> bba = BollettinoBacinoLocalServiceUtil.dynamicQuery(dyn2);
+				if (bba!=null && bba.size()>0) {
+					bm.setBacino(bba.get(0));
+					bm.note = bba.get(0).getNote();
+				}
+				
+				for (StazioneManager st : bm.stazioni) {
+					long bs = st.sensore.getId();
+					DynamicQuery dyn = BollettinoSensoreLocalServiceUtil.dynamicQuery()
+							.add(PropertyFactoryUtil.forName("idStazione").eq(st.sensore.getIdStazione()))
+							.add(PropertyFactoryUtil.forName("idBollettino").eq(bollettino.getBollettinoId()));
+					List<BollettinoSensore> ssvv = BollettinoSensoreLocalServiceUtil.dynamicQuery(dyn);
+					if (ssvv.size()>0)
+					{
+						st.sensore = ssvv.get(0);
+						if (true || st.sensore.isOsservato()) {
+							st.giornoPrevisto = st.sensore.getGiornoPrevisto();
+							st.oraPrevista = st.sensore.getOraPrevista();
+							st.livelloPrevisto = st.sensore.getColmoPrevisto();
+							int tendenza = st.sensore.getTendenza();
+							if (tendenza==1) st.setTendenza("+");
+							else if (tendenza==0) st.setTendenza("=");
+							else st.setTendenza("-");
+							st.selezionata = true;
+							bm.selezionato = true;
+							st.osservato = true;
+						}
+
+						
+					}
+			
+				}
+			}
+		}
 	}
 
 	private Log _log = LogFactoryUtil.getLog(BollettinoBean.class);

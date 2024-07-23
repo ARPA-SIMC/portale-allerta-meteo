@@ -124,6 +124,8 @@ public class SmsManagerWebServices {
 		
 		try {
 			infoNodo = HostUtility.getCurrentHostIpAndPort() + ", jvm name = " + SmsUtility.nameJVM();
+			//if (infoNodo==null || infoNodo.contains("10.10.64.128")) return getSmsSchedulerState();
+		
 		} catch (SystemException e1) {
 			infoNodo = "unknown, jvm name = " + SmsUtility.nameJVM();
 		}

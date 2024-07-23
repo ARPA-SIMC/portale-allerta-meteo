@@ -194,6 +194,42 @@ public class DatiSpecificiInvioLocalServiceWrapper
 				datiSpecifici, documentiCollegati, componentiInvio);
 	}
 
+	@Override
+	public String comunicaDatiSpecificiInvioValanghe(
+		it.eng.parer.model.DatiSpecificiInvio datiSpecifici,
+		java.util.List<it.eng.parer.model.DocumentiCollegati>
+			documentiCollegati,
+		java.util.List<it.eng.parer.model.ComponentiInvio> componentiInvio) {
+
+		return _datiSpecificiInvioLocalService.
+			comunicaDatiSpecificiInvioValanghe(
+				datiSpecifici, documentiCollegati, componentiInvio);
+	}
+
+	@Override
+	public String comunicaDatiSpecificiInvioValangheMail(
+		it.eng.parer.model.DatiSpecificiInvio datiSpecifici,
+		java.util.List<it.eng.parer.model.DocumentiCollegati>
+			documentiCollegati,
+		java.util.List<it.eng.parer.model.ComponentiInvio> componentiInvio) {
+
+		return _datiSpecificiInvioLocalService.
+			comunicaDatiSpecificiInvioValangheMail(
+				datiSpecifici, documentiCollegati, componentiInvio);
+	}
+
+	@Override
+	public String comunicaDatiSpecificiInvioValangheSms(
+		it.eng.parer.model.DatiSpecificiInvio datiSpecifici,
+		java.util.List<it.eng.parer.model.DocumentiCollegati>
+			documentiCollegati,
+		java.util.List<it.eng.parer.model.ComponentiInvio> componentiInvio) {
+
+		return _datiSpecificiInvioLocalService.
+			comunicaDatiSpecificiInvioValangheSms(
+				datiSpecifici, documentiCollegati, componentiInvio);
+	}
+
 	/**
 	 * Creates a new dati specifici invio with the primary key. Does not add the dati specifici invio to the database.
 	 *

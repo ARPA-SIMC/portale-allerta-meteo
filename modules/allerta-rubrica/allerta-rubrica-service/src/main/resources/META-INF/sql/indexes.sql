@@ -5,6 +5,7 @@ create index IX_986928F9 on rubrica_RubricaContatto (FK_NOMINATIVO);
 create index IX_E1A2FC41 on rubrica_RubricaContatto (FK_UTENTE_CREAZIONE);
 create index IX_7EE5A197 on rubrica_RubricaContatto (FK_UTENTE_MODIFICA);
 
+create index IX_D1C58909 on rubrica_RubricaGruppo (FK_CATEGORIA, FK_SITO_PROPRIETARIO);
 create index IX_33AC84F9 on rubrica_RubricaGruppo (FK_SITO_PROPRIETARIO, NOME[$COLUMN_LENGTH:512$], DISABLED);
 create index IX_A0657AAD on rubrica_RubricaGruppo (ID_GRUPPO, FK_SITO_PROPRIETARIO);
 

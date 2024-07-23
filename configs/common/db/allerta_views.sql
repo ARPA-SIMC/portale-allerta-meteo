@@ -1,349 +1,35 @@
---
--- PostgreSQL database dump
---
-
--- Dumped from database version 10.8 (Ubuntu 10.8-1.pgdg18.04+1)
--- Dumped by pg_dump version 10.8 (Ubuntu 10.8-1.pgdg18.04+1)
-
-SET statement_timeout = 0;
-SET lock_timeout = 0;
-SET idle_in_transaction_session_timeout = 0;
-SET client_encoding = 'UTF8';
-SET standard_conforming_strings = on;
-SELECT pg_catalog.set_config('search_path', '', false);
-SET check_function_bodies = false;
-SET xmloption = content;
-SET client_min_messages = warning;
-SET row_security = off;
 
 --
--- Name: area_rubrica_vw; Type: VIEW; Schema: public; Owner: usrweballerte
+-- TOC entry 609 (class 1259 OID 8626064)
+-- Name: appartenenza_comuni_vw; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW public.area_rubrica_vw AS
- SELECT DISTINCT a.nome AS area,
-    u.firstname,
+CREATE VIEW public.appartenenza_comuni_vw AS
+ SELECT g.groupid,
+    g.name,
+    u.userid,
     u.lastname,
-    u.userid
-   FROM (((public.organization_ o
-     JOIN public.users_orgs uo ON ((o.organizationid = uo.organizationid)))
-     JOIN public.user_ u ON ((u.userid = uo.userid)))
-     JOIN public.allerter_area a ON ((((o.name)::text = ('Allerta Zona '::text || (a.nome)::text)) OR ((o.name)::text IN ( SELECT ('Allerta Zona '::text || (o2.nome)::text)
-           FROM public.allerter_area o2
-          WHERE ((o2.tipoarea)::text = (a.nome)::text))) OR ((o.name)::text = ('Allerta Zona '::text || (( SELECT ar.tipoarea
-           FROM public.allerter_area ar
-          WHERE ((ar.nome)::text = (a.nome)::text)))::text)))))
-  WHERE (u.status = 0)
-  ORDER BY a.nome;
-
-
-ALTER TABLE public.area_rubrica_vw OWNER TO usrweballerte;
-
---
--- Name: area_email_vw; Type: VIEW; Schema: public; Owner: usrweballerte
---
-
-CREATE VIEW public.area_email_vw AS
-( SELECT v.area,
-    v.firstname,
-    v.lastname,
-    u.emailaddress AS valore
-   FROM ((public.area_rubrica_vw v
-     JOIN public.contact_ c ON ((v.userid = c.classpk)))
-     JOIN public.user_ u ON ((u.userid = v.userid)))
-  ORDER BY v.area, v.firstname, v.lastname, u.emailaddress)
-UNION
-( SELECT v.area,
-    v.firstname,
-    v.lastname,
-    a.address AS valore
-   FROM ((public.area_rubrica_vw v
-     JOIN public.contact_ c ON ((v.userid = c.classpk)))
-     JOIN public.emailaddress a ON ((a.classpk = c.contactid)))
-  ORDER BY v.area, v.firstname, v.lastname, a.address);
-
-
-ALTER TABLE public.area_email_vw OWNER TO usrweballerte;
-
---
--- Name: area_numeri_vw; Type: VIEW; Schema: public; Owner: usrweballerte
---
-
-CREATE VIEW public.area_numeri_vw AS
- SELECT v.area,
-    v.firstname,
-    v.lastname,
-    p.number_ AS valore
-   FROM ((public.area_rubrica_vw v
-     JOIN public.contact_ c ON ((v.userid = c.classpk)))
-     JOIN public.phone p ON ((p.classpk = c.contactid)))
-  ORDER BY v.area, v.firstname, v.lastname, p.number_;
-
-
-ALTER TABLE public.area_numeri_vw OWNER TO usrweballerte;
-
---
--- Name: area_contatti_vw; Type: VIEW; Schema: public; Owner: usrweballerte
---
-
-CREATE VIEW public.area_contatti_vw AS
- SELECT area_numeri_vw.area,
-    regexp_replace(((((((area_numeri_vw.firstname)::text || ' '::text) || (area_numeri_vw.lastname)::text) || '";"'::text) || (area_numeri_vw.valore)::text) || '";"SMS'::text), ''''::text, ' '::text, 'g'::text) AS rubrica
-   FROM public.area_numeri_vw
-UNION
- SELECT area_email_vw.area,
-    regexp_replace(((((((area_email_vw.firstname)::text || ' '::text) || (area_email_vw.lastname)::text) || '";"'::text) || (area_email_vw.valore)::text) || '";"EMAIL'::text), ''''::text, ' '::text, 'g'::text) AS rubrica
-   FROM public.area_email_vw;
-
-
-ALTER TABLE public.area_contatti_vw OWNER TO usrweballerte;
-
---
--- Name: area_contatti_vw_2; Type: VIEW; Schema: public; Owner: usrweballerte
---
-
-CREATE VIEW public.area_contatti_vw_2 AS
- SELECT area_numeri_vw.area,
-    regexp_replace((((area_numeri_vw.firstname)::text || ' '::text) || (area_numeri_vw.lastname)::text), ''''::text, ' '::text, 'g'::text) AS nome,
-    (area_numeri_vw.valore)::text AS recapito,
-    'SMS'::text AS tipo
-   FROM public.area_numeri_vw
-UNION
- SELECT area_email_vw.area,
-    regexp_replace((((area_email_vw.firstname)::text || ' '::text) || (area_email_vw.lastname)::text), ''''::text, ' '::text, 'g'::text) AS nome,
-    (area_email_vw.valore)::text AS recapito,
-    'EMAIL'::text AS tipo
-   FROM public.area_email_vw;
-
-
-ALTER TABLE public.area_contatti_vw_2 OWNER TO usrweballerte;
-
---
--- Name: area_email_vw_2; Type: VIEW; Schema: public; Owner: usrweballerte
---
-
-CREATE VIEW public.area_email_vw_2 AS
-( SELECT u.uuid_ AS uuid,
-    v.area,
-    v.firstname,
-    v.lastname,
-    u.emailaddress AS valore
-   FROM ((public.area_rubrica_vw v
-     JOIN public.contact_ c ON ((v.userid = c.classpk)))
-     JOIN public.user_ u ON ((u.userid = v.userid)))
-  ORDER BY v.area, v.firstname, v.lastname, u.emailaddress)
-UNION
-( SELECT a.uuid_ AS uuid,
-    v.area,
-    v.firstname,
-    v.lastname,
-    a.address AS valore
-   FROM ((public.area_rubrica_vw v
-     JOIN public.contact_ c ON ((v.userid = c.classpk)))
-     JOIN public.emailaddress a ON ((a.classpk = c.contactid)))
-  ORDER BY v.area, v.firstname, v.lastname, a.address);
-
-
-ALTER TABLE public.area_email_vw_2 OWNER TO usrweballerte;
-
---
--- Name: area_numeri_vw_2; Type: VIEW; Schema: public; Owner: usrweballerte
---
-
-CREATE VIEW public.area_numeri_vw_2 AS
- SELECT p.uuid_ AS uuid,
-    v.area,
-    v.firstname,
-    v.lastname,
-    p.number_ AS valore
-   FROM ((public.area_rubrica_vw v
-     JOIN public.contact_ c ON ((v.userid = c.classpk)))
-     JOIN public.phone p ON ((p.classpk = c.contactid)))
-  ORDER BY v.area, v.firstname, v.lastname, p.number_;
-
-
-ALTER TABLE public.area_numeri_vw_2 OWNER TO usrweballerte;
-
---
--- Name: area_contatti_vw_3; Type: VIEW; Schema: public; Owner: usrweballerte
---
-
-CREATE VIEW public.area_contatti_vw_3 AS
- SELECT area_numeri_vw_2.uuid AS id,
-    area_numeri_vw_2.area AS tag,
-    regexp_replace(((((((area_numeri_vw_2.firstname)::text || ' '::text) || (area_numeri_vw_2.lastname)::text) || '";"'::text) || (area_numeri_vw_2.valore)::text) || '";"SMS'::text), ''''::text, ' '::text, 'g'::text) AS rubrica
-   FROM public.area_numeri_vw_2
-UNION
- SELECT area_email_vw_2.uuid AS id,
-    area_email_vw_2.area AS tag,
-    regexp_replace(((((((area_email_vw_2.firstname)::text || ' '::text) || (area_email_vw_2.lastname)::text) || '";"'::text) || (area_email_vw_2.valore)::text) || '";"EMAIL'::text), ''''::text, ' '::text, 'g'::text) AS rubrica
-   FROM public.area_email_vw_2;
-
-
-ALTER TABLE public.area_contatti_vw_3 OWNER TO usrweballerte;
-
---
--- Name: area_contatti_vw_4; Type: VIEW; Schema: public; Owner: usrweballerte
---
-
-CREATE VIEW public.area_contatti_vw_4 AS
- SELECT area_numeri_vw_2.uuid AS id,
-    (('ZONA '::text || (area_numeri_vw_2.area)::text))::character varying(75) AS tag,
-    regexp_replace((((area_numeri_vw_2.firstname)::text || ' '::text) || (area_numeri_vw_2.lastname)::text), ''''::text, ' '::text, 'g'::text) AS nome,
-    (area_numeri_vw_2.valore)::text AS recapito,
-    'SMS'::text AS tipo
-   FROM public.area_numeri_vw_2
-UNION
- SELECT area_email_vw_2.uuid AS id,
-    (('ZONA '::text || (area_email_vw_2.area)::text))::character varying(75) AS tag,
-    regexp_replace((((area_email_vw_2.firstname)::text || ' '::text) || (area_email_vw_2.lastname)::text), ''''::text, ' '::text, 'g'::text) AS nome,
-    (area_email_vw_2.valore)::text AS recapito,
-    'EMAIL'::text AS tipo
-   FROM public.area_email_vw_2;
-
-
-ALTER TABLE public.area_contatti_vw_4 OWNER TO usrweballerte;
-
---
--- Name: org_rubrica_vw; Type: VIEW; Schema: public; Owner: usrweballerte
---
-
-CREATE VIEW public.org_rubrica_vw AS
- SELECT o.organizationid,
-    o.name,
     u.firstname,
-    u.lastname,
-    u.userid
-   FROM ((public.organization_ o
-     JOIN public.users_orgs uo ON ((o.organizationid = uo.organizationid)))
-     JOIN public.user_ u ON ((u.userid = uo.userid)))
-  ORDER BY o.name;
-
-
-ALTER TABLE public.org_rubrica_vw OWNER TO usrweballerte;
-
---
--- Name: org_email_vw_2; Type: VIEW; Schema: public; Owner: usrweballerte
---
-
-CREATE VIEW public.org_email_vw_2 AS
-( SELECT u.uuid_ AS uuid,
-    v.organizationid,
-    v.name,
-    v.firstname,
-    v.lastname,
-    u.emailaddress AS valore
-   FROM ((public.org_rubrica_vw v
-     JOIN public.contact_ c ON ((v.userid = c.classpk)))
-     JOIN public.user_ u ON ((u.userid = v.userid)))
-  ORDER BY v.name, v.firstname, v.lastname, u.emailaddress)
-UNION
-( SELECT a.uuid_ AS uuid,
-    v.organizationid,
-    v.name,
-    v.firstname,
-    v.lastname,
-    a.address AS valore
-   FROM ((public.org_rubrica_vw v
-     JOIN public.contact_ c ON ((v.userid = c.classpk)))
-     JOIN public.emailaddress a ON ((a.classpk = c.contactid)))
-  ORDER BY v.name, v.firstname, v.lastname, a.address);
-
-
-ALTER TABLE public.org_email_vw_2 OWNER TO usrweballerte;
+    u.emailaddress,
+    string_agg((p.number_)::text, ','::text) AS telefoni
+   FROM ((((public.group_ g
+     JOIN public.users_groups ug ON ((ug.groupid = g.groupid)))
+     JOIN public.user_ u ON ((ug.userid = u.userid)))
+     JOIN public.contact_ c ON ((c.classpk = u.userid)))
+     LEFT JOIN public.phone p ON ((p.classpk = c.contactid)))
+  WHERE (g.site AND (g.groupid <> 20181) AND (NOT (EXISTS ( SELECT ur.userid,
+            ur.groupid,
+            ur.roleid,
+            ur.mvccversion,
+            ur.companyid
+           FROM public.usergrouprole ur
+          WHERE ((ur.userid = u.userid) AND (ur.roleid = ANY (ARRAY[(29574)::bigint, (75902)::bigint, (75920)::bigint, (451351)::bigint])))))))
+  GROUP BY g.groupid, g.name, u.userid, u.lastname, u.firstname, u.emailaddress
+  ORDER BY g.name, u.lastname, u.firstname;
 
 --
--- Name: fiume_email_vw_2; Type: VIEW; Schema: public; Owner: usrweballerte
---
-
-CREATE VIEW public.fiume_email_vw_2 AS
- SELECT n.uuid,
-    x.name AS fiume,
-    o2.name AS gruppoinvio,
-    n.firstname,
-    n.lastname,
-    n.valore AS email,
-    ((o2.name)::text !~~ '%-NT'::text) AS tecnico
-   FROM ((( SELECT o.organizationid,
-            o.name,
-            o.treepath
-           FROM public.organization_ o
-          WHERE ((o.parentorganizationid = 196015) AND ((o.name)::text ~~ 'FIUME%'::text))) x
-     JOIN public.organization_ o2 ON (((o2.treepath ~~ (x.treepath || '%/'::text)) OR ((o2.name)::text = ANY (ARRAY[('SEMPRE-NT'::character varying)::text, ('SEMPRE-TT'::character varying)::text])))))
-     JOIN public.org_email_vw_2 n ON ((n.organizationid = o2.organizationid)))
-  ORDER BY x.name, o2.name, n.lastname, n.firstname;
-
-
-ALTER TABLE public.fiume_email_vw_2 OWNER TO usrweballerte;
-
---
--- Name: org_numeri_vw_2; Type: VIEW; Schema: public; Owner: usrweballerte
---
-
-CREATE VIEW public.org_numeri_vw_2 AS
- SELECT p.uuid_ AS uuid,
-    v.organizationid,
-    v.name,
-    v.firstname,
-    v.lastname,
-    v.userid,
-    p.number_ AS valore
-   FROM ((public.org_rubrica_vw v
-     JOIN public.contact_ c ON ((v.userid = c.classpk)))
-     JOIN public.phone p ON ((p.classpk = c.contactid)))
-  ORDER BY v.name, v.firstname, v.lastname, p.number_;
-
-
-ALTER TABLE public.org_numeri_vw_2 OWNER TO usrweballerte;
-
---
--- Name: fiume_numeri_vw_2; Type: VIEW; Schema: public; Owner: usrweballerte
---
-
-CREATE VIEW public.fiume_numeri_vw_2 AS
- SELECT n.uuid,
-    x.name AS fiume,
-    o2.name AS gruppoinvio,
-    n.firstname,
-    n.lastname,
-    n.valore AS numero,
-    ((o2.name)::text !~~ '%-NT'::text) AS tecnico
-   FROM ((( SELECT o.organizationid,
-            o.name,
-            o.treepath
-           FROM public.organization_ o
-          WHERE ((o.parentorganizationid = 196015) AND ((o.name)::text ~~ 'FIUME%'::text))) x
-     JOIN public.organization_ o2 ON (((o2.treepath ~~ (x.treepath || '%/'::text)) OR ((o2.name)::text = ANY (ARRAY[('SEMPRE-NT'::character varying)::text, ('SEMPRE-TT'::character varying)::text])))))
-     JOIN public.org_numeri_vw_2 n ON ((n.organizationid = o2.organizationid)))
-  ORDER BY x.name, o2.name, n.lastname, n.firstname;
-
-
-ALTER TABLE public.fiume_numeri_vw_2 OWNER TO usrweballerte;
-
---
--- Name: bacini_rubrica_vw; Type: VIEW; Schema: public; Owner: usrweballerte
---
-
-CREATE VIEW public.bacini_rubrica_vw AS
- SELECT fiume_numeri_vw_2.uuid AS id,
-    fiume_numeri_vw_2.fiume AS tag,
-    regexp_replace((((fiume_numeri_vw_2.firstname)::text || ' '::text) || (fiume_numeri_vw_2.lastname)::text), ''''::text, ' '::text, 'g'::text) AS nome,
-    (fiume_numeri_vw_2.numero)::text AS recapito,
-    'SMS'::text AS tipo
-   FROM public.fiume_numeri_vw_2
-UNION
- SELECT fiume_email_vw_2.uuid AS id,
-    fiume_email_vw_2.fiume AS tag,
-    regexp_replace((((fiume_email_vw_2.firstname)::text || ' '::text) || (fiume_email_vw_2.lastname)::text), ''''::text, ' '::text, 'g'::text) AS nome,
-    (fiume_email_vw_2.email)::text AS recapito,
-    'EMAIL'::text AS tipo
-   FROM public.fiume_email_vw_2;
-
-
-ALTER TABLE public.bacini_rubrica_vw OWNER TO usrweballerte;
-
---
--- Name: comune_superamento_vw; Type: VIEW; Schema: public; Owner: usrweballerte
+-- TOC entry 289 (class 1259 OID 692442)
+-- Name: comune_superamento_vw; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW public.comune_superamento_vw AS
@@ -370,389 +56,829 @@ CREATE VIEW public.comune_superamento_vw AS
   ORDER BY a.allarmeid, g.name;
 
 
-ALTER TABLE public.comune_superamento_vw OWNER TO usrweballerte;
-
 --
--- Name: destinatari_sempre_vw; Type: VIEW; Schema: public; Owner: usrweballerte
---
-
-CREATE VIEW public.destinatari_sempre_vw AS
- SELECT DISTINCT u.firstname,
-    u.lastname,
-    u.userid
-   FROM ((public.organization_ o
-     JOIN public.users_orgs uo ON ((o.organizationid = uo.organizationid)))
-     JOIN public.user_ u ON ((u.userid = uo.userid)))
-  WHERE (((o.name)::text = 'Rubrica Allerta'::text) AND (u.status = 0));
-
-
-ALTER TABLE public.destinatari_sempre_vw OWNER TO usrweballerte;
-
---
--- Name: destinatari_sempre_email_vw; Type: VIEW; Schema: public; Owner: usrweballerte
+-- TOC entry 619 (class 1259 OID 39480793)
+-- Name: comuni_sensori2_vw; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW public.destinatari_sempre_email_vw AS
-( SELECT v.firstname,
-    v.lastname,
-    u.emailaddress AS valore
-   FROM ((public.destinatari_sempre_vw v
-     JOIN public.contact_ c ON ((v.userid = c.classpk)))
-     JOIN public.user_ u ON ((u.userid = v.userid)))
-  ORDER BY v.firstname, v.lastname, u.emailaddress)
-UNION
-( SELECT v.firstname,
-    v.lastname,
-    a.address AS valore
-   FROM ((public.destinatari_sempre_vw v
-     JOIN public.contact_ c ON ((v.userid = c.classpk)))
-     JOIN public.emailaddress a ON ((a.classpk = c.contactid)))
-  ORDER BY v.firstname, v.lastname, a.address);
-
-
-ALTER TABLE public.destinatari_sempre_email_vw OWNER TO usrweballerte;
-
---
--- Name: destinatari_sempre_numeri_vw; Type: VIEW; Schema: public; Owner: usrweballerte
---
-
-CREATE VIEW public.destinatari_sempre_numeri_vw AS
- SELECT v.firstname,
-    v.lastname,
-    p.number_ AS valore
-   FROM ((public.destinatari_sempre_vw v
-     JOIN public.contact_ c ON ((v.userid = c.classpk)))
-     JOIN public.phone p ON ((p.classpk = c.contactid)))
-  ORDER BY v.firstname, v.lastname, p.number_;
-
-
-ALTER TABLE public.destinatari_sempre_numeri_vw OWNER TO usrweballerte;
-
---
--- Name: destinatari_sempre_contatti_vw; Type: VIEW; Schema: public; Owner: usrweballerte
---
-
-CREATE VIEW public.destinatari_sempre_contatti_vw AS
- SELECT regexp_replace(((((((destinatari_sempre_numeri_vw.firstname)::text || ' '::text) || (destinatari_sempre_numeri_vw.lastname)::text) || '";"'::text) || (destinatari_sempre_numeri_vw.valore)::text) || '";"SMS'::text), ''''::text, ' '::text, 'g'::text) AS rubrica
-   FROM public.destinatari_sempre_numeri_vw
-UNION
- SELECT regexp_replace(((((((destinatari_sempre_email_vw.firstname)::text || ' '::text) || (destinatari_sempre_email_vw.lastname)::text) || '";"'::text) || (destinatari_sempre_email_vw.valore)::text) || '";"EMAIL'::text), ''''::text, ' '::text, 'g'::text) AS rubrica
-   FROM public.destinatari_sempre_email_vw;
-
-
-ALTER TABLE public.destinatari_sempre_contatti_vw OWNER TO usrweballerte;
-
---
--- Name: destinatari_sempre_contatti_vw_2; Type: VIEW; Schema: public; Owner: usrweballerte
---
-
-CREATE VIEW public.destinatari_sempre_contatti_vw_2 AS
- SELECT regexp_replace((((destinatari_sempre_numeri_vw.firstname)::text || ' '::text) || (destinatari_sempre_numeri_vw.lastname)::text), ''''::text, ' '::text, 'g'::text) AS nome,
-    (destinatari_sempre_numeri_vw.valore)::text AS recapito,
-    'SMS'::text AS tipo
-   FROM public.destinatari_sempre_numeri_vw
-UNION
- SELECT regexp_replace((((destinatari_sempre_email_vw.firstname)::text || ' '::text) || (destinatari_sempre_email_vw.lastname)::text), ''''::text, ' '::text, 'g'::text) AS nome,
-    (destinatari_sempre_email_vw.valore)::text AS recapito,
-    'EMAIL'::text AS tipo
-   FROM public.destinatari_sempre_email_vw;
-
-
-ALTER TABLE public.destinatari_sempre_contatti_vw_2 OWNER TO usrweballerte;
-
---
--- Name: destinatari_sempre_email_vw_2; Type: VIEW; Schema: public; Owner: usrweballerte
---
-
-CREATE VIEW public.destinatari_sempre_email_vw_2 AS
-( SELECT u.uuid_ AS uuid,
-    v.firstname,
-    v.lastname,
-    u.emailaddress AS valore
-   FROM ((public.destinatari_sempre_vw v
-     JOIN public.contact_ c ON ((v.userid = c.classpk)))
-     JOIN public.user_ u ON ((u.userid = v.userid)))
-  ORDER BY v.firstname, v.lastname, u.emailaddress)
-UNION
-( SELECT a.uuid_ AS uuid,
-    v.firstname,
-    v.lastname,
-    a.address AS valore
-   FROM ((public.destinatari_sempre_vw v
-     JOIN public.contact_ c ON ((v.userid = c.classpk)))
-     JOIN public.emailaddress a ON ((a.classpk = c.contactid)))
-  ORDER BY v.firstname, v.lastname, a.address);
-
-
-ALTER TABLE public.destinatari_sempre_email_vw_2 OWNER TO usrweballerte;
-
---
--- Name: destinatari_sempre_numeri_vw_2; Type: VIEW; Schema: public; Owner: usrweballerte
---
-
-CREATE VIEW public.destinatari_sempre_numeri_vw_2 AS
- SELECT p.uuid_ AS uuid,
-    v.firstname,
-    v.lastname,
-    p.number_ AS valore
-   FROM ((public.destinatari_sempre_vw v
-     JOIN public.contact_ c ON ((v.userid = c.classpk)))
-     JOIN public.phone p ON ((p.classpk = c.contactid)))
-  ORDER BY v.firstname, v.lastname, p.number_;
-
-
-ALTER TABLE public.destinatari_sempre_numeri_vw_2 OWNER TO usrweballerte;
-
---
--- Name: destinatari_sempre_contatti_vw_3; Type: VIEW; Schema: public; Owner: usrweballerte
---
-
-CREATE VIEW public.destinatari_sempre_contatti_vw_3 AS
- SELECT destinatari_sempre_numeri_vw_2.uuid,
-    regexp_replace((((destinatari_sempre_numeri_vw_2.firstname)::text || ' '::text) || (destinatari_sempre_numeri_vw_2.lastname)::text), ''''::text, ' '::text, 'g'::text) AS nome,
-    (destinatari_sempre_numeri_vw_2.valore)::text AS recapito,
-    'SMS'::text AS tipo
-   FROM public.destinatari_sempre_numeri_vw_2
-UNION
- SELECT destinatari_sempre_email_vw_2.uuid,
-    regexp_replace((((destinatari_sempre_email_vw_2.firstname)::text || ' '::text) || (destinatari_sempre_email_vw_2.lastname)::text), ''''::text, ' '::text, 'g'::text) AS nome,
-    (destinatari_sempre_email_vw_2.valore)::text AS recapito,
-    'EMAIL'::text AS tipo
-   FROM public.destinatari_sempre_email_vw_2;
-
-
-ALTER TABLE public.destinatari_sempre_contatti_vw_3 OWNER TO usrweballerte;
-
---
--- Name: destinatari_sempre_contatti_vw_4; Type: VIEW; Schema: public; Owner: usrweballerte
---
-
-CREATE VIEW public.destinatari_sempre_contatti_vw_4 AS
- SELECT destinatari_sempre_numeri_vw_2.uuid,
-    regexp_replace(((((((destinatari_sempre_numeri_vw_2.firstname)::text || ' '::text) || (destinatari_sempre_numeri_vw_2.lastname)::text) || '";"'::text) || (destinatari_sempre_numeri_vw_2.valore)::text) || '";"SMS'::text), ''''::text, ' '::text, 'g'::text) AS rubrica
-   FROM public.destinatari_sempre_numeri_vw_2
-UNION
- SELECT destinatari_sempre_email_vw_2.uuid,
-    regexp_replace(((((((destinatari_sempre_email_vw_2.firstname)::text || ' '::text) || (destinatari_sempre_email_vw_2.lastname)::text) || '";"'::text) || (destinatari_sempre_email_vw_2.valore)::text) || '";"EMAIL'::text), ''''::text, ' '::text, 'g'::text) AS rubrica
-   FROM public.destinatari_sempre_email_vw_2;
-
-
-ALTER TABLE public.destinatari_sempre_contatti_vw_4 OWNER TO usrweballerte;
-
---
--- Name: org_email_vw; Type: VIEW; Schema: public; Owner: usrweballerte
---
-
-CREATE VIEW public.org_email_vw AS
-( SELECT v.organizationid,
-    v.name,
-    v.firstname,
-    v.lastname,
-    u.emailaddress AS valore
-   FROM ((public.org_rubrica_vw v
-     JOIN public.contact_ c ON ((v.userid = c.classpk)))
-     JOIN public.user_ u ON ((u.userid = v.userid)))
-  ORDER BY v.name, v.firstname, v.lastname, u.emailaddress)
-UNION
-( SELECT v.organizationid,
-    v.name,
-    v.firstname,
-    v.lastname,
-    a.address AS valore
-   FROM ((public.org_rubrica_vw v
-     JOIN public.contact_ c ON ((v.userid = c.classpk)))
-     JOIN public.emailaddress a ON ((a.classpk = c.contactid)))
-  ORDER BY v.name, v.firstname, v.lastname, a.address);
-
-
-ALTER TABLE public.org_email_vw OWNER TO usrweballerte;
-
---
--- Name: fiume_email_vw; Type: VIEW; Schema: public; Owner: usrweballerte
---
-
-CREATE VIEW public.fiume_email_vw AS
- SELECT x.name AS fiume,
-    o2.name AS gruppoinvio,
-    n.firstname,
-    n.lastname,
-    n.valore AS email,
-    ((o2.name)::text !~~ '%-NT'::text) AS tecnico
-   FROM ((( SELECT o.organizationid,
-            o.name,
-            o.treepath
-           FROM public.organization_ o
-          WHERE ((o.parentorganizationid = 196015) AND ((o.name)::text ~~ 'FIUME%'::text))) x
-     JOIN public.organization_ o2 ON (((o2.treepath ~~ (x.treepath || '%/'::text)) OR ((o2.name)::text = ANY (ARRAY[('SEMPRE-NT'::character varying)::text, ('SEMPRE-TT'::character varying)::text])))))
-     JOIN public.org_email_vw n ON ((n.organizationid = o2.organizationid)))
-  ORDER BY x.name, o2.name, n.lastname, n.firstname;
-
-
-ALTER TABLE public.fiume_email_vw OWNER TO usrweballerte;
-
---
--- Name: org_numeri_vw; Type: VIEW; Schema: public; Owner: usrweballerte
---
-
-CREATE VIEW public.org_numeri_vw AS
- SELECT v.organizationid,
-    v.name,
-    v.firstname,
-    v.lastname,
-    v.userid,
-    p.number_ AS valore
-   FROM ((public.org_rubrica_vw v
-     JOIN public.contact_ c ON ((v.userid = c.classpk)))
-     JOIN public.phone p ON ((p.classpk = c.contactid)))
-  ORDER BY v.name, v.firstname, v.lastname, p.number_;
-
-
-ALTER TABLE public.org_numeri_vw OWNER TO usrweballerte;
-
---
--- Name: fiume_numeri_vw; Type: VIEW; Schema: public; Owner: usrweballerte
---
-
-CREATE VIEW public.fiume_numeri_vw AS
- SELECT x.name AS fiume,
-    o2.name AS gruppoinvio,
-    n.firstname,
-    n.lastname,
-    n.valore AS numero,
-    ((o2.name)::text !~~ '%-NT'::text) AS tecnico
-   FROM ((( SELECT o.organizationid,
-            o.name,
-            o.treepath
-           FROM public.organization_ o
-          WHERE ((o.parentorganizationid = 196015) AND ((o.name)::text ~~ 'FIUME%'::text))) x
-     JOIN public.organization_ o2 ON (((o2.treepath ~~ (x.treepath || '%/'::text)) OR ((o2.name)::text = ANY (ARRAY[('SEMPRE-NT'::character varying)::text, ('SEMPRE-TT'::character varying)::text])))))
-     JOIN public.org_numeri_vw n ON ((n.organizationid = o2.organizationid)))
-  ORDER BY x.name, o2.name, n.lastname, n.firstname;
-
-
-ALTER TABLE public.fiume_numeri_vw OWNER TO usrweballerte;
-
---
--- Name: meteomont_email_vw; Type: VIEW; Schema: public; Owner: usrweballerte
---
-
-CREATE VIEW public.meteomont_email_vw AS
- SELECT n.uuid,
+CREATE VIEW public.comuni_sensori2_vw AS
+ SELECT (regexp_matches((rg.nome)::text, 'Comune (.*)\((.*)\)'::text))[1] AS comune,
+    (regexp_matches((rg.nome)::text, 'Comune (.*)\((.*)\)'::text))[2] AS provincia,
+    string_agg((replace((rg2.nome)::text, 'IDR. '::text, ''::text) ||
         CASE
-            WHEN (n.organizationid = 238662) THEN 'Meteomont_App_Emilia_Centrale'::text
-            WHEN (n.organizationid = 238668) THEN 'Meteomont_App_Emilia_Occidentale'::text
-            ELSE 'Meteomont_App_Romagnolo'::text
-        END AS tag,
-    n.firstname,
-    n.lastname,
-    n.valore AS email
-   FROM ((( SELECT o.organizationid,
-            o.name,
-            o.treepath
-           FROM public.organization_ o
-          WHERE ((o.parentorganizationid = 238646) AND ((o.name)::text ~~ 'Valanghe %'::text) AND (o.organizationid <> 515378))) x
-     JOIN public.organization_ o2 ON (((o2.organizationid = x.organizationid) OR (x.organizationid = 515378))))
-     JOIN public.org_email_vw_2 n ON ((n.organizationid = o2.organizationid)))
-  ORDER BY x.name, o2.name, n.lastname, n.firstname;
+            WHEN ((rg2.nome)::text !~~ '%(%'::text) THEN replace(((' ('::text || (
+            CASE
+                WHEN ((i.nomesottobacino IS NOT NULL) AND ((i.nomesottobacino)::text <> ''::text)) THEN i.nomesottobacino
+                ELSE rgp.nome
+            END)::text) || ')'::text), 'FIUME '::text, ''::text)
+            ELSE ''::text
+        END), ', '::text ORDER BY rg2.nome) AS idrometri,
+    string_agg(replace((rg3.nome)::text, 'PLV. '::text, ''::text), ', '::text ORDER BY rg3.nome) AS pluviometri
+   FROM (((((((((public.rubrica_rubricagruppo rg
+     LEFT JOIN public.rubrica_rubricagruppogruppi rgg ON ((rgg.fk_gruppo_figlio = rg.id_gruppo)))
+     LEFT JOIN public.rubrica_rubricagruppo rg2 ON (((rg2.id_gruppo = rgg.fk_gruppo_padre) AND ((rg2.nome)::text ~~ 'IDR.%'::text))))
+     LEFT JOIN public.rubrica_rubricagruppo rg3 ON (((rg3.id_gruppo = rgg.fk_gruppo_padre) AND ((rg3.nome)::text ~~ 'PLV.%'::text))))
+     LEFT JOIN public.bollettino_idrometro i ON (((i.nomerubrica)::text = (rg2.nome)::text)))
+     LEFT JOIN public.bollettino_pluviometro p ON (((p.nomerubrica)::text = (rg3.nome)::text)))
+     LEFT JOIN public.bollettino_stazione st1 ON (((st1.id_)::text = (i.stazioneid)::text)))
+     LEFT JOIN public.bollettino_stazione st2 ON (((st2.id_)::text = (p.stazioneid)::text)))
+     LEFT JOIN public.rubrica_rubricagruppogruppi rgg2 ON ((rgg2.fk_gruppo_figlio = rg2.id_gruppo)))
+     LEFT JOIN public.rubrica_rubricagruppo rgp ON ((rgp.id_gruppo = rgg2.fk_gruppo_padre)))
+  WHERE (((rg.nome)::text ~~ 'Comune%'::text) AND (st1.attivo OR st2.attivo))
+  GROUP BY rg.nome
+  ORDER BY rg.nome;
 
-
-ALTER TABLE public.meteomont_email_vw OWNER TO usrweballerte;
 
 --
--- Name: meteomont_numeri_vw; Type: VIEW; Schema: public; Owner: usrweballerte
+-- TOC entry 611 (class 1259 OID 8626114)
+-- Name: comuni_sensori_vw; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW public.meteomont_numeri_vw AS
- SELECT n.uuid,
+CREATE VIEW public.comuni_sensori_vw AS
+ SELECT (regexp_matches((rg.nome)::text, 'Comune (.*)\((.*)\)'::text))[1] AS comune,
+    (regexp_matches((rg.nome)::text, 'Comune (.*)\((.*)\)'::text))[2] AS provincia,
+    string_agg((replace((rg2.nome)::text, 'IDR. '::text, ''::text) ||
         CASE
-            WHEN (n.organizationid = 238662) THEN 'Meteomont_App_Emilia_Centrale'::text
-            WHEN (n.organizationid = 238668) THEN 'Meteomont_App_Emilia_Occidentale'::text
-            ELSE 'Meteomont_App_Romagnolo'::text
-        END AS tag,
-    n.firstname,
-    n.lastname,
-    n.valore AS numero
-   FROM ((( SELECT o.organizationid,
-            o.name,
-            o.treepath
-           FROM public.organization_ o
-          WHERE ((o.parentorganizationid = 238646) AND ((o.name)::text ~~ 'Valanghe %'::text) AND (o.organizationid <> 515378))) x
-     JOIN public.organization_ o2 ON (((o2.organizationid = x.organizationid) OR (x.organizationid = 515378))))
-     JOIN public.org_numeri_vw_2 n ON ((n.organizationid = o2.organizationid)))
-  ORDER BY x.name, o2.name, n.lastname, n.firstname;
+            WHEN ((rg2.nome)::text !~~ '%(%'::text) THEN replace(((' ('::text || (bs.namesubbasin)::text) || ')'::text), 'FIUME '::text, ''::text)
+            ELSE ''::text
+        END), ', '::text ORDER BY rg2.nome) AS idrometri,
+    string_agg(replace((rg3.nome)::text, 'PLV. '::text, ''::text), ', '::text ORDER BY rg3.nome) AS pluviometri
+   FROM (((((((public.rubrica_rubricagruppo rg
+     LEFT JOIN public.rubrica_rubricagruppogruppi rgg ON ((rgg.fk_gruppo_figlio = rg.id_gruppo)))
+     LEFT JOIN public.rubrica_rubricagruppo rg2 ON (((rg2.id_gruppo = rgg.fk_gruppo_padre) AND ((rg2.nome)::text ~~ 'IDR.%'::text))))
+     LEFT JOIN public.rubrica_rubricagruppo rg3 ON (((rg3.id_gruppo = rgg.fk_gruppo_padre) AND ((rg3.nome)::text ~~ 'PLV.%'::text))))
+     LEFT JOIN public.bollettino_idrometro i ON (((i.nomerubrica)::text = (rg2.nome)::text)))
+     LEFT JOIN public.bollettino_stazione bs ON (((bs.id_)::text = (i.stazioneid)::text)))
+     LEFT JOIN public.bollettino_pluviometro p ON (((p.nomerubrica)::text = (rg3.nome)::text)))
+     LEFT JOIN public.bollettino_stazione st2 ON (((st2.id_)::text = (p.stazioneid)::text)))
+  WHERE (((rg.nome)::text ~~ 'Comune%'::text) AND (bs.attivo OR st2.attivo))
+  GROUP BY rg.nome
+  ORDER BY rg.nome;
 
-
-ALTER TABLE public.meteomont_numeri_vw OWNER TO usrweballerte;
 
 --
--- Name: meteomont_rubrica_vw; Type: VIEW; Schema: public; Owner: usrweballerte
+-- TOC entry 630 (class 1259 OID 65203534)
+-- Name: dewetra1_vw; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW public.meteomont_rubrica_vw AS
- SELECT meteomont_numeri_vw.uuid AS id,
-    meteomont_numeri_vw.tag,
-    regexp_replace((((meteomont_numeri_vw.firstname)::text || ' '::text) || (meteomont_numeri_vw.lastname)::text), ''''::text, ' '::text, 'g'::text) AS nome,
-    (meteomont_numeri_vw.numero)::text AS recapito,
-    'SMS'::text AS tipo
-   FROM public.meteomont_numeri_vw
-UNION
- SELECT meteomont_email_vw.uuid AS id,
-    meteomont_email_vw.tag,
-    regexp_replace((((meteomont_email_vw.firstname)::text || ' '::text) || (meteomont_email_vw.lastname)::text), ''''::text, ' '::text, 'g'::text) AS nome,
-    (meteomont_email_vw.email)::text AS recapito,
-    'EMAIL'::text AS tipo
-   FROM public.meteomont_email_vw;
+CREATE VIEW public.dewetra1_vw AS
+ SELECT d.id_,
+    d.comune,
+    d."timestamp",
+    d.hri,
+    d.ssi,
+    d.sri,
+    d.vmi,
+    d.vil,
+    d.poh,
+    d.etm,
+    d.top,
+    d.lgt,
+    d.pers,
+    d.srt,
+    d.srt_3,
+    d.srt_6,
+    d.vel,
+    d.dir,
+    dc.id AS indice_colore,
+    dc.colore AS ind,
+    c.area,
+    c.provincia
+   FROM ((public.dewetra_hrw d
+     JOIN public.dewetra_colori dc ON (((GREATEST(d.hri, d.ssi) >= (dc.min)::double precision) AND (GREATEST(d.hri, d.ssi) < (dc.max)::double precision))))
+     JOIN public.storico_aree c ON ((((c.nome)::text = upper((d.comune)::text)) AND (c.data_inizio <= d."timestamp") AND (c.data_fine >= d."timestamp") AND ((c.tipo)::text = 'M'::text))));
 
-
-ALTER TABLE public.meteomont_rubrica_vw OWNER TO usrweballerte;
 
 --
--- Name: meteomont_vw; Type: VIEW; Schema: public; Owner: usrweballerte
+-- TOC entry 631 (class 1259 OID 65205395)
+-- Name: dewetra2_vw; Type: VIEW; Schema: public; Owner: -
 --
-/*----- FROM IMPORT
+
+CREATE VIEW public.dewetra2_vw AS
+ SELECT d.id_,
+    d.comune,
+    d."timestamp",
+    d.hri,
+    d.ssi,
+    d.sri,
+    d.vmi,
+    d.vil,
+    d.poh,
+    d.etm,
+    d.top,
+    d.lgt,
+    d.pers,
+    d.srt,
+    d.srt_3,
+    d.srt_6,
+    d.vel,
+    d.dir,
+    d.indice_colore,
+    d.ind,
+    d.area,
+    d.provincia,
+    a.allertaid
+   FROM (public.dewetra1_vw d
+     JOIN public.allerter_allerta a ON (((a.datainizio <= d."timestamp") AND (a.datafine > d."timestamp") AND (a.stato = 0))));
+
+
+--
+-- TOC entry 632 (class 1259 OID 65205932)
+-- Name: dewetra3_vw; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.dewetra3_vw AS
+ SELECT y.allertaid,
+    y.dt,
+    y.area,
+    ((((((y.cnt || ' record da '::text) || (y.mn)::time without time zone) || ' a '::text) || (y.mx)::time without time zone) || ', max '::text) || (y.colore)::text) AS txt
+   FROM ( SELECT x.dt,
+            x.allertaid,
+            x.area,
+            x.cnt,
+            x.mn,
+            x.mx,
+            x.col,
+            c.colore
+           FROM (( SELECT date(dewetra2_vw."timestamp") AS dt,
+                    dewetra2_vw.allertaid,
+                    dewetra2_vw.area,
+                    count(*) AS cnt,
+                    min(dewetra2_vw."timestamp") AS mn,
+                    max(dewetra2_vw."timestamp") AS mx,
+                    max(dewetra2_vw.indice_colore) AS col
+                   FROM public.dewetra2_vw
+                  GROUP BY dewetra2_vw.allertaid, (date(dewetra2_vw."timestamp")), dewetra2_vw.area) x
+             JOIN public.dewetra_colori c ON ((c.id = x.col)))) y;
+
+
+
+
+--
+-- TOC entry 613 (class 1259 OID 8897065)
+-- Name: elenco_superamenti_vw; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.elenco_superamenti_vw AS
+ SELECT x.allarmeid,
+    x.createdate,
+    x.datafine,
+    x.idregola,
+    x.colore,
+    x.idvariabile,
+    x.soglia,
+    x.idstazione,
+    x.name,
+    x.soglia1,
+    x.soglia2,
+    x.soglia3,
+    x.txt,
+    "substring"((x.txt)::text, '[0-9][0-9]:[0-9][0-9]'::text) AS oralocale,
+        CASE
+            WHEN ((x.idvariabile)::text ~~ '%13215%'::text) THEN 'idro'::text
+            ELSE 'pluvio'::text
+        END AS tipo,
+        CASE
+            WHEN ((x.idvariabile)::text ~~ '%13215%'::text) THEN "substring"((x.txt)::text, '[0-9]+,[0-9]+ m'::text)
+            ELSE "substring"((x.txt)::text, '[0-9]+,[0-9]+ mm'::text)
+        END AS livello,
+        CASE
+            WHEN (x.soglia = 1) THEN x.soglia1
+            WHEN (x.soglia = 2) THEN x.soglia2
+            ELSE x.soglia3
+        END AS sogliaregola
+   FROM ( SELECT al.allarmeid,
+            al.createdate,
+            al.datafine,
+            al.idregola,
+            r.colore,
+            rac.idvariabile,
+            rac.soglia,
+            st.id_ AS idstazione,
+            st.name,
+            sv.soglia1,
+            sv.soglia2,
+            sv.soglia3,
+            ( SELECT s.testo AS txt
+                   FROM public.allerter_sms s
+                  WHERE (((s.tipo)::text = 'superamento'::text) AND (s.param = al.allarmeid) AND ((s.testo)::text ~ '[0-9][0-9]:[0-9][0-9]'::text))
+                 LIMIT 1) AS txt
+           FROM ((((public.bollettino_allarme al
+             LEFT JOIN public.bollettino_regolaallarme r ON ((al.idregola = r.id_)))
+             LEFT JOIN public.bollettino_regolaallarmecondizione rac ON (((rac.idregola = r.id_) AND (rac.id_ = ( SELECT min(r2.id_) AS min
+                   FROM public.bollettino_regolaallarmecondizione r2
+                  WHERE (r2.idregola = r.id_))))))
+             LEFT JOIN public.bollettino_stazione st ON (((st.id_)::text = (rac.idstazione)::text)))
+             LEFT JOIN public.bollettino_stazionevariabile sv ON ((((sv.idstazione)::text = (st.id_)::text) AND ((sv.idvariabile)::text = (rac.idvariabile)::text))))) x
+  ORDER BY x.createdate DESC,
+        CASE
+            WHEN ((x.idvariabile)::text ~~ '%13215%'::text) THEN 'idro'::text
+            ELSE 'pluvio'::text
+        END, x.name, x.soglia;
+
+
+
+--
+-- TOC entry 349 (class 1259 OID 692710)
+-- Name: idro; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.idro AS
+ SELECT DISTINCT s.id_ AS stazione,
+    s.name
+   FROM ((public.bollettino_stazione s
+     JOIN public.bollettino_stazionevariabile v ON (((s.id_)::text = (v.idstazione)::text)))
+     JOIN public.bollettino_valoresensore val ON (((val.idstazione)::text = (v.idstazione)::text)))
+  WHERE ((v.idvariabile)::text ~~ '%B13215%'::text);
+
+
+--
+-- TOC entry 407 (class 1259 OID 693050)
+-- Name: lr7_rubrica_gerarchia; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.lr7_rubrica_gerarchia AS
+ SELECT x.id_gruppo,
+    x.nome,
+    x.fk_sito_proprietario,
+    x.sottogruppi,
+    string_agg((rn.id_nominativo)::text, ','::text) AS nominativi
+   FROM ((( SELECT rg.id_gruppo,
+            rg.nome,
+            rg.fk_sito_proprietario,
+            string_agg((rg2.id_gruppo)::text, ','::text) AS sottogruppi
+           FROM ((public.rubrica_rubricagruppo rg
+             LEFT JOIN public.rubrica_rubricagruppogruppi rgg ON ((rgg.fk_gruppo_padre = rg.id_gruppo)))
+             LEFT JOIN public.rubrica_rubricagruppo rg2 ON (((rg2.id_gruppo = rgg.fk_gruppo_figlio) AND (NOT rg2.disabled))))
+          WHERE (NOT rg.disabled)
+          GROUP BY rg.id_gruppo, rg.nome, rg.fk_sito_proprietario) x
+     LEFT JOIN public.rubrica_rubricagrupponominativi rgn ON ((x.id_gruppo = rgn.fk_gruppo)))
+     LEFT JOIN public.rubrica_rubricanominativo rn ON (((rn.id_nominativo = rgn.fk_nominativo) AND (NOT rn.disabled))))
+  GROUP BY x.id_gruppo, x.fk_sito_proprietario, x.nome, x.sottogruppi;
+
+
+--
+-- TOC entry 411 (class 1259 OID 693064)
+-- Name: lr7_rubrica_supporto1_vw; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.lr7_rubrica_supporto1_vw AS
+ SELECT x.gruppo,
+    x.id_contatto,
+    x.cognome,
+    x.nome,
+    x.ruolo,
+    x.specifica_ruolo,
+    x.indirizzo,
+    x.tipo_contatto,
+    x.contatto,
+    x.nomegruppo,
+    x.nomeruolo,
+    x.zona,
+    x.sottozona,
+    replace(x.zona, 'Allerta Zona '::text, 'ZONA '::text) AS z,
+    replace(x.sottozona, 'Allerta Zona '::text, 'ZONA '::text) AS sz
+   FROM ( WITH RECURSIVE grafo_gruppi(gruppo, id_contatto, cognome, nome, ruolo, specifica_ruolo, indirizzo, tipo_contatto, contatto, nomegruppo, nomeruolo, zona, sottozona) AS (
+                 SELECT rg.id_gruppo AS gruppo,
+                    rc.id_contatto,
+                    rn.cognome,
+                    rn.nome,
+                    rgn.fk_ruolo,
+                    rgn.specifica_ruolo,
+                    rn.indirizzo,
+                    rca.nome AS tipo_contatto,
+                    rc.contatto,
+                    rg.nome AS nomegruppo,
+                    rr.descrizione AS nomeruolo,
+                    NULL::text AS zona,
+                    NULL::text AS sottozona
+                   FROM (((((public.rubrica_rubricagruppo rg
+                     LEFT JOIN public.rubrica_rubricagrupponominativi rgn ON ((rgn.fk_gruppo = rg.id_gruppo)))
+                     LEFT JOIN public.rubrica_rubricanominativo rn ON (((rn.id_nominativo = rgn.fk_nominativo) AND (NOT rn.disabled))))
+                     LEFT JOIN public.rubrica_rubricacontatto rc ON (((rc.fk_nominativo = rn.id_nominativo) AND (rc.data_fine_validita IS NULL))))
+                     LEFT JOIN public.rubrica_rubricaruolo rr ON ((rr.id_ruolo = rgn.fk_ruolo)))
+                     LEFT JOIN public.rubrica_rubricacanale rca ON ((rca.id_canale = rc.fk_canale)))
+                  WHERE (((rg.nome)::text = 'Rubrica Allerta'::text) AND (rg.fk_sito_proprietario = 20181) AND (NOT (rg.disabled = true)))
+                UNION
+                 SELECT rg.id_gruppo AS gruppo,
+                    rc.id_contatto,
+                    rn.cognome,
+                    rn.nome,
+                    rgn.fk_ruolo,
+                    rgn.specifica_ruolo,
+                    rn.indirizzo,
+                    rca.nome AS tipo_contatto,
+                    rc.contatto,
+                    (concat(gg.nomegruppo, '/', rg.nome))::character varying(512) AS nomegruppo,
+                    rr.descrizione AS nomeruolo,
+                        CASE
+                            WHEN ((gg.zona IS NULL) AND ((rg.nome)::text ~~ 'Allerta Zona%'::text) AND (NOT (((rg.nome)::text ~~ '%1'::text) OR ((rg.nome)::text ~~ '%2'::text) OR ((rg.nome)::text ~~ '%3'::text)))) THEN (rg.nome)::text
+                            ELSE gg.zona
+                        END AS zona,
+                        CASE
+                            WHEN ((gg.sottozona IS NULL) AND ((rg.nome)::text ~~ 'Allerta Zona%'::text) AND (((rg.nome)::text ~~ '%1'::text) OR ((rg.nome)::text ~~ '%2'::text) OR ((rg.nome)::text ~~ '%3'::text))) THEN (rg.nome)::text
+                            ELSE gg.sottozona
+                        END AS sottozona
+                   FROM (((((((grafo_gruppi gg
+                     LEFT JOIN public.rubrica_rubricagruppogruppi rgg ON ((rgg.fk_gruppo_padre = gg.gruppo)))
+                     LEFT JOIN public.rubrica_rubricagruppo rg ON (((rg.id_gruppo = rgg.fk_gruppo_figlio) AND (NOT rg.disabled))))
+                     LEFT JOIN public.rubrica_rubricagrupponominativi rgn ON ((rgn.fk_gruppo = rg.id_gruppo)))
+                     LEFT JOIN public.rubrica_rubricanominativo rn ON (((rn.id_nominativo = rgn.fk_nominativo) AND (NOT rn.disabled))))
+                     LEFT JOIN public.rubrica_rubricacontatto rc ON (((rc.fk_nominativo = rn.id_nominativo) AND (rc.data_fine_validita IS NULL))))
+                     LEFT JOIN public.rubrica_rubricaruolo rr ON ((rr.id_ruolo = rgn.fk_ruolo)))
+                     LEFT JOIN public.rubrica_rubricacanale rca ON ((rca.id_canale = rc.fk_canale)))
+                )
+         SELECT grafo_gruppi.gruppo,
+            grafo_gruppi.id_contatto,
+            grafo_gruppi.cognome,
+            grafo_gruppi.nome,
+            grafo_gruppi.ruolo,
+            grafo_gruppi.specifica_ruolo,
+            grafo_gruppi.indirizzo,
+            grafo_gruppi.tipo_contatto,
+            grafo_gruppi.contatto,
+            grafo_gruppi.nomegruppo,
+            grafo_gruppi.nomeruolo,
+            grafo_gruppi.zona,
+            grafo_gruppi.sottozona
+           FROM grafo_gruppi
+          WHERE (grafo_gruppi.contatto IS NOT NULL)
+          ORDER BY grafo_gruppi.gruppo, grafo_gruppi.cognome, grafo_gruppi.nome, grafo_gruppi.tipo_contatto, grafo_gruppi.contatto) x;
+
+
+--
+-- TOC entry 412 (class 1259 OID 693069)
+-- Name: lr7_rubrica_supporto2_vw; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.lr7_rubrica_supporto2_vw AS
+ SELECT x.gruppo,
+    x.id_contatto,
+    x.cognome,
+    x.nome,
+    x.ruolo,
+    x.specifica_ruolo,
+    x.indirizzo,
+    x.tipo_contatto,
+    x.contatto,
+    x.nomegruppo,
+    x.nomeruolo,
+    x.fiume,
+    y.nome AS fiume2
+   FROM (( WITH RECURSIVE grafo_gruppi(gruppo, id_contatto, cognome, nome, ruolo, specifica_ruolo, indirizzo, tipo_contatto, contatto, nomegruppo, nomeruolo, fiume) AS (
+                 SELECT rg.id_gruppo AS gruppo,
+                    rc.id_contatto,
+                    rn.cognome,
+                    rn.nome,
+                    rgn.fk_ruolo,
+                    rgn.specifica_ruolo,
+                    rn.indirizzo,
+                    rca.nome AS tipo_contatto,
+                    rc.contatto,
+                    rg.nome AS nomegruppo,
+                    rr.descrizione AS nomeruolo,
+                    NULL::text AS fiume
+                   FROM (((((public.rubrica_rubricagruppo rg
+                     LEFT JOIN public.rubrica_rubricagrupponominativi rgn ON ((rgn.fk_gruppo = rg.id_gruppo)))
+                     LEFT JOIN public.rubrica_rubricanominativo rn ON (((rn.id_nominativo = rgn.fk_nominativo) AND (NOT rn.disabled))))
+                     LEFT JOIN public.rubrica_rubricacontatto rc ON (((rc.fk_nominativo = rn.id_nominativo) AND (rc.data_fine_validita IS NULL))))
+                     LEFT JOIN public.rubrica_rubricaruolo rr ON ((rr.id_ruolo = rgn.fk_ruolo)))
+                     LEFT JOIN public.rubrica_rubricacanale rca ON ((rca.id_canale = rc.fk_canale)))
+                  WHERE (((rg.nome)::text = 'Idrometri'::text) AND (rg.fk_sito_proprietario = 20181) AND (NOT (rg.disabled = true)))
+                UNION
+                 SELECT rg.id_gruppo AS gruppo,
+                    rc.id_contatto,
+                    rn.cognome,
+                    rn.nome,
+                    rgn.fk_ruolo,
+                    rgn.specifica_ruolo,
+                    rn.indirizzo,
+                    rca.nome AS tipo_contatto,
+                    rc.contatto,
+                    (concat(gg.nomegruppo, '/', rg.nome))::character varying(512) AS nomegruppo,
+                    rr.descrizione AS nomeruolo,
+                        CASE
+                            WHEN ((gg.fiume IS NULL) AND ((rg.nome)::text ~~ 'FIUME%'::text)) THEN (rg.nome)::text
+                            ELSE gg.fiume
+                        END AS fiume
+                   FROM (((((((grafo_gruppi gg
+                     LEFT JOIN public.rubrica_rubricagruppogruppi rgg ON ((rgg.fk_gruppo_padre = gg.gruppo)))
+                     LEFT JOIN public.rubrica_rubricagruppo rg ON (((rg.id_gruppo = rgg.fk_gruppo_figlio) AND (NOT rg.disabled))))
+                     LEFT JOIN public.rubrica_rubricagrupponominativi rgn ON ((rgn.fk_gruppo = rg.id_gruppo)))
+                     LEFT JOIN public.rubrica_rubricanominativo rn ON (((rn.id_nominativo = rgn.fk_nominativo) AND (NOT rn.disabled))))
+                     LEFT JOIN public.rubrica_rubricacontatto rc ON (((rc.fk_nominativo = rn.id_nominativo) AND (rc.data_fine_validita IS NULL))))
+                     LEFT JOIN public.rubrica_rubricaruolo rr ON ((rr.id_ruolo = rgn.fk_ruolo)))
+                     LEFT JOIN public.rubrica_rubricacanale rca ON ((rca.id_canale = rc.fk_canale)))
+                )
+         SELECT grafo_gruppi.gruppo,
+            grafo_gruppi.id_contatto,
+            grafo_gruppi.cognome,
+            grafo_gruppi.nome,
+            grafo_gruppi.ruolo,
+            grafo_gruppi.specifica_ruolo,
+            grafo_gruppi.indirizzo,
+            grafo_gruppi.tipo_contatto,
+            grafo_gruppi.contatto,
+            grafo_gruppi.nomegruppo,
+            grafo_gruppi.nomeruolo,
+            grafo_gruppi.fiume
+           FROM grafo_gruppi
+          WHERE (grafo_gruppi.contatto IS NOT NULL)
+          ORDER BY grafo_gruppi.gruppo, grafo_gruppi.cognome, grafo_gruppi.nome, grafo_gruppi.tipo_contatto, grafo_gruppi.contatto) x
+     JOIN ( SELECT DISTINCT rg.nome
+           FROM public.rubrica_rubricagruppo rg
+          WHERE (((rg.nome)::text ~~ 'FIUME%'::text) AND (rg.fk_sito_proprietario = 20181))) y ON (((x.fiume = (y.nome)::text) OR (x.fiume IS NULL))));
+
+
+--
+-- TOC entry 413 (class 1259 OID 693074)
+-- Name: lr7_rubrica_supporto3_vw; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.lr7_rubrica_supporto3_vw AS
+ SELECT x.gruppo,
+    x.id_contatto,
+    x.cognome,
+    x.nome,
+    x.ruolo,
+    x.specifica_ruolo,
+    x.indirizzo,
+    x.tipo_contatto,
+    x.contatto,
+    x.nomegruppo,
+    x.nomeruolo
+   FROM ( WITH RECURSIVE grafo_gruppi(gruppo, id_contatto, cognome, nome, ruolo, specifica_ruolo, indirizzo, tipo_contatto, contatto, nomegruppo, nomeruolo) AS (
+                 SELECT rg.id_gruppo AS gruppo,
+                    rc.id_contatto,
+                    rn.cognome,
+                    rn.nome,
+                    rgn.fk_ruolo,
+                    rgn.specifica_ruolo,
+                    rn.indirizzo,
+                    rca.nome AS tipo_contatto,
+                    rc.contatto,
+                    rg.nome AS nomegruppo,
+                    rr.descrizione AS nomeruolo
+                   FROM (((((public.rubrica_rubricagruppo rg
+                     LEFT JOIN public.rubrica_rubricagrupponominativi rgn ON ((rgn.fk_gruppo = rg.id_gruppo)))
+                     LEFT JOIN public.rubrica_rubricanominativo rn ON (((rn.id_nominativo = rgn.fk_nominativo) AND (NOT rn.disabled))))
+                     LEFT JOIN public.rubrica_rubricacontatto rc ON (((rc.fk_nominativo = rn.id_nominativo) AND (rc.data_fine_validita IS NULL))))
+                     LEFT JOIN public.rubrica_rubricaruolo rr ON ((rr.id_ruolo = rgn.fk_ruolo)))
+                     LEFT JOIN public.rubrica_rubricacanale rca ON ((rca.id_canale = rc.fk_canale)))
+                  WHERE (((rg.nome)::text ~~ 'Valanghe%'::text) AND (rg.fk_sito_proprietario = 20181) AND (NOT (rg.disabled = true)))
+                UNION
+                 SELECT rg.id_gruppo AS gruppo,
+                    rc.id_contatto,
+                    rn.cognome,
+                    rn.nome,
+                    rgn.fk_ruolo,
+                    rgn.specifica_ruolo,
+                    rn.indirizzo,
+                    rca.nome AS tipo_contatto,
+                    rc.contatto,
+                    (concat(gg.nomegruppo, '/', rg.nome))::character varying(512) AS nomegruppo,
+                    rr.descrizione AS nomeruolo
+                   FROM (((((((grafo_gruppi gg
+                     LEFT JOIN public.rubrica_rubricagruppogruppi rgg ON ((rgg.fk_gruppo_padre = gg.gruppo)))
+                     LEFT JOIN public.rubrica_rubricagruppo rg ON (((rg.id_gruppo = rgg.fk_gruppo_figlio) AND (NOT rg.disabled))))
+                     LEFT JOIN public.rubrica_rubricagrupponominativi rgn ON ((rgn.fk_gruppo = rg.id_gruppo)))
+                     LEFT JOIN public.rubrica_rubricanominativo rn ON (((rn.id_nominativo = rgn.fk_nominativo) AND (NOT rn.disabled))))
+                     LEFT JOIN public.rubrica_rubricacontatto rc ON (((rc.fk_nominativo = rn.id_nominativo) AND (rc.data_fine_validita IS NULL))))
+                     LEFT JOIN public.rubrica_rubricaruolo rr ON ((rr.id_ruolo = rgn.fk_ruolo)))
+                     LEFT JOIN public.rubrica_rubricacanale rca ON ((rca.id_canale = rc.fk_canale)))
+                )
+         SELECT grafo_gruppi.gruppo,
+            grafo_gruppi.id_contatto,
+            grafo_gruppi.cognome,
+            grafo_gruppi.nome,
+            grafo_gruppi.ruolo,
+            grafo_gruppi.specifica_ruolo,
+            grafo_gruppi.indirizzo,
+            grafo_gruppi.tipo_contatto,
+            grafo_gruppi.contatto,
+            grafo_gruppi.nomegruppo,
+            grafo_gruppi.nomeruolo
+           FROM grafo_gruppi
+          WHERE (grafo_gruppi.contatto IS NOT NULL)
+          ORDER BY grafo_gruppi.gruppo, grafo_gruppi.cognome, grafo_gruppi.nome, grafo_gruppi.tipo_contatto, grafo_gruppi.contatto) x;
+
+
+--
+-- TOC entry 414 (class 1259 OID 693079)
+-- Name: lr7_rubrica_supporto4_vw; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.lr7_rubrica_supporto4_vw AS
+ SELECT x.gruppo,
+    x.id_contatto,
+    x.cognome,
+    x.nome,
+    x.ruolo,
+    x.specifica_ruolo,
+    x.indirizzo,
+    x.tipo_contatto,
+    x.contatto,
+    x.nomegruppo,
+    x.nomeruolo,
+    x.fiume,
+    y.nome AS fiume2
+   FROM (( WITH RECURSIVE grafo_gruppi(gruppo, id_contatto, cognome, nome, ruolo, specifica_ruolo, indirizzo, tipo_contatto, contatto, nomegruppo, nomeruolo, fiume) AS (
+                 SELECT rg.id_gruppo AS gruppo,
+                    rc.id_contatto,
+                    rn.cognome,
+                    rn.nome,
+                    rgn.fk_ruolo,
+                    rgn.specifica_ruolo,
+                    rn.indirizzo,
+                    rca.nome AS tipo_contatto,
+                    rc.contatto,
+                    rg.nome AS nomegruppo,
+                    rr.descrizione AS nomeruolo,
+                    NULL::text AS fiume
+                   FROM (((((public.rubrica_rubricagruppo rg
+                     LEFT JOIN public.rubrica_rubricagrupponominativi rgn ON ((rgn.fk_gruppo = rg.id_gruppo)))
+                     LEFT JOIN public.rubrica_rubricanominativo rn ON (((rn.id_nominativo = rgn.fk_nominativo) AND (NOT rn.disabled))))
+                     LEFT JOIN public.rubrica_rubricacontatto rc ON (((rc.fk_nominativo = rn.id_nominativo) AND (rc.data_fine_validita IS NULL))))
+                     LEFT JOIN public.rubrica_rubricaruolo rr ON ((rr.id_ruolo = rgn.fk_ruolo)))
+                     LEFT JOIN public.rubrica_rubricacanale rca ON ((rca.id_canale = rc.fk_canale)))
+                  WHERE (((rg.nome)::text = 'Rubrica Monitoraggio'::text) AND (rg.fk_sito_proprietario = 20181) AND (NOT (rg.disabled = true)))
+                UNION
+                 SELECT rg.id_gruppo AS gruppo,
+                    rc.id_contatto,
+                    rn.cognome,
+                    rn.nome,
+                    rgn.fk_ruolo,
+                    rgn.specifica_ruolo,
+                    rn.indirizzo,
+                    rca.nome AS tipo_contatto,
+                    rc.contatto,
+                    (concat(gg.nomegruppo, '/', rg.nome))::character varying(512) AS nomegruppo,
+                    rr.descrizione AS nomeruolo,
+                        CASE
+                            WHEN ((gg.fiume IS NULL) AND ((rg.nome)::text ~~ 'Monitoraggio%'::text)) THEN (rg.nome)::text
+                            ELSE gg.fiume
+                        END AS fiume
+                   FROM (((((((grafo_gruppi gg
+                     LEFT JOIN public.rubrica_rubricagruppogruppi rgg ON ((rgg.fk_gruppo_padre = gg.gruppo)))
+                     LEFT JOIN public.rubrica_rubricagruppo rg ON (((rg.id_gruppo = rgg.fk_gruppo_figlio) AND (NOT rg.disabled))))
+                     LEFT JOIN public.rubrica_rubricagrupponominativi rgn ON ((rgn.fk_gruppo = rg.id_gruppo)))
+                     LEFT JOIN public.rubrica_rubricanominativo rn ON (((rn.id_nominativo = rgn.fk_nominativo) AND (NOT rn.disabled))))
+                     LEFT JOIN public.rubrica_rubricacontatto rc ON (((rc.fk_nominativo = rn.id_nominativo) AND (rc.data_fine_validita IS NULL))))
+                     LEFT JOIN public.rubrica_rubricaruolo rr ON ((rr.id_ruolo = rgn.fk_ruolo)))
+                     LEFT JOIN public.rubrica_rubricacanale rca ON ((rca.id_canale = rc.fk_canale)))
+                )
+         SELECT grafo_gruppi.gruppo,
+            grafo_gruppi.id_contatto,
+            grafo_gruppi.cognome,
+            grafo_gruppi.nome,
+            grafo_gruppi.ruolo,
+            grafo_gruppi.specifica_ruolo,
+            grafo_gruppi.indirizzo,
+            grafo_gruppi.tipo_contatto,
+            grafo_gruppi.contatto,
+            grafo_gruppi.nomegruppo,
+            grafo_gruppi.nomeruolo,
+            grafo_gruppi.fiume
+           FROM grafo_gruppi
+          WHERE (grafo_gruppi.contatto IS NOT NULL)
+          ORDER BY grafo_gruppi.gruppo, grafo_gruppi.cognome, grafo_gruppi.nome, grafo_gruppi.tipo_contatto, grafo_gruppi.contatto) x
+     JOIN ( SELECT DISTINCT rg.nome
+           FROM public.rubrica_rubricagruppo rg
+          WHERE (((rg.nome)::text ~~ 'Monitoraggio%'::text) AND (rg.fk_sito_proprietario = 20181))) y ON (((x.fiume = (y.nome)::text) OR (x.fiume IS NULL))));
+
+
+--
+-- TOC entry 415 (class 1259 OID 693084)
+-- Name: lr7_rubrica_supporto5_vw; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.lr7_rubrica_supporto5_vw AS
+ SELECT x.gruppo,
+    x.id_contatto,
+    x.cognome,
+    x.nome,
+    x.ruolo,
+    x.specifica_ruolo,
+    x.indirizzo,
+    x.tipo_contatto,
+    x.contatto,
+    x.nomegruppo,
+    x.nomeruolo,
+    x.fiume,
+    y.nome AS fiume2
+   FROM (( WITH RECURSIVE grafo_gruppi(gruppo, id_contatto, cognome, nome, ruolo, specifica_ruolo, indirizzo, tipo_contatto, contatto, nomegruppo, nomeruolo, fiume) AS (
+                 SELECT rg.id_gruppo AS gruppo,
+                    rc.id_contatto,
+                    rn.cognome,
+                    rn.nome,
+                    rgn.fk_ruolo,
+                    rgn.specifica_ruolo,
+                    rn.indirizzo,
+                    rca.nome AS tipo_contatto,
+                    rc.contatto,
+                    rg.nome AS nomegruppo,
+                    rr.descrizione AS nomeruolo,
+                    NULL::text AS fiume
+                   FROM (((((public.rubrica_rubricagruppo rg
+                     LEFT JOIN public.rubrica_rubricagrupponominativi rgn ON ((rgn.fk_gruppo = rg.id_gruppo)))
+                     LEFT JOIN public.rubrica_rubricanominativo rn ON (((rn.id_nominativo = rgn.fk_nominativo) AND (NOT rn.disabled))))
+                     LEFT JOIN public.rubrica_rubricacontatto rc ON (((rc.fk_nominativo = rn.id_nominativo) AND (rc.data_fine_validita IS NULL))))
+                     LEFT JOIN public.rubrica_rubricaruolo rr ON ((rr.id_ruolo = rgn.fk_ruolo)))
+                     LEFT JOIN public.rubrica_rubricacanale rca ON ((rca.id_canale = rc.fk_canale)))
+                  WHERE (((rg.nome)::text = 'Pluviometri'::text) AND (rg.fk_sito_proprietario = 20181) AND (NOT (rg.disabled = true)))
+                UNION
+                 SELECT rg.id_gruppo AS gruppo,
+                    rc.id_contatto,
+                    rn.cognome,
+                    rn.nome,
+                    rgn.fk_ruolo,
+                    rgn.specifica_ruolo,
+                    rn.indirizzo,
+                    rca.nome AS tipo_contatto,
+                    rc.contatto,
+                    (concat(gg.nomegruppo, '/', rg.nome))::character varying(512) AS nomegruppo,
+                    rr.descrizione AS nomeruolo,
+                        CASE
+                            WHEN ((gg.fiume IS NULL) AND ((rg.nome)::text ~~ 'PLV.%'::text)) THEN (rg.nome)::text
+                            ELSE gg.fiume
+                        END AS fiume
+                   FROM (((((((grafo_gruppi gg
+                     LEFT JOIN public.rubrica_rubricagruppogruppi rgg ON ((rgg.fk_gruppo_padre = gg.gruppo)))
+                     LEFT JOIN public.rubrica_rubricagruppo rg ON (((rg.id_gruppo = rgg.fk_gruppo_figlio) AND (NOT rg.disabled))))
+                     LEFT JOIN public.rubrica_rubricagrupponominativi rgn ON ((rgn.fk_gruppo = rg.id_gruppo)))
+                     LEFT JOIN public.rubrica_rubricanominativo rn ON (((rn.id_nominativo = rgn.fk_nominativo) AND (NOT rn.disabled))))
+                     LEFT JOIN public.rubrica_rubricacontatto rc ON (((rc.fk_nominativo = rn.id_nominativo) AND (rc.data_fine_validita IS NULL))))
+                     LEFT JOIN public.rubrica_rubricaruolo rr ON ((rr.id_ruolo = rgn.fk_ruolo)))
+                     LEFT JOIN public.rubrica_rubricacanale rca ON ((rca.id_canale = rc.fk_canale)))
+                )
+         SELECT grafo_gruppi.gruppo,
+            grafo_gruppi.id_contatto,
+            grafo_gruppi.cognome,
+            grafo_gruppi.nome,
+            grafo_gruppi.ruolo,
+            grafo_gruppi.specifica_ruolo,
+            grafo_gruppi.indirizzo,
+            grafo_gruppi.tipo_contatto,
+            grafo_gruppi.contatto,
+            grafo_gruppi.nomegruppo,
+            grafo_gruppi.nomeruolo,
+            grafo_gruppi.fiume
+           FROM grafo_gruppi
+          WHERE (grafo_gruppi.contatto IS NOT NULL)
+          ORDER BY grafo_gruppi.gruppo, grafo_gruppi.cognome, grafo_gruppi.nome, grafo_gruppi.tipo_contatto, grafo_gruppi.contatto) x
+     JOIN ( SELECT DISTINCT rg.nome
+           FROM public.rubrica_rubricagruppo rg
+          WHERE (((rg.nome)::text ~~ 'PLV.%'::text) AND (rg.fk_sito_proprietario = 20181))) y ON (((x.fiume = (y.nome)::text) OR ((x.fiume IS NULL) AND (NOT ((x.nomegruppo)::text ~~ 'Pluviometri/PLUVIOMETRI%'::text))))));
+
+
+--
+-- TOC entry 620 (class 1259 OID 53613100)
+-- Name: lr7_rubrica_supporto6_vw; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.lr7_rubrica_supporto6_vw AS
+ SELECT x.gruppo,
+    x.id_contatto,
+    x.cognome,
+    x.nome,
+    x.ruolo,
+    x.specifica_ruolo,
+    x.indirizzo,
+    x.tipo_contatto,
+    x.contatto,
+    x.nomegruppo,
+    x.nomeruolo
+   FROM ( WITH RECURSIVE grafo_gruppi(gruppo, id_contatto, cognome, nome, ruolo, specifica_ruolo, indirizzo, tipo_contatto, contatto, nomegruppo, nomeruolo) AS (
+                 SELECT rg.id_gruppo AS gruppo,
+                    rc.id_contatto,
+                    rn.cognome,
+                    rn.nome,
+                    rgn.fk_ruolo,
+                    rgn.specifica_ruolo,
+                    rn.indirizzo,
+                    rca.nome AS tipo_contatto,
+                    rc.contatto,
+                    rg.nome AS nomegruppo,
+                    rr.descrizione AS nomeruolo
+                   FROM (((((public.rubrica_rubricagruppo rg
+                     LEFT JOIN public.rubrica_rubricagrupponominativi rgn ON ((rgn.fk_gruppo = rg.id_gruppo)))
+                     LEFT JOIN public.rubrica_rubricanominativo rn ON (((rn.id_nominativo = rgn.fk_nominativo) AND (NOT rn.disabled))))
+                     LEFT JOIN public.rubrica_rubricacontatto rc ON (((rc.fk_nominativo = rn.id_nominativo) AND (rc.data_fine_validita IS NULL))))
+                     LEFT JOIN public.rubrica_rubricaruolo rr ON ((rr.id_ruolo = rgn.fk_ruolo)))
+                     LEFT JOIN public.rubrica_rubricacanale rca ON ((rca.id_canale = rc.fk_canale)))
+                  WHERE (((rg.nome)::text ~~ 'Allerta Diga%'::text) AND (rg.fk_sito_proprietario = 20181) AND (NOT (rg.disabled = true)))
+                UNION
+                 SELECT rg.id_gruppo AS gruppo,
+                    rc.id_contatto,
+                    rn.cognome,
+                    rn.nome,
+                    rgn.fk_ruolo,
+                    rgn.specifica_ruolo,
+                    rn.indirizzo,
+                    rca.nome AS tipo_contatto,
+                    rc.contatto,
+                    (concat(gg.nomegruppo, '/', rg.nome))::character varying(512) AS nomegruppo,
+                    rr.descrizione AS nomeruolo
+                   FROM (((((((grafo_gruppi gg
+                     LEFT JOIN public.rubrica_rubricagruppogruppi rgg ON ((rgg.fk_gruppo_padre = gg.gruppo)))
+                     LEFT JOIN public.rubrica_rubricagruppo rg ON (((rg.id_gruppo = rgg.fk_gruppo_figlio) AND (NOT rg.disabled))))
+                     LEFT JOIN public.rubrica_rubricagrupponominativi rgn ON ((rgn.fk_gruppo = rg.id_gruppo)))
+                     LEFT JOIN public.rubrica_rubricanominativo rn ON (((rn.id_nominativo = rgn.fk_nominativo) AND (NOT rn.disabled))))
+                     LEFT JOIN public.rubrica_rubricacontatto rc ON (((rc.fk_nominativo = rn.id_nominativo) AND (rc.data_fine_validita IS NULL))))
+                     LEFT JOIN public.rubrica_rubricaruolo rr ON ((rr.id_ruolo = rgn.fk_ruolo)))
+                     LEFT JOIN public.rubrica_rubricacanale rca ON ((rca.id_canale = rc.fk_canale)))
+                )
+         SELECT grafo_gruppi.gruppo,
+            grafo_gruppi.id_contatto,
+            grafo_gruppi.cognome,
+            grafo_gruppi.nome,
+            grafo_gruppi.ruolo,
+            grafo_gruppi.specifica_ruolo,
+            grafo_gruppi.indirizzo,
+            grafo_gruppi.tipo_contatto,
+            grafo_gruppi.contatto,
+            grafo_gruppi.nomegruppo,
+            grafo_gruppi.nomeruolo
+           FROM grafo_gruppi
+          WHERE (grafo_gruppi.contatto IS NOT NULL)
+          ORDER BY grafo_gruppi.gruppo, grafo_gruppi.cognome, grafo_gruppi.nome, grafo_gruppi.tipo_contatto, grafo_gruppi.contatto) x;
+
+
+--
+-- TOC entry 600 (class 1259 OID 1467544)
+-- Name: meteomont2_vw; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.meteomont2_vw AS
+ SELECT y.titolo,
+    y.url,
+    y.username,
+    y.userid,
+    y.createdate,
+    y.createday,
+    y.numero,
+    y.anno,
+    y.articleid,
+    y.fileentryid,
+    ( SELECT allerter_sms.sottotipo
+           FROM public.allerter_sms
+          WHERE (((allerter_sms.tipo)::text = 'comunicazione'::text) AND (allerter_sms.datainvio > y.createdate) AND (allerter_sms.datainvio < (y.createdate + '12:00:00'::interval)) AND (upper((allerter_sms.testo)::text) ~~ '%METEOMONT%'::text))
+         LIMIT 1) AS invio,
+    ( SELECT allerter_email.sottotipo
+           FROM public.allerter_email
+          WHERE (((allerter_email.tipo)::text = 'comunicazione'::text) AND (allerter_email.datainvio > y.createdate) AND (allerter_email.datainvio < (y.createdate + '12:00:00'::interval)) AND (upper(allerter_email.testo) ~~ '%METEOMONT%'::text))
+         LIMIT 1) AS invio_mail
+   FROM ( SELECT x.titolo,
+            x.fileuuid,
+            x.username,
+            x.userid,
+            x.createdate,
+            x.createday,
+            x.numero,
+            x.anno,
+            x.articleid,
+            f.fileentryid,
+            ((((((('/documents/'::text || f.repositoryid) || '/'::text) || f.folderid) || '/'::text) || (f.filename)::text) || '/'::text) || (f.uuid_)::text) AS url
+           FROM (( SELECT jl.title AS titolo,
+                    (''::text || (( SELECT regexp_matches(j.content, '.+\"uuid\":\"(.+)\".+'::text) AS regexp_matches))[1]) AS fileuuid,
+                    j.username,
+                    j.userid,
+                    j.createdate,
+                    (j.createdate)::date AS createday,
+                    date_part('doy'::text, j.createdate) AS numero,
+                    date_part('year'::text, j.createdate) AS anno,
+                    j.articleid
+                   FROM (public.journalarticle j
+                     JOIN public.journalarticlelocalization jl ON (((jl.articlepk = j.id_) AND ((jl.languageid)::text = 'it_IT'::text))))
+                  WHERE (((j.ddmstructurekey)::text = '227847'::text) AND (j.modifieddate = ( SELECT max(j2.modifieddate) AS max
+                           FROM public.journalarticle j2
+                          WHERE ((j2.articleid)::text = (j.articleid)::text))))
+                  ORDER BY j.createdate DESC) x
+             JOIN public.dlfileentry f ON (((f.uuid_)::text = x.fileuuid)))) y;
+
+
+--
+-- TOC entry 599 (class 1259 OID 1466315)
+-- Name: meteomont_vw; Type: VIEW; Schema: public; Owner: -
+--
+
 CREATE VIEW public.meteomont_vw AS
- SELECT (( SELECT regexp_matches(j.title, '.+<Title language-id="it_IT">(.+)</Title>.+'::text) AS regexp_matches))[1] AS titolo,
-    ('/documents'::text || (( SELECT regexp_matches(j.content, '.+<!\[CDATA\[/documents(.+)\]\]>.+'::text) AS regexp_matches))[1]) AS url
-   FROM public.journalarticle j
-  WHERE (((j.structureid)::text = '227847'::text) AND (j.modifieddate = ( SELECT max(j2.modifieddate) AS max
-           FROM public.journalarticle j2
-          WHERE ((j2.articleid)::text = (j.articleid)::text))))
-  ORDER BY j.createdate DESC;
- -----*/
- 
- 
-CREATE VIEW public.meteomont_vw AS
-SELECT JournalArticleLocalization.title AS titolo,
-(
-	select '/documents'::text || '/' || j.groupid::text || '/' || folderid::text || '/' || title::text || '/' || uuid_::text
-	from public.dlfileentry where uuid_= (
-		 select (
-			select
-			regexp_matches(
-				xpath('/root/dynamic-element[@type=''document_library'']/dynamic-content/text()', content::xml)::text
-			, 'uuid\\":\\"(.+)\\"}.+'::text) AS regexp_matches	 
-				)[1]
-	 )
-) as url	
-FROM public.journalarticle j
-    inner join public.journalarticlelocalization
-		on j.id_ = JournalArticleLocalization.articlepk
-		and  j.defaultlanguageid = JournalArticleLocalization.languageid
-WHERE 
-	(j.ddmstructurekey)::text = '227847'::text 
-	 AND (
-	   j.modifieddate = ( 
-		   SELECT max(j2.modifieddate) AS max
-		   FROM public.journalarticle j2
-		   WHERE (j2.articleid)::text = (j.articleid)::text)
-	   )
-ORDER BY j.createdate DESC;  
+ SELECT x.titolo,
+    ((((((('/documents/'::text || f.repositoryid) || '/'::text) || f.folderid) || '/'::text) || (f.filename)::text) || '/'::text) || (f.uuid_)::text) AS url
+   FROM (( SELECT jl.title AS titolo,
+            (''::text || (( SELECT regexp_matches(j.content, '.+\"uuid\":\"(.+)\".+'::text) AS regexp_matches))[1]) AS fileuuid
+           FROM (public.journalarticle j
+             JOIN public.journalarticlelocalization jl ON (((jl.articlepk = j.id_) AND ((jl.languageid)::text = 'it_IT'::text))))
+          WHERE (((j.ddmstructurekey)::text = '227847'::text) AND (j.modifieddate = ( SELECT max(j2.modifieddate) AS max
+                   FROM public.journalarticle j2
+                  WHERE ((j2.articleid)::text = (j.articleid)::text))))
+          ORDER BY j.createdate DESC) x
+     JOIN public.dlfileentry f ON (((f.uuid_)::text = x.fileuuid)));
 
-
-ALTER TABLE public.meteomont_vw OWNER TO usrweballerte;
 
 --
--- Name: monit_vw; Type: VIEW; Schema: public; Owner: usrweballerte
+-- TOC entry 433 (class 1259 OID 693174)
+-- Name: monit_vw; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW public.monit_vw AS
@@ -780,540 +906,295 @@ CREATE VIEW public.monit_vw AS
    FROM public.bollettino_bollettino;
 
 
-ALTER TABLE public.monit_vw OWNER TO usrweballerte;
-
 --
--- Name: monitoraggio_email_vw; Type: VIEW; Schema: public; Owner: usrweballerte
---
-
-CREATE VIEW public.monitoraggio_email_vw AS
- SELECT n.uuid,
-    replace((x.name)::text, 'Monitoraggio '::text, 'Monitoraggio_Fiume_'::text) AS tag,
-    n.firstname,
-    n.lastname,
-    n.valore AS email
-   FROM ((( SELECT o.organizationid,
-            o.name,
-            o.treepath
-           FROM public.organization_ o
-          WHERE ((o.parentorganizationid = 233088) AND ((o.name)::text ~~ 'Monitoraggio %'::text))) x
-     JOIN public.organization_ o2 ON (((o2.organizationid = x.organizationid) OR (x.organizationid = 233088))))
-     JOIN public.org_email_vw_2 n ON ((n.organizationid = o2.organizationid)))
-  ORDER BY x.name, o2.name, n.lastname, n.firstname;
-
-
-ALTER TABLE public.monitoraggio_email_vw OWNER TO usrweballerte;
-
---
--- Name: monitoraggio_numeri_vw; Type: VIEW; Schema: public; Owner: usrweballerte
---
-
-CREATE VIEW public.monitoraggio_numeri_vw AS
- SELECT n.uuid,
-    replace((x.name)::text, 'Monitoraggio '::text, 'Monitoraggio_Fiume_'::text) AS tag,
-    n.firstname,
-    n.lastname,
-    n.valore AS numero
-   FROM ((( SELECT o.organizationid,
-            o.name,
-            o.treepath
-           FROM public.organization_ o
-          WHERE ((o.parentorganizationid = 233088) AND ((o.name)::text ~~ 'Monitoraggio %'::text))) x
-     JOIN public.organization_ o2 ON (((o2.organizationid = x.organizationid) OR (x.organizationid = 233088))))
-     JOIN public.org_numeri_vw_2 n ON ((n.organizationid = o2.organizationid)))
-  ORDER BY x.name, o2.name, n.lastname, n.firstname;
-
-
-ALTER TABLE public.monitoraggio_numeri_vw OWNER TO usrweballerte;
-
---
--- Name: monitoraggio_rubrica_vw; Type: VIEW; Schema: public; Owner: usrweballerte
---
-
-CREATE VIEW public.monitoraggio_rubrica_vw AS
- SELECT monitoraggio_numeri_vw.uuid AS id,
-    monitoraggio_numeri_vw.tag,
-    regexp_replace((((monitoraggio_numeri_vw.firstname)::text || ' '::text) || (monitoraggio_numeri_vw.lastname)::text), ''''::text, ' '::text, 'g'::text) AS nome,
-    (monitoraggio_numeri_vw.numero)::text AS recapito,
-    'SMS'::text AS tipo
-   FROM public.monitoraggio_numeri_vw
-UNION
- SELECT monitoraggio_email_vw.uuid AS id,
-    monitoraggio_email_vw.tag,
-    regexp_replace((((monitoraggio_email_vw.firstname)::text || ' '::text) || (monitoraggio_email_vw.lastname)::text), ''''::text, ' '::text, 'g'::text) AS nome,
-    (monitoraggio_email_vw.email)::text AS recapito,
-    'EMAIL'::text AS tipo
-   FROM public.monitoraggio_email_vw;
-
-
-ALTER TABLE public.monitoraggio_rubrica_vw OWNER TO usrweballerte;
-
---
--- Name: new_area_rubrica_vw; Type: VIEW; Schema: public; Owner: usrweballerte
+-- TOC entry 601 (class 1259 OID 1704296)
+-- Name: new_area_rubrica_vw; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW public.new_area_rubrica_vw AS
- SELECT area_contatti_vw_4.id,
-    area_contatti_vw_4.tag,
-    area_contatti_vw_4.nome,
-    area_contatti_vw_4.recapito,
-    area_contatti_vw_4.tipo
-   FROM public.area_contatti_vw_4
-UNION
- SELECT destinatari_sempre_contatti_vw_3.uuid AS id,
-    'ZONE_SEMPRE'::character varying AS tag,
-    destinatari_sempre_contatti_vw_3.nome,
-    destinatari_sempre_contatti_vw_3.recapito,
-    destinatari_sempre_contatti_vw_3.tipo
-   FROM public.destinatari_sempre_contatti_vw_3;
-
-
-ALTER TABLE public.new_area_rubrica_vw OWNER TO usrweballerte;
-
---
--- Name: new_fiume_email_vw; Type: VIEW; Schema: public; Owner: usrweballerte
---
-
-CREATE VIEW public.new_fiume_email_vw AS
-( SELECT DISTINCT n.uuid,
+ SELECT DISTINCT x.id,
+    x.tag,
+    x.nome,
+    x.recapito,
         CASE
-            WHEN (((o2.name)::text ~~ 'IDR.%'::text) OR ((o2.name)::text ~~ '%-TT'::text)) THEN ((x.name)::text || '-TT'::text)
-            ELSE ((x.name)::text || '-NT'::text)
-        END AS tag,
-    n.firstname,
-    n.lastname,
-    n.valore AS email
-   FROM ((( SELECT o.organizationid,
-            o.name,
-            o.treepath
-           FROM public.organization_ o
-          WHERE ((o.parentorganizationid = 196015) AND ((o.name)::text ~~ 'FIUME%'::text))) x
-     JOIN public.organization_ o2 ON ((o2.treepath ~~ (x.treepath || '%/'::text))))
-     JOIN public.org_email_vw_2 n ON ((n.organizationid = o2.organizationid)))
-  ORDER BY n.lastname, n.firstname)
-UNION
- SELECT n.uuid,
-    ('FIUME_'::text || (o2.name)::text) AS tag,
-    n.firstname,
-    n.lastname,
-    n.valore AS email
-   FROM (public.organization_ o2
-     JOIN public.org_email_vw_2 n ON ((n.organizationid = o2.organizationid)))
-  WHERE ((o2.name)::text = ANY (ARRAY[('SEMPRE-NT'::character varying)::text, ('SEMPRE-TT'::character varying)::text]));
+            WHEN ((x.tipo)::text = 'EMAIL'::text) THEN 'EMAIL'::text
+            ELSE 'SMS'::text
+        END AS tipo
+   FROM ( SELECT lr7_rubrica_supporto1_vw.id_contatto AS id,
+            (lr7_rubrica_supporto1_vw.z || '1'::text) AS tag,
+            (((((lr7_rubrica_supporto1_vw.nome)::text || ' '::text) || (lr7_rubrica_supporto1_vw.cognome)::text) || ' - '::text) || regexp_replace((lr7_rubrica_supporto1_vw.nomegruppo)::text, '^.+[/\\]'::text, ''::text)) AS nome,
+            lr7_rubrica_supporto1_vw.contatto AS recapito,
+            lr7_rubrica_supporto1_vw.tipo_contatto AS tipo
+           FROM public.lr7_rubrica_supporto1_vw
+          WHERE ((lr7_rubrica_supporto1_vw.z IS NOT NULL) AND (lr7_rubrica_supporto1_vw.sz IS NULL))
+        UNION ALL
+         SELECT lr7_rubrica_supporto1_vw.id_contatto AS id,
+            (lr7_rubrica_supporto1_vw.z || '2'::text) AS tag,
+            (((((lr7_rubrica_supporto1_vw.nome)::text || ' '::text) || (lr7_rubrica_supporto1_vw.cognome)::text) || ' - '::text) || regexp_replace((lr7_rubrica_supporto1_vw.nomegruppo)::text, '^.+[/\\]'::text, ''::text)) AS nome,
+            lr7_rubrica_supporto1_vw.contatto AS recapito,
+            lr7_rubrica_supporto1_vw.tipo_contatto AS tipo
+           FROM public.lr7_rubrica_supporto1_vw
+          WHERE ((lr7_rubrica_supporto1_vw.z IS NOT NULL) AND (lr7_rubrica_supporto1_vw.sz IS NULL))
+        UNION ALL
+         SELECT lr7_rubrica_supporto1_vw.id_contatto AS id,
+            (lr7_rubrica_supporto1_vw.z || '3'::text) AS tag,
+            (((((lr7_rubrica_supporto1_vw.nome)::text || ' '::text) || (lr7_rubrica_supporto1_vw.cognome)::text) || ' - '::text) || regexp_replace((lr7_rubrica_supporto1_vw.nomegruppo)::text, '^.+[/\\]'::text, ''::text)) AS nome,
+            lr7_rubrica_supporto1_vw.contatto AS recapito,
+            lr7_rubrica_supporto1_vw.tipo_contatto AS tipo
+           FROM public.lr7_rubrica_supporto1_vw
+          WHERE ((lr7_rubrica_supporto1_vw.z IS NOT NULL) AND (lr7_rubrica_supporto1_vw.z = ANY (ARRAY['ZONA F'::text, 'ZONA D'::text])) AND (lr7_rubrica_supporto1_vw.sz IS NULL))
+        UNION ALL
+         SELECT lr7_rubrica_supporto1_vw.id_contatto AS id,
+            lr7_rubrica_supporto1_vw.sz AS tag,
+            (((((lr7_rubrica_supporto1_vw.nome)::text || ' '::text) || (lr7_rubrica_supporto1_vw.cognome)::text) || ' - '::text) || regexp_replace((lr7_rubrica_supporto1_vw.nomegruppo)::text, '^.+[/\\]'::text, ''::text)) AS nome,
+            lr7_rubrica_supporto1_vw.contatto AS recapito,
+            lr7_rubrica_supporto1_vw.tipo_contatto AS tipo
+           FROM public.lr7_rubrica_supporto1_vw
+          WHERE (lr7_rubrica_supporto1_vw.sz IS NOT NULL)
+        UNION ALL
+         SELECT lr7_rubrica_supporto1_vw.id_contatto AS id,
+            'ZONE_SEMPRE'::text AS tag,
+            (((((lr7_rubrica_supporto1_vw.nome)::text || ' '::text) || (lr7_rubrica_supporto1_vw.cognome)::text) || ' - '::text) || regexp_replace((lr7_rubrica_supporto1_vw.nomegruppo)::text, '^.+[/\\]'::text, ''::text)) AS nome,
+            lr7_rubrica_supporto1_vw.contatto AS recapito,
+            lr7_rubrica_supporto1_vw.tipo_contatto AS tipo
+           FROM public.lr7_rubrica_supporto1_vw
+          WHERE ((lr7_rubrica_supporto1_vw.z IS NULL) AND (lr7_rubrica_supporto1_vw.sz IS NULL))) x
+  ORDER BY x.recapito;
 
-
-ALTER TABLE public.new_fiume_email_vw OWNER TO usrweballerte;
 
 --
--- Name: new_fiume_numeri_vw; Type: VIEW; Schema: public; Owner: usrweballerte
+-- TOC entry 621 (class 1259 OID 53613775)
+-- Name: new_diga_rubrica_vw; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW public.new_fiume_numeri_vw AS
-( SELECT DISTINCT n.uuid,
+CREATE VIEW public.new_diga_rubrica_vw AS
+ SELECT DISTINCT ((x.id || '_'::text) || split_part((x.nomegruppo)::text, '/'::text, 1)) AS id,
+    x.tag,
+    x.nome,
+    x.recapito,
         CASE
-            WHEN (((o2.name)::text ~~ 'IDR.%'::text) OR ((o2.name)::text ~~ '%-TT'::text)) THEN ((x.name)::text || '-TT'::text)
-            ELSE ((x.name)::text || '-NT'::text)
-        END AS tag,
-    n.firstname,
-    n.lastname,
-    n.valore AS numero
-   FROM ((( SELECT o.organizationid,
-            o.name,
-            o.treepath
-           FROM public.organization_ o
-          WHERE ((o.parentorganizationid = 196015) AND ((o.name)::text ~~ 'FIUME%'::text))) x
-     JOIN public.organization_ o2 ON ((o2.treepath ~~ (x.treepath || '%/'::text))))
-     JOIN public.org_numeri_vw_2 n ON ((n.organizationid = o2.organizationid)))
-  ORDER BY n.lastname, n.firstname)
-UNION
- SELECT n.uuid,
-    ('FIUME_'::text || (o2.name)::text) AS tag,
-    n.firstname,
-    n.lastname,
-    n.valore AS numero
-   FROM (public.organization_ o2
-     JOIN public.org_numeri_vw_2 n ON ((n.organizationid = o2.organizationid)))
-  WHERE ((o2.name)::text = ANY (ARRAY[('SEMPRE-NT'::character varying)::text, ('SEMPRE-TT'::character varying)::text]));
+            WHEN ((x.tipo)::text = 'EMAIL'::text) THEN 'EMAIL'::text
+            ELSE 'SMS'::text
+        END AS tipo
+   FROM ( SELECT lr7_rubrica_supporto6_vw.id_contatto AS id,
+            lr7_rubrica_supporto6_vw.nomegruppo,
+            split_part((lr7_rubrica_supporto6_vw.nomegruppo)::text, '/'::text, 1) AS tag,
+            (((((lr7_rubrica_supporto6_vw.nome)::text || ' '::text) || (lr7_rubrica_supporto6_vw.cognome)::text) || ' - '::text) || regexp_replace((lr7_rubrica_supporto6_vw.nomegruppo)::text, '^.+[/\\]'::text, ''::text)) AS nome,
+            lr7_rubrica_supporto6_vw.contatto AS recapito,
+            lr7_rubrica_supporto6_vw.tipo_contatto AS tipo
+           FROM public.lr7_rubrica_supporto6_vw
+          WHERE ((lr7_rubrica_supporto6_vw.nomegruppo)::text ~~ 'Allerta Diga%'::text)) x;
 
-
-ALTER TABLE public.new_fiume_numeri_vw OWNER TO usrweballerte;
 
 --
--- Name: new_fiume_rubrica_vw; Type: VIEW; Schema: public; Owner: usrweballerte
+-- TOC entry 602 (class 1259 OID 1705432)
+-- Name: new_fiume_rubrica_vw; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW public.new_fiume_rubrica_vw AS
- SELECT new_fiume_numeri_vw.uuid AS id,
-    new_fiume_numeri_vw.tag,
-    regexp_replace((((new_fiume_numeri_vw.firstname)::text || ' '::text) || (new_fiume_numeri_vw.lastname)::text), ''''::text, ' '::text, 'g'::text) AS nome,
-    (new_fiume_numeri_vw.numero)::text AS recapito,
-    'SMS'::text AS tipo
-   FROM public.new_fiume_numeri_vw
-UNION
- SELECT new_fiume_email_vw.uuid AS id,
-    new_fiume_email_vw.tag,
-    regexp_replace((((new_fiume_email_vw.firstname)::text || ' '::text) || (new_fiume_email_vw.lastname)::text), ''''::text, ' '::text, 'g'::text) AS nome,
-    (new_fiume_email_vw.email)::text AS recapito,
-    'EMAIL'::text AS tipo
-   FROM public.new_fiume_email_vw;
-
-
-ALTER TABLE public.new_fiume_rubrica_vw OWNER TO usrweballerte;
-
---
--- Name: new_meteomont_email_vw; Type: VIEW; Schema: public; Owner: usrweballerte
---
-
-CREATE VIEW public.new_meteomont_email_vw AS
- SELECT n.uuid,
+ SELECT DISTINCT x.id,
+    x.tag,
+    x.nome,
+    x.recapito,
         CASE
-            WHEN (n.organizationid = 238662) THEN 'Meteomont_App_Emilia_Centrale'::text
-            WHEN (n.organizationid = 238668) THEN 'Meteomont_App_Emilia_Occidentale'::text
-            WHEN (n.organizationid = 515378) THEN 'Meteomont_sempre'::text
-            ELSE 'Meteomont_App_Romagnolo'::text
-        END AS tag,
-    n.firstname,
-    n.lastname,
-    n.valore AS email
-   FROM ((( SELECT o.organizationid,
-            o.name,
-            o.treepath
-           FROM public.organization_ o
-          WHERE ((o.parentorganizationid = 238646) AND ((o.name)::text ~~ 'Valanghe %'::text))) x
-     JOIN public.organization_ o2 ON ((o2.organizationid = x.organizationid)))
-     JOIN public.org_email_vw_2 n ON ((n.organizationid = o2.organizationid)))
-  ORDER BY x.name, o2.name, n.lastname, n.firstname;
+            WHEN ((x.tipo)::text = 'EMAIL'::text) THEN 'EMAIL'::text
+            ELSE 'SMS'::text
+        END AS tipo
+   FROM ( SELECT lr7_rubrica_supporto2_vw.id_contatto AS id,
+            (lr7_rubrica_supporto2_vw.fiume || '-NT'::text) AS tag,
+            (((((lr7_rubrica_supporto2_vw.nome)::text || ' '::text) || (lr7_rubrica_supporto2_vw.cognome)::text) || ' - '::text) || regexp_replace((lr7_rubrica_supporto2_vw.nomegruppo)::text, '^.+[/\\]'::text, ''::text)) AS nome,
+            lr7_rubrica_supporto2_vw.contatto AS recapito,
+            lr7_rubrica_supporto2_vw.tipo_contatto AS tipo
+           FROM public.lr7_rubrica_supporto2_vw
+          WHERE (((lr7_rubrica_supporto2_vw.nomegruppo)::text ~~ '%-NT%'::text) AND ((lr7_rubrica_supporto2_vw.nomegruppo)::text !~~ '%SEMPRE-NT%'::text))
+        UNION ALL
+         SELECT lr7_rubrica_supporto2_vw.id_contatto AS id,
+            (lr7_rubrica_supporto2_vw.fiume || '-TT'::text) AS tag,
+            (((((lr7_rubrica_supporto2_vw.nome)::text || ' '::text) || (lr7_rubrica_supporto2_vw.cognome)::text) || ' - '::text) || regexp_replace((lr7_rubrica_supporto2_vw.nomegruppo)::text, '^.+[/\\]'::text, ''::text)) AS nome,
+            lr7_rubrica_supporto2_vw.contatto AS recapito,
+            lr7_rubrica_supporto2_vw.tipo_contatto AS tipo
+           FROM public.lr7_rubrica_supporto2_vw
+          WHERE (((lr7_rubrica_supporto2_vw.nomegruppo)::text !~~ '%-NT%'::text) AND ((lr7_rubrica_supporto2_vw.nomegruppo)::text !~~ '%SEMPRE-TT%'::text))
+        UNION ALL
+         SELECT lr7_rubrica_supporto2_vw.id_contatto AS id,
+            'Fiume_sempre_NT'::text AS tag,
+            (((((lr7_rubrica_supporto2_vw.nome)::text || ' '::text) || (lr7_rubrica_supporto2_vw.cognome)::text) || ' - '::text) || regexp_replace((lr7_rubrica_supporto2_vw.nomegruppo)::text, '^.+[/\\]'::text, ''::text)) AS nome,
+            lr7_rubrica_supporto2_vw.contatto AS recapito,
+            lr7_rubrica_supporto2_vw.tipo_contatto AS tipo
+           FROM public.lr7_rubrica_supporto2_vw
+          WHERE ((lr7_rubrica_supporto2_vw.nomegruppo)::text ~~ '%SEMPRE-NT%'::text)
+        UNION ALL
+         SELECT lr7_rubrica_supporto2_vw.id_contatto AS id,
+            'Fiume_sempre_TT'::text AS tag,
+            (((((lr7_rubrica_supporto2_vw.nome)::text || ' '::text) || (lr7_rubrica_supporto2_vw.cognome)::text) || ' - '::text) || regexp_replace((lr7_rubrica_supporto2_vw.nomegruppo)::text, '^.+[/\\]'::text, ''::text)) AS nome,
+            lr7_rubrica_supporto2_vw.contatto AS recapito,
+            lr7_rubrica_supporto2_vw.tipo_contatto AS tipo
+           FROM public.lr7_rubrica_supporto2_vw
+          WHERE ((lr7_rubrica_supporto2_vw.nomegruppo)::text ~~ '%SEMPRE-TT%'::text)) x;
 
-
-ALTER TABLE public.new_meteomont_email_vw OWNER TO usrweballerte;
 
 --
--- Name: new_meteomont_numeri_vw; Type: VIEW; Schema: public; Owner: usrweballerte
---
-
-CREATE VIEW public.new_meteomont_numeri_vw AS
- SELECT n.uuid,
-        CASE
-            WHEN (n.organizationid = 238662) THEN 'Meteomont_App_Emilia_Centrale'::text
-            WHEN (n.organizationid = 238668) THEN 'Meteomont_App_Emilia_Occidentale'::text
-            WHEN (n.organizationid = 515378) THEN 'Meteomont_sempre'::text
-            ELSE 'Meteomont_App_Romagnolo'::text
-        END AS tag,
-    n.firstname,
-    n.lastname,
-    n.valore AS numero
-   FROM ((( SELECT o.organizationid,
-            o.name,
-            o.treepath
-           FROM public.organization_ o
-          WHERE ((o.parentorganizationid = 238646) AND ((o.name)::text ~~ 'Valanghe %'::text))) x
-     JOIN public.organization_ o2 ON ((o2.organizationid = x.organizationid)))
-     JOIN public.org_numeri_vw_2 n ON ((n.organizationid = o2.organizationid)))
-  ORDER BY x.name, o2.name, n.lastname, n.firstname;
-
-
-ALTER TABLE public.new_meteomont_numeri_vw OWNER TO usrweballerte;
-
---
--- Name: new_meteomont_rubrica_vw; Type: VIEW; Schema: public; Owner: usrweballerte
+-- TOC entry 603 (class 1259 OID 1706170)
+-- Name: new_meteomont_rubrica_vw; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW public.new_meteomont_rubrica_vw AS
- SELECT new_meteomont_numeri_vw.uuid AS id,
-    new_meteomont_numeri_vw.tag,
-    regexp_replace((((new_meteomont_numeri_vw.firstname)::text || ' '::text) || (new_meteomont_numeri_vw.lastname)::text), ''''::text, ' '::text, 'g'::text) AS nome,
-    (new_meteomont_numeri_vw.numero)::text AS recapito,
-    'SMS'::text AS tipo
-   FROM public.new_meteomont_numeri_vw
-UNION
- SELECT new_meteomont_email_vw.uuid AS id,
-    new_meteomont_email_vw.tag,
-    regexp_replace((((new_meteomont_email_vw.firstname)::text || ' '::text) || (new_meteomont_email_vw.lastname)::text), ''''::text, ' '::text, 'g'::text) AS nome,
-    (new_meteomont_email_vw.email)::text AS recapito,
-    'EMAIL'::text AS tipo
-   FROM public.new_meteomont_email_vw;
-
-
-ALTER TABLE public.new_meteomont_rubrica_vw OWNER TO usrweballerte;
-
---
--- Name: new_monitoraggio_email_vw; Type: VIEW; Schema: public; Owner: usrweballerte
---
-
-CREATE VIEW public.new_monitoraggio_email_vw AS
- SELECT n.uuid,
+ SELECT DISTINCT x.id,
+    x.tag,
+    x.nome,
+    x.recapito,
         CASE
-            WHEN (x.organizationid = 233088) THEN 'Monitoraggio_sempre'::text
-            ELSE replace((x.name)::text, 'Monitoraggio '::text, 'Monitoraggio_Fiume_'::text)
-        END AS tag,
-    n.firstname,
-    n.lastname,
-    n.valore AS email
-   FROM ((( SELECT o.organizationid,
-            o.name,
-            o.treepath
-           FROM public.organization_ o
-          WHERE (((o.parentorganizationid = 233088) AND ((o.name)::text ~~ 'Monitoraggio %'::text)) OR (o.organizationid = 233088))) x
-     JOIN public.organization_ o2 ON ((o2.organizationid = x.organizationid)))
-     JOIN public.org_email_vw_2 n ON ((n.organizationid = o2.organizationid)))
-  ORDER BY x.name, o2.name, n.lastname, n.firstname;
+            WHEN ((x.tipo)::text = 'EMAIL'::text) THEN 'EMAIL'::text
+            ELSE 'SMS'::text
+        END AS tipo
+   FROM ( SELECT lr7_rubrica_supporto3_vw.id_contatto AS id,
+            'Meteomont_sempre'::text AS tag,
+            (((((lr7_rubrica_supporto3_vw.nome)::text || ' '::text) || (lr7_rubrica_supporto3_vw.cognome)::text) || ' - '::text) || regexp_replace((lr7_rubrica_supporto3_vw.nomegruppo)::text, '^.+[/\\]'::text, ''::text)) AS nome,
+            lr7_rubrica_supporto3_vw.contatto AS recapito,
+            lr7_rubrica_supporto3_vw.tipo_contatto AS tipo
+           FROM public.lr7_rubrica_supporto3_vw
+          WHERE ((lr7_rubrica_supporto3_vw.nomegruppo)::text ~~ 'Valanghe SEMPRE%'::text)
+        UNION ALL
+         SELECT lr7_rubrica_supporto3_vw.id_contatto AS id,
+            'Meteomont_App_Romagnolo'::text AS tag,
+            (((((lr7_rubrica_supporto3_vw.nome)::text || ' '::text) || (lr7_rubrica_supporto3_vw.cognome)::text) || ' - '::text) || regexp_replace((lr7_rubrica_supporto3_vw.nomegruppo)::text, '^.+[/\\]'::text, ''::text)) AS nome,
+            lr7_rubrica_supporto3_vw.contatto AS recapito,
+            lr7_rubrica_supporto3_vw.tipo_contatto AS tipo
+           FROM public.lr7_rubrica_supporto3_vw
+          WHERE ((lr7_rubrica_supporto3_vw.nomegruppo)::text ~~ 'Valanghe App. Romagnolo%'::text)
+        UNION ALL
+         SELECT lr7_rubrica_supporto3_vw.id_contatto AS id,
+            'Meteomont_App_Emilia_Centrale'::text AS tag,
+            (((((lr7_rubrica_supporto3_vw.nome)::text || ' '::text) || (lr7_rubrica_supporto3_vw.cognome)::text) || ' - '::text) || regexp_replace((lr7_rubrica_supporto3_vw.nomegruppo)::text, '^.+[/\\]'::text, ''::text)) AS nome,
+            lr7_rubrica_supporto3_vw.contatto AS recapito,
+            lr7_rubrica_supporto3_vw.tipo_contatto AS tipo
+           FROM public.lr7_rubrica_supporto3_vw
+          WHERE ((lr7_rubrica_supporto3_vw.nomegruppo)::text ~~ 'Valanghe App. E. Centrale%'::text)
+        UNION ALL
+         SELECT lr7_rubrica_supporto3_vw.id_contatto AS id,
+            'Meteomont_App_Emilia_Occidentale'::text AS tag,
+            (((((lr7_rubrica_supporto3_vw.nome)::text || ' '::text) || (lr7_rubrica_supporto3_vw.cognome)::text) || ' - '::text) || regexp_replace((lr7_rubrica_supporto3_vw.nomegruppo)::text, '^.+[/\\]'::text, ''::text)) AS nome,
+            lr7_rubrica_supporto3_vw.contatto AS recapito,
+            lr7_rubrica_supporto3_vw.tipo_contatto AS tipo
+           FROM public.lr7_rubrica_supporto3_vw
+          WHERE ((lr7_rubrica_supporto3_vw.nomegruppo)::text ~~ 'Valanghe App. E. Occidentale%'::text)) x;
 
-
-ALTER TABLE public.new_monitoraggio_email_vw OWNER TO usrweballerte;
 
 --
--- Name: new_monitoraggio_numeri_vw; Type: VIEW; Schema: public; Owner: usrweballerte
---
-
-CREATE VIEW public.new_monitoraggio_numeri_vw AS
- SELECT n.uuid,
-        CASE
-            WHEN (x.organizationid = 233088) THEN 'Monitoraggio_sempre'::text
-            ELSE replace((x.name)::text, 'Monitoraggio '::text, 'Monitoraggio_Fiume_'::text)
-        END AS tag,
-    n.firstname,
-    n.lastname,
-    n.valore AS numero
-   FROM ((( SELECT o.organizationid,
-            o.name,
-            o.treepath
-           FROM public.organization_ o
-          WHERE (((o.parentorganizationid = 233088) AND ((o.name)::text ~~ 'Monitoraggio %'::text)) OR (o.organizationid = 233088))) x
-     JOIN public.organization_ o2 ON ((o2.organizationid = x.organizationid)))
-     JOIN public.org_numeri_vw_2 n ON ((n.organizationid = o2.organizationid)))
-  ORDER BY x.name, o2.name, n.lastname, n.firstname;
-
-
-ALTER TABLE public.new_monitoraggio_numeri_vw OWNER TO usrweballerte;
-
---
--- Name: new_monitoraggio_rubrica_vw; Type: VIEW; Schema: public; Owner: usrweballerte
+-- TOC entry 604 (class 1259 OID 1706543)
+-- Name: new_monitoraggio_rubrica_vw; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW public.new_monitoraggio_rubrica_vw AS
- SELECT new_monitoraggio_numeri_vw.uuid AS id,
-    new_monitoraggio_numeri_vw.tag,
-    regexp_replace((((new_monitoraggio_numeri_vw.firstname)::text || ' '::text) || (new_monitoraggio_numeri_vw.lastname)::text), ''''::text, ' '::text, 'g'::text) AS nome,
-    (new_monitoraggio_numeri_vw.numero)::text AS recapito,
-    'SMS'::text AS tipo
-   FROM public.new_monitoraggio_numeri_vw
-UNION
- SELECT new_monitoraggio_email_vw.uuid AS id,
-    new_monitoraggio_email_vw.tag,
-    regexp_replace((((new_monitoraggio_email_vw.firstname)::text || ' '::text) || (new_monitoraggio_email_vw.lastname)::text), ''''::text, ' '::text, 'g'::text) AS nome,
-    (new_monitoraggio_email_vw.email)::text AS recapito,
-    'EMAIL'::text AS tipo
-   FROM public.new_monitoraggio_email_vw;
+ SELECT DISTINCT x.id,
+    x.tag,
+    x.nome,
+    x.recapito,
+        CASE
+            WHEN ((x.tipo)::text = 'EMAIL'::text) THEN 'EMAIL'::text
+            ELSE 'SMS'::text
+        END AS tipo
+   FROM ( SELECT lr7_rubrica_supporto4_vw.id_contatto AS id,
+            COALESCE(regexp_replace(lr7_rubrica_supporto4_vw.fiume, 'Monitoraggio '::text, 'Monitoraggio_Fiume_'::text), 'Monitoraggio_sempre'::text) AS tag,
+            (((((lr7_rubrica_supporto4_vw.nome)::text || ' '::text) || (lr7_rubrica_supporto4_vw.cognome)::text) || ' - '::text) || regexp_replace((lr7_rubrica_supporto4_vw.nomegruppo)::text, '^.+[/\\]'::text, ''::text)) AS nome,
+            lr7_rubrica_supporto4_vw.contatto AS recapito,
+            lr7_rubrica_supporto4_vw.tipo_contatto AS tipo
+           FROM public.lr7_rubrica_supporto4_vw) x;
 
-
-ALTER TABLE public.new_monitoraggio_rubrica_vw OWNER TO usrweballerte;
 
 --
--- Name: new_pluviometro_email_vw; Type: VIEW; Schema: public; Owner: usrweballerte
---
-
-CREATE VIEW public.new_pluviometro_email_vw AS
- SELECT n.uuid,
-    p.nomerubrica,
-    n.firstname,
-    n.lastname,
-    n.valore AS email
-   FROM ((( SELECT x.nomerubrica
-           FROM public.bollettino_pluviometro x
-        UNION
-         SELECT 'PLV. SEMPRE'::character varying AS nomerubrica) p
-     JOIN public.organization_ g ON ((((p.nomerubrica)::text = (g.name)::text) OR (((p.nomerubrica)::text = 'PLV. SEMPRE'::text) AND ((g.name)::text = 'Pluviometri'::text)))))
-     JOIN public.org_email_vw_2 n ON ((n.organizationid = g.organizationid)))
-  WHERE ((p.nomerubrica IS NOT NULL) AND ((p.nomerubrica)::text <> ''::text))
-  ORDER BY p.nomerubrica, n.lastname, n.firstname;
-
-
-ALTER TABLE public.new_pluviometro_email_vw OWNER TO usrweballerte;
-
---
--- Name: new_pluviometro_numeri_vw; Type: VIEW; Schema: public; Owner: usrweballerte
---
-
-CREATE VIEW public.new_pluviometro_numeri_vw AS
- SELECT n.uuid,
-    p.nomerubrica,
-    n.firstname,
-    n.lastname,
-    n.valore AS sms
-   FROM ((( SELECT x.nomerubrica
-           FROM public.bollettino_pluviometro x
-        UNION
-         SELECT 'PLV. SEMPRE'::character varying AS nomerubrica) p
-     JOIN public.organization_ g ON ((((p.nomerubrica)::text = (g.name)::text) OR (((p.nomerubrica)::text = 'PLV. SEMPRE'::text) AND ((g.name)::text = 'Pluviometri'::text)))))
-     JOIN public.org_numeri_vw_2 n ON ((n.organizationid = g.organizationid)))
-  WHERE ((p.nomerubrica IS NOT NULL) AND ((p.nomerubrica)::text <> ''::text))
-  ORDER BY p.nomerubrica, n.lastname, n.firstname;
-
-
-ALTER TABLE public.new_pluviometro_numeri_vw OWNER TO usrweballerte;
-
---
--- Name: new_pluviometro_rubrica_vw; Type: VIEW; Schema: public; Owner: usrweballerte
+-- TOC entry 605 (class 1259 OID 1707696)
+-- Name: new_pluviometro_rubrica_vw; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW public.new_pluviometro_rubrica_vw AS
- SELECT new_pluviometro_numeri_vw.uuid AS id,
-    new_pluviometro_numeri_vw.nomerubrica AS tag,
-    regexp_replace((((new_pluviometro_numeri_vw.firstname)::text || ' '::text) || (new_pluviometro_numeri_vw.lastname)::text), ''''::text, ' '::text, 'g'::text) AS nome,
-    (new_pluviometro_numeri_vw.sms)::text AS recapito,
-    'SMS'::text AS tipo
-   FROM public.new_pluviometro_numeri_vw
-UNION
- SELECT new_pluviometro_email_vw.uuid AS id,
-    new_pluviometro_email_vw.nomerubrica AS tag,
-    regexp_replace((((new_pluviometro_email_vw.firstname)::text || ' '::text) || (new_pluviometro_email_vw.lastname)::text), ''''::text, ' '::text, 'g'::text) AS nome,
-    (new_pluviometro_email_vw.email)::text AS recapito,
-    'EMAIL'::text AS tipo
-   FROM public.new_pluviometro_email_vw;
+ SELECT DISTINCT x.id,
+    x.tag,
+    x.nome,
+    x.recapito,
+        CASE
+            WHEN ((x.tipo)::text = 'EMAIL'::text) THEN 'EMAIL'::text
+            ELSE 'SMS'::text
+        END AS tipo
+   FROM ( SELECT lr7_rubrica_supporto5_vw.id_contatto AS id,
+            COALESCE(lr7_rubrica_supporto5_vw.fiume, 'PLV. SEMPRE'::text) AS tag,
+            (((((lr7_rubrica_supporto5_vw.nome)::text || ' '::text) || (lr7_rubrica_supporto5_vw.cognome)::text) || ' - '::text) || regexp_replace((lr7_rubrica_supporto5_vw.nomegruppo)::text, '^.+[/\\]'::text, ''::text)) AS nome,
+            lr7_rubrica_supporto5_vw.contatto AS recapito,
+            lr7_rubrica_supporto5_vw.tipo_contatto AS tipo
+           FROM public.lr7_rubrica_supporto5_vw) x;
 
-
-ALTER TABLE public.new_pluviometro_rubrica_vw OWNER TO usrweballerte;
 
 --
--- Name: pluviometro_email_vw; Type: VIEW; Schema: public; Owner: usrweballerte
+-- TOC entry 434 (class 1259 OID 693178)
+-- Name: nominativi_duplicati_vw; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW public.pluviometro_email_vw AS
- SELECT n.uuid,
-    p.nomerubrica,
-    n.firstname,
-    n.lastname,
-    n.valore AS email
-   FROM ((public.bollettino_pluviometro p
-     JOIN public.organization_ g ON ((((p.nomerubrica)::text = (g.name)::text) OR ((g.name)::text = 'Pluviometri'::text))))
-     JOIN public.org_email_vw_2 n ON ((n.organizationid = g.organizationid)))
-  WHERE ((p.nomerubrica IS NOT NULL) AND ((p.nomerubrica)::text <> ''::text))
-  ORDER BY p.nomerubrica, n.lastname, n.firstname;
+CREATE VIEW public.nominativi_duplicati_vw AS
+ SELECT c1.id_nominativo AS id1,
+    c2.id_nominativo AS id2,
+    c1.cognome,
+    c1.nome,
+    c1.contatti
+   FROM (( SELECT rn.id_nominativo,
+            upper(btrim((rn.cognome)::text)) AS cognome,
+            upper(btrim((rn.nome)::text)) AS nome,
+            array_to_string(array_agg(btrim(upper((rc.contatto)::text))), '|'::text) AS contatti
+           FROM (public.rubrica_rubricanominativo rn
+             LEFT JOIN ( SELECT rubrica_rubricacontatto.id_contatto,
+                    rubrica_rubricacontatto.fk_nominativo,
+                    rubrica_rubricacontatto.fk_canale,
+                    rubrica_rubricacontatto.contatto,
+                    rubrica_rubricacontatto.allertamento,
+                    rubrica_rubricacontatto.fk_utente_creazione,
+                    rubrica_rubricacontatto.data_creazione,
+                    rubrica_rubricacontatto.fk_utente_modifica,
+                    rubrica_rubricacontatto.data_modifica,
+                    rubrica_rubricacontatto.data_fine_validita,
+                    rubrica_rubricacontatto.modifica_minore
+                   FROM public.rubrica_rubricacontatto
+                  ORDER BY rubrica_rubricacontatto.contatto) rc ON ((rc.fk_nominativo = rn.id_nominativo)))
+          GROUP BY rn.id_nominativo, rn.cognome, rn.nome
+          ORDER BY (array_to_string(array_agg(btrim(upper((rc.contatto)::text))), '|'::text))) c1
+     JOIN ( SELECT rn.id_nominativo,
+            upper(btrim((rn.cognome)::text)) AS cognome,
+            upper(btrim((rn.nome)::text)) AS nome,
+            array_to_string(array_agg(btrim(upper((rc.contatto)::text))), '|'::text) AS contatti
+           FROM (public.rubrica_rubricanominativo rn
+             LEFT JOIN ( SELECT rubrica_rubricacontatto.id_contatto,
+                    rubrica_rubricacontatto.fk_nominativo,
+                    rubrica_rubricacontatto.fk_canale,
+                    rubrica_rubricacontatto.contatto,
+                    rubrica_rubricacontatto.allertamento,
+                    rubrica_rubricacontatto.fk_utente_creazione,
+                    rubrica_rubricacontatto.data_creazione,
+                    rubrica_rubricacontatto.fk_utente_modifica,
+                    rubrica_rubricacontatto.data_modifica,
+                    rubrica_rubricacontatto.data_fine_validita,
+                    rubrica_rubricacontatto.modifica_minore
+                   FROM public.rubrica_rubricacontatto
+                  ORDER BY rubrica_rubricacontatto.contatto) rc ON ((rc.fk_nominativo = rn.id_nominativo)))
+          GROUP BY rn.id_nominativo, rn.cognome, rn.nome
+          ORDER BY (array_to_string(array_agg(btrim(upper((rc.contatto)::text))), '|'::text))) c2 ON (((c1.cognome = c2.cognome) AND (c1.nome = c2.nome) AND (c1.contatti = c2.contatti) AND (c1.id_nominativo < c2.id_nominativo))))
+  ORDER BY c1.id_nominativo;
 
-
-ALTER TABLE public.pluviometro_email_vw OWNER TO usrweballerte;
 
 --
--- Name: pluviometro_numeri_vw; Type: VIEW; Schema: public; Owner: usrweballerte
+-- TOC entry 456 (class 1259 OID 693286)
+-- Name: pluvio; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW public.pluviometro_numeri_vw AS
- SELECT n.uuid,
-    p.nomerubrica,
-    n.firstname,
-    n.lastname,
-    n.valore AS sms
-   FROM ((public.bollettino_pluviometro p
-     JOIN public.organization_ g ON ((((p.nomerubrica)::text = (g.name)::text) OR ((g.name)::text = 'Pluviometri'::text))))
-     JOIN public.org_numeri_vw_2 n ON ((n.organizationid = g.organizationid)))
-  WHERE ((p.nomerubrica IS NOT NULL) AND ((p.nomerubrica)::text <> ''::text))
-  ORDER BY p.nomerubrica, n.lastname, n.firstname;
+CREATE VIEW public.pluvio AS
+ SELECT DISTINCT s.id_ AS stazione,
+    s.name
+   FROM ((public.bollettino_stazione s
+     JOIN public.bollettino_stazionevariabile v ON (((s.id_)::text = (v.idstazione)::text)))
+     JOIN public.bollettino_valoresensore val ON (((val.idstazione)::text = (v.idstazione)::text)))
+  WHERE (((v.idvariabile)::text ~~ '%B13011%'::text) AND ((val.idvariabile)::text = (v.idvariabile)::text));
 
-
-ALTER TABLE public.pluviometro_numeri_vw OWNER TO usrweballerte;
 
 --
--- Name: pluviometro_rubrica_vw; Type: VIEW; Schema: public; Owner: usrweballerte
---
-
-CREATE VIEW public.pluviometro_rubrica_vw AS
- SELECT pluviometro_numeri_vw.uuid AS id,
-    pluviometro_numeri_vw.nomerubrica AS tag,
-    regexp_replace((((pluviometro_numeri_vw.firstname)::text || ' '::text) || (pluviometro_numeri_vw.lastname)::text), ''''::text, ' '::text, 'g'::text) AS nome,
-    (pluviometro_numeri_vw.sms)::text AS recapito,
-    'SMS'::text AS tipo
-   FROM public.pluviometro_numeri_vw
-UNION
- SELECT pluviometro_email_vw.uuid AS id,
-    pluviometro_email_vw.nomerubrica AS tag,
-    regexp_replace((((pluviometro_email_vw.firstname)::text || ' '::text) || (pluviometro_email_vw.lastname)::text), ''''::text, ' '::text, 'g'::text) AS nome,
-    (pluviometro_email_vw.email)::text AS recapito,
-    'EMAIL'::text AS tipo
-   FROM public.pluviometro_email_vw;
-
-
-ALTER TABLE public.pluviometro_rubrica_vw OWNER TO usrweballerte;
-
---
--- Name: recapiti_agenzia_vw; Type: VIEW; Schema: public; Owner: usrweballerte
---
-
-CREATE VIEW public.recapiti_agenzia_vw AS
- SELECT (((b.firstname)::text || '  '::text) || (b.lastname)::text) AS chi,
-    b.valore AS recapito,
-    'SMS'::text AS sms
-   FROM public.destinatari_sempre_numeri_vw_2 b
-  WHERE ((b.firstname)::text ~~ '%Agenzia%'::text)
-UNION
- SELECT (((c.firstname)::text || '  '::text) || (c.lastname)::text) AS chi,
-    c.valore AS recapito,
-    'EMAIL'::text AS sms
-   FROM public.destinatari_sempre_email_vw_2 c
-  WHERE ((c.firstname)::text ~~ '%Agenzia%'::text)
-UNION
- SELECT (((a.firstname)::text || '  '::text) || (a.lastname)::text) AS chi,
-    a.valore AS recapito,
-    'SMS'::text AS sms
-   FROM public.area_numeri_vw_2 a
-  WHERE ((a.firstname)::text ~~ '%Agenzia%'::text)
-UNION
- SELECT (((d.firstname)::text || '  '::text) || (d.lastname)::text) AS chi,
-    d.valore AS recapito,
-    'EMAIL'::text AS sms
-   FROM public.area_email_vw_2 d
-  WHERE ((d.firstname)::text ~~ '%Agenzia%'::text)
-  ORDER BY 1;
-
-
-ALTER TABLE public.recapiti_agenzia_vw OWNER TO usrweballerte;
-
---
--- Name: recapiti_comuni_vw; Type: VIEW; Schema: public; Owner: usrweballerte
---
-
-CREATE VIEW public.recapiti_comuni_vw AS
- SELECT (((a.firstname)::text || '  '::text) || (a.lastname)::text) AS chi,
-    a.valore AS recapito,
-    'SMS'::text AS sms
-   FROM public.area_numeri_vw_2 a
-  WHERE ((a.firstname)::text ~~ '%Comune%'::text)
-UNION
- SELECT (((d.firstname)::text || '  '::text) || (d.lastname)::text) AS chi,
-    d.valore AS recapito,
-    'EMAIL'::text AS sms
-   FROM public.area_email_vw_2 d
-  WHERE ((d.firstname)::text ~~ '%Comune%'::text)
-UNION
- SELECT (((a.firstname)::text || '  '::text) || (a.lastname)::text) AS chi,
-    a.valore AS recapito,
-    'SMS'::text AS sms
-   FROM public.area_numeri_vw_2 a
-  WHERE ((a.firstname)::text ~~ '%Unione%'::text)
-UNION
- SELECT (((d.firstname)::text || '  '::text) || (d.lastname)::text) AS chi,
-    d.valore AS recapito,
-    'EMAIL'::text AS sms
-   FROM public.area_email_vw_2 d
-  WHERE ((d.firstname)::text ~~ '%Unione%'::text)
-UNION
- SELECT (((b.firstname)::text || '  '::text) || (b.lastname)::text) AS chi,
-    b.valore AS recapito,
-    'SMS'::text AS sms
-   FROM public.destinatari_sempre_numeri_vw_2 b
-  WHERE ((b.firstname)::text ~~ '%Agenzia%'::text)
-UNION
- SELECT (((c.firstname)::text || '  '::text) || (c.lastname)::text) AS chi,
-    c.valore AS recapito,
-    'EMAIL'::text AS sms
-   FROM public.destinatari_sempre_email_vw_2 c
-  WHERE ((c.firstname)::text ~~ '%Agenzia%'::text)
-  ORDER BY 1;
-
-
-ALTER TABLE public.recapiti_comuni_vw OWNER TO usrweballerte;
-
---
--- Name: regole_condizioni_vw; Type: VIEW; Schema: public; Owner: usrweballerte
+-- TOC entry 486 (class 1259 OID 693434)
+-- Name: regole_condizioni_vw; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW public.regole_condizioni_vw AS
@@ -1334,10 +1215,82 @@ CREATE VIEW public.regole_condizioni_vw AS
   ORDER BY ra.id_, rac.id_;
 
 
-ALTER TABLE public.regole_condizioni_vw OWNER TO usrweballerte;
+--
+-- TOC entry 487 (class 1259 OID 693439)
+-- Name: sensori_comuni_vw; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.sensori_comuni_vw AS
+ SELECT s.id_,
+    s.name,
+    sv.idvariabile,
+    s.namebasin,
+    s.namesubbasin,
+    (s.attivo AND ((now() - (sv.dataultimovalore)::timestamp with time zone) < '3 days'::interval)) AS attivo,
+    array_to_string(array_agg(DISTINCT replace((o2.nome)::text, 'Comune '::text, ''::text)), ', '::text) AS comuni,
+    (('_'::text || array_to_string(array_agg(DISTINCT o2.id_gruppo), '_'::text)) || '_'::text) AS idcomuni,
+    COALESCE(sv3.idvariabile, sv2.idvariabile) AS idvariabilevera,
+    (NOT (EXISTS ( SELECT d.idstazione,
+            d.idvariabile
+           FROM public.bollettino_disattivazionesensore d
+          WHERE (((d.idstazione)::text = (s.id_)::text) AND ((d.idvariabile)::text = (sv.idvariabile)::text))))) AS funzionante,
+    i.sogliaspike,
+    sv.soglia1,
+    sv.soglia2,
+    sv.soglia3
+   FROM ((((((((((public.bollettino_stazione s
+     JOIN public.bollettino_stazionevariabile sv ON (((s.id_)::text = (sv.idstazione)::text)))
+     JOIN public.bollettino_regolaallarmecondizione c2 ON ((((s.id_)::text = (c2.idstazione)::text) AND ((sv.idvariabile)::text = (c2.idvariabile)::text) AND (c2.id_ = ( SELECT min(rac2.id_) AS min
+           FROM public.bollettino_regolaallarmecondizione rac2
+          WHERE (rac2.idregola = c2.idregola))))))
+     JOIN public.bollettino_regolaallarme ra ON ((ra.id_ = c2.idregola)))
+     LEFT JOIN public.bollettino_idrometro i ON ((((i.stazioneid)::text = (c2.idstazione)::text) AND ((c2.idvariabile)::text = '254,0,0/1,-,-,-/B13215'::text))))
+     LEFT JOIN public.bollettino_pluviometro p ON ((((p.stazioneid)::text = (c2.idstazione)::text) AND ((c2.idvariabile)::text = '1,0,3600/1,-,-,-/B13011'::text))))
+     LEFT JOIN public.rubrica_rubricagruppo o ON ((((o.nome)::text = (COALESCE(i.nomerubrica, p.nomerubrica))::text) AND (o.fk_sito_proprietario = 20181))))
+     LEFT JOIN public.rubrica_rubricagruppogruppi uo ON ((uo.fk_gruppo_padre = o.id_gruppo)))
+     LEFT JOIN public.rubrica_rubricagruppo o2 ON (((o2.id_gruppo = uo.fk_gruppo_figlio) AND (((o2.nome)::text ~~ 'Comune%'::text) OR ((o2.nome)::text ~~ 'Unione%'::text)))))
+     LEFT JOIN public.bollettino_stazionevariabile sv2 ON ((((s.id_)::text = (sv2.idstazione)::text) AND ((sv.idvariabile)::text = '1,0,3600/1,-,-,-/B13011'::text) AND ((sv2.idvariabile)::text = '1,0,1800/1,-,-,-/B13011'::text))))
+     LEFT JOIN public.bollettino_stazionevariabile sv3 ON ((((s.id_)::text = (sv3.idstazione)::text) AND ((sv.idvariabile)::text = '1,0,3600/1,-,-,-/B13011'::text) AND ((sv3.idvariabile)::text = '1,0,900/1,-,-,-/B13011'::text))))
+  WHERE ((sv.idvariabile)::text = ANY (ARRAY[('254,0,0/1,-,-,-/B13215'::character varying)::text, ('1,0,3600/1,-,-,-/B13011'::character varying)::text]))
+  GROUP BY s.id_, s.name, sv.idvariabile, s.namebasin, s.namesubbasin, s.attivo, sv2.idvariabile, sv3.idvariabile, i.sogliaspike, sv.dataultimovalore, sv.soglia1, sv.soglia2, sv.soglia3
+  ORDER BY sv.idvariabile DESC, s.name;
+
 
 --
--- Name: regole_allarme_vw; Type: VIEW; Schema: public; Owner: usrweballerte
+-- TOC entry 617 (class 1259 OID 21573047)
+-- Name: regole_allarme2_vw; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.regole_allarme2_vw AS
+ SELECT v.id_,
+    v.nome,
+    v.descrizione,
+    v.idvariabile,
+    v.colore,
+    v.attivo,
+    v.nomerubrica AS principale,
+    array_to_string(ARRAY( SELECT DISTINCT v4.nomerubrica
+           FROM public.regole_condizioni_vw v4
+          WHERE ((v4.id_ = v.id_) AND (v4.idcondizione > min(v.idcondizione)))
+          ORDER BY v4.nomerubrica), ', '::text) AS altrisensori,
+    sc.comuni,
+    idro.nomebacino AS fiume,
+    idro.nomesottobacino AS tratti
+   FROM (((public.regole_condizioni_vw v
+     JOIN ( SELECT v3.id_,
+            min(v3.idcondizione) AS primaria
+           FROM public.regole_condizioni_vw v3
+          GROUP BY v3.id_
+          ORDER BY v3.id_) v2 ON (((v.id_ = v2.id_) AND (v.idcondizione = v2.primaria))))
+     LEFT JOIN public.sensori_comuni_vw sc ON ((((sc.id_)::text = (v.idstazione)::text) AND ((sc.idvariabile)::text = (v.idvariabile)::text))))
+     LEFT JOIN public.bollettino_idrometro idro ON (((idro.nomerubrica)::text = (v.nomerubrica)::text)))
+  GROUP BY v.id_, v.nome, v.descrizione, v.idvariabile, v.colore, v.attivo, v.nomerubrica, sc.comuni, idro.nomebacino, idro.nomesottobacino
+  ORDER BY v.id_;
+
+
+--
+-- TOC entry 488 (class 1259 OID 693444)
+-- Name: regole_allarme_vw; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW public.regole_allarme_vw AS
@@ -1352,93 +1305,96 @@ CREATE VIEW public.regole_allarme_vw AS
            FROM public.regole_condizioni_vw v4
           WHERE ((v4.id_ = v.id_) AND (v4.idcondizione > min(v.idcondizione)))
           ORDER BY v4.nomerubrica), ', '::text) AS altrisensori,
-    array_to_string(array_agg(gr.name), ', '::text) AS comuni
-   FROM (((((public.regole_condizioni_vw v
+    sc.comuni
+   FROM ((public.regole_condizioni_vw v
      JOIN ( SELECT v3.id_,
             min(v3.idcondizione) AS primaria
            FROM public.regole_condizioni_vw v3
           GROUP BY v3.id_
           ORDER BY v3.id_) v2 ON (((v.id_ = v2.id_) AND (v.idcondizione = v2.primaria))))
-     LEFT JOIN public.organization_ o ON (((o.name)::text = (v.nomerubrica)::text)))
-     LEFT JOIN public.users_orgs uo ON ((o.organizationid = uo.organizationid)))
-     LEFT JOIN public.usergrouprole ugr ON ((uo.userid = ugr.userid)))
-     LEFT JOIN public.group_ gr ON (((ugr.groupid = gr.groupid) AND (ugr.roleid = 451351))))
-  GROUP BY v.id_, v.nome, v.descrizione, v.idvariabile, v.colore, v.attivo, v.nomerubrica
+     LEFT JOIN public.sensori_comuni_vw sc ON ((((sc.id_)::text = (v.idstazione)::text) AND ((sc.idvariabile)::text = (v.idvariabile)::text))))
+  GROUP BY v.id_, v.nome, v.descrizione, v.idvariabile, v.colore, v.attivo, v.nomerubrica, sc.comuni
   ORDER BY v.id_;
 
 
-ALTER TABLE public.regole_allarme_vw OWNER TO usrweballerte;
+--
+-- TOC entry 618 (class 1259 OID 36840242)
+-- Name: report_post_evento_vw; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.report_post_evento_vw AS
+ SELECT x.id_,
+    x.data_pubblicazione,
+    x.data_inizio,
+    x.data_fine,
+    x.titolo,
+    x.assetentryid,
+    x.fileuuid,
+    x.pdf,
+    x.link,
+    COALESCE((x.data_inizio)::timestamp without time zone, x.data_pubblicazione) AS data_sort
+   FROM ( SELECT j.id_,
+            j.createdate AS data_pubblicazione,
+            ("substring"(j.content, '.*?name="DataInizioEvento".*?CDATA\[(.*?)\].*'::text))::date AS data_inizio,
+            ("substring"(j.content, '.*?name="DataFineEvento".*?CDATA\[(.*?)\].*'::text))::date AS data_fine,
+            "substring"(a.title, '.*<Title language-id="it_IT">(.*?)<.*'::text) AS titolo,
+            a.entryid AS assetentryid,
+            "substring"(j.content, '.*"uuid":"(.*?)".*'::text) AS fileuuid,
+            ((((('/documents/'::text || f.repositoryid) || f.treepath) || (f.filename)::text) || '/'::text) || (f.uuid_)::text) AS pdf,
+            ('/archivio-report-post-evento/-/asset_publisher/HpRwtPMIzgmZ/content/id/'::text || a.entryid) AS link
+           FROM ((public.journalarticle j
+             LEFT JOIN public.assetentry a ON (((a.classtypeid = '57636'::bigint) AND (a.classpk = ((j.articleid)::bigint + 2)))))
+             LEFT JOIN public.dlfileentry f ON (((f.uuid_)::text = "substring"(j.content, '.*"uuid":"(.*?)".*'::text))))
+          WHERE (((j.ddmstructurekey)::text = '57635'::text) AND (j.version = ( SELECT max(j2.version) AS max
+                   FROM public.journalarticle j2
+                  WHERE ((j2.articleid)::text = (j.articleid)::text))))
+          ORDER BY j.createdate DESC) x;
+
 
 --
--- Name: sensori_comuni_vw; Type: VIEW; Schema: public; Owner: usrweballerte
+-- TOC entry 646 (class 1259 OID 109041648)
+-- Name: sensori_comuni_tutti_vw; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW public.sensori_comuni_vw AS
+CREATE VIEW public.sensori_comuni_tutti_vw AS
  SELECT s.id_,
     s.name,
     sv.idvariabile,
     s.namebasin,
     s.namesubbasin,
     (s.attivo AND ((now() - (sv.dataultimovalore)::timestamp with time zone) < '3 days'::interval)) AS attivo,
-    array_to_string(array_agg(DISTINCT g.name), ', '::text) AS comuni,
-    (('_'::text || array_to_string(array_agg(DISTINCT g.groupid), '_'::text)) || '_'::text) AS idcomuni,
-    sv2.idvariabile AS idvariabilevera,
+    array_to_string(array_agg(DISTINCT replace((o2.nome)::text, 'Comune '::text, ''::text)), ', '::text) AS comuni,
+    (('_'::text || array_to_string(array_agg(DISTINCT o2.id_gruppo), '_'::text)) || '_'::text) AS idcomuni,
+    COALESCE(sv3.idvariabile, sv2.idvariabile) AS idvariabilevera,
     (NOT (EXISTS ( SELECT d.idstazione,
             d.idvariabile
            FROM public.bollettino_disattivazionesensore d
           WHERE (((d.idstazione)::text = (s.id_)::text) AND ((d.idvariabile)::text = (sv.idvariabile)::text))))) AS funzionante,
-    i.sogliaspike
+    i.sogliaspike,
+    sv.soglia1,
+    sv.soglia2,
+    sv.soglia3
    FROM ((((((((((public.bollettino_stazione s
      JOIN public.bollettino_stazionevariabile sv ON (((s.id_)::text = (sv.idstazione)::text)))
-     JOIN public.bollettino_regolaallarmecondizione c2 ON ((((s.id_)::text = (c2.idstazione)::text) AND ((sv.idvariabile)::text = (c2.idvariabile)::text) AND (c2.id_ = ( SELECT min(rac2.id_) AS min
+     LEFT JOIN public.bollettino_regolaallarmecondizione c2 ON ((((s.id_)::text = (c2.idstazione)::text) AND ((sv.idvariabile)::text = (c2.idvariabile)::text) AND (c2.id_ = ( SELECT min(rac2.id_) AS min
            FROM public.bollettino_regolaallarmecondizione rac2
           WHERE (rac2.idregola = c2.idregola))))))
-     JOIN public.bollettino_regolaallarme ra ON ((ra.id_ = c2.idregola)))
+     LEFT JOIN public.bollettino_regolaallarme ra ON ((ra.id_ = c2.idregola)))
      LEFT JOIN public.bollettino_idrometro i ON ((((i.stazioneid)::text = (c2.idstazione)::text) AND ((c2.idvariabile)::text = '254,0,0/1,-,-,-/B13215'::text))))
      LEFT JOIN public.bollettino_pluviometro p ON ((((p.stazioneid)::text = (c2.idstazione)::text) AND ((c2.idvariabile)::text = '1,0,3600/1,-,-,-/B13011'::text))))
-     LEFT JOIN public.organization_ o ON (((o.name)::text = (COALESCE(i.nomerubrica, p.nomerubrica))::text)))
-     LEFT JOIN public.users_orgs uo ON ((uo.organizationid = o.organizationid)))
-     LEFT JOIN public.usergrouprole ugr ON (((ugr.userid = uo.userid) AND (ugr.roleid = 451351))))
-     LEFT JOIN public.group_ g ON ((g.groupid = ugr.groupid)))
+     LEFT JOIN public.rubrica_rubricagruppo o ON ((((o.nome)::text = (COALESCE(i.nomerubrica, p.nomerubrica))::text) AND (o.fk_sito_proprietario = 20181))))
+     LEFT JOIN public.rubrica_rubricagruppogruppi uo ON ((uo.fk_gruppo_padre = o.id_gruppo)))
+     LEFT JOIN public.rubrica_rubricagruppo o2 ON (((o2.id_gruppo = uo.fk_gruppo_figlio) AND (((o2.nome)::text ~~ 'Comune%'::text) OR ((o2.nome)::text ~~ 'Unione%'::text)))))
      LEFT JOIN public.bollettino_stazionevariabile sv2 ON ((((s.id_)::text = (sv2.idstazione)::text) AND ((sv.idvariabile)::text = '1,0,3600/1,-,-,-/B13011'::text) AND ((sv2.idvariabile)::text = '1,0,1800/1,-,-,-/B13011'::text))))
+     LEFT JOIN public.bollettino_stazionevariabile sv3 ON ((((s.id_)::text = (sv3.idstazione)::text) AND ((sv.idvariabile)::text = '1,0,3600/1,-,-,-/B13011'::text) AND ((sv3.idvariabile)::text = '1,0,900/1,-,-,-/B13011'::text))))
   WHERE ((sv.idvariabile)::text = ANY (ARRAY[('254,0,0/1,-,-,-/B13215'::character varying)::text, ('1,0,3600/1,-,-,-/B13011'::character varying)::text]))
-  GROUP BY s.id_, s.name, sv.idvariabile, s.namebasin, s.namesubbasin, s.attivo, sv2.idvariabile, i.sogliaspike, sv.dataultimovalore
+  GROUP BY s.id_, s.name, sv.idvariabile, s.namebasin, s.namesubbasin, s.attivo, sv2.idvariabile, sv3.idvariabile, i.sogliaspike, sv.dataultimovalore, sv.soglia1, sv.soglia2, sv.soglia3
   ORDER BY sv.idvariabile DESC, s.name;
 
 
-ALTER TABLE public.sensori_comuni_vw OWNER TO usrweballerte;
-
 --
--- Name: sms_by_day_and_type_vw; Type: VIEW; Schema: public; Owner: usrweballerte
---
-
-CREATE VIEW public.sms_by_day_and_type_vw AS
- SELECT (allerter_sms.datainvio)::date AS datainvio,
-    allerter_sms.tipo,
-    count(*) AS numero_sms
-   FROM public.allerter_sms
-  GROUP BY ((allerter_sms.datainvio)::date), allerter_sms.tipo
-  ORDER BY ((allerter_sms.datainvio)::date);
-
-
-ALTER TABLE public.sms_by_day_and_type_vw OWNER TO usrweballerte;
-
---
--- Name: sms_by_day_vw; Type: VIEW; Schema: public; Owner: usrweballerte
---
-
-CREATE VIEW public.sms_by_day_vw AS
- SELECT (allerter_sms.datainvio)::date AS datainvio,
-    count(*) AS numero_sms
-   FROM public.allerter_sms
-  GROUP BY ((allerter_sms.datainvio)::date)
-  ORDER BY ((allerter_sms.datainvio)::date);
-
-
-ALTER TABLE public.sms_by_day_vw OWNER TO usrweballerte;
-
---
--- Name: sms_by_month_vw; Type: VIEW; Schema: public; Owner: usrweballerte
+-- TOC entry 534 (class 1259 OID 693660)
+-- Name: sms_by_month_vw; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW public.sms_by_month_vw AS
@@ -1470,58 +1426,9 @@ CREATE VIEW public.sms_by_month_vw AS
   ORDER BY (((date_part('month'::text, allerter_sms.datainvio))::text || '/'::text) || (date_part('year'::text, allerter_sms.datainvio))::text);
 
 
-ALTER TABLE public.sms_by_month_vw OWNER TO usrweballerte;
-
 --
--- Name: sms_by_tempo_consegna_vw; Type: VIEW; Schema: public; Owner: usrweballerte
---
-
-CREATE VIEW public.sms_by_tempo_consegna_vw AS
- SELECT (((date_part('month'::text, allerter_sms.datainvio))::text || '/'::text) || (date_part('year'::text, allerter_sms.datainvio))::text) AS mese,
-    ((100.0 * (count(
-        CASE
-            WHEN ((allerter_sms.dataricevuta - allerter_sms.datainvio) < '00:01:00'::interval) THEN 1
-            ELSE NULL::integer
-        END))::numeric) / (count(allerter_sms.dataricevuta))::numeric) AS minuti1,
-    ((100.0 * (count(
-        CASE
-            WHEN (((allerter_sms.dataricevuta - allerter_sms.datainvio) >= '00:01:00'::interval) AND ((allerter_sms.dataricevuta - allerter_sms.datainvio) < '00:10:00'::interval)) THEN 1
-            ELSE NULL::integer
-        END))::numeric) / (count(allerter_sms.dataricevuta))::numeric) AS minuti10,
-    ((100.0 * (count(
-        CASE
-            WHEN (((allerter_sms.dataricevuta - allerter_sms.datainvio) >= '00:10:00'::interval) AND ((allerter_sms.dataricevuta - allerter_sms.datainvio) < '01:00:00'::interval)) THEN 1
-            ELSE NULL::integer
-        END))::numeric) / (count(allerter_sms.dataricevuta))::numeric) AS ore1,
-    ((100.0 * (count(
-        CASE
-            WHEN (((allerter_sms.dataricevuta - allerter_sms.datainvio) >= '01:00:00'::interval) AND ((allerter_sms.dataricevuta - allerter_sms.datainvio) < '06:00:00'::interval)) THEN 1
-            ELSE NULL::integer
-        END))::numeric) / (count(allerter_sms.dataricevuta))::numeric) AS ore6,
-    ((100.0 * (count(
-        CASE
-            WHEN (((allerter_sms.dataricevuta - allerter_sms.datainvio) >= '06:00:00'::interval) AND ((allerter_sms.dataricevuta - allerter_sms.datainvio) < '12:00:00'::interval)) THEN 1
-            ELSE NULL::integer
-        END))::numeric) / (count(allerter_sms.dataricevuta))::numeric) AS ore12,
-    ((100.0 * (count(
-        CASE
-            WHEN (((allerter_sms.dataricevuta - allerter_sms.datainvio) >= '12:00:00'::interval) AND ((allerter_sms.dataricevuta - allerter_sms.datainvio) < '24:00:00'::interval)) THEN 1
-            ELSE NULL::integer
-        END))::numeric) / (count(allerter_sms.dataricevuta))::numeric) AS ore24,
-    ((100.0 * (count(
-        CASE
-            WHEN ((allerter_sms.dataricevuta - allerter_sms.datainvio) >= '24:00:00'::interval) THEN 1
-            ELSE NULL::integer
-        END))::numeric) / (count(allerter_sms.dataricevuta))::numeric) AS piudiore24
-   FROM public.allerter_sms
-  GROUP BY (((date_part('month'::text, allerter_sms.datainvio))::text || '/'::text) || (date_part('year'::text, allerter_sms.datainvio))::text)
-  ORDER BY (((date_part('month'::text, allerter_sms.datainvio))::text || '/'::text) || (date_part('year'::text, allerter_sms.datainvio))::text);
-
-
-ALTER TABLE public.sms_by_tempo_consegna_vw OWNER TO usrweballerte;
-
---
--- Name: sms_dettaglio_vw; Type: VIEW; Schema: public; Owner: usrweballerte
+-- TOC entry 535 (class 1259 OID 693665)
+-- Name: sms_dettaglio_vw; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW public.sms_dettaglio_vw AS
@@ -1571,7 +1478,7 @@ CREATE VIEW public.sms_dettaglio_vw AS
             s2.descrizioneerrore,
             s2."timestamp"
            FROM public.allerter_sms s2
-          WHERE (((s2.tipo)::text = (s.tipo)::text) AND ((s2.sottotipo)::text = (s.sottotipo)::text) AND (s2.param = s.param) AND ((s2.numero)::text = (s.numero)::text) AND (s2.stato = ANY (ARRAY[(4)::bigint, ('-1001'::integer)::bigint]))))) AS contatto_ricevuto,
+          WHERE (((s2.tipo)::text = (s.tipo)::text) AND (((s.tipo)::text = 'superamento'::text) OR ((s2.sottotipo)::text = (s.sottotipo)::text)) AND (s2.param = s.param) AND ((s2.numero)::text = (s.numero)::text) AND (s2.stato = ANY (ARRAY[(4)::bigint, ('-1001'::integer)::bigint]))))) AS contatto_ricevuto,
     (EXISTS ( SELECT s2.id_,
             s2.tipo,
             s2.sottotipo,
@@ -1591,7 +1498,10 @@ CREATE VIEW public.sms_dettaglio_vw AS
             s2.descrizioneerrore,
             s2."timestamp"
            FROM public.allerter_sms s2
-          WHERE (((s2.tipo)::text = (s.tipo)::text) AND ((s2.sottotipo)::text = (s.sottotipo)::text) AND (s2.param = s.param) AND (((s2.numero)::text = (s.numero)::text) OR (s2.destinatario = s.destinatario)) AND ((s2.stato = ANY (ARRAY[(4)::bigint, ('-1001'::integer)::bigint])) OR (s2.dataricevuta IS NOT NULL))))) AS destinatario_ricevuto
+          WHERE (((s2.tipo)::text = (s.tipo)::text) AND (((s.tipo)::text = 'superamento'::text) OR ((s2.sottotipo)::text = (s.sottotipo)::text)) AND (s2.param = s.param) AND ((s2.numero)::text IN ( SELECT s3.numero
+                   FROM public.allerter_sms s3
+                  WHERE (((s3.tipo)::text = (s.tipo)::text) AND ((s3.sottotipo)::text = (s.sottotipo)::text) AND (s3.param = s.param) AND (s3.destinatario = s.destinatario)))) AND (s2.stato = ANY (ARRAY[(4)::bigint, ('-1001'::integer)::bigint]))))) AS destinatario_ricevuto,
+    s.destinatario AS id_destinatario
    FROM public.allerter_sms s
   ORDER BY
         CASE
@@ -1600,10 +1510,9 @@ CREATE VIEW public.sms_dettaglio_vw AS
         END, s.nomedestinatario, s.numero;
 
 
-ALTER TABLE public.sms_dettaglio_vw OWNER TO usrweballerte;
-
 --
--- Name: sms_invii_vw; Type: VIEW; Schema: public; Owner: usrweballerte
+-- TOC entry 536 (class 1259 OID 693670)
+-- Name: sms_invii_vw; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW public.sms_invii_vw AS
@@ -1632,7 +1541,11 @@ CREATE VIEW public.sms_invii_vw AS
                     ELSE 'Superamento pluviometrico'::text
                 END AS tipo_evento,
             count(*) AS generati,
-            count(s.dataack) AS spediti,
+            count(
+                CASE
+                    WHEN ((s.dataack IS NOT NULL) OR (s.stato = 5)) THEN 1
+                    ELSE NULL::integer
+                END) AS spediti,
             count(
                 CASE
                     WHEN (s.stato = 4) THEN s.dataricevuta
@@ -1652,7 +1565,7 @@ CREATE VIEW public.sms_invii_vw AS
                   WHERE (r2.idregola = r.idregola))))))
              JOIN public.bollettino_stazione st ON (((st.id_)::text = (r.idstazione)::text)))
              LEFT JOIN public.bollettino_stazionevariabile sv ON ((((r.idstazione)::text = (sv.idstazione)::text) AND ((r.idvariabile)::text = (sv.idvariabile)::text))))
-          WHERE (((s.tipo)::text = 'superamento'::text) AND (s.tentativi = 0) AND (s.stato >= 0))
+          WHERE (((s.tipo)::text = 'superamento'::text) AND (s.stato >= 0))
           GROUP BY s.tipo, s.param, r.idvariabile, r.soglia, st.name, sv.soglia1, sv.soglia2, sv.soglia3
           ORDER BY s.tipo, s.param)
         UNION
@@ -1661,16 +1574,22 @@ CREATE VIEW public.sms_invii_vw AS
                     WHEN ((s.tipo)::text = 'allerta'::text) THEN ('Allerta n. '::text || (s.sottotipo)::text)
                     WHEN ((s.tipo)::text = 'monitoraggio'::text) THEN ('Monitoraggio '::text || (s.sottotipo)::text)
                     WHEN ((s.tipo)::text = 'comunicazione'::text) THEN 'Comunicazione'::text
+                    WHEN ((s.tipo)::text = 'valanghe'::text) THEN ('Allerta valanghe n. '::text || (s.sottotipo)::text)
                     ELSE NULL::text
                 END AS evento,
                 CASE
                     WHEN ((s.tipo)::text = 'allerta'::text) THEN 'Allerta PC'::text
                     WHEN ((s.tipo)::text = 'monitoraggio'::text) THEN 'Documento monitoraggio'::text
                     WHEN ((s.tipo)::text = 'comunicazione'::text) THEN 'Comunicazione'::text
+                    WHEN ((s.tipo)::text = 'valanghe'::text) THEN 'Allerta valanghe'::text
                     ELSE NULL::text
                 END AS tipo_evento,
             count(*) AS generati,
-            count(s.dataack) AS spediti,
+            count(
+                CASE
+                    WHEN ((s.dataack IS NOT NULL) OR (s.stato = 5)) THEN 1
+                    ELSE NULL::integer
+                END) AS spediti,
             count(
                 CASE
                     WHEN (s.stato = 4) THEN s.dataricevuta
@@ -1684,77 +1603,14 @@ CREATE VIEW public.sms_invii_vw AS
             GREATEST(max(s.dataricevuta), max(s.dataack), max(s.datainvio)) AS ultimo_aggiornamento,
             min(s.datainvio) AS creazione
            FROM public.allerter_sms s
-          WHERE (((s.tipo)::text = ANY (ARRAY[('allerta'::character varying)::text, ('monitoraggio'::character varying)::text, ('comunicazione'::character varying)::text])) AND (s.tentativi = 0) AND (s.stato >= 0))
+          WHERE (((s.tipo)::text = ANY (ARRAY[('allerta'::character varying)::text, ('monitoraggio'::character varying)::text, ('comunicazione'::character varying)::text, ('valanghe'::character varying)::text])) AND (s.stato >= 0))
           GROUP BY s.tipo, s.sottotipo) x
   ORDER BY x.creazione DESC;
 
 
-ALTER TABLE public.sms_invii_vw OWNER TO usrweballerte;
-
 --
--- Name: valanghe_email_vw; Type: VIEW; Schema: public; Owner: usrweballerte
---
-
-CREATE VIEW public.valanghe_email_vw AS
- SELECT org_email_vw.name AS gruppo,
-    org_email_vw.firstname,
-    org_email_vw.lastname,
-    org_email_vw.valore AS email
-   FROM public.org_email_vw
-  WHERE (org_email_vw.organizationid = ANY (ARRAY[(238662)::bigint, (238668)::bigint, (238674)::bigint, (515378)::bigint]));
-
-
-ALTER TABLE public.valanghe_email_vw OWNER TO usrweballerte;
-
---
--- Name: valanghe_email_vw_2; Type: VIEW; Schema: public; Owner: usrweballerte
---
-
-CREATE VIEW public.valanghe_email_vw_2 AS
- SELECT org_email_vw_2.uuid,
-    org_email_vw_2.name AS gruppo,
-    org_email_vw_2.firstname,
-    org_email_vw_2.lastname,
-    org_email_vw_2.valore AS email
-   FROM public.org_email_vw_2
-  WHERE (org_email_vw_2.organizationid = ANY (ARRAY[(238662)::bigint, (238668)::bigint, (238674)::bigint, (515378)::bigint]));
-
-
-ALTER TABLE public.valanghe_email_vw_2 OWNER TO usrweballerte;
-
---
--- Name: valanghe_numeri_vw; Type: VIEW; Schema: public; Owner: usrweballerte
---
-
-CREATE VIEW public.valanghe_numeri_vw AS
- SELECT org_numeri_vw.name AS gruppo,
-    org_numeri_vw.firstname,
-    org_numeri_vw.lastname,
-    org_numeri_vw.valore AS numero
-   FROM public.org_numeri_vw
-  WHERE (org_numeri_vw.organizationid = ANY (ARRAY[(238662)::bigint, (238668)::bigint, (238674)::bigint, (515378)::bigint]));
-
-
-ALTER TABLE public.valanghe_numeri_vw OWNER TO usrweballerte;
-
---
--- Name: valanghe_numeri_vw_2; Type: VIEW; Schema: public; Owner: usrweballerte
---
-
-CREATE VIEW public.valanghe_numeri_vw_2 AS
- SELECT org_numeri_vw_2.uuid,
-    org_numeri_vw_2.name AS gruppo,
-    org_numeri_vw_2.firstname,
-    org_numeri_vw_2.lastname,
-    org_numeri_vw_2.valore AS numero
-   FROM public.org_numeri_vw_2
-  WHERE (org_numeri_vw_2.organizationid = ANY (ARRAY[(238662)::bigint, (238668)::bigint, (238674)::bigint, (515378)::bigint]));
-
-
-ALTER TABLE public.valanghe_numeri_vw_2 OWNER TO usrweballerte;
-
---
--- Name: ultimi_due_valori_sensori; Type: VIEW; Schema: public; Owner: usrweballerte
+-- TOC entry 553 (class 1259 OID 693738)
+-- Name: ultimi_due_valori_sensori; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW public.ultimi_due_valori_sensori AS
@@ -1770,32 +1626,208 @@ CREATE VIEW public.ultimi_due_valori_sensori AS
    FROM public.bollettino_stazionevariabile v;
 
 
-ALTER TABLE public.ultimi_due_valori_sensori OWNER TO usrweballerte;
-
-
 --
--- Name: spike_idrometri; Type: VIEW; Schema: public; Owner: usrweballerte
+-- TOC entry 554 (class 1259 OID 693742)
+-- Name: spike_idrometri; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW public.spike_idrometri AS
- SELECT i.nomerubrica,
+ SELECT COALESCE(i.nomerubrica, staz.name) AS nomerubrica,
     u.idstazione,
     u.idvariabile,
     v.value AS ult,
     v2.value AS penult,
     (v.value - v2.value) AS delta,
     i.sogliaspike
-   FROM (((public.ultimi_due_valori_sensori u
+   FROM ((((public.ultimi_due_valori_sensori u
      JOIN public.bollettino_idrometro i ON (((i.stazioneid)::text = (u.idstazione)::text)))
      JOIN public.bollettino_valoresensore v ON ((((v.idstazione)::text = (u.idstazione)::text) AND ((v.idvariabile)::text = (u.idvariabile)::text) AND (v.datetime = u.dataultimovalore))))
      JOIN public.bollettino_valoresensore v2 ON ((((v2.idstazione)::text = (u.idstazione)::text) AND ((v2.idvariabile)::text = (u.idvariabile)::text) AND (v2.datetime = u.datapenultimovalore))))
+     LEFT JOIN public.bollettino_stazione staz ON (((staz.id_)::text = (u.idstazione)::text)))
   WHERE (((u.idvariabile)::text = '254,0,0/1,-,-,-/B13215'::text) AND ((v.value - v2.value) > i.sogliaspike) AND (i.sogliaspike > (0.0)::double precision));
 
 
-ALTER TABLE public.spike_idrometri OWNER TO usrweballerte;
+--
+-- TOC entry 612 (class 1259 OID 8626119)
+-- Name: superamenti_soglia1_vw; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.superamenti_soglia1_vw AS
+ SELECT bv.uuid_,
+    bv.id_,
+    bv.value,
+    bv.datetime,
+    bv.idvariabile,
+    bv.idstazione,
+    sv.soglia1
+   FROM ((( SELECT bollettino_valoresensore.idstazione,
+            max(bollettino_valoresensore.datetime) AS datetime
+           FROM public.bollettino_valoresensore
+          WHERE ((bollettino_valoresensore.idvariabile)::text ~~ '%13215%'::text)
+          GROUP BY bollettino_valoresensore.idstazione) x
+     JOIN public.bollettino_valoresensore bv ON ((((bv.idstazione)::text = (x.idstazione)::text) AND (bv.datetime = x.datetime) AND ((bv.idvariabile)::text ~~ '%13215%'::text))))
+     JOIN public.bollettino_stazionevariabile sv ON ((((sv.idstazione)::text = (bv.idstazione)::text) AND ((sv.idvariabile)::text = (bv.idvariabile)::text))))
+  WHERE ((bv.value >= sv.soglia1) AND (sv.soglia1 <> (0)::double precision));
+
 
 --
--- Name: view_staz_sens; Type: VIEW; Schema: public; Owner: usrweballerte
+-- TOC entry 643 (class 1259 OID 93767254)
+-- Name: utenti_vw; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.utenti_vw AS
+SELECT
+    NULL::bigint AS userid,
+    NULL::character varying(75) AS screenname,
+    NULL::character varying(75) AS lastname,
+    NULL::character varying(75) AS firstname,
+    NULL::character varying(254) AS emailaddress,
+    NULL::text AS ruoli_portale,
+    NULL::text AS servizio,
+    NULL::text AS ruolo_in_modulo;
+
+
+
+--
+-- TOC entry 636 (class 1259 OID 66015672)
+-- Name: verifica_correttezza_vw; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.verifica_correttezza_vw AS
+ SELECT x.allertaid,
+    x.dataemissione,
+    x.datainizio,
+    date_part('dow'::text, x.datainizio) AS dow,
+    vd1.datoinserito AS c1,
+    vd2.datoinserito AS c2,
+    vd3.datoinserito AS c3,
+    vd4.datoinserito AS c4,
+    vd5.datoinserito AS c5,
+    vd6.datoinserito AS c6,
+    vd7.datoinserito AS c7,
+    vd8.datoinserito AS c8,
+    vd9.datoinserito AS c9
+   FROM (((((((((( SELECT a.allertaid,
+            a.dataemissione,
+            a.datainizio
+           FROM public.allerter_allerta a
+          WHERE (a.stato = 0)
+        UNION
+         SELECT a.allertaid,
+            a.dataemissione,
+            (a.datainizio + '12:00:00'::interval) AS datainizio
+           FROM public.allerter_allerta a
+          WHERE ((a.stato = 0) AND (date_part('hour'::text, a.datainizio) = (12)::double precision))
+        UNION
+         SELECT a.allertaid,
+            a.dataemissione,
+            (a.datafine - '24:00:00'::interval) AS datainizio
+           FROM public.allerter_allerta a
+          WHERE ((a.stato = 0) AND ((a.datafine - a.datainizio) >= '2 days'::interval))
+        UNION
+         SELECT a.allertaid,
+            a.dataemissione,
+            (a.datafine - '48:00:00'::interval) AS datainizio
+           FROM public.allerter_allerta a
+          WHERE ((a.stato = 0) AND ((a.datafine - a.datainizio) >= '3 days'::interval))) x
+     LEFT JOIN public.verifica_verificadato vd1 ON (((vd1.documento = x.allertaid) AND (vd1.giorno = x.datainizio) AND (vd1.evento = 1) AND ((vd1.nomedato)::text = 'correttezza'::text))))
+     LEFT JOIN public.verifica_verificadato vd2 ON (((vd2.documento = x.allertaid) AND (vd2.giorno = x.datainizio) AND (vd2.evento = 2) AND ((vd2.nomedato)::text = 'correttezza'::text))))
+     LEFT JOIN public.verifica_verificadato vd3 ON (((vd3.documento = x.allertaid) AND (vd3.giorno = x.datainizio) AND (vd3.evento = 3) AND ((vd3.nomedato)::text = 'correttezza'::text))))
+     LEFT JOIN public.verifica_verificadato vd4 ON (((vd4.documento = x.allertaid) AND (vd4.giorno = x.datainizio) AND (vd4.evento = 4) AND ((vd4.nomedato)::text = 'correttezza'::text))))
+     LEFT JOIN public.verifica_verificadato vd5 ON (((vd5.documento = x.allertaid) AND (vd5.giorno = x.datainizio) AND (vd5.evento = 5) AND ((vd5.nomedato)::text = 'correttezza'::text))))
+     LEFT JOIN public.verifica_verificadato vd6 ON (((vd6.documento = x.allertaid) AND (vd6.giorno = x.datainizio) AND (vd6.evento = 6) AND ((vd6.nomedato)::text = 'correttezza'::text))))
+     LEFT JOIN public.verifica_verificadato vd7 ON (((vd7.documento = x.allertaid) AND (vd7.giorno = x.datainizio) AND (vd7.evento = 7) AND ((vd7.nomedato)::text = 'correttezza'::text))))
+     LEFT JOIN public.verifica_verificadato vd8 ON (((vd8.documento = x.allertaid) AND (vd8.giorno = x.datainizio) AND (vd8.evento = 8) AND ((vd8.nomedato)::text = 'correttezza'::text))))
+     LEFT JOIN public.verifica_verificadato vd9 ON (((vd9.documento = x.allertaid) AND (vd9.giorno = x.datainizio) AND (vd9.evento = 9) AND ((vd9.nomedato)::text = 'correttezza'::text))))
+  ORDER BY x.datainizio, x.dataemissione;
+
+
+--
+-- TOC entry 647 (class 1259 OID 109058657)
+-- Name: verifica_settimanale_vw; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.verifica_settimanale_vw AS
+ SELECT ((('Report settimanale dal '::text || to_char((((('now'::text)::date + i.i) - 7))::timestamp with time zone, 'dd/MM/yyyy'::text)) || ' al '::text) || to_char((((('now'::text)::date + i.i) - 0))::timestamp with time zone, 'dd/MM/yyyy'::text)) AS titolo,
+    ((('Report settimanale dal '::text || to_char((((('now'::text)::date + i.i) - 7))::timestamp with time zone, 'dd/MM/yyyy'::text)) || ' al '::text) || to_char((((('now'::text)::date + i.i) - 0))::timestamp with time zone, 'dd/MM/yyyy'::text)) AS subtitle,
+    ('/verifica?p_p_id=allerta_verifica_web_AllertaVerificaWebPortlet&p_p_lifecycle=0&p_p_state=normal&p_p_mode=view&_allerta_verifica_web_AllertaVerificaWebPortlet_mvcRenderCommandName=%2Fallertaer%2Fverifica%2Fcompila&_allerta_verifica_web_AllertaVerificaWebPortlet_id='::text || ( SELECT min(verifica_verifica.id_) AS min
+           FROM public.verifica_verifica
+          WHERE (verifica_verifica.datainizio >= ((('now'::text)::date + i.i) - 7)))) AS text,
+    to_char(((('now'::text)::date + i.i))::timestamp with time zone, 'DD/MM/YYYY HH24:MI'::text) AS dataemissione,
+    to_char((((('now'::text)::date + i.i) - 7))::timestamp with time zone, 'DD/MM/YYYY HH24:MI'::text) AS datainizio,
+    'icon i-info-circle-o'::text AS cls,
+    ('/o/report/verifica-settimana?datada='::text || to_char((((('now'::text)::date + i.i) - 7))::timestamp with time zone, 'dd/MM/yyyy'::text)) AS pdf,
+    ((('now'::text)::date + i.i) - 7) AS datainiziovera
+   FROM generate_series(('2022-01-10'::date - ('now'::text)::date), 0) i(i)
+  WHERE (date_part('dow'::text, (('now'::text)::date + i.i)) = (1)::double precision);
+
+--
+-- TOC entry 7400 (class 2618 OID 93767257)
+-- Name: utenti_vw _RETURN; Type: RULE; Schema: public; Owner: -
+--
+
+CREATE OR REPLACE VIEW public.utenti_vw AS
+ SELECT user_.userid,
+    user_.screenname,
+    user_.lastname,
+    user_.firstname,
+    user_.emailaddress,
+    string_agg((r.name)::text, ', '::text) AS ruoli_portale,
+    ev.data_ AS servizio,
+    ev2.data_ AS ruolo_in_modulo
+   FROM (((((public.user_
+     LEFT JOIN public.users_roles ON ((user_.userid = users_roles.userid)))
+     JOIN public.role_ r ON (((r.roleid = users_roles.roleid) AND ((r.name)::text <> 'User'::text))))
+     LEFT JOIN public.expandorow er ON ((er.classpk = user_.userid)))
+     LEFT JOIN public.expandovalue ev ON (((ev.columnid = 79996) AND (ev.rowid_ = er.rowid_))))
+     LEFT JOIN public.expandovalue ev2 ON (((ev2.columnid = 36341) AND (ev2.rowid_ = er.rowid_))))
+  WHERE ((user_.status = 0) AND (user_.userid <> 20158))
+  GROUP BY user_.userid, ev.data_, ev2.data_
+  ORDER BY user_.lastname, user_.firstname;
+
+
+
+--
+-- TOC entry 637 (class 1259 OID 66015677)
+-- Name: verifica_valutazione_vw; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.verifica_valutazione_vw AS
+ SELECT x.allertaid,
+    x.dataemissione,
+    x.datainizio,
+    x.fenomeno,
+    vd1.datoinserito AS correttezza,
+    vd2.datoinserito AS magnitudo,
+    vd3.datoinserito AS localizzazione,
+    vd4.datoinserito AS cause,
+    vd5.datoinserito AS valutazione_descrittiva
+   FROM (((((( SELECT DISTINCT v.allertaid,
+            v.dataemissione,
+            v.datainizio,
+            generate_series.generate_series AS fenomeno
+           FROM (public.verifica_correttezza_vw v
+             JOIN generate_series(1, 9) generate_series(generate_series) ON ((1 = 1)))
+          WHERE ((EXISTS ( SELECT a.allertastatoid
+                   FROM public.allerter_allertastato a
+                  WHERE ((a.allertaid = v.allertaid) AND (a.eventoid = generate_series.generate_series) AND (a.statoid > 0) AND (a.statoid <> 1000) AND ((a.areaid *
+                        CASE
+                            WHEN (date_part('hour'::text, v.datainizio) = (12)::double precision) THEN '-1'::integer
+                            ELSE 1
+                        END) > 0)))) OR (EXISTS ( SELECT vv.id_
+                   FROM public.verifica_verificadato vv
+                  WHERE ((vv.documento = v.allertaid) AND (vv.giorno = v.datainizio) AND (vv.evento = generate_series.generate_series) AND ((vv.nomedato)::text = 'colore_post'::text) AND (vv.datoinserito = ANY (ARRAY['GIALLO'::text, 'ARANCIONE'::text, 'ROSSO'::text]))))))
+          ORDER BY v.datainizio, generate_series.generate_series) x
+     LEFT JOIN public.verifica_verificadato vd1 ON (((vd1.documento = x.allertaid) AND (vd1.giorno = x.datainizio) AND (vd1.evento = x.fenomeno) AND ((vd1.nomedato)::text = 'correttezza'::text))))
+     LEFT JOIN public.verifica_verificadato vd2 ON (((vd2.documento = x.allertaid) AND (vd2.giorno = x.datainizio) AND (vd2.evento = x.fenomeno) AND ((vd2.nomedato)::text = 'magnitudo'::text))))
+     LEFT JOIN public.verifica_verificadato vd3 ON (((vd3.documento = x.allertaid) AND (vd3.giorno = x.datainizio) AND (vd3.evento = x.fenomeno) AND ((vd3.nomedato)::text = 'localizzazione'::text))))
+     LEFT JOIN public.verifica_verificadato vd4 ON (((vd4.documento = x.allertaid) AND (vd4.giorno = x.datainizio) AND (vd4.evento = x.fenomeno) AND ((vd4.nomedato)::text = 'cause'::text))))
+     LEFT JOIN public.verifica_verificadato vd5 ON (((vd5.documento = x.allertaid) AND (vd5.giorno = x.datainizio) AND (vd5.evento = x.fenomeno) AND ((vd5.nomedato)::text = 'valutazione_descrittiva'::text))));
+
+
+--
+-- TOC entry 583 (class 1259 OID 693879)
+-- Name: view_staz_sens; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW public.view_staz_sens AS
@@ -1812,50 +1844,57 @@ CREATE VIEW public.view_staz_sens AS
   WHERE (staz.attivo AND (stazvar.dataultimovalore IS NOT NULL) AND ((now() - (stazvar.dataultimovalore)::timestamp with time zone) < '5 days'::interval));
 
 
-ALTER TABLE public.view_staz_sens OWNER TO usrweballerte;
-
 --
--- Name: view_staz_sens_old; Type: VIEW; Schema: public; Owner: usrweballerte
---
-
-CREATE VIEW public.view_staz_sens_old AS
- SELECT vs.datetime,
-    staz.id_,
-    vs.value,
-    staz.lat,
-    staz.lon,
-    staz.name,
-    stazvar.idvariabile
-   FROM ((public.bollettino_stazionevariabile stazvar
-     JOIN public.bollettino_stazione staz ON (((stazvar.idstazione)::text = (staz.id_)::text)))
-     LEFT JOIN public.bollettino_valoresensore vs ON (((vs.idstazione)::text = (staz.id_)::text)));
-
-
-ALTER TABLE public.view_staz_sens_old OWNER TO usrweballerte;
-
---
--- Name: visualizzazioni_allerta_vw; Type: VIEW; Schema: public; Owner: usrweballerte
+-- TOC entry 584 (class 1259 OID 693884)
+-- Name: view_staz_sensore_15m; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW public.visualizzazioni_allerta_vw AS
- SELECT a.allertaid,
-    a.datainizio,
-    a.datafine,
-    a.numero,
-    a.tipoallerta AS allerta,
-    a.titolo,
-    f.title AS file,
-    a.link,
-    f.readcount
-   FROM (public.dlfileentry f
-     JOIN public.allerter_allerta a ON (((a.link)::text ~~ (('%/'::text || f.folderid) || '/%'::text))))
-  WHERE ((a.stato = 0) AND (((f.title)::text ~~ 'allerta%'::text) OR ((f.title)::text ~~ 'bollettino%'::text)))
-  ORDER BY a.datainizio;
+CREATE VIEW public.view_staz_sensore_15m AS
+ SELECT bollettino_stazionevariabile.uuid_,
+    bollettino_stazionevariabile.id_,
+    bollettino_stazionevariabile.idstazione,
+    bollettino_stazionevariabile.idvariabile,
+    bollettino_stazionevariabile.dataultimovalore,
+    bollettino_stazionevariabile.soglia1,
+    bollettino_stazionevariabile.soglia2,
+    bollettino_stazionevariabile.soglia3
+   FROM (public.bollettino_stazionevariabile
+     JOIN public.bollettino_stazione s ON (((bollettino_stazionevariabile.idstazione)::text = (s.id_)::text)))
+  WHERE (((bollettino_stazionevariabile.idvariabile)::text = '1,0,3600/1,-,-,-/B13011'::text) AND (NOT ((bollettino_stazionevariabile.idstazione)::text IN ( SELECT bollettino_stazionevariabile_1.idstazione
+           FROM public.bollettino_stazionevariabile bollettino_stazionevariabile_1
+          WHERE ((bollettino_stazionevariabile_1.idvariabile)::text = '1,0,1800/1,-,-,-/B13011'::text)))) AND (bollettino_stazionevariabile.dataultimovalore IS NOT NULL) AND s.attivo AND ((now() - (bollettino_stazionevariabile.dataultimovalore)::timestamp with time zone) < '5 days'::interval))
+UNION
+ SELECT bollettino_stazionevariabile.uuid_,
+    bollettino_stazionevariabile.id_,
+    bollettino_stazionevariabile.idstazione,
+    bollettino_stazionevariabile.idvariabile,
+    bollettino_stazionevariabile.dataultimovalore,
+    bollettino_stazionevariabile.soglia1,
+    bollettino_stazionevariabile.soglia2,
+    bollettino_stazionevariabile.soglia3
+   FROM (public.bollettino_stazionevariabile
+     JOIN public.bollettino_stazione s ON (((bollettino_stazionevariabile.idstazione)::text = (s.id_)::text)))
+  WHERE (((bollettino_stazionevariabile.idvariabile)::text = '1,0,1800/1,-,-,-/B13011'::text) AND (NOT ((bollettino_stazionevariabile.idstazione)::text IN ( SELECT bollettino_stazionevariabile_1.idstazione
+           FROM public.bollettino_stazionevariabile bollettino_stazionevariabile_1
+          WHERE ((bollettino_stazionevariabile_1.idvariabile)::text = '1,0,900/1,-,-,-/B13011'::text)))) AND (bollettino_stazionevariabile.dataultimovalore IS NOT NULL) AND s.attivo AND ((now() - (bollettino_stazionevariabile.dataultimovalore)::timestamp with time zone) < '5 days'::interval))
+UNION
+ SELECT bollettino_stazionevariabile.uuid_,
+    bollettino_stazionevariabile.id_,
+    bollettino_stazionevariabile.idstazione,
+    bollettino_stazionevariabile.idvariabile,
+    bollettino_stazionevariabile.dataultimovalore,
+    bollettino_stazionevariabile.soglia1,
+    bollettino_stazionevariabile.soglia2,
+    bollettino_stazionevariabile.soglia3
+   FROM (public.bollettino_stazionevariabile
+     JOIN public.bollettino_stazione s ON (((bollettino_stazionevariabile.idstazione)::text = (s.id_)::text)))
+  WHERE (((bollettino_stazionevariabile.idvariabile)::text = '1,0,900/1,-,-,-/B13011'::text) AND (bollettino_stazionevariabile.dataultimovalore IS NOT NULL) AND s.attivo AND ((now() - (bollettino_stazionevariabile.dataultimovalore)::timestamp with time zone) < '5 days'::interval));
 
 
-ALTER TABLE public.visualizzazioni_allerta_vw OWNER TO usrweballerte;
-
--- Name: view_staz_sensore_30m; Type: VIEW; Schema: public; Owner: usrweballerte
+--
+-- TOC entry 585 (class 1259 OID 693889)
+-- Name: view_staz_sensore_30m; Type: VIEW; Schema: public; Owner: -
+--
 
 CREATE VIEW public.view_staz_sensore_30m AS
  SELECT bollettino_stazionevariabile.uuid_,
@@ -1885,182 +1924,294 @@ UNION
   WHERE (((bollettino_stazionevariabile.idvariabile)::text = '1,0,1800/1,-,-,-/B13011'::text) AND (bollettino_stazionevariabile.dataultimovalore IS NOT NULL) AND s.attivo AND ((now() - (bollettino_stazionevariabile.dataultimovalore)::timestamp with time zone) < '5 days'::interval));
 
 
-ALTER TABLE public.view_staz_sensore_30m OWNER TO usrweballerte;
 
--- Name: view_staz_sensore_30m_old; Type: VIEW; Schema: public; Owner: usrweballerte
+--
+-- TOC entry 587 (class 1259 OID 693898)
+-- Name: visualizzazioni_allerta_vw; Type: VIEW; Schema: public; Owner: -
+--
 
-CREATE VIEW public.view_staz_sensore_30m_old AS
- SELECT bollettino_stazionevariabile.uuid_,
-    bollettino_stazionevariabile.id_,
-    bollettino_stazionevariabile.idstazione,
-    bollettino_stazionevariabile.idvariabile,
-    bollettino_stazionevariabile.dataultimovalore,
-    bollettino_stazionevariabile.soglia1,
-    bollettino_stazionevariabile.soglia2,
-    bollettino_stazionevariabile.soglia3
-   FROM public.bollettino_stazionevariabile
-  WHERE (((bollettino_stazionevariabile.idvariabile)::text = '1,0,3600/1,-,-,-/B13011'::text) AND (NOT ((bollettino_stazionevariabile.idstazione)::text IN ( SELECT bollettino_stazionevariabile_1.idstazione
-           FROM public.bollettino_stazionevariabile bollettino_stazionevariabile_1
-          WHERE ((bollettino_stazionevariabile_1.idvariabile)::text = '1,0,1800/1,-,-,-/B13011'::text)))) AND (bollettino_stazionevariabile.dataultimovalore IS NOT NULL))
-UNION
- SELECT bollettino_stazionevariabile.uuid_,
-    bollettino_stazionevariabile.id_,
-    bollettino_stazionevariabile.idstazione,
-    bollettino_stazionevariabile.idvariabile,
-    bollettino_stazionevariabile.dataultimovalore,
-    bollettino_stazionevariabile.soglia1,
-    bollettino_stazionevariabile.soglia2,
-    bollettino_stazionevariabile.soglia3
-   FROM public.bollettino_stazionevariabile
-  WHERE (((bollettino_stazionevariabile.idvariabile)::text = '1,0,1800/1,-,-,-/B13011'::text) AND (bollettino_stazionevariabile.dataultimovalore IS NOT NULL));
-  
-  
-ALTER TABLE public.view_staz_sensore_30m_old OWNER TO usrweballerte;
-
-
-CREATE VIEW public.idro AS
- SELECT DISTINCT s.id_ AS stazione,
-    s.name
-   FROM ((public.bollettino_stazione s
-     JOIN public.bollettino_stazionevariabile v ON (((s.id_)::text = (v.idstazione)::text)))
-     JOIN public.bollettino_valoresensore val ON (((val.idstazione)::text = (v.idstazione)::text)))
-  WHERE ((v.idvariabile)::text ~~ '%B13215%'::text);
-
-
-ALTER TABLE public.idro OWNER TO usrweballerte;
-
+CREATE VIEW public.visualizzazioni_allerta_vw AS
+ SELECT a.allertaid,
+    a.datainizio,
+    a.datafine,
+    a.numero,
+    a.tipoallerta AS allerta,
+    a.titolo,
+    f.title AS file,
+    a.link,
+    f.readcount
+   FROM (public.dlfileentry f
+     JOIN public.allerter_allerta a ON (((a.link)::text ~~ (('%/'::text || f.folderid) || '/%'::text))))
+  WHERE ((a.stato = 0) AND (((f.title)::text ~~ 'allerta%'::text) OR ((f.title)::text ~~ 'bollettino%'::text)))
+  ORDER BY a.datainizio;
 
 
 --
--- Name: pluvio; Type: VIEW; Schema: public; Owner: usrweballerte
+-- TOC entry 588 (class 1259 OID 693903)
+-- Name: vw_soglie_idro; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW public.pluvio AS
- SELECT DISTINCT s.id_ AS stazione,
-    s.name
-   FROM ((public.bollettino_stazione s
-     JOIN public.bollettino_stazionevariabile v ON (((s.id_)::text = (v.idstazione)::text)))
-     JOIN public.bollettino_valoresensore val ON (((val.idstazione)::text = (v.idstazione)::text)))
-  WHERE (((v.idvariabile)::text ~~ '%B13011%'::text) AND ((val.idvariabile)::text = (v.idvariabile)::text));
-
-
-ALTER TABLE public.pluvio OWNER TO usrweballerte;
-
-
-
---
--- Name: TABLE meteomont_email_vw; Type: ACL; Schema: public; Owner: usrweballerte
---
-
-GRANT SELECT ON TABLE public.meteomont_email_vw TO PUBLIC;
-
-
---
--- Name: TABLE meteomont_numeri_vw; Type: ACL; Schema: public; Owner: usrweballerte
---
-
-GRANT SELECT ON TABLE public.meteomont_numeri_vw TO PUBLIC;
-
-
---
--- Name: TABLE meteomont_rubrica_vw; Type: ACL; Schema: public; Owner: usrweballerte
---
-
-GRANT SELECT ON TABLE public.meteomont_rubrica_vw TO PUBLIC;
-
-
---
--- Name: TABLE monitoraggio_email_vw; Type: ACL; Schema: public; Owner: usrweballerte
---
-
-GRANT SELECT ON TABLE public.monitoraggio_email_vw TO PUBLIC;
+CREATE VIEW public.vw_soglie_idro AS
+ SELECT x.name,
+    x.idstazione,
+    x.idvariabile,
+    x.dataultimovalore,
+    x.soglia1,
+    x.soglia2,
+    x.soglia3,
+    x.valore,
+    ((x.soglia1 <> (0)::double precision) AND (x.valore >= x.soglia1)) AS superamento1,
+    ((x.soglia2 <> (0)::double precision) AND (x.valore >= x.soglia2)) AS superamento2,
+    ((x.soglia3 <> (0)::double precision) AND (x.valore >= x.soglia3)) AS superamento3
+   FROM ( SELECT s.name,
+            sv.idstazione,
+            sv.idvariabile,
+            sv.dataultimovalore,
+            sv.soglia1,
+            sv.soglia2,
+            sv.soglia3,
+            ( SELECT v.value
+                   FROM public.bollettino_valoresensore v
+                  WHERE (((v.idstazione)::text = (sv.idstazione)::text) AND ((v.idvariabile)::text = (sv.idvariabile)::text))
+                  ORDER BY v.datetime DESC
+                 LIMIT 1) AS valore
+           FROM (public.bollettino_stazione s
+             JOIN public.bollettino_stazionevariabile sv ON (((s.id_)::text = (sv.idstazione)::text)))
+          WHERE (((sv.idvariabile)::text = '254,0,0/1,-,-,-/B13215'::text) AND (NOT (EXISTS ( SELECT spike.valore
+                   FROM public.allerter_logspike spike
+                  WHERE (((spike.idstazione)::text = (sv.idstazione)::text) AND (spike.dataora = sv.dataultimovalore))))) AND (NOT (EXISTS ( SELECT d.idstazione,
+                    d.idvariabile
+                   FROM public.bollettino_disattivazionesensore d
+                  WHERE (((d.idstazione)::text = (sv.idstazione)::text) AND ((d.idvariabile)::text = (sv.idvariabile)::text))))) AND s.attivo)) x;
 
 
 --
--- Name: TABLE monitoraggio_numeri_vw; Type: ACL; Schema: public; Owner: usrweballerte
+-- TOC entry 589 (class 1259 OID 693908)
+-- Name: vw_soglie_pluvio; Type: VIEW; Schema: public; Owner: -
 --
 
-GRANT SELECT ON TABLE public.monitoraggio_numeri_vw TO PUBLIC;
+CREATE VIEW public.vw_soglie_pluvio AS
+ SELECT z.idstazione,
+    z.name,
+    z.soglia1,
+    z.soglia2,
+    z.soglia3,
+    z.v_1h,
+    z.v_3h,
+    z.v_12h,
+    COALESCE(((z.soglia1 > (0)::double precision) AND (z.v_1h >= z.soglia1)), false) AS superamento1,
+    COALESCE(((z.soglia2 > (0)::double precision) AND (z.v_3h >= z.soglia2)), false) AS superamento2,
+    COALESCE(((z.soglia3 > (0)::double precision) AND (z.v_12h >= z.soglia3)), false) AS superamento3
+   FROM ( SELECT y.id_ AS idstazione,
+            y.name,
+            y.soglia1,
+            y.soglia2,
+            y.soglia3,
+            GREATEST(y.v1_1h, y.v1_30min, y.v1_15min) AS v_1h,
+            GREATEST(y.v2_1h, y.v2_30min, (y.v2_15min)::double precision) AS v_3h,
+            GREATEST(y.v3_1h, (y.v3_30min)::double precision, (y.v3_15min)::double precision) AS v_12h
+           FROM ( SELECT x.uuid_,
+                    x.id_,
+                    x.ident,
+                    x.name,
+                    x.lon,
+                    x.lat,
+                    x.height,
+                    x.idbasin,
+                    x.idsubbasin,
+                    x.idcountry,
+                    x.idprovince,
+                    x.idregion,
+                    x.idmunicipality,
+                    x.idmacroarea,
+                    x.namebasin,
+                    x.namesubbasin,
+                    x.namecountry,
+                    x.nameprovince,
+                    x.nameregion,
+                    x.namemunicipality,
+                    x.namemacroarea,
+                    x.network,
+                    x.attivo,
+                    x.incluso,
+                    x.progressivo,
+                    sv.soglia1,
+                    sv.soglia2,
+                    sv.soglia3,
+                    ( SELECT sum(tmp.value) AS sum
+                           FROM ( SELECT v.value
+                                   FROM public.bollettino_valoresensore v
+                                  WHERE (((v.idstazione)::text = (x.id_)::text) AND ((v.idvariabile)::text = '1,0,3600/1,-,-,-/B13011'::text))
+                                  ORDER BY v.datetime DESC
+                                 LIMIT 1) tmp) AS v1_1h,
+                    ( SELECT sum(tmp.value) AS sum
+                           FROM ( SELECT v.value
+                                   FROM public.bollettino_valoresensore v
+                                  WHERE (((v.idstazione)::text = (x.id_)::text) AND ((v.idvariabile)::text = '1,0,1800/1,-,-,-/B13011'::text))
+                                  ORDER BY v.datetime DESC
+                                 LIMIT 2) tmp) AS v1_30min,
+                    ( SELECT sum(tmp.value) AS sum
+                           FROM ( SELECT v.value
+                                   FROM public.bollettino_valoresensore v
+                                  WHERE (((v.idstazione)::text = (x.id_)::text) AND ((v.idvariabile)::text = '1,0,900/1,-,-,-/B13011'::text))
+                                  ORDER BY v.datetime DESC
+                                 LIMIT 4) tmp) AS v1_15min,
+                    ( SELECT sum(tmp.value) AS sum
+                           FROM ( SELECT v.value
+                                   FROM public.bollettino_valoresensore v
+                                  WHERE (((v.idstazione)::text = (x.id_)::text) AND ((v.idvariabile)::text = '1,0,3600/1,-,-,-/B13011'::text))
+                                  ORDER BY v.datetime DESC
+                                 LIMIT 3) tmp) AS v2_1h,
+                    ( SELECT sum(tmp.value) AS sum
+                           FROM ( SELECT v.value
+                                   FROM public.bollettino_valoresensore v
+                                  WHERE (((v.idstazione)::text = (x.id_)::text) AND ((v.idvariabile)::text = '1,0,1800/1,-,-,-/B13011'::text))
+                                  ORDER BY v.datetime DESC
+                                 LIMIT 6) tmp) AS v2_30min,
+                    '-1'::integer AS v2_15min,
+                    ( SELECT sum(tmp.value) AS sum
+                           FROM ( SELECT v.value
+                                   FROM public.bollettino_valoresensore v
+                                  WHERE (((v.idstazione)::text = (x.id_)::text) AND ((v.idvariabile)::text = '1,0,3600/1,-,-,-/B13011'::text))
+                                  ORDER BY v.datetime DESC
+                                 LIMIT 12) tmp) AS v3_1h,
+                    '-1'::integer AS v3_30min,
+                    '-1'::integer AS v3_15min
+                   FROM (( SELECT s.uuid_,
+                            s.id_,
+                            s.ident,
+                            s.name,
+                            s.lon,
+                            s.lat,
+                            s.height,
+                            s.idbasin,
+                            s.idsubbasin,
+                            s.idcountry,
+                            s.idprovince,
+                            s.idregion,
+                            s.idmunicipality,
+                            s.idmacroarea,
+                            s.namebasin,
+                            s.namesubbasin,
+                            s.namecountry,
+                            s.nameprovince,
+                            s.nameregion,
+                            s.namemunicipality,
+                            s.namemacroarea,
+                            s.network,
+                            s.attivo,
+                            s.incluso,
+                            s.progressivo
+                           FROM public.bollettino_stazione s
+                          WHERE (s.attivo AND (EXISTS ( SELECT sv_1.uuid_,
+                                    sv_1.id_,
+                                    sv_1.idstazione,
+                                    sv_1.idvariabile,
+                                    sv_1.dataultimovalore,
+                                    sv_1.soglia1,
+                                    sv_1.soglia2,
+                                    sv_1.soglia3
+                                   FROM public.bollettino_stazionevariabile sv_1
+                                  WHERE (((sv_1.idstazione)::text = (s.id_)::text) AND ((sv_1.idvariabile)::text ~~ '%B13011'::text)))) AND (NOT (EXISTS ( SELECT d.idstazione,
+                                    d.idvariabile
+                                   FROM public.bollettino_disattivazionesensore d
+                                  WHERE (((d.idstazione)::text = (s.id_)::text) AND ((d.idvariabile)::text ~~ '%B13011'::text))))))) x
+                     LEFT JOIN public.bollettino_stazionevariabile sv ON ((((sv.idstazione)::text = (x.id_)::text) AND ((sv.idvariabile)::text = '1,0,3600/1,-,-,-/B13011'::text))))) y) z;
 
 
 --
--- Name: TABLE monitoraggio_rubrica_vw; Type: ACL; Schema: public; Owner: usrweballerte
+-- TOC entry 622 (class 1259 OID 53711246)
+-- Name: vw_attivazione_monitoraggio; Type: VIEW; Schema: public; Owner: -
 --
 
-GRANT SELECT ON TABLE public.monitoraggio_rubrica_vw TO PUBLIC;
-
-
---
--- Name: TABLE new_area_rubrica_vw; Type: ACL; Schema: public; Owner: usrweballerte
---
-
-GRANT SELECT ON TABLE public.new_area_rubrica_vw TO PUBLIC;
-
-
---
--- Name: TABLE new_meteomont_email_vw; Type: ACL; Schema: public; Owner: usrweballerte
---
-
-GRANT SELECT ON TABLE public.new_meteomont_email_vw TO PUBLIC;
-
-
---
--- Name: TABLE new_meteomont_numeri_vw; Type: ACL; Schema: public; Owner: usrweballerte
---
-
-GRANT SELECT ON TABLE public.new_meteomont_numeri_vw TO PUBLIC;
+CREATE VIEW public.vw_attivazione_monitoraggio AS
+ SELECT i.dataultimovalore AS datasup,
+    i.name AS nome_idro,
+    i.soglia1 AS soglia_idro,
+    i.valore AS valore_idro,
+    pl.name AS nome_pluvio,
+    pl.soglia3 AS soglia_pluvio,
+    pl.v_12h AS valore_pluvio
+   FROM ((((public.bollettino_regolaallarmecondizione rac
+     JOIN public.bollettino_regolaallarme ra ON ((ra.id_ = rac.idregola)))
+     JOIN public.bollettino_regolaallarmecondizione rac2 ON (((rac2.idregola = rac.idregola) AND (rac2.id_ <> rac.id_))))
+     JOIN public.vw_soglie_idro i ON ((((i.idstazione)::text = (rac.idstazione)::text) AND i.superamento1)))
+     JOIN public.vw_soglie_pluvio pl ON ((((pl.idstazione)::text = (rac2.idstazione)::text) AND pl.superamento3)))
+  WHERE (((rac.idvariabile)::text = '254,0,0/1,-,-,-/B13215'::text) AND (i.soglia1 <> (0.0)::double precision) AND ra.attivo);
 
 
 --
--- Name: TABLE new_meteomont_rubrica_vw; Type: ACL; Schema: public; Owner: usrweballerte
+-- TOC entry 590 (class 1259 OID 693913)
+-- Name: vw_stato_regole; Type: VIEW; Schema: public; Owner: -
 --
 
-GRANT SELECT ON TABLE public.new_meteomont_rubrica_vw TO PUBLIC;
-
-
---
--- Name: TABLE new_monitoraggio_email_vw; Type: ACL; Schema: public; Owner: usrweballerte
---
-
-GRANT SELECT ON TABLE public.new_monitoraggio_email_vw TO PUBLIC;
-
-
---
--- Name: TABLE new_monitoraggio_numeri_vw; Type: ACL; Schema: public; Owner: usrweballerte
---
-
-GRANT SELECT ON TABLE public.new_monitoraggio_numeri_vw TO PUBLIC;
-
-
---
--- Name: TABLE new_monitoraggio_rubrica_vw; Type: ACL; Schema: public; Owner: usrweballerte
---
-
-GRANT SELECT ON TABLE public.new_monitoraggio_rubrica_vw TO PUBLIC;
-
-
---
--- Name: TABLE recapiti_agenzia_vw; Type: ACL; Schema: public; Owner: usrweballerte
---
-
-GRANT SELECT ON TABLE public.recapiti_agenzia_vw TO PUBLIC;
-
-
---
--- Name: TABLE recapiti_comuni_vw; Type: ACL; Schema: public; Owner: usrweballerte
---
-
-GRANT SELECT ON TABLE public.recapiti_comuni_vw TO PUBLIC;
-
-
---
--- Name: TABLE visualizzazioni_allerta_vw; Type: ACL; Schema: public; Owner: usrweballerte
---
-
-GRANT SELECT ON TABLE public.visualizzazioni_allerta_vw TO PUBLIC;
-
-
---
--- PostgreSQL database dump complete
---
-
+CREATE VIEW public.vw_stato_regole AS
+ SELECT z.idregola,
+    z.nome,
+    z.espressione,
+    z.descrizione,
+    z.colore,
+    z.idcondizione,
+    z.lettera,
+    z.soglia,
+    z.idstazione,
+    z.soglia1,
+    z.soglia2,
+    z.soglia3,
+    z.v1,
+    z.v2,
+    z.v3,
+    z.superamento1,
+    z.superamento2,
+    z.superamento3,
+    z.tipo,
+    (((z.tipo = 'pluvio'::text) OR (EXISTS ( SELECT bollettino_bollettinoparametro.parametroid,
+            bollettino_bollettinoparametro.valore
+           FROM public.bollettino_bollettinoparametro
+          WHERE (((bollettino_bollettinoparametro.parametroid)::text = 'GESTIONE_MONITORAGGIO'::text) AND (bollettino_bollettinoparametro.valore = 'true'::text))))) AND ((z.superamento1 AND (z.soglia = 1)) OR (z.superamento2 AND (z.soglia = 2)) OR (z.superamento3 AND (z.soglia = 3)))) AS superata
+   FROM ( SELECT ra.id_ AS idregola,
+            ra.nome,
+            ra.espressione,
+            ra.descrizione,
+            ra.colore,
+            rac.id_ AS idcondizione,
+            rac.lettera,
+            rac.soglia,
+            x.idstazione,
+            x.soglia1,
+            x.soglia2,
+            x.soglia3,
+            x.v1,
+            x.v2,
+            x.v3,
+            x.superamento1,
+            x.superamento2,
+            x.superamento3,
+            x.tipo
+           FROM ((public.bollettino_regolaallarme ra
+             JOIN public.bollettino_regolaallarmecondizione rac ON ((rac.idregola = ra.id_)))
+             LEFT JOIN ( SELECT i.idstazione,
+                    i.soglia1,
+                    i.soglia2,
+                    i.soglia3,
+                    i.valore AS v1,
+                    i.valore AS v2,
+                    i.valore AS v3,
+                    i.superamento1,
+                    i.superamento2,
+                    i.superamento3,
+                    'idro'::text AS tipo
+                   FROM public.vw_soglie_idro i
+                UNION
+                 SELECT p.idstazione,
+                    p.soglia1,
+                    p.soglia2,
+                    p.soglia3,
+                    p.v_1h AS v1,
+                    p.v_3h AS v2,
+                    p.v_12h AS v3,
+                    p.superamento1,
+                    p.superamento2,
+                    p.superamento3,
+                    'pluvio'::text AS tipo
+                   FROM public.vw_soglie_pluvio p) x ON ((((rac.idstazione)::text = (x.idstazione)::text) AND ((((rac.idvariabile)::text = '254,0,0/1,-,-,-/B13215'::text) AND (x.tipo = 'idro'::text)) OR (((rac.idvariabile)::text <> '254,0,0/1,-,-,-/B13215'::text) AND (x.tipo = 'pluvio'::text))))))) z;

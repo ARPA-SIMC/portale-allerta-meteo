@@ -1,0 +1,14 @@
+dependencies {
+	compileOnly group: "com.liferay.portal", name: "com.liferay.portal.kernel"
+	compileOnly group: "com.liferay.portal", name: "com.liferay.util.taglib"
+	compileOnly group: "javax.portlet", name: "portlet-api"
+	compileOnly group: "javax.servlet", name: "javax.servlet-api"
+	compileOnly group: "jstl", name: "jstl"
+	compileOnly group: "org.osgi", name: "org.osgi.service.component.annotations"
+	
+	compile group: "biz.aQute.bnd", name: "biz.aQute.bndlib", version: "3.1.0"
+	compile group: 'com.liferay', name: 'com.liferay.portal.configuration.metatype.api', version: '3.1.0'
+	
+	compileOnly project(":modules:allerta-bollettino:allerta-bollettino-api")
+	
+}

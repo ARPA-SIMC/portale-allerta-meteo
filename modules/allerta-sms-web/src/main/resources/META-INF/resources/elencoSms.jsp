@@ -160,8 +160,14 @@ td, th { padding: 5px !important; font-size: 90% !important}
 		            });
 		        </script>
 			</div>
+			
+			<div class="col-md-2">
+				<aui:input 
+					name="email" 
+				/>
+			</div>
 		
-			<div class="col-md-3" style='text-align: center;margin-top: 25px;'>
+			<div class="col-md-1" style='text-align: center;margin-top: 25px;'>
 				<button
 					id='aggiorna'>
 					Aggiorna
@@ -356,13 +362,13 @@ td, th { padding: 5px !important; font-size: 90% !important}
 function exportAsExcel() {
 	
 	var url = '<%=smsExport%>';
-	url += '&<portlet:namespace />tipo=' + $('#<portlet:namespace />tipo').val();
-	url += '&<portlet:namespace />sottotipo=' + $('#<portlet:namespace />sottotipo').val();
-	url += '&<portlet:namespace />nome=' + $('#<portlet:namespace />nome').val();
-	url += '&<portlet:namespace />numero=' + $('#<portlet:namespace />numero').val();
-	url += '&<portlet:namespace />stato=' + $('#<portlet:namespace />stato').val();
-	url += '&<portlet:namespace />dataInvioDa=' + $('#<portlet:namespace />dataInvioDa').val();
-	url += '&<portlet:namespace />dataInvioA=' + $('#<portlet:namespace />dataInvioA').val();
+	//url += '&<portlet:namespace />tipo=' + $('#<portlet:namespace />tipo').val();
+	//url += '&<portlet:namespace />sottotipo=' + $('#<portlet:namespace />sottotipo').val();
+	//url += '&<portlet:namespace />nome=' + $('#<portlet:namespace />nome').val();
+	//url += '&<portlet:namespace />numero=' + $('#<portlet:namespace />numero').val();
+	//url += '&<portlet:namespace />stato=' + $('#<portlet:namespace />stato').val();
+	//url += '&<portlet:namespace />dataInvioDa=' + $('#<portlet:namespace />dataInvioDa').val();
+	//url += '&<portlet:namespace />dataInvioA=' + $('#<portlet:namespace />dataInvioA').val();
 	url += '&<portlet:namespace />source=sms';
 	
 	console.log( 'exportAsExcel clicked', url);
@@ -374,13 +380,13 @@ function exportAsExcel() {
 function exportEmailAsExcel(){
 	
 	var url = '<%=smsExport%>';
-	url += '&<portlet:namespace />tipo=' + $('#<portlet:namespace />tipo').val();
-	url += '&<portlet:namespace />sottotipo=' + $('#<portlet:namespace />sottotipo').val();
-	url += '&<portlet:namespace />nome=' + $('#<portlet:namespace />nome').val();
-	url += '&<portlet:namespace />numero=' + $('#<portlet:namespace />numero').val();
-	url += '&<portlet:namespace />stato=' + $('#<portlet:namespace />stato').val();
-	url += '&<portlet:namespace />dataInvioDa=' + $('#<portlet:namespace />dataInvioDa').val();
-	url += '&<portlet:namespace />dataInvioA=' + $('#<portlet:namespace />dataInvioA').val();
+	//url += '&<portlet:namespace />tipo=' + $('#<portlet:namespace />tipo').val();
+	//url += '&<portlet:namespace />sottotipo=' + $('#<portlet:namespace />sottotipo').val();
+	//url += '&<portlet:namespace />nome=' + $('#<portlet:namespace />nome').val();
+	//url += '&<portlet:namespace />numero=' + $('#<portlet:namespace />numero').val();
+	//url += '&<portlet:namespace />stato=' + $('#<portlet:namespace />stato').val();
+	//url += '&<portlet:namespace />dataInvioDa=' + $('#<portlet:namespace />dataInvioDa').val();
+	//url += '&<portlet:namespace />dataInvioA=' + $('#<portlet:namespace />dataInvioA').val();
 	url += '&<portlet:namespace />source=email';
 	
 	 $('#<portlet:namespace/>smsService')[0].action = url;

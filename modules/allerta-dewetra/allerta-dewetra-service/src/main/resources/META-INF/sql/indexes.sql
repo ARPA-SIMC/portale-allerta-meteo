@@ -1,0 +1,1 @@
+create index IX_B7D86DA7 on DEWETRA_HRW (comune[$COLUMN_LENGTH:75$]);

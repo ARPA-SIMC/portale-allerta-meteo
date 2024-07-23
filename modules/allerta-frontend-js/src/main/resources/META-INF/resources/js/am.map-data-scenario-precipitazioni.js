@@ -19,6 +19,7 @@ am.MapDataScenarioPrecipitazioni = (function($) {
 		// Call constructor of superclass to initialize superclass-derived
 		// members.
 		MapDataScenarioSensore.call(this, options);
+		this.timespan.step = 15;
 
 	}
 	// Inherit from MapDataScenario

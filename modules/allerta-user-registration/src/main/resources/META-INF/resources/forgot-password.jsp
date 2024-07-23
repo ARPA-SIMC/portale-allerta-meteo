@@ -36,7 +36,7 @@
 	<!-- Login screen -->
 	<div class="u-content-container py-md-4">
 		<div class="row flex-md-row-reverse">
-			<div class="col-12 col-md-6">
+			<div class="col-12 col-md-12">
 			
 			<liferay-ui:error exception="<%=CaptchaTextException.class %>"
 				message="Captcha Errato"></liferay-ui:error>
@@ -92,15 +92,7 @@
 
 				</aui:form>
 			</div>
-			<div class="col-12 col-md-6">
-				<h2>Non hai un account?</h2>
-				<p class="pr-lg-5">Registrati ad Allerta Meteo Emilia-Romagna
-					per ricevere aggiornamenti sulle previsioni e la situazione di
-					allerta nei tuoi luoghi preferiti.</p>
-				<div class="my-3">
-					<a href="<%=regURL%>" class="btn btn-secondary btn-lg">Registrati</a>
-				</div>
-			</div>
+			
 		</div>
 
 

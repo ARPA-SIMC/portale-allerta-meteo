@@ -1,3 +1,4 @@
+<%@page import="com.liferay.portal.kernel.security.auth.AuthTokenUtil"%>
 <%@page import="com.liferay.portal.kernel.service.UserGroupRoleLocalServiceUtil"%>
 <%@page import="com.liferay.portal.kernel.service.UserLocalServiceUtil"%>
 <%@page import="java.util.Iterator"%>
@@ -51,6 +52,11 @@ if ( themeDisplay.isSignedIn()) {
 		}
 		
 		String comune = site.getName();
+		String nomesito = site.getFriendlyURL();
+		String nomesito2 = nomesito.replaceAll("/", "%2F");
+		Long grp = site.getGroupId();
+		String token = AuthTokenUtil.getToken(request);
+		
 		
 		String siteUrl = themeDisplay.getPortalURL() + themeDisplay.getPathFriendlyURLPublic() + themeDisplay.getScopeGroup().getFriendlyURL();
 %>
@@ -88,12 +94,14 @@ windowState="<%=LiferayWindowState.POP_UP.toString()%>" portletMode="VIEW">
                                <a class="btn btn-secondary" id="sendMessagge" data-toggle="modal" data-target="#modal-send-message">
                                    <span class="icon i-envelope" title="Icona messaggio"></span>
                                    <span class="nav-vertical__item-label">Invia un messaggio</span>
-                               </a>    
-                               <a class="btn btn-secondary" href="<%=siteUrl%>/aggiornamenti-del-comune">
+                               </a>       
+                               
+                            <%} %>
+                            
+                            	<a class="btn btn-secondary" href="<%=siteUrl%>/aggiornamenti-del-comune">
                                    <span class="icon i-message" title="Icona notizia"></span>
                                    <span class="nav-vertical__item-label">Pubblica un aggiornamento dal tuo comune</span>
-                               </a>    
-                            <%} %>
+                               </a>   
                                <a class="btn btn-secondary" href="<%=siteUrl%>/piano-di-protezione-civile">
                                    <span class="icon i-map" title="Icona ingranaggio"></span>
                                    <span class="nav-vertical__item-label">Gestisci documenti</span>

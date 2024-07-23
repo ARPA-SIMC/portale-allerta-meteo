@@ -96,12 +96,20 @@ public class RubricaGruppoLocalServiceImpl
 			return rubricaGruppoFinder.getGruppiByName(site, groupName, limit, offset);
 		}
 		
+		public ArrayList<Object[]> getGruppiByNameCategoria(Long site, String groupName, Long categoria, Long limit, Long offset) {
+			return rubricaGruppoFinder.getGruppiByNameCategory(site, groupName, categoria, limit, offset);
+		}
+		
 		public List<Object[]> getGroup(Long id) {
 			return rubricaGruppoFinder.getGroup(id);
 		}
 		
 		public void aggiornaTuttoGruppo(Long gruppo) {
 			rubricaGruppoFinder.aggiornaTuttoGruppo(gruppo);
+		}
+		
+		public ArrayList<Object[]> getGerarchia(Long site) {
+			return rubricaGruppoFinder.getGerarchia(site);
 		}
 		
 }

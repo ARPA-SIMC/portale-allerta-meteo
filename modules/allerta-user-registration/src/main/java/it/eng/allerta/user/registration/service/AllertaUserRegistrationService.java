@@ -74,7 +74,7 @@ public class AllertaUserRegistrationService {
 		calendar.setTime(dataNascita);
 		int year = calendar.get(Calendar.YEAR);
 		// Add one to month {0 - 11}
-		int month = calendar.get(Calendar.MONTH) + 1;
+		int month = calendar.get(Calendar.MONTH);
 		int day = calendar.get(Calendar.DAY_OF_MONTH);
 
 		long facebookId = 0;
@@ -132,7 +132,7 @@ public class AllertaUserRegistrationService {
 					AllertaKeys.AllertaUserRegistration, plid, PortletRequest.RENDER_PHASE);
 			
 			// INVIO MAIL AD UTENTE CITTADINO PER ATTIVAZIONE
-			MailUtils.sendActivationMailToUser(user, portletURL.toString());
+			//MailUtils.sendActivationMailToUser(user, portletURL.toString());
 			
 			MailUtils.informeAdminStartWf("Nuovo cittadino registrato <br/>. Utente Nome: " + user.getFirstName()
 					+ " Cognome: " + user.getLastName() + "  screenName :" + screenName + " mail" + emailAddress);

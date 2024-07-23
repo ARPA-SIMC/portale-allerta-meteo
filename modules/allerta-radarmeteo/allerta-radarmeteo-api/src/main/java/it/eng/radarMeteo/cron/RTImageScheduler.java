@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
@@ -58,52 +59,53 @@ public class RTImageScheduler extends BaseMessageListener {
 
 	private Log _log = LogFactoryUtil.getLog(RTImageScheduler.class);
 
-	public static final String JSONURL = "https://simc.arpae.it/webapp/radar.json/";
-	public static final String IMAGEURL = "https://simc.arpae.it/webapp/getradarimage.php?f=";
+	//public static final String JSONURL = "https://simc.arpae.it/webapp/radar.json/";
+	//public static final String IMAGEURL = "https://simc.arpae.it/webapp/getradarimage.php?f=";
 	public static final int IMG_UDPATE_TIME = 5;
 
-	public static final String JSONURL5 = "https://www.arpae.it/sim/external/bollettino/radar_wp7.php?callback=";
-	public static final String IMAGEURL5 = "https://www.arpae.it/sim/external/bollettino/mappa_radar_wp7.php?f=";
+	//public static final String JSONURL5 = "https://www.arpae.it/sim/external/bollettino/radar_wp7.php?callback=";
+	//public static final String IMAGEURL5 = "https://www.arpae.it/sim/external/bollettino/mappa_radar_wp7.php?f=";
 
+	public static final String JSONURL_NEW = "https://apps.arpae.it/REST/meteo_radar_stima_pioggia/?sort=-_id&max_results=";
+	
 	@Override
 	protected void doReceive(Message message) throws Exception {
 		
 		_log.info("RTImageScheduler - START");
 		
-		getAllImages();
+		getAllImages(100);
 		
 		_log.info("RTImageScheduler - END");
 	}
 
 
 	//----This method downloads all images that specified in JSON---//
-	public void getAllImages(){
+	public void getAllImages(int num){
 		//		Long id = null;
 		String defaultBounds = "7,42,15,47";
 		defaultBounds = "8.5,43.4,13.2058,46.001";
 		try {
-			String jsonString = getJsonFromUrl();
+			String jsonString = getJsonFromUrl(num);
 
-			String index;
 			//			logger.info(jsonString);
 			if(!jsonString.equals("")){
-				JSONArray jsonarray = JSONFactoryUtil.createJSONArray(jsonString);
+				JSONArray jsonarray = JSONFactoryUtil.createJSONObject(jsonString).getJSONArray("_items");
 				for (int i = 0; i < jsonarray.length(); i++) {
+					
 					JSONObject jsonobject = jsonarray.getJSONObject(i);
-					index = jsonobject.getString("i");
-					InputStream stream =  getInputStreaWithTimeout(IMAGEURL5+index);
-					Img img = getImg(jsonobject.getLong("ts"));
-					img.setTimestamp(Long.parseLong(index.substring(5,index.length()-4)));
+					String timestamp = jsonobject.getString("data_validita");
+					Instant instant = Instant.parse(timestamp);
+					long ts = instant.getEpochSecond();
+					
+					Img img = getImg(ts);
+					img.setTimestamp(ts);
 					img.setCoord(defaultBounds);
 					
-					ByteArrayOutputStream baos = new ByteArrayOutputStream();
-					StreamUtil.transfer(stream, baos);
-					
-					img.setData(new String(Base64.encode(baos.toByteArray())));
+					img.setData(jsonobject.getJSONObject("mappa").getString("image_data"));
 					imgLocalService.updateImg(img);
 				}
 			}else{
-				_log	.debug("RT_portlet [ERROR]: JSON5 is null.");
+				_log	.debug("RT_portlet [ERROR]: JSONX is null.");
 			}
 
 			//this serve for delete the imagine non need
@@ -118,21 +120,17 @@ public class RTImageScheduler extends BaseMessageListener {
 			_log.error("RT_portlet [ERROR]: JSON ERROR ");
 			_log.error(e);
 
-		} catch (IOException e) {
-			_log.error("RT_portlet [ERROR]: Something wrong while downloading image: ");
-			_log.error(e);
-
 		} catch (SystemException e) {
 			_log.error("RT_portlet [ERROR] SystemException: Can't save/update Img in db:");
 			_log.error(e);
 		}
 		catch (Exception e) {
 			_log.error("RT_portlet [ERROR] exception : Something went wrong: ");
-			_log.error(e);
+			//_log.error(e);
 		}
 	}
 
-	public String getJsonFromUrl(){
+	public String getJsonFromUrl(int num){
 		
 		String jsonString = null;
 		//InputStream in = null;
@@ -141,12 +139,18 @@ public class RTImageScheduler extends BaseMessageListener {
 		try{
 			
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			StreamUtil.transfer(getInputStreaWithTimeout(JSONURL5), baos);
+			//StreamUtil.transfer(getInputStreaWithTimeout(JSONURL5), baos);
+			InputStream is = getInputStreaWithTimeout(JSONURL_NEW+num);
+			StreamUtil.transfer(is, baos);
+			
+			try {
+				is.close();
+			} catch (Exception e) {}
 			
 			jsonString = new String(baos.toByteArray());
 			json=getJson().get(1);
 			//Json jsonFromUrl = jsonFromUrl(JSONURL5, jsonString, 1);
-			if(json == null){
+			/*if(json == null){
 				
 				baos = new ByteArrayOutputStream();
 				StreamUtil.transfer( getInputStreaWithTimeout(JSONURL), baos);
@@ -157,16 +161,14 @@ public class RTImageScheduler extends BaseMessageListener {
 				json.setInserted(Calendar.getInstance().getTimeInMillis());
 				json.setData(jsonString);
 				
-			} else{
-				
-				json =  getJson().get(1);
-				json.setType("JSON5");
-				json.setInserted(Calendar.getInstance().getTimeInMillis());
-				if(jsonString.length()>0){
-					jsonString =jsonString.substring(1, jsonString.length()-1);
-					json.setData(jsonString);
-				}
+			} else{*/
+			json.setType("JSONX");
+			json.setInserted(Calendar.getInstance().getTimeInMillis());
+			if(jsonString.length()>0){
+				//jsonString =jsonString.substring(1, jsonString.length()-1);
+				json.setData(jsonString);
 			}
+			//}
 		}
 		catch(IOException e){
 			
@@ -210,7 +212,10 @@ public class RTImageScheduler extends BaseMessageListener {
 	//-------This method saves only the last recent image that was added to JSON
 	public void getLastImage() {
 		
-		Long id = null;
+		
+		getAllImages(1);
+		
+		/*Long id = null;
 		Long comparable =   new Long(0);
 		InputStream stream = null;
 		
@@ -278,7 +283,7 @@ public class RTImageScheduler extends BaseMessageListener {
 				// TODO Auto-generated catch block
 				_log.error(e);
 			}
-		}
+		}*/
 	}
 
 	private Img getImg(Long id){
@@ -366,6 +371,8 @@ public class RTImageScheduler extends BaseMessageListener {
 		
 		_log.info("RTImagesScheduler scheduling at " + configuration.schedulerRTImagesMinutes());
 
+		if (configuration.schedulerRTImagesMinutes()<1) return;
+		
 		Trigger trigger = _triggerFactory.createTrigger(className, className, null, null, configuration.schedulerRTImagesMinutes(), TimeUnit.MINUTE);
 
 		SchedulerEntry schedulerEntry = new SchedulerEntryImpl(className, trigger);

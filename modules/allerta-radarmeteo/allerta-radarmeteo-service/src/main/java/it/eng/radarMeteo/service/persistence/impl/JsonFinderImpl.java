@@ -149,6 +149,8 @@ public class JsonFinderImpl extends JsonFinderBaseImpl implements JsonFinder{
 			variabileS = variabile.split("/");
 			if(minute==30)
 				variabile = "1,0,1800/"+variabileS[1]+"/"+variabileS[2];
+			if (minute==15 || minute==45)
+				variabile = "1,0,900/"+variabileS[1]+"/"+variabileS[2];
 //			System.out.println(variabile);
 			qPos.add(variabile);
 			qPos.add(new Timestamp(date));

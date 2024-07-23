@@ -12,12 +12,18 @@ long loginPlid = PortalUtil.getPlidFromPortletId(themeDisplay.getScopeGroupId(),
 
 PortletURL loginUrl = PortletURLFactoryUtil.create(request, AllertaKeys.AllertaUserRegistration, 
 		loginPlid, PortletRequest.RENDER_PHASE);
+
+
+
+String completeUrl = request.getAttribute("CURRENT_COMPLETE_URL").toString().toLowerCase();
+boolean sitoPrivato = !completeUrl.contains("allertameteo.");
+
 %>
 
-<li class="nav-item"><a
+<li class="nav-item"><c:if test="<%=sitoPrivato %>"><a
 	class="nav-link  header__personal-nav__toggle" href="/login?redirect=<%=themeDisplay.getURLCurrent()%>">
-		<span class="icon i-sign-in" title="Accedi"></span> <span
-		class="d-none d-lg-inline-block d-print-inline-block ">Accedi</span>
-</a></li>
+		<span class="icon i-sign-in" title="Area riservata"></span> <span
+		class="d-none d-lg-inline-block d-print-inline-block ">Area riservata</span>
+</a></c:if></li>
 
 

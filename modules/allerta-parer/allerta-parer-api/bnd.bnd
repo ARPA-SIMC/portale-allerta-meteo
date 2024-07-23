@@ -16,6 +16,9 @@ Export-Package: \
 	it.eng.parer.xmlGen.serviziVersamento.wsRequestUnico,\
 	it.eng.parer.xmlGen.superamento.mail,\
 	it.eng.parer.xmlGen.superamento.sms,\
+	it.eng.parer.xmlGen.valanghe,\
+	it.eng.parer.xmlGen.valanghe.mail,\
+	it.eng.parer.xmlGen.valanghe.sms,\
 	it.eng.parer.xmlGen.util,\
 	it.eng.parer.exception,\
 	it.eng.parer.model,\

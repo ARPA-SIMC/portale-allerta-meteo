@@ -105,7 +105,7 @@ public class BlogsRenderFilter implements RenderFilter {
 			throws IOException, PortletException {
 		
 		String url = (String)request.getAttribute("CURRENT_COMPLETE_URL");
-		boolean filtra = !url.contains("report-post-evento")
+		boolean filtra = !url.contains("report-post-evento") && !url.contains("allerte-e-bollettini")
 				&& (url.contains("blog/id/") || url.contains("content/id/"));
 		
 		if (!filtra) {

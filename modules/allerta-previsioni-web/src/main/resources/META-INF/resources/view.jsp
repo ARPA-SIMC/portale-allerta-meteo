@@ -116,7 +116,7 @@ DocumentazioneConfiguration doc = AllertaTracker.getDocumentazioneConfiguration(
 					</div>
 				<%} %>
 				
-				<%if( mapModelBean.isExistDomani() ) {%>
+				<%if( mapModelBean.isExistDomani() || mapModelBean.getValangheDomaniLink()!=null ) {%>
 					<jsp:include page="maps/map-domani.jsp"></jsp:include>
 				<%} else {%>
 				   <div 

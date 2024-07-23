@@ -4621,6 +4621,21 @@ html, body {
     .am .leaflet-marker-icon.marker--sensor.idro_3 {
       background: #F0E442;
       color: #000; }
+      
+      
+    .am .leaflet-marker-icon._3600.livellomare,
+    .am .leaflet-marker-icon.marker--sensor.livellomare {
+      background: #007FFF;
+      color: white; }
+    .am .leaflet-marker-icon._3600.altezzaonda,
+    .am .leaflet-marker-icon.marker--sensor.altezzaonda {
+      background: #007FFF;
+      color: white; }
+    .am .leaflet-marker-icon._3600.direzioneonda,
+    .am .leaflet-marker-icon.marker--sensor.direzioneonda {
+      background: #007FFF;
+      color: white; }  
+      
     .am .leaflet-marker-icon._3600.temp_p40,
     .am .leaflet-marker-icon.marker--sensor.temp_p40 {
       background: #BF00FF;

@@ -2,10 +2,14 @@ package it.eng.allerter.allerta;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Serializable;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
@@ -30,6 +34,9 @@ import com.liferay.document.library.kernel.model.DLFolderConstants;
 import com.liferay.document.library.kernel.service.DLAppServiceUtil;
 import com.liferay.portal.kernel.exception.NoSuchWorkflowDefinitionLinkException;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.ResourceConstants;
@@ -54,6 +61,7 @@ import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.portal.kernel.util.StreamUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
@@ -68,12 +76,15 @@ import it.eng.allerta.utils.AllertaTracker;
 import it.eng.allerter.model.Allerta;
 import it.eng.allerter.model.AllertaParametro;
 import it.eng.allerter.model.AllertaStato;
+import it.eng.allerter.model.Allerta;
 import it.eng.allerter.service.AllertaLocalService;
 import it.eng.allerter.service.AllertaLocalServiceUtil;
 import it.eng.allerter.service.AllertaParametroLocalServiceUtil;
 import it.eng.allerter.service.AllertaStatoLocalServiceUtil;
+import it.eng.allerter.service.LogInternoLocalServiceUtil;
 //import it.eng.allerter.service.//LogInternoLocalServiceUtil;
 import it.eng.allerter.service.SMSLocalServiceUtil;
+import it.eng.bollettino.service.BollettinoLocalServiceUtil;
 
 public class AllertaBean implements Serializable {
 
@@ -83,6 +94,7 @@ public class AllertaBean implements Serializable {
 	private static final long serialVersionUID = 3538119404903799906L;
 
 	String sintesi = "";
+	String sintesiBriefing = "";
 	String descrizioneMeteo = "";
 	String note = "";
 	String riferimenti = "";
@@ -104,6 +116,11 @@ public class AllertaBean implements Serializable {
 	Allerta allertaCorrente;
 	int matriceColori[][] = new int[16][16];
 	String aree[] = { "A", "B", "C", "D", "E", "F", "G", "H" };
+	String areeNuove[] =
+		{"A1","A2","B1","B2","C1","C2","D1","D2","D3","E1","E2","F1","F2","F3","G1","G2","H1","H2"};
+	long idAreeNuove[] =
+		{11L,12L,21L,22L,31L,32L,41L,42L,43L,51L,52L,61L,62L,63L,71L,72L,81L,82L};
+	
 	String eventi[] = { "Criticità idraulica", "Criticità idrogeologica", "Criticità per temporali", "Vento",
 			"Temperature estreme", "Neve", "Pioggia che gela", "Stato del mare", "Criticità costiera" };
 	String eventiInformali[] = { "piene dei fiumi", "frane e piene dei corsi minori", "temporali", "vento",
@@ -112,13 +129,28 @@ public class AllertaBean implements Serializable {
 	List<RigaManager> griglia;
 	HttpServletRequest httpRequest;
 	
+	boolean usaAreeNuove = true;
+	boolean suDueGiorni = false;
 	
+	private long areaId(String area) {
+		for (int k=0; k<areeNuove.length; k++)
+			if (areeNuove[k].equals(area)) return idAreeNuove[k];
+		return -1L;
+	}
+	
+	private String getArea(long id) {
+		for (int k=0; k<idAreeNuove.length; k++)
+			if (idAreeNuove[k]==id) return areeNuove[k];
+		
+		return null;
+	}
 	
 	private void initRequest() throws Exception {
 
 		if (httpRequest != null) {
 			
 			sintesi = ParamUtil.getString(httpRequest, "sintesi");
+			sintesiBriefing = ParamUtil.getString(httpRequest, "sintesiBriefing");
 			descrizioneMeteo = ParamUtil.getString(httpRequest, "descrizioneMeteo");
 			note = ParamUtil.getString(httpRequest, "note");
 			riferimenti = ParamUtil.getString(httpRequest, "riferimenti");
@@ -130,6 +162,8 @@ public class AllertaBean implements Serializable {
 			dataInizio  = ParamUtil.getDate(httpRequest, "dataInizio", AllertaKeys.WebDateTimeFormat);
 			dataFine  = ParamUtil.getDate(httpRequest, "dataFine", AllertaKeys.WebDateTimeFormat);
 			allertaId = ParamUtil.getLong(httpRequest, "allertaId");
+			
+			suDueGiorni = ParamUtil.getBoolean(httpRequest, "duegriglie");
 
 			griglia=null;
 			initGriglia();
@@ -220,19 +254,20 @@ public class AllertaBean implements Serializable {
 		griglia = new ArrayList<RigaManager>();
 		int riga = 1;
 		int colonna = 1;
-
-		for (String area : aree) {
+		String[] ar = (usaAreeNuove?areeNuove:aree);
+		
+		for (String area : ar) {
 			RigaManager rm = new RigaManager();
 			List<GrigliaManager> r = new ArrayList<GrigliaManager>();
 			rm.celle = r;
 			rm.nomeRiga = area;
-			rm.divisa = (!area.equals("F"));
+			rm.divisa = (!usaAreeNuove && !area.equals("F"));
 			griglia.add(rm);
 			colonna = 1;
 			for (String evento : eventi) {
 
 				GrigliaManager gm = new GrigliaManager();
-				gm.riga = riga;
+				gm.riga = usaAreeNuove?(int)areaId(area): riga;
 				gm.colonna = colonna++;
 
 				gm.area = area;
@@ -247,8 +282,11 @@ public class AllertaBean implements Serializable {
 				
 				int valore = 1000;
 				if (this.httpRequest != null) {
-					String inputName = "input"+cm.riga+"-"+cm.colonna+"-"+cm.sottoriga;
+					String inputName = usaAreeNuove?"input"+cm.riga+"-"+cm.colonna:"input"+cm.riga+"-"+cm.colonna+"-"+cm.sottoriga;
 					valore = ParamUtil.getInteger(httpRequest, inputName, 1000);
+					if (usaAreeNuove && ParamUtil.getBoolean(httpRequest, "duegriglie")) {
+						cm.valoreSecondoGiorno = ParamUtil.getInteger(httpRequest, "inputX"+cm.riga+"-"+cm.colonna, 1000);
+					}
 				}
 						
 				cm.valore = valore; //1000;
@@ -265,6 +303,9 @@ public class AllertaBean implements Serializable {
 					if (this.httpRequest != null) {
 						String inputName = "input"+cm2.riga+"-"+cm2.colonna+"-"+cm2.sottoriga;
 						valore = ParamUtil.getInteger(httpRequest, inputName, 1000);
+						if (usaAreeNuove) {
+							cm2.valoreSecondoGiorno = ParamUtil.getInteger(httpRequest, inputName+"_2", 1000);
+						}
 					}
 					
 					cm2.valore = valore; //1000;
@@ -297,10 +338,13 @@ public class AllertaBean implements Serializable {
 			this.dataFine = allertaCorrente.getDataFine();
 			this.dataInizio = allertaCorrente.getDataInizio();
 			this.sintesi = allertaCorrente.getSintesi();
+			this.sintesiBriefing = allertaCorrente.getSintesiBriefing();
 			this.descrizioneMeteo = allertaCorrente.getDescrizioneMeteo();
 			this.note = allertaCorrente.getNote();
 			this.riferimenti = allertaCorrente.getRiferimenti();
 			this.tendenza = "" + allertaCorrente.getTendenza();
+			
+			this.suDueGiorni = allertaCorrente.getParentId()>0;
 
 			List<AllertaStato> bb = allertaCorrente.getAllertaStato();
 
@@ -309,10 +353,17 @@ public class AllertaBean implements Serializable {
 				for (RigaManager rm : griglia) {
 					for (GrigliaManager gm : rm.celle) {
 						for (CellaManager cm : gm.valori) {
+							int target = 10 * cm.riga + (cm.colonna > 3 ? cm.sottoriga : 0);
+							if (usaAreeNuove) target = cm.riga;
 							if (cm.colonna == bbb.getEventoId()
-									&& bbb.getAreaId() == (10 * cm.riga + (cm.colonna > 3 ? cm.sottoriga : 0))) {
+									&& bbb.getAreaId() == target) {
 								cm.stato = bbb;
 								cm.valore = (int) bbb.getStatoId();
+							}
+							if (usaAreeNuove && cm.colonna == bbb.getEventoId() && bbb.getAreaId()==-target) {
+								//secondo giorno
+								cm.statoSecondoGiorno = bbb;
+								cm.valoreSecondoGiorno = (int) bbb.getStatoId();
 							}
 						}
 					}
@@ -347,6 +398,9 @@ public class AllertaBean implements Serializable {
 
 					if (cm.valore != 0 && cm.valore != 1000)
 						return true;
+					
+					if (usaAreeNuove && suDueGiorni && cm.valoreSecondoGiorno!=0 && cm.valoreSecondoGiorno!=1000)
+						return true;
 				}
 			}
 
@@ -365,6 +419,9 @@ public class AllertaBean implements Serializable {
 
 					if (gm.colonna < 4 && cm.valore != 0 && cm.valore != 1000)
 						return true;
+					
+					if (usaAreeNuove && suDueGiorni && gm.colonna < 4 && cm.valoreSecondoGiorno != 0 && cm.valoreSecondoGiorno != 1000)
+						return true;
 				}
 			}
 
@@ -373,18 +430,11 @@ public class AllertaBean implements Serializable {
 		return false;
 	}
 
-	public String[] getListaEventiInformali() {
+	public String[] getListaEventiInformali(int gravita[]) {
 
-		int gravita[] = new int[eventi.length];
+		//int gravita[] = new int[eventi.length];
 
-		for (RigaManager rm : griglia)
-			for (GrigliaManager gm : rm.celle)
-				for (CellaManager cm : gm.valori) {
-					int v = cm.valore;
-					int c = cm.colonna;
-					if (v != 1000 && v > gravita[c - 1])
-						gravita[c - 1] = v;
-				}
+
 
 		int ev = 0;
 
@@ -412,21 +462,34 @@ public class AllertaBean implements Serializable {
 
 	}
 
-	public void setTitoloDefault()  {
+	/*public void setTitoloDefault()  {
 		titolo = getTitoloDefault();
+	}*/
+	
+	public void setTitoloDefault(int allerta[])  {
+		titolo = getTitoloDefault(allerta);
 	}
 	
 	
-	public String getTitoloDefault() {
+	/*public String getTitoloDefault() {
+
+		return getTitoloDefault(isAllerta());
+
+	}*/
+	
+	public String getTitoloDefault(int allerta[]) {
+		
+		boolean isAllerta = false;
+		for (int k=0; k<allerta.length; k++) if (allerta[k]>0) isAllerta=true;
 
 		SimpleDateFormat data = new SimpleDateFormat("dd-MM-yyyy");
 		String dt = data.format(dataInizio);
+ 
+		if (isAllerta) {
 
-		if (isAllerta()) {
+			String out = "Allerta " + /* numero */ getNumeroDefault(allerta) + " valida dalle HH:mm del DD/MM/YYYY: "; // " + dt + ": ";
 
-			String out = "Allerta " + /* numero */ getNumeroDefault() + " valida dal " + dt + ": ";
-
-			String[] ev = getListaEventiInformali();
+			String[] ev = getListaEventiInformali(allerta);
 			int lungh = 0;
 			for (int k = 0; k < ev.length; k++)
 				lungh += ev[k].length();
@@ -450,7 +513,7 @@ public class AllertaBean implements Serializable {
 			return out;
 
 		} else {
-			return "Bollettino di vigilanza " + getNumeroDefault() + " valido dal " + dt + ": nessuna allerta.";
+			return "Bollettino di vigilanza " + getNumeroDefault(allerta) + " valido dalle HH:mm del DD/MM/YYYY: nessuna allerta.";
 		}
 
 	}
@@ -460,12 +523,26 @@ public class AllertaBean implements Serializable {
 		numero = getNumeroDefault();
 	}
 	
+	public void setNumeroDefault(int[] allerta) {
+		
+		numero = getNumeroDefault(allerta);
+	}
+	
 	public String getNumeroDefault() {
+
+		return getNumeroDefault(getIdEventi());
+
+	}
+	
+	public String getNumeroDefault(int[] a) {
+		
+		boolean allerta = false;
+		for (int k=0; k<a.length; k++) if (a[k]>0) allerta=true;
 
 		Calendar c = Calendar.getInstance();
 		c.setTime(dataInizio);
 		int anno = c.get(Calendar.YEAR);
-		return AllertaLocalServiceUtil.nextIdAllerta(isAllerta(), anno);
+		return AllertaLocalServiceUtil.nextIdAllerta(allerta, anno);
 
 	}
 
@@ -489,14 +566,40 @@ public class AllertaBean implements Serializable {
 
 		}
 	}
+	
+	public int[] getIdEventi() {
+		int[] e = new int[9];
+		
+		for (RigaManager rm : griglia)
+			for (GrigliaManager gm : rm.celle)
+				for (CellaManager cm : gm.valori) {
+					int v = cm.valore;
+					int c = cm.colonna;
+					if (v != 1000 && v > e[c - 1])
+						e[c - 1] = v;
+					
+					v = cm.valoreSecondoGiorno;
+					if (v != 1000 && v > e[c - 1])
+						e[c - 1] = v;
+				}
+		
+		return e;
+	}
 
 	public void validate() throws Exception {
 		if (Validator.isNull(numero)) {
-			numero = getNumeroDefault();			
+			numero = getNumeroDefault(getIdEventi());			
 		}
 		
 		if (Validator.isNull(titolo)) {
-			titolo = getTitoloDefault();			
+			try {
+				titolo = getTitoloDefault(getIdEventi());	
+				titolo = titolo.replace("HH:mm", new SimpleDateFormat("HH:mm").format(dataInizio));
+				titolo = titolo.replace("DD/MM/YYYY", new SimpleDateFormat("dd-MM-yyyy").format(dataInizio));
+			} catch (Exception e) {
+				titolo = "";
+			}
+			
 		}
 		
 
@@ -513,6 +616,10 @@ public class AllertaBean implements Serializable {
 
 		if (Validator.isNull(sintesi)) {
 			sintesi = "";	
+		}
+		
+		if (Validator.isNull(sintesiBriefing)) {
+			sintesiBriefing = "";	
 		}
 		
 //		if (Validator.isNull(descrizioneMeteo)) {
@@ -539,6 +646,10 @@ public class AllertaBean implements Serializable {
 
 			if (allertaId > 0) {
 				allertaCorrente = AllertaLocalServiceUtil.getAllerta(allertaId);				
+				if (allertaCorrente!=null && allertaCorrente.getStato()==0) return;
+				if (allertaCorrente!=null && allertaCorrente.getStato()==1) return;
+				if (allertaCorrente!=null && allertaCorrente.getStato()==1000) return;
+
 			}
 			
 			if (allertaCorrente == null) {
@@ -554,7 +665,7 @@ public class AllertaBean implements Serializable {
 				allertaCorrente.setCompanyId(themeDisplay.getCompanyId());
 				allertaCorrente.setStato(WorkflowConstants.STATUS_DRAFT);
 				allertaCorrente.setCreatorName(themeDisplay.getRealUser().getFullName());
-
+				if (usaAreeNuove) allertaCorrente.setParentId(suDueGiorni?1:0);
 				createFolder(themeDisplay, "allerta-" + inc, "File per allerta " + inc);
 
 			} 
@@ -570,6 +681,7 @@ public class AllertaBean implements Serializable {
 			allertaCorrente.setCompanyId(themeDisplay.getCompanyId());
 
 			allertaCorrente.setSintesi(sintesi);
+			allertaCorrente.setSintesiBriefing(sintesiBriefing);
 			allertaCorrente.setDescrizioneMeteo(descrizioneMeteo);
 			allertaCorrente.setNote(note);
 			allertaCorrente.setRiferimenti(riferimenti);
@@ -585,14 +697,22 @@ public class AllertaBean implements Serializable {
 			allertaCorrente.setProgressivo(isAllertaIdro() ? 1 : 0); // usiamo progressivo per questo... brutto ma non
 																		// c'è tempo
 
-			if (titolo == null || titolo.equals(""))
-				titolo = getTitoloDefault();
+			if (titolo == null) titolo ="";
+				//titolo = getTitoloDefault(getIdEventi());
 			allertaCorrente.setTitolo(titolo);
+			
+			allertaCorrente.setParentId(suDueGiorni?1:0);
 
 			AllertaLocalServiceUtil.updateAllerta(allertaCorrente);
 
 			for (AllertaStato as : allertaCorrente.getAllertaStato()) {
 				AllertaStatoLocalServiceUtil.deleteAllertaStato(as);
+			}
+			
+			try {
+				BollettinoLocalServiceUtil.eseguiQueryGenerica("delete from allerter_allertastato where allertaid="+allertaCorrente.getAllertaId());
+			} catch (Exception e) {
+				LogInternoLocalServiceUtil.log("salvaAllerta", "deleteAllertaStato", e, "");
 			}
 			
 			for (RigaManager rm : griglia) {
@@ -604,15 +724,27 @@ public class AllertaBean implements Serializable {
 							long inc = CounterLocalServiceUtil.increment(AllertaStato.class.getName());
 							cm.stato = AllertaStatoLocalServiceUtil.createAllertaStato(inc);
 							cm.stato.setEventoId(cm.colonna);
-							cm.stato.setAreaId(cm.riga * 10 + (cm.colonna > 3 ? cm.sottoriga : 0));
+							long areaid = (usaAreeNuove?cm.riga:cm.riga * 10 + (cm.colonna > 3 ? cm.sottoriga : 0));
+							cm.stato.setAreaId(areaid);
 							cm.stato.setCreateDate(new Date());
 							cm.stato.setAllertaId(allertaCorrente.getAllertaId());
 
 						//}
 
-						cm.stato.setStatoId(cm.valore);
-						AllertaStatoLocalServiceUtil.updateAllertaStato(cm.stato);
-
+							cm.stato.setStatoId(cm.valore);
+							AllertaStatoLocalServiceUtil.updateAllertaStato(cm.stato);
+							
+							if (usaAreeNuove && suDueGiorni) {
+								inc = CounterLocalServiceUtil.increment(AllertaStato.class.getName());
+								cm.statoSecondoGiorno = AllertaStatoLocalServiceUtil.createAllertaStato(inc);
+								cm.statoSecondoGiorno.setEventoId(cm.colonna);
+								cm.statoSecondoGiorno.setAreaId(-areaid);
+								cm.statoSecondoGiorno.setCreateDate(new Date());
+								cm.statoSecondoGiorno.setAllertaId(allertaCorrente.getAllertaId());
+								cm.statoSecondoGiorno.setStatoId(cm.valoreSecondoGiorno);
+								AllertaStatoLocalServiceUtil.updateAllertaStato(cm.statoSecondoGiorno);
+								
+							}
 					}
 				}
 			}
@@ -654,12 +786,38 @@ public class AllertaBean implements Serializable {
 				// themeDisplay, req2);
 			}
 
+			boolean salvaFase = false;
+			allertaId = allertaCorrente.getAllertaId();
+			
+			//salva una copia se l'utente è un compilatore ARPAE
+			if (themeDisplay!=null) {
+				
+				List<Role> rrr = RoleLocalServiceUtil.getUserRoles(themeDisplay.getRealUserId());
+
+				if (rrr!=null) {
+					for (Role rr : rrr) {
+						if (rr.getRoleId()==2059543)
+							salvaFase = true;
+					}
+				}
+			}
+			
+			if (salvaFase) salvaCopia(1);
+			
+			LogInternoLocalServiceUtil.log("salvaAllerta", salvaFase?"salvo fase 1":"non salvo fase 1", "", "");
+
 			creaReport();
 						
-			allertaId = allertaCorrente.getAllertaId();
+			
+			
+			
+			
+			
+
 
 		} catch(Exception e) {
 			allertaCorrente =null;
+			LogInternoLocalServiceUtil.log("salvaAllerta", "", e, "");
 			throw e;
 		}
 
@@ -706,9 +864,142 @@ public class AllertaBean implements Serializable {
 			return null;
 		}
 	}
+	
+	public void creaReportNuovo() {
+
+
+		int stati[] = new int[areeNuove.length];
+		int statiSecondoGiorno[] = new int[areeNuove.length];
+		for (int k = 0; k < areeNuove.length; k++) {
+			stati[k] = -1;
+			statiSecondoGiorno[k] = -1;
+		}
+		int riga = 0;
+		for (RigaManager rm : griglia) {
+			for (int k = 0; k < eventi.length; k++) {
+				GrigliaManager gm = rm.celle.get(k);
+				int stato = gm.valori.get(0).valore;
+				int stato2 = gm.valori.get(0).valoreSecondoGiorno;
+
+				if (stato != 1000 && stato > stati[riga])
+					stati[riga] = stato;
+
+				if (suDueGiorni && stato2 != 1000 && stato2 > statiSecondoGiorno[riga])
+					statiSecondoGiorno[riga] = stato2;
+
+			}
+			riga++;
+		}
+
+		try {
+
+			BufferedImage macroaree = ImageUtility.makeMappaAreeNuove(stati, 955, 550, areeNuove);
+			File f = FileUtil.createTempFile("png");
+			ImageUtility.saveImage(macroaree, f, "PNG");
+			
+			File f2 = null;
+			if (suDueGiorni) {
+				macroaree = ImageUtility.makeMappaAreeNuove(statiSecondoGiorno, 955, 550, areeNuove);
+				f2 = FileUtil.createTempFile("png");
+				ImageUtility.saveImage(macroaree, f2, "PNG");
+			}
+			
+
+			HashMap<String, String> map = new HashMap<String, String>();
+
+			for (int k = 0; k < eventi.length; k++) {
+				for (int j = 0; j < areeNuove.length; j++) {
+					String r = areeNuove[j];
+					String val = getStringaStato(griglia.get(j).celle.get(k).valori.get(0).valore);
+					String val2 = getStringaStato(griglia.get(j).celle.get(k).valori.get(0).valoreSecondoGiorno);
+
+					//map.put(r, val);
+					//map.put(r+"_X", val2);
+				}
+			}
+			
+			map.put("title",allertaCorrente.getTitolo());
+			JasperUtils ju = AllertaTracker.getService(JasperUtils.class); 
+			byte[] report = ju.generateReportAllertaNuovo(f.getAbsolutePath(), f2!=null?f2.getAbsolutePath():null,
+					allertaCorrente.getAllertaId(), map);
+			System.out.println("REPORT: " + (report != null ? report.length : 0));
+
+			if (report != null && report.length > 0) {
+				File f3 = FileUtil.createTempFile(report);
+
+				// FileUtils.writeByteArrayToFile(f2, data);
+				String numero = "";
+				if (allertaCorrente.getNumero() != null)
+					numero = allertaCorrente.getNumero().replace("/", "_");
+				String nomeFile = allertaCorrente.isTipoAllerta() ? "allerta" + numero + ".pdf"
+						: "bollettino" + numero + ".pdf";
+				String tipoFile = allertaCorrente.isTipoAllerta() ? "Allerta" : "Bollettino di vigilanza";
+
+				//if (themeDisplay != null) {
+				
+					ServiceContext serviceContext;
+					if (httpRequest!=null) 
+						serviceContext = ServiceContextFactory.getInstance(Allerta.class.getName(), httpRequest);
+					else {
+						serviceContext = new ServiceContext();
+						serviceContext.setUserId(allertaCorrente.getUserId());
+						serviceContext.setCompanyId(allertaCorrente.getCompanyId());
+						serviceContext.setScopeGroupId(allertaCorrente.getGroupId());
+					}
+					AllertaLocalServiceUtil.fileUploadByApp(f3, "allerta-" + allertaCorrente.getAllertaId(), nomeFile, tipoFile,
+							"application/pdf", serviceContext);
+					
+					/*Long parentFolderId = DLFolderConstants.DEFAULT_PARENT_FOLDER_ID;
+					try {
+						AllertaParametro ap = AllertaParametroLocalServiceUtil.fetchAllertaParametro(AllertaKeys.AllertaParentFolderParamKey);
+						if (ap != null)
+							parentFolderId = Long.parseLong(ap.getValore());
+					} catch (Exception e) {
+					}
+
+					try {
+						Folder folder = DLAppServiceUtil.getFolder(allertaCorrente.getGroupId(), parentFolderId, nomeFile);
+					} catch(Exception e) {
+						ThemeDisplay themeDisplay = (ThemeDisplay) httpRequest.getAttribute(WebKeys.THEME_DISPLAY);
+						createFolder(themeDisplay, "allerta-" + allertaCorrente.getAllertaId(), "File per allerta " +  allertaCorrente.getAllertaId());
+						
+						System.out.println("Creata Folder : allerta-" + allertaCorrente.getAllertaId() );
+					}*/
+					
+					String pdfLink = allertaCorrente.getFileLinkRelative("allerta-" + allertaCorrente.getAllertaId(),
+							nomeFile);
+
+					allertaCorrente.setLink(pdfLink);
+					String hash = this.getHash(report);
+					allertaCorrente.setHash(hash); 
+					
+					//BollettinoLocalServiceUtil.eseguiQueryGenerica("update allerter_allerta set link='"+pdfLink+"', hash='"+hash+"' where allertaid="+allertaCorrente.getAllertaId());
+					
+					AllertaLocalServiceUtil.updateAllerta(allertaCorrente);
+
+					System.out.println("LINK PDF: " + pdfLink);
+					 
+				FileUtil.delete(f3);
+			}
+
+			FileUtil.delete(f);
+			FileUtil.delete(f2);
+
+		} catch (Exception e) {
+			_log.error(e);
+			//LogInternoLocalServiceUtil.log("allertaBean", "creaReport", e, "");
+			
+		}
+
+	}
 
 
 	public void creaReport() {
+		
+		if (usaAreeNuove) {
+			creaReportNuovo();
+			return;
+		}
 
 		int statiMacroaree[] = new int[8];
 		for (int k = 0; k < 8; k++)
@@ -836,11 +1127,15 @@ public class AllertaBean implements Serializable {
 							nomeFile);
 
 					allertaCorrente.setLink(pdfLink);
-					allertaCorrente.setHash(this.getHash(report));
+					String hash = this.getHash(report);
+					allertaCorrente.setHash(hash); 
+					
+					//BollettinoLocalServiceUtil.eseguiQueryGenerica("update allerter_allerta set link='"+pdfLink+"', hash='"+hash+"' where allertaid="+allertaCorrente.getAllertaId());
+					
 					AllertaLocalServiceUtil.updateAllerta(allertaCorrente);
 
 					System.out.println("LINK PDF: " + pdfLink);
-					
+					 
 				FileUtil.delete(f3);
 			}
 
@@ -870,7 +1165,10 @@ public class AllertaBean implements Serializable {
 	public void inviaApprovazione() throws Exception {
 
 		if (allertaId > 0) {
-			allertaCorrente = AllertaLocalServiceUtil.getAllerta(allertaId);				
+			allertaCorrente = AllertaLocalServiceUtil.getAllerta(allertaId);
+			if (allertaCorrente!=null && allertaCorrente.getStato()==0) return;
+			if (allertaCorrente!=null && allertaCorrente.getStato()==1) return;
+			if (allertaCorrente!=null && allertaCorrente.getStato()==1000) return;
 		}
 		
 		if (allertaCorrente == null)
@@ -1054,11 +1352,11 @@ public class AllertaBean implements Serializable {
 		this.tendenza = tendenza;
 	}
 
-	public Allerta getAllertaCorrente() {
+	public Allerta getallertaCorrente() {
 		return allertaCorrente;
 	}
 
-	public void setAllertaCorrente(Allerta allertaCorrente) {
+	public void setallertaCorrente(Allerta allertaCorrente) {
 		this.allertaCorrente = allertaCorrente;
 	}
 
@@ -1155,6 +1453,16 @@ public class AllertaBean implements Serializable {
 
 	public void setSintesi(String sintesi) {
 		this.sintesi = sintesi;
+	}
+	
+	
+
+	public String getSintesiBriefing() {
+		return sintesiBriefing;
+	}
+
+	public void setSintesiBriefing(String sintesiBriefing) {
+		this.sintesiBriefing = sintesiBriefing;
 	}
 
 	public String getTitolo() {
@@ -1424,6 +1732,275 @@ public class AllertaBean implements Serializable {
 		return (response == null || response.toString().toLowerCase().contains("true"));
 
 	}
+	
+	
+	public InputStream getInputStreaWithTimeout(String value){
+		HttpURLConnection huc = null;
+		try {
+			URL url = new URL(value);
+			HttpURLConnection.setFollowRedirects(true); 
+			huc = (HttpURLConnection) url.openConnection();
+			
+			huc.setConnectTimeout(15 * 1000);
+			huc.setReadTimeout(30 * 1000);
+			huc.setRequestMethod("GET");
+			huc.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.1.2) Gecko/20090729 Firefox/3.5.2 (.NET CLR 3.5.30729)");
+			huc.connect();
+			return huc.getInputStream();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			_log.error("IoException.. metodo per gestire l'inputstream con timeout \n"+e);
+		}
+		return null;
+
+	}
+	
+	private byte[] fromStreamtoByteArray(InputStream inputStream) throws IOException {
+		
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		StreamUtil.transfer(inputStream, baos);
+		
+		return baos.toByteArray();
+	}
+	
+	private JSONObject getWebService(){
+		String url = "https://script.googleusercontent.com/macros/echo?user_content_key=13S4cdER2a5AZd86SCM7dbzy-IIozA6L5vFSgfIJtkyTa9GIDQm72JNINfXuEbJSxaxtavzquzMwL27-wGW07Ot6SPrZ1DANm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnFkPiVyyN-A0goUErDlVGQaA-N-LGmHcnhC3e9mSD3Pb5LgV5meaYSvQEHyO7R06VWWzrUn0HQsEJ7IYMfFmuz1bEoAiDKYo1tz9Jw9Md8uu&lib=MYkDu2VWjSg7qCylkk4tJsVVeNotqYhY0";
+		
+		InputStream input = null;
+		
+		try {
+			
+			input = getInputStreaWithTimeout(url);
+			String json = new String(fromStreamtoByteArray(input),"utf-8");
+			JSONObject j = JSONFactoryUtil.createJSONObject(json);
+			
+			if (input!=null) input.close();
+			return j;
+		} catch (Exception e) {
+			_log.error(e);
+		}
+		return null;
+	}
+	
+	public String creaDaWebService() {
+		JSONObject j = getWebService();
+		if (j==null) return "erroreAccesso";
+		
+		String fenos[] = { "criticità idraulica", "criticità idrogeologica", "criticità temporali", "vento",
+				"temperature estreme", "neve", "pioggia che gela", "mare", "criticità costiera" };
+		
+		String dataEmissione = j.getString("dataemissione");
+		if (dataEmissione==null || !dataEmissione.equals(new SimpleDateFormat("dd/MM/yyyy").format(new Date())))
+			return "nonAggiornato";
+		
+		String duegriglie = j.getString("duegriglie");
+		boolean duegiorni = duegriglie!=null && !duegriglie.toUpperCase().equals("NO");
+		this.suDueGiorni = duegiorni;
+		
+		try {
+			ThemeDisplay themeDisplay = (ThemeDisplay) httpRequest.getAttribute(WebKeys.THEME_DISPLAY);	
+			ServiceContext serviceContext = ServiceContextFactory.getInstance(Allerta.class.getName(), httpRequest);				
+			
+			long inc = CounterLocalServiceUtil.increment(Allerta	.class.getName());
+			allertaCorrente = AllertaLocalServiceUtil.createAllerta(inc);
+			
+			allertaCorrente.setCreateDate(new Date());
+			allertaCorrente.setUserId(themeDisplay.getRealUserId());
+			allertaCorrente.setGroupId(themeDisplay.getScopeGroupId());
+			allertaCorrente.setUserName(themeDisplay.getRealUser().getFullName());
+			allertaCorrente.setCompanyId(themeDisplay.getCompanyId());
+			allertaCorrente.setStato(WorkflowConstants.STATUS_DRAFT);
+			allertaCorrente.setCreatorName(themeDisplay.getRealUser().getFullName());
+			
+			allertaCorrente.setModifiedDate(new Date());
+			
+			allertaCorrente.setParentId(duegiorni?1:0);
+
+			setThreadUserPermission();
+			
+			Calendar c = Calendar.getInstance();
+			c.set(Calendar.HOUR_OF_DAY, 0);
+			c.set(Calendar.MINUTE,0);
+			c.set(Calendar.SECOND,0);
+			c.set(Calendar.MILLISECOND,0);
+			c.add(Calendar.DAY_OF_YEAR, 1);
+			dataInizio = c.getTime();
+			c.add(Calendar.DAY_OF_YEAR, 1);
+			dataFine = c.getTime();
+			if (duegiorni) dataInizio = new Date(dataInizio.getTime()-12*3600*1000);
+			allertaCorrente.setDataInizio(this.dataInizio);
+			allertaCorrente.setDataFine(this.dataFine);
+			
+			allertaCorrente.setDescrizioneMeteo(j.getString("descrizione"));
+			
+			
+			
+			allertaCorrente.setTendenza(1);
+			String ten = j.getString("tendenza");
+			if (ten!=null) {
+				ten = ten.toLowerCase();
+				if (ten.startsWith("stazion")) allertaCorrente.setTendenza(2);
+				if (ten.startsWith("attenua")) allertaCorrente.setTendenza(3);
+				if (ten.startsWith("in esaur")) allertaCorrente.setTendenza(4);
+				
+			}
+
+				try {
+					AllertaParametro ap = AllertaParametroLocalServiceUtil
+						.fetchAllertaParametro("TESTO_RIFERIMENTI");
+					if (ap != null)
+						riferimenti = ap.getValore();
+				} catch (Exception e) {
+				}
+	
+			allertaCorrente.setRiferimenti(riferimenti);	
+			allertaCorrente.setSintesi(null);
+			allertaCorrente.setNote("");
+			allertaCorrente.setSintesiBriefing("");
+			
+			allertaCorrente.setUtenteFirmaArpaId(20198);
+			allertaCorrente.setUtenteFirmaProtId(20198);
+			
+			boolean allerta = false;
+			boolean idro = false;
+			int ev[] = new int[9];
+			
+			String[] tabella = {"tabella"};
+			String[] tabella2 = {"tabella","tabella12"};
+			
+			String[] tabellaCheck = (duegiorni?tabella2:tabella);
+			
+			for (int lista=0; lista<tabellaCheck.length; lista++) {
+				JSONArray t = j.getJSONArray(tabellaCheck[lista]);
+				if (t!=null) {
+					for (int k=0; k<t.length(); k++) {
+						JSONObject riga = t.getJSONObject(k);
+						if (riga!=null) {
+							String area = riga.getString("AREA");
+							if (area==null) continue;
+							long idArea = 0;
+							for (int index=0; index<areeNuove.length; index++) {
+								if (areeNuove[index].equals(area))
+									idArea = idAreeNuove[index];
+							}
+							if (idArea==0) continue;
+							
+							//aggiornamento delle 12
+							if (lista==1)
+								idArea = -idArea;
+							
+							for (int feno=1; feno<=9; feno++) {
+								String fenoString = riga.getString(fenos[feno-1]);
+								long f = convertiStringaColore(fenoString);
+								if (f>0 && f!=1000) {
+									allerta = true;
+									if (f>ev[feno-1]) ev[feno-1] = (int)f;
+									if (feno<=3) idro=true;
+								}
+								long incro = CounterLocalServiceUtil.increment(AllertaStato.class.getName());
+	
+								AllertaStato as = AllertaStatoLocalServiceUtil.createAllertaStato(incro);
+								as.setAllertaId(inc);
+								as.setAreaId(idArea);
+								as.setEventoId(feno);
+								as.setStatoId(f);
+								as.setCreateDate(new Date());
+								AllertaStatoLocalServiceUtil.updateAllertaStato(as);
+								
+							}
+	
+						}
+					}
+				}
+			}
+			
+			allertaCorrente.setTipoAllerta(allerta);
+			allertaCorrente.setProgressivo(idro?1:0);
+			
+			String s = getTitoloDefault(ev);
+			s = s.replace("HH:mm", duegiorni?"12:00":"00:00");
+			s = s.replace("DD/MM/YYYY", new SimpleDateFormat("dd/MM/yyyy").format(dataInizio));
+			allertaCorrente.setTitolo(s);
+			//allertaCorrente.setTipoAllerta(ev[0]>0);
+			allertaCorrente.setNumero(getNumeroDefault(ev));
+			
+			AllertaLocalServiceUtil.updateAllerta(allertaCorrente);
+			
+			AssetEntryLocalServiceUtil.updateEntry(
+					themeDisplay.getUserId(), allertaCorrente.getGroupId(),
+					Allerta.class.getName(), allertaCorrente.getAllertaId(), 
+					serviceContext.getAssetCategoryIds(), serviceContext.getAssetTagNames()
+				);
+
+			if (allertaCorrente.getStato() == WorkflowConstants.STATUS_DRAFT) {				
+					AssetEntry ae = AssetEntryLocalServiceUtil.getEntry(Allerta.class.getName(), allertaCorrente.getAllertaId());
+					
+					try {
+						ae.setTitle(allertaCorrente.getTitolo());
+						ae.setDescription(allertaCorrente.getDescrizioneMeteo());
+						
+						if (ae.getCreateDate()==null) ae.setCreateDate(new Date());
+							ae.setModifiedDate(new Date());
+							
+						ae.setSummary(allertaCorrente.getTitolo());					
+						AssetEntryLocalServiceUtil.updateAssetEntry(ae);
+					} catch (Exception ee) {
+						_log.error(ee);
+					}
+					
+					long id = ae.getEntryId();
+					List<AssetCategory> cx = AssetCategoryLocalServiceUtil.getCategories();
+					
+					for (AssetCategory ac : cx) {
+						if (ac.getName().equals("allerta-lavorazione")) {
+							AssetCategoryLocalServiceUtil.addAssetEntryAssetCategory(id, ac);
+							break;
+						}
+					}
+				}
+			
+			this.allertaId = allertaCorrente.getAllertaId();
+			initBean();
+			createFolder(themeDisplay, "allerta-" + inc, "File per documento allerta " + inc);
+			creaReport();
+			
+			salvaCopia(0);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			LogInternoLocalServiceUtil.log("AllertaBean", "creaDaWebService", e, "");
+			return "erroreSalvataggio";
+		}
+		
+		return "";
+	}
+	
+	private long convertiStringaColore(String s) {
+		if (s==null || "".equals(s)) return 1000;
+		if (s.equals("verde")) return 0;
+		if (s.equals("giallo")) return 1;
+		if (s.equals("arancione")) return 2;
+		if (s.equals("rosso")) return 3;
+		
+		return 1000;
+	}
+	
+	public void salvaCopia(int fase) {
+		String cancella1 = "delete from allerter_allertaversione where allertaid="+allertaId+" and fase="+fase;
+		String cancella2 = "delete from allerter_allertastatoversione where allertaid="+allertaId+" and fase="+fase;
+	
+		String inserisci1 = "insert into allerter_allertaversione (select "+fase+" as fase, a.* from allerter_allerta a where a.allertaid="+allertaId+")";
+		String inserisci2 = "insert into allerter_allertastatoversione (select "+fase+" as fase, a.* from allerter_allertastato a where a.allertaid="+allertaId+")";
+		
+		try {
+			BollettinoLocalServiceUtil.eseguiQueryGenerica(cancella1);
+			BollettinoLocalServiceUtil.eseguiQueryGenerica(cancella2);
+			BollettinoLocalServiceUtil.eseguiQueryGenerica(inserisci1);
+			BollettinoLocalServiceUtil.eseguiQueryGenerica(inserisci2);
+		} catch (Exception e) {
+			LogInternoLocalServiceUtil.log("AllertaBean", "salvaCopia", e, "");
+		}
+	}
 
 //	public void submit() {
 //
@@ -1485,20 +2062,16 @@ public class AllertaBean implements Serializable {
 	public void setAllertaId(long allertaId) throws Exception {
 		this.allertaId = allertaId;
 	}
-
 	
-//	public void approve() throws WorkflowException {
-//		
-//		ThemeDisplay themeDisplay = (ThemeDisplay) httpRequest.getAttribute(WebKeys.THEME_DISPLAY);
-//		
-//		Map<String, Serializable> workflowContext = new HashMap<String, Serializable>();
-//		workflowContext.put(WorkflowConstants.CONTEXT_ENTRY_CLASS_NAME, Allerta.class.getName());
-//		workflowContext.put(WorkflowConstants.CONTEXT_ENTRY_CLASS_PK, allertaCorrente.getAllertaId());
-//		workflowContext.put(WorkflowConstants.CONTEXT_USER_ID, themeDisplay.getUserId());
-//		workflowContext.put(WorkflowConstants.CONTEXT_GROUP_ID, themeDisplay.getCompanyGroupId());
-//		workflowContext.put(WorkflowConstants.CONTEXT_COMPANY_ID, themeDisplay.getCompanyId());
-//		WorkflowStatusManagerUtil.updateStatus(WorkflowConstants.STATUS_APPROVED, workflowContext);
-//	}
+	public boolean isSuDueGiorni() {
+		return suDueGiorni;
+	}
+
+	public void setSuDueGiorni(boolean suDueGiorni) {
+		this.suDueGiorni = suDueGiorni;
+	}
+
+
 
 
 	private Log _log = LogFactoryUtil.getLog(AllertaBean.class);

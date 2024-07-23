@@ -35,7 +35,11 @@ import com.liferay.asset.kernel.model.AssetEntry;
 import com.liferay.asset.kernel.service.AssetCategoryLocalService;
 import com.liferay.asset.kernel.service.AssetEntryLocalService;
 import com.liferay.asset.kernel.service.persistence.AssetEntryQuery;
+import com.liferay.blogs.model.BlogsEntry;
+import com.liferay.blogs.service.BlogsEntryLocalServiceUtil;
 import com.liferay.counter.kernel.service.CounterLocalService;
+import com.liferay.counter.kernel.service.CounterLocalServiceUtil;
+import com.liferay.expando.kernel.util.ExpandoBridgeUtil;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
 import com.liferay.portal.kernel.dao.orm.OrderFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
@@ -44,6 +48,8 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.json.JSONDeserializer;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.json.JSONSerializer;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.messaging.BaseMessageListener;
@@ -51,6 +57,7 @@ import com.liferay.portal.kernel.messaging.DestinationNames;
 import com.liferay.portal.kernel.messaging.Message;
 import com.liferay.portal.kernel.messaging.MessageListener;
 import com.liferay.portal.kernel.model.Company;
+import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.model.WorkflowDefinitionLink;
 import com.liferay.portal.kernel.scheduler.SchedulerEngineHelper;
 import com.liferay.portal.kernel.scheduler.SchedulerEngineHelperUtil;
@@ -60,8 +67,12 @@ import com.liferay.portal.kernel.scheduler.TimeUnit;
 import com.liferay.portal.kernel.scheduler.Trigger;
 import com.liferay.portal.kernel.scheduler.TriggerFactory;
 import com.liferay.portal.kernel.scheduler.TriggerFactoryUtil;
+import com.liferay.portal.kernel.security.permission.PermissionChecker;
+import com.liferay.portal.kernel.security.permission.PermissionCheckerFactoryUtil;
+import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
 import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.service.UserLocalServiceUtil;
 import com.liferay.portal.kernel.service.WorkflowDefinitionLinkLocalService;
 import com.liferay.portal.kernel.util.Base64;
 import com.liferay.portal.kernel.util.StreamUtil;
@@ -71,11 +82,15 @@ import com.liferay.portal.kernel.workflow.WorkflowHandlerRegistryUtil;
 import it.eng.allerta.configuration.AllertaBaseConfiguration;
 import it.eng.allerta.configuration.schedulers.AllertaBaseSchedulersConfiguration;
 import it.eng.allerta.utils.AllertaTracker;
+import it.eng.allerta.utils.BlogsRenderFilter;
 import it.eng.allerter.model.Allerta;
+import it.eng.allerter.model.AllertaValanghe;
 import it.eng.allerter.service.AllertaLocalService;
+import it.eng.allerter.service.AllertaValangheLocalService;
 import it.eng.allerter.service.LogInternoLocalService;
 import it.eng.allerter.service.LogInternoLocalServiceUtil;
 import it.eng.allerter.service.SMSLocalService;
+import it.eng.allerter.service.SMSLocalServiceUtil;
 import it.eng.bollettino.model.Allarme;
 import it.eng.bollettino.model.Bollettino;
 import it.eng.bollettino.model.BollettinoParametro;
@@ -90,6 +105,9 @@ import it.eng.bollettino.service.AllarmeLocalService;
 import it.eng.bollettino.service.AllarmeLocalServiceUtil;
 import it.eng.bollettino.service.BollettinoLocalServiceUtil;
 import it.eng.bollettino.service.BollettinoParametroLocalServiceUtil;
+import it.eng.radarMeteo.service.ImgLocalService;
+import it.eng.radarMeteo.service.ImgLocalServiceUtil;
+import it.eng.radarMeteo.service.ImgService;
 import it.eng.bollettino.service.RegolaAllarmeComuneLocalService;
 import it.eng.bollettino.service.RegolaAllarmeComuneLocalServiceUtil;
 import it.eng.bollettino.service.RegolaAllarmeCondizioneLocalService;
@@ -103,6 +121,7 @@ import it.eng.bollettino.service.ValoreSensoreLocalService;
 import it.eng.bollettino.service.ValoreSensoreLocalServiceUtil;
 import it.eng.bollettino.service.VariabileLocalService;
 import it.eng.bollettino.service.VariabileLocalServiceUtil;
+import it.eng.cache.service.DatiLocalServiceUtil;
 
 @Component(
 		  immediate = true, 			  
@@ -116,6 +135,7 @@ public class CaricaDBTask extends BaseMessageListener {
 	static CaricaDBTask lastInstance = null;
 	
 	static int executions = 0;
+	static Date lastInvioAccensione = null;
 	
 	private List stazioniConBuchi(String variabile, String intervallo, String lookback) {
 		String query = "select distinct idstazione from bollettino_valoresensore vs where not exists("+
@@ -245,6 +265,7 @@ public class CaricaDBTask extends BaseMessageListener {
 			}
 			
 			boolean aggiornaStazioni = executions % 100 == 0;
+			String risultati = "";
 
 			try {
 				if (!disable_rtdata) aggiornaStazioni();
@@ -253,6 +274,7 @@ public class CaricaDBTask extends BaseMessageListener {
 					if (ra.aggiunti>0 || ra.modificati>0 || ra.rimossi>0 || ra.errore!=null) {
 						if (ra.errore!=null) logInternoLocalService.log("dati osservati", "Aggiornamento stazioni", "Errore: "+ra.errore, "");
 						else {
+							risultati += "MODIFICHE ALLE STAZIONI - "+ra.toString()+" ";
 							String ris = "Aggiunti "+ra.aggiunti+", modificati "+ra.modificati+", rimossi "+ra.rimossi;
 							logInternoLocalService.log("dati osservati", "Aggiornamento stazioni", ris, "");
 						}
@@ -286,6 +308,7 @@ public class CaricaDBTask extends BaseMessageListener {
 					if (ra.aggiunti>0 || ra.modificati>0 || ra.rimossi>0 || ra.errore!=null) {
 						if (ra.errore!=null) logInternoLocalService.log("dati osservati", "Aggiornamento sensori", "Errore: "+ra.errore, "");
 						else {
+							risultati += "MODIFICHE A SOGLIE O VARIABILI DEI SENSORI - "+ra.toString()+" ";
 							String ris = "Aggiunti "+ra.aggiunti+", modificati "+ra.modificati+", rimossi "+ra.rimossi;
 							logInternoLocalService.log("dati osservati", "Aggiornamento sensori", ris, "");
 						}
@@ -293,8 +316,39 @@ public class CaricaDBTask extends BaseMessageListener {
 				}
 			} catch (Exception e) {
 				logger.error(e);
-			}			
+			}		
+			
+			try {
+				aggiornaTuttoMare();
+			} catch (Exception e) {
+				logger.error(e);
+			}	
+			
+			try {
+				if (risultati!=null && !risultati.equals("")) {
+					BollettinoParametro gruppo = BollettinoParametroLocalServiceUtil.fetchBollettinoParametro("GRUPPO_ACCENSIONE_MAPPA");
+					if (gruppo!=null) {
+						try {
+							
+							
+							
+							long ts = new Date().getTime();
+							long canaleMail[] = new long[1];
+							canaleMail[0] = 1;
+							smsLocalService.creaNotificaGruppoRubrica(canaleMail, "AllerteER", "Notifica variazioni stazioni Portale Allerte", "automatismo", "aggStazioni", ts, 20181, gruppo.getValore(), true, null);
+							smsLocalService.eliminaDuplicatiEmail("automatismo", "aggStazioni", ts);
+							smsLocalService.inviaEmail("automatismo", "aggStazioni", ts,
+									"Notifica variazioni stazioni Portale Allerte", "Si comunicano le seguenti variazioni alle stazioni sul Portale Allerte Emilia-Romagna. "+risultati, "no-reply@regione.emilia-romagna.it");
+										} catch (Exception e) {
+							logger.error(e);
+						}
+					}
+				}
 
+			} catch (Exception e) {
+				logger.error(e);
+			}	
+			
 			try {
 				if (!disable_rtdata) aggiornaTuttiValori();
 			} catch (Exception e) {
@@ -303,6 +357,12 @@ public class CaricaDBTask extends BaseMessageListener {
 
 			try {
 				regoleAllarme();
+			} catch (Exception e) {
+				logger.error(e);
+			}
+			
+			try {
+				aggiornaLogSoglie();
 			} catch (Exception e) {
 				logger.error(e);
 			}
@@ -329,12 +389,77 @@ public class CaricaDBTask extends BaseMessageListener {
 		
 	}
 	
+	public void aggiornaLogSoglie() {
+		String comando1 = "update allerter_logsoglia x set dataorafine = " + 
+				"(select datetime from bollettino_valoresensore vs where vs.idstazione=x.idstazione and " + 
+				"vs.idvariabile=x.idvariabile order by vs.datetime desc limit 1) where x.dataorafine is null and not exists " + 
+				"(select * from superamenti_soglia1_vw ss where ss.idstazione=x.idstazione and ss.idvariabile=x.idvariabile)";
+		
+		String sottoComando = "select idstazione, datetime as dataorainizio, " + 
+				"idvariabile, (select name from bollettino_stazione where id_=vv.idstazione limit 1) as nomestazione, value as valore " + 
+				"from superamenti_soglia1_vw vv where not exists (select * from allerter_logsoglia ls where " + 
+				"ls.idstazione=vv.idstazione and ls.idvariabile=vv.idvariabile and ls.dataorafine is null) " + 
+				"and not exists (select * from allerter_logspike spike where spike.idstazione=vv.idstazione " + 
+				"and spike.idvariabile=vv.idvariabile and spike.dataora=vv.datetime)";
+		String sottoComando2 = "select idstazione, datetime as dataorainizio, null as dataorafine, " + 
+				"idvariabile, (select name from bollettino_stazione where id_=vv.idstazione limit 1) as nomestazione, value as valore, 1 as soglia, soglia1 as valoresoglia " + 
+				"from superamenti_soglia1_vw vv where not exists (select * from allerter_logsoglia ls where " + 
+				"ls.idstazione=vv.idstazione and ls.idvariabile=vv.idvariabile and ls.dataorafine is null) " + 
+				"and not exists (select * from allerter_logspike spike where spike.idstazione=vv.idstazione " + 
+				"and spike.idvariabile=vv.idvariabile and spike.dataora=vv.datetime)";
+		String comando2 = "insert into allerter_logsoglia ("+sottoComando2+")";
+	
+		try {
+			
+			List<Object[]> l = BollettinoLocalServiceUtil.eseguiQueryGenericaLista(sottoComando);
+			long ts = new Date().getTime();
+			
+			if (l!=null) {
+				long[] canali = {1}; //solo mail
+				for (Object[] o : l) {
+					ts++;
+					
+					String gruppoRubrica = "Superamenti soglia 1";
+					String testoMail = "Si comunica superamento soglia 1 idrometro %STAZIONE% alle %ORE% ora locale";
+					
+					Date d = (Date)o[1];
+					boolean oraLegale = TimeZone.getDefault().inDaylightTime( d);
+					d.setTime(d.getTime()+(oraLegale?7200000:3600000));
+					String ora = new SimpleDateFormat("HH:mm").format(d);
+					String stazione = (String)o[3];
+					
+					testoMail = testoMail.replaceAll("%ORE%", ora);
+					testoMail = testoMail.replaceAll("%STAZIONE%", stazione);
+					
+					
+					smsLocalService.creaNotificaGruppoRubrica(canali, "AllerteER", "", "soglia1", "soglia1", ts, 20181, gruppoRubrica, true, null);
+					//smsLocalService.creaSMSOrganization("AllerteER", sms, "spike", s, ts, org);
+					smsLocalService.eliminaDuplicatiEmail("soglia1", "soglia1", ts);
+					smsLocalService.inviaEmail("soglia1", "soglia1", ts,
+							"Portale Web allerte: superamento soglia 1 idrometro "+stazione, testoMail, "no-reply@regione.emilia-romagna.it");
+					
+				}
+			}
+			
+			BollettinoLocalServiceUtil.eseguiQueryGenerica(comando1);
+			BollettinoLocalServiceUtil.eseguiQueryGenerica(comando2);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	
+	}
+	
 	public void aggiornaTuttiValori() {
 		
 		boolean aggiornato = false;
 		StringBuilder stringa = new StringBuilder();
 		
 		try {	
+			
+			try {
+			DatiLocalServiceUtil.removeDatiByPrefix("sensorvalues%");
+			} catch (Exception ecc ) {}
+			
 			if (aggiornaValoriSuperficiale("254,0,0/1,-,-,-/B13215","idro",stringa))
 				aggiornato = true;
 
@@ -367,6 +492,7 @@ public class CaricaDBTask extends BaseMessageListener {
 				logger.error(ex);
 			}
 			
+			//ricaricaCachePluvio();
 		logInternoLocalService.log("rt_data", "Scaricamento dati sensori", stringa.toString(), "");
 
 		} catch (Exception e) {
@@ -469,9 +595,80 @@ public class CaricaDBTask extends BaseMessageListener {
 			
 			assetEntryLocalService.reindex(bollettinoAssets);
 			
+			
+			assetEntryQuery = new AssetEntryQuery();
+			assetEntryQuery.setClassName(AllertaValanghe.class.getName());
+			assetEntryQuery.setAllCategoryIds( new long[]{idCat});
+			
+			allertaAssets = assetEntryLocalService.getEntries(assetEntryQuery);
+			for (AssetEntry allertaAssetEntry : allertaAssets) {
+					
+				AllertaValanghe a = allertaValangheLocalService.fetchAllertaValanghe(allertaAssetEntry.getClassPK());
+				
+				if (a != null && a.getDataFine() != null && a.getDataFine().before(d)) {
+					
+					long[] cats = allertaAssetEntry.getCategoryIds();
+					
+					long[] cc = new long[cats.length - 1];
+					
+					int i = 0;
+					for( long l : cats) {
+						
+						if( l != idCat)
+							cc[i++] = l;
+					}
+					
+					assetEntryLocalService.deleteAssetCategoryAssetEntry(idCat, allertaAssetEntry);
+					assetEntryLocalService.updateEntry(
+							allertaAssetEntry.getUserId(), 
+							allertaAssetEntry.getGroupId(), 
+							allertaAssetEntry.getClassName(), 
+							allertaAssetEntry.getClassPK(), 
+							cc, 
+							new String[]{});
+					logger.info("Rimuovo da homepage AllertaValanghe " + a.getAllertaValangheId());
+				}
+				
+			}
+			
+			assetEntryLocalService.reindex(allertaAssets);
+			
 			//allerta-pubblicata 153999
 			//monitoraggio-pubblicato 158459
 			
+			assetEntryQuery = new AssetEntryQuery();
+			assetEntryQuery.setClassName("com.liferay.blogs.model.BlogsEntry");
+			assetEntryQuery.setAllCategoryIds( new long[]{idCat});
+			
+			allertaAssets = assetEntryLocalService.getEntries(assetEntryQuery);
+			
+			if (allertaAssets.size()>0) {
+	            PermissionChecker permissionChecker;
+	            User u = UserLocalServiceUtil.fetchUser(20198);
+
+	            permissionChecker = PermissionCheckerFactoryUtil.create(u);
+	            PermissionThreadLocal.setPermissionChecker(permissionChecker);
+			}
+			
+			for (AssetEntry allertaAssetEntry : allertaAssets) {
+				BlogsEntry b = BlogsEntryLocalServiceUtil.fetchBlogsEntry(allertaAssetEntry.getClassPK());
+				if (b!=null && b.getExpandoBridge()!=null) {
+					if (b.getExpandoBridge().hasAttribute("Data uscita banner")) {
+						Date dd = (Date) b.getExpandoBridge().getAttribute("Data uscita banner");
+						if (dd!=null && new Date().after(dd)) {
+							assetEntryLocalService.deleteAssetCategoryAssetEntry(idCat, allertaAssetEntry);
+							assetEntryLocalService.updateEntry(
+									allertaAssetEntry.getUserId(), 
+									allertaAssetEntry.getGroupId(), 
+									allertaAssetEntry.getClassName(), 
+									allertaAssetEntry.getClassPK(), 
+									new long[] {}, 
+									new String[]{});
+							logger.info("Rimuovo da homepage news " + b.getEntryId());
+						}
+					}
+				}
+			}
 			
 		} catch (Exception e) {
 			logger.error(e);
@@ -488,10 +685,6 @@ public class CaricaDBTask extends BaseMessageListener {
 	
 	public void caricaTrascinataPioggia() throws Exception {
 
-		String f = "";
-		
-
-
 		BollettinoParametro bp = BollettinoParametroLocalServiceUtil.fetchBollettinoParametro("DBTASK_TRASCINATA_URL1");
 		if (bp == null)
 			return;
@@ -499,7 +692,6 @@ public class CaricaDBTask extends BaseMessageListener {
 		String content = downloadUrl(url);
 		if (content == null) {
 			logger.error("Scaricamento elenco immagini trascinate FALLITO da "+url);
-			// logger.info("NO LIST");
 			return;
 		}
 
@@ -509,20 +701,17 @@ public class CaricaDBTask extends BaseMessageListener {
 		Object o = map.get("6h");
 
 		if (o == null) {
-			// logger.info("NO 6h");
 			return;
 		}
 
 		List o2 = (List) o;
 
 		if (o2.size() == 0) {
-			// logger.info("NO LIST 6h");
 			return;
 		}
 
 		String o3 = o2.get(0).toString();
 
-		// logger.info(o3);
 		bp = BollettinoParametroLocalServiceUtil.fetchBollettinoParametro("DBTASK_TRASCINATA_URL2");
 		if (bp == null)
 			return;
@@ -532,21 +721,12 @@ public class CaricaDBTask extends BaseMessageListener {
 
 		if (data == null) {
 			logger.error("Scaricamento immagine trascinata FALLITO da "+url);
-			// logger.info("NO BINARY");
 			return;
 		}
 
 		// temp file
 		try {
-			/*File file = FileUtil.createTempFile(data);
-			File veroFile = new File(file.getParentFile(), "trascinata6h.png");
-			if (veroFile.exists()) {
-				veroFile.delete();
 
-			}
-			file.renameTo(veroFile);*/
-
-			//logger.info(file.getAbsolutePath());
 
 			try {
 				bp = BollettinoParametroLocalServiceUtil.fetchBollettinoParametro("PATH_IMG_BOLLETTINO");
@@ -563,6 +743,60 @@ public class CaricaDBTask extends BaseMessageListener {
 				BollettinoParametroLocalServiceUtil.updateBollettinoParametro(bp);
 				
 				logger.info("Trascinata scaricata con successo");
+				
+			} catch (Exception e) {
+
+			}
+		} catch (Exception e) {
+			logger.error(e);
+		}
+		
+		
+		o = map.get("48h");
+
+		if (o == null) {
+			return;
+		}
+
+		o2 = (List) o;
+
+		if (o2.size() == 0) {
+			return;
+		}
+
+		o3 = o2.get(0).toString();
+
+		bp = BollettinoParametroLocalServiceUtil.fetchBollettinoParametro("DBTASK_TRASCINATA_URL3");
+		if (bp == null)
+			return;
+		url2 = bp.getValore() + o3;
+
+		data = downloadUrlBinary(url2);
+
+		if (data == null) {
+			logger.error("Scaricamento immagine trascinata FALLITO da "+url);
+			return;
+		}
+
+		// temp file
+		try {
+
+
+			try {
+				bp = BollettinoParametroLocalServiceUtil.fetchBollettinoParametro("PATH_IMG_BOLLETTINO");
+				if (bp == null)
+					bp = BollettinoParametroLocalServiceUtil.createBollettinoParametro("PATH_IMG_BOLLETTINO");
+				bp.setValore("xxx");
+				BollettinoParametroLocalServiceUtil.updateBollettinoParametro(bp);
+				
+				String hex = bytesToHex(data);
+				bp = BollettinoParametroLocalServiceUtil.fetchBollettinoParametro("IMG_BOLLETTINO2");
+				if (bp == null)
+					bp = BollettinoParametroLocalServiceUtil.createBollettinoParametro("IMG_BOLLETTINO2");
+				bp.setValore(hex);
+				BollettinoParametroLocalServiceUtil.updateBollettinoParametro(bp);
+				
+				logger.info("Trascinata 48h scaricata con successo");
 				
 			} catch (Exception e) {
 
@@ -1861,6 +2095,71 @@ public class CaricaDBTask extends BaseMessageListener {
 			return null;
 		}
 	}
+	
+	private String downloadUrlPublic(String url) {
+		
+		try {
+
+			URL u = new URL(url);
+
+			HttpURLConnection conn = (HttpURLConnection) u.openConnection();
+			
+			conn.setConnectTimeout(30000);
+			conn.setReadTimeout(60000);
+			
+			//logger.info("Request URL ... " + url);
+			
+			/*if (u.getUserInfo() != null) {
+				String basicAuth = "Basic " + new String(new Base64().encode(u.getUserInfo().getBytes()));
+				conn.setRequestProperty("Authorization", basicAuth);
+			}*/
+			
+			boolean redirectRequest = false;
+
+			int status = conn.getResponseCode();
+			
+			if (status != HttpURLConnection.HTTP_OK) {
+				
+				if (status == HttpURLConnection.HTTP_MOVED_TEMP
+					|| status == HttpURLConnection.HTTP_MOVED_PERM
+						|| status == HttpURLConnection.HTTP_SEE_OTHER)
+					
+					redirectRequest = true;
+			}
+
+			if (redirectRequest) {
+
+				String newUrl = conn.getHeaderField("Location");
+				conn.setConnectTimeout(30000);
+				conn.setReadTimeout(60000);
+				
+				//logger.info("Redirect to URL : " + newUrl);
+				conn = (HttpURLConnection) new URL(newUrl).openConnection();
+			}
+
+			BufferedReader in = new BufferedReader(
+		                              new InputStreamReader(conn.getInputStream()));
+			String inputLine;
+			StringBuffer content = new StringBuffer();
+
+			while ((inputLine = in.readLine()) != null) {
+				content.append(inputLine);
+			}
+			in.close();
+
+			return content.toString();
+						
+		}
+		catch (FileNotFoundException f) {
+			logger.error("Error 404: "+url);
+			return null;
+		}
+		catch (Exception e) {
+			logger.error(e);
+			logInternoLocalService.log("Download URL","Impossibile scaricare "+url, e, null);
+			return null;
+		}
+	}
 
 	private String downloadUrl_old(String url) {
 
@@ -1924,17 +2223,174 @@ public class CaricaDBTask extends BaseMessageListener {
 		new CaricaDBTask().aggiornaSensori();
 	}
 	
+	/**
+	 * Controlla l'eventuale accensione della mappa di monitoraggio quando
+	 * non si è in corso di allerta idrogeologica. In questo caso usa una
+	 * vista che controlla il superamento di soglia 1 in un idrometro a cui
+	 * si abbina un superamento soglia 3 di un pluviometro ad esso associato.
+	 */
+	public void controlloPioggiaMonitoraggioFuoriAllerta() {
+		
+		String idrometro = "";
+		String pluviometro = "";
+		
+		BollettinoParametro bp = BollettinoParametroLocalServiceUtil.fetchBollettinoParametro("GESTIONE_MONITORAGGIO");
+		if (bp!=null && bp.getValore()!=null && bp.getValore().equals("true")) return;
+		
+				
+		String query1 = "select * from vw_attivazione_monitoraggio";
+		List<Object[]> l = BollettinoLocalServiceUtil.eseguiQueryGenericaLista(query1);
+		
+		logInternoLocalService.log("monitoraggio","controlloPioggiaMonitoraggioFuoriAllerta","Query monitoraggio risultati: "+(l!=null?l.size():0),"");
+
+		
+		if (l==null || l.size()==0) return;
+		
+		
+		
+		String testo = "Accensione mappa monitoraggio causata da idrometro %IDRO% e pluviometro %PLUVIO%";
+		String testoMail = "Si comunica l'accensione automatica della mappa di monitoraggio causata dall'idrometro "+
+		"%IDRO% sopra soglia 1 a %VALOREIDRO% m e dal pluviometro %PLUVIO% con cumulata a 12 ore pari a %VALOREPLUVIO% mm";
+		
+		Object[] o = l.get(0);
+		if (o!=null) {
+			idrometro = (o[1]!=null?o[1].toString():"");
+			String sogliaIdro = (o[2]!=null?o[2].toString():"");
+			String valoreIdro = (o[3]!=null?o[3].toString():"");
+			pluviometro = (o[4]!=null?o[4].toString():"");
+			String sogliaPluvio = (o[5]!=null?o[5].toString():"");
+			String valorePluvio = (o[6]!=null?o[6].toString():"");
+			
+			testo = testo.replaceAll("%IDRO%", idrometro);
+			testo = testo.replaceAll("%SOGLIAIDRO%", sogliaIdro);
+			testo = testo.replaceAll("%VALOREIDRO%", valoreIdro);
+			testo = testo.replaceAll("%PLUVIO%", pluviometro);
+			testo = testo.replaceAll("%SOGLIAPLUVIO%", sogliaPluvio);
+			testo = testo.replaceAll("%VALOREPLUVIO%", valorePluvio);
+			
+			testoMail = testoMail.replaceAll("%IDRO%", idrometro);
+			testoMail = testoMail.replaceAll("%SOGLIAIDRO%", sogliaIdro);
+			testoMail = testoMail.replaceAll("%VALOREIDRO%", valoreIdro);
+			testoMail = testoMail.replaceAll("%PLUVIO%", pluviometro);
+			testoMail = testoMail.replaceAll("%SOGLIAPLUVIO%", sogliaPluvio);
+			testoMail = testoMail.replaceAll("%VALOREPLUVIO%", valorePluvio);
+		}
+		
+		BollettinoParametro gruppo = BollettinoParametroLocalServiceUtil.fetchBollettinoParametro("GRUPPO_ACCENSIONE_MAPPA");
+		if (gruppo!=null) {
+			try {
+				
+				
+				
+				long ts = new Date().getTime();
+				long canaleMail[] = new long[1];
+				canaleMail[0] = 1;
+				smsLocalService.creaNotificaGruppoRubrica(canaleMail, "AllerteER", testo, "automatismo", "monitoraggio", ts, 20181, gruppo.getValore(), true, null);
+				smsLocalService.eliminaDuplicatiEmail("automatismo", "monitoraggio", ts);
+				smsLocalService.inviaEmail("automatismo", "monitoraggio", ts,
+						testo, testoMail, "no-reply@regione.emilia-romagna.it");
+							} catch (Exception e) {
+				logger.error(e);
+			}
+		}
+
+		//commentato, per ora notifichiamo ma non attiviamo
+		
+		bp.setValore("true");
+		BollettinoParametroLocalServiceUtil.updateBollettinoParametro(bp);
+		logInternoLocalService.log("monitoraggio","Attivazione monitoraggio","Stato di monitoraggio fuori allerta attivato: "+idrometro+"+"+pluviometro,"");
+		
+	}
+	
 	public void controlloPioggiaMonitoraggio() {
 		
 		String query1 = "select count(*) from allerter_allerta a where a.datafine > current_timestamp and a.stato = 0 and exists (select * from allerter_allertastato s where "+
 				" s.allertaid = a.allertaid and s.eventoid<4 and s.statoid in (1,2,3))";
-		String query2 = "select max(value) from bollettino_valoresensore v join bollettino_stazionevariabile sv on v.idstazione = sv.idstazione and v.idvariabile = sv.idvariabile  where v.datetime=sv.dataultimovalore and v.idvariabile in ('1,0,3600/1,-,-,-/B13011','1,0,1800/1,-,-,-/B13011','1,0,900/1,-,-,-/B13011')";
+		//String query2 = "select max(value) from bollettino_valoresensore v join bollettino_stazionevariabile sv on v.idstazione = sv.idstazione and v.idvariabile = sv.idvariabile  where v.datetime=sv.dataultimovalore and v.idvariabile in ('1,0,3600/1,-,-,-/B13011','1,0,1800/1,-,-,-/B13011','1,0,900/1,-,-,-/B13011')";
+		String query2 = "select greatest((select max(value) from bollettino_valoresensore v  " + 
+				"join bollettino_stazionevariabile sv on v.idstazione = sv.idstazione  " + 
+				"and v.idvariabile = sv.idvariabile  where v.datetime=sv.dataultimovalore and v.idvariabile =  " + 
+				"'1,0,3600/1,-,-,-/B13011' and now()-sv.dataultimovalore<cast('6 hours' as interval)), " + 
+				"(select max(val) from ( " + 
+				"select v.idstazione,sum(v.value) as val from bollettino_valoresensore v " + 
+				"join bollettino_stazionevariabile sv on v.idstazione = sv.idstazione  " + 
+				"and v.idvariabile = sv.idvariabile where v.datetime>=sv.dataultimovalore-cast ('30 minutes' as interval) " + 
+				"and v.idvariabile =  " + 
+				"'1,0,1800/1,-,-,-/B13011' and now()-sv.dataultimovalore<cast('6 hours' as interval) group by v.idstazione) x), " + 
+				"(select max(val) from ( " + 
+				"select v.idstazione,sum(v.value) as val from bollettino_valoresensore v " + 
+				"join bollettino_stazionevariabile sv on v.idstazione = sv.idstazione  " + 
+				"and v.idvariabile = sv.idvariabile where v.datetime>=sv.dataultimovalore-cast('45 minutes' as interval) " + 
+				"and v.idvariabile =  " + 
+				"'1,0,900/1,-,-,-/B13011' and now()-sv.dataultimovalore<cast('6 hours' as interval) group by v.idstazione) x)) as mm";
 		
 		try {
 			
+			//se la mappa è già accesa
+			BollettinoParametro accesa = BollettinoParametroLocalServiceUtil.fetchBollettinoParametro("GESTIONE_MONITORAGGIO");
+			if (accesa!=null && accesa.getValore()!=null && accesa.getValore().equals("true")) {
+				//20240513 se il monitoraggio è acceso E siamo in verde idro-geo-temporali E questo è il documento più recente,
+				//ALLORA spegni il monitoraggio e notifica
+				Calendar adesso = Calendar.getInstance(Locale.ITALY);
+				int ora = adesso.get(Calendar.HOUR_OF_DAY);
+				int minuto = adesso.get(Calendar.MINUTE);
+				if (ora>0 || minuto>=10) {
+					//esegui il controllo solo verso mezzanotte, così da non impedire
+					//successive accensioni
+					return;
+				}
+				LogInternoLocalServiceUtil.log("controlloMonitoraggio", "spegnimentoAutomatico", "Eseguo controllo spegnimento mezzanotte", "");
+
+				
+				Object o = BollettinoLocalServiceUtil.eseguiQueryGenerica(query1);
+				if (o==null) return;
+				Integer i =Integer.parseInt(o.toString());
+				if (i.intValue()<1) {
+					accesa.setValore("false");
+					BollettinoParametroLocalServiceUtil.updateBollettinoParametro(accesa);
+					LogInternoLocalServiceUtil.log("controlloMonitoraggio", "spegnimentoAutomatico", "Spegnimento automatico mappa monitoraggio", "");
+
+					try {
+						String testo = "Spegnimento automatico mappa monitoraggio";
+						String testoMail = "Si comunica lo spegnimento automatico della mappa di monitoraggio in quanto non ci sono allerte idro-geo-temporali in corso di validità presente o futura.";
+												
+						BollettinoParametro gruppo = BollettinoParametroLocalServiceUtil.fetchBollettinoParametro("GRUPPO_ACCENSIONE_MAPPA");
+						if (gruppo!=null) {
+							try {
+								
+								
+								
+								long ts = new Date().getTime();
+								long canaleMail[] = new long[1];
+								canaleMail[0] = 1;
+								smsLocalService.creaNotificaGruppoRubrica(canaleMail, "AllerteER", testo, "automatismo", "monitoraggio", ts, 20181, gruppo.getValore(), true, null);
+								smsLocalService.eliminaDuplicatiEmail("automatismo", "monitoraggio", ts);
+								smsLocalService.inviaEmail("automatismo", "monitoraggio", ts,
+										testo, testoMail, "no-reply@regione.emilia-romagna.it");
+											} catch (Exception e) {
+								logger.error(e);
+							}
+						}
+					} catch (Exception e) {
+						logger.error(e);
+						//logInternoLocalService.log("caricaDbTask","controlloPioggiaMonitoraggio", e, null);
+					}
+				}
+				return;
+			}
+			
 			BollettinoParametro bp = BollettinoParametroLocalServiceUtil.fetchBollettinoParametro("CONTROLLO_MONITORAGGIO");
 			//logInternoLocalService.log("caricaDbTask", "controlloPioggiaMonitoraggio", "bp "+bp.getValore(), "");
-			if (bp==null || bp.getValore()==null || !bp.getValore().equals("true")) return;
+			if (bp==null || bp.getValore()==null || !bp.getValore().equals("true")) {
+				//usa un criterio diverso se sei fuori allerta idro
+				try {
+					controlloPioggiaMonitoraggioFuoriAllerta();
+				} catch (Exception e) {
+					e.printStackTrace();
+					LogInternoLocalServiceUtil.log("controlloPioggiaMonitoraggio", "fuoriAllerta", e, "");
+				}
+				return;
+			}
 			
 			Object o = BollettinoLocalServiceUtil.eseguiQueryGenerica(query1);
 			if (o==null) return;
@@ -1966,6 +2422,34 @@ public class CaricaDBTask extends BaseMessageListener {
 			logger.warn("Monitoraggio attivato automaticamente");
 			logInternoLocalService.log("monitoraggio","Attivazione monitoraggio","Stato di monitoraggio attivato automaticamente: rilevati "+d+"mm di pioggia","");
 			
+			try {
+				String testo = "Accensione mappa monitoraggio per pioggia associata ad allerta idro";
+				String testoMail = "Si comunica l'accensione automatica della mappa di monitoraggio causata dalla caduta di %MM%mm di pioggia.";
+				
+				testoMail = testoMail.replaceAll("%MM%", new DecimalFormat("0.0").format(d));
+				
+				BollettinoParametro gruppo = BollettinoParametroLocalServiceUtil.fetchBollettinoParametro("GRUPPO_ACCENSIONE_MAPPA");
+				if (gruppo!=null) {
+					try {
+						
+						
+						
+						long ts = new Date().getTime();
+						long canaleMail[] = new long[1];
+						canaleMail[0] = 1;
+						smsLocalService.creaNotificaGruppoRubrica(canaleMail, "AllerteER", testo, "automatismo", "monitoraggio", ts, 20181, gruppo.getValore(), true, null);
+						smsLocalService.eliminaDuplicatiEmail("automatismo", "monitoraggio", ts);
+						smsLocalService.inviaEmail("automatismo", "monitoraggio", ts,
+								testo, testoMail, "no-reply@regione.emilia-romagna.it");
+									} catch (Exception e) {
+						logger.error(e);
+					}
+				}
+			} catch (Exception e) {
+				logger.error(e);
+				//logInternoLocalService.log("caricaDbTask","controlloPioggiaMonitoraggio", e, null);
+			}
+			
 		} catch (Exception e) {
 			logger.error(e);
 			//logInternoLocalService.log("caricaDbTask","controlloPioggiaMonitoraggio", e, null);
@@ -1995,6 +2479,19 @@ public class CaricaDBTask extends BaseMessageListener {
 		} catch (Exception e) {
 			logger.error(e);
 			//logInternoLocalService.log("caricaDbTask", "monitoraggioMem", e, "");
+		}
+	}
+	
+	private void ricaricaCachePluvio() {
+		long ts = new Date().getTime();
+		ts = ts - (ts % 15*60*1000); //arrotonda ai 15 minuti precedenti
+		JSONSerializer serializer = JSONFactoryUtil.createJSONSerializer();
+
+		for (int k=0; k<12; k++) {
+			String cacheName = "sensorvalues_"+ts+"_1,0,3600/1,-,-,-/B13011";
+			String jsonData = serializer.serialize(imgLocalService.getSensorValues("1,0,3600/1,-,-,-/B13011", ts));
+			DatiLocalServiceUtil.putDato(cacheName, jsonData);
+			ts-=(ts % 15*60*1000);
 		}
 	}
 	
@@ -2030,6 +2527,8 @@ public class CaricaDBTask extends BaseMessageListener {
 		
 		logger.info("scheduling at " + distance);
 		
+		if (distance<1) return;
+		
 		Trigger trigger = 
 				_triggerFactory.createTrigger(className, className, null, null, distance, TimeUnit.MINUTE);
 
@@ -2038,6 +2537,106 @@ public class CaricaDBTask extends BaseMessageListener {
 				
 		baseScheduler.register(
 			this, schedulerEntry, DestinationNames.SCHEDULER_DISPATCH);
+		
+	}
+	
+	public int aggiornaTuttoMare() {
+		int out = 0;
+		out += aggiornaDatiMare(14387);
+		out += aggiornaDatiMare(53146);
+		out += aggiornaDatiMare(53155);
+		out += aggiornaDatiMare(53156);
+		
+		DatiLocalServiceUtil.removeDatiByPrefix("sensorvalues%");
+		LogInternoLocalServiceUtil.log("aggiornaMare", "completato", "scritti "+out+" record", "");
+		return out;
+	}
+	
+	public int aggiornaDatiMare(int id) {
+		String query = "https://apps.arpae.it/REST/meteo_marefe/?where={\"_id\":\""+id+"\"}";
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+		SimpleDateFormat atom = new SimpleDateFormat("yyyyMMdd'T'HHmm");
+		
+		int out = 0;
+		
+		HashMap<String, String> variabili = new HashMap<String, String>();
+		HashMap<Integer, String> stazioni = new HashMap<Integer, String>();
+		
+		try {
+			
+			variabili.put("livello_mare_igm", "254,0,0/101,-,-,-/B22037");
+			variabili.put("direzione_onde_30min", "200,0,1800/1,-,-,-/M00001");
+			variabili.put("altezza_significativa_onde_30min", "0,0,1800/1,-,-,-/M00002");
+			
+			//stazioni.put(14387, "-/1224944,4467667/marefe");
+			stazioni.put(53146, "-/1247587,4421458/boa");
+			//stazioni.put(53155, "-/1235751,4426714/boa");
+			//stazioni.put(53156, "-/1275067,4397027/boa");
+			
+			if (!stazioni.containsKey(id)) return 0;
+			String idStazione = stazioni.get(id);
+			
+			String s = downloadUrlPublic(query);
+		
+			if (s==null) return 0;
+			
+			JSONObject root = JSONFactoryUtil.createJSONObject(s);
+			JSONObject dati = root.getJSONArray("_items").getJSONObject(0).getJSONObject("dati");
+			for (String giorno : dati.keySet()) {
+				try {
+					Date d = sdf.parse(giorno);
+					if ((new Date().getTime()-d.getTime())>2*24*3600*1000) continue;
+					
+					JSONObject gg = dati.getJSONObject(giorno);
+					
+					for (String ore : gg.keySet()) {
+						try {
+							Date d2 = atom.parse(giorno+"T"+ore);
+							
+							JSONObject valori = gg.getJSONObject(ore);
+							
+							for (String vars : valori.keySet()) {
+								if (!variabili.containsKey(vars)) continue;
+								
+								if (valori.isNull(vars)) {
+									
+								} else {
+								
+									String idVariabile = variabili.get(vars);
+									ValoreSensore val = valoreSensoreLocalService.createValoreSensore(0);
+									val.setIdStazione(idStazione);
+									val.setIdVariabile(idVariabile);
+									val.setDatetime(d2);
+									val.setValue(valori.getDouble(vars));
+									ValoreSensoreLocalServiceUtil.updateValoreSensore(val);
+									out++;
+								}
+							}
+							
+							
+							
+							
+							
+						} catch (Exception e3) {
+							
+						}
+					}
+				} catch (Exception e2) {
+					
+				}
+			}
+			
+			for (String v : variabili.keySet()) {
+				BollettinoLocalServiceUtil.eseguiQueryGenerica("update bollettino_stazionevariabile x set dataultimovalore = (select max(datetime) from bollettino_valoresensore vs " + 
+						"where vs.idstazione=x.idstazione and vs.idvariabile=x.idvariabile) where x.idstazione='"+idStazione+"' and x.idvariabile='"+variabili.get(v) +"'");
+			}
+			
+			
+		} catch (Exception e) {
+			logInternoLocalService.log("aggiornaDatiMare", "aggiornaDatiMare", e, "");
+		}
+		
+		return out;
 		
 	}
 	
@@ -2065,6 +2664,9 @@ public class CaricaDBTask extends BaseMessageListener {
 	
 	@Reference
 	private AllertaLocalService allertaLocalService; 
+	
+	@Reference
+	private AllertaValangheLocalService allertaValangheLocalService; 
 	
 	@Reference
 	private SchedulerEngineHelper baseScheduler;
@@ -2098,5 +2700,8 @@ public class CaricaDBTask extends BaseMessageListener {
 	
 	@Reference
 	private LogInternoLocalService logInternoLocalService;
+	
+	@Reference
+	ImgService imgLocalService;
 	
 }

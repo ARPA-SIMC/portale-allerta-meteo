@@ -1,10 +1,17 @@
+<%@page import="com.liferay.portal.kernel.model.User"%>
 <%@page import="com.liferay.portal.kernel.util.PortalUtil"%>
 <%@ include file="./init.jsp"%>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
 
 <%
 	HttpServletRequest loginRequest = 
 				PortalUtil.getOriginalServletRequest(
 						PortalUtil.getHttpServletRequest(renderRequest));
+
+
+	User u = themeDisplay.getUser();
+	boolean logged = u!=null && !u.isDefaultUser();
 %>
 
 <portlet:actionURL name="/allerta/user-login" var="loginURL">
@@ -23,24 +30,45 @@
 
 <div class="container d-flex pt-5">
 	<div class="row w-100 justify-content-between">
-		<h1 class="col-12 col-lg-8">Accedi ad Allerta Meteo</h1>
+		<h1 class="col-12 col-lg-8">Area riservata Allerta Meteo</h1>
 
 		<p class="col-12 lead"></p>
 	</div>
 </div>
 
+
+
+
 <style>
 .ricordami {
 	margin-right:0.5em;
+}
+.occhio {
+	float: right;
+	position: relative;
+	top: 2.8rem;
+	left: -0.4rem;
+	cursor: pointer;
+	z-index: 10;
 }
 </style>
 
 <div class="container d-flex">
 	<!-- Login screen -->
 	<div class="u-content-container py-md-4">
-		<div class="row flex-md-row-reverse">
-			<div class="col-12 col-md-6">
+		<div class="row flex-md-row">
+			<div class="col-12 col-md-12">
+			
+				<p>L'accesso &egrave; riservato. Per rimanere aggiornato seguici su 
+				<a href="https://twitter.com/AllertaMeteoRER" target="_blank">Twitter</a> 
+				e <a target="_blank" href="https://t.me/AllertaMeteoEMR">Telegram</a>.
 
+				</p>
+				
+				<c:if test="<%=logged %>">
+				<p>Hai effettuato il login con successo, <b><%=(u.getFirstName()!=null?u.getFirstName():"")+" "+(u.getLastName()!=null?u.getLastName():"") %></b>.</p>
+				</c:if>
+				<c:if test="<%=!logged %>">
 				<aui:form action="<%=loginURL%>" method="post" name="fm1"
 					cssClass="u-section--gray u-section--rounded-corners p-3 p-lg-4">
 					<h2 class="sr-only">Inserisci username e password per accedere</h2>
@@ -70,7 +98,7 @@
 							
 							<!-- input -->
 							<div class="col-12 col-md-9">
-							
+								<i class="far fa-eye occhio" id="togglePassword"></i>
 								<aui:input 
 									name="password" 
 									type="password"
@@ -80,6 +108,7 @@
 									value="">
 									<aui:validator name="required"></aui:validator>
 								</aui:input>
+								
 						
 							</div>
 							<div class="col-12">
@@ -118,21 +147,28 @@
 					</div>
 
 				</aui:form>
+				</c:if>
 			</div>
-			<div class="col-12 col-md-6">
-				<h2>Non hai un account?</h2>
-				<p class="pr-lg-5">Registrati ad Allerta Meteo Emilia-Romagna
-					per ricevere aggiornamenti sulle previsioni e la situazione di
-					allerta nei tuoi luoghi preferiti.</p>
-				<div class="my-3">
-					<a href="<%=regURL%>" class="btn btn-secondary btn-lg">Registrati</a>
-				</div>
-			</div>
+
 		</div>
 
 
 	</div>
 	<!-- / Login screen -->
 </div>
+
+<script type="text/javascript">
+const togglePassword = document.querySelector('#togglePassword');
+const password = document.querySelector('#_AllertaUserRegistration_password');
+
+togglePassword.addEventListener('click', function (e) {
+    // toggle the type attribute
+    const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+    password.setAttribute('type', type);
+    // toggle the eye slash icon
+    this.classList.toggle('fa-eye-slash');
+});
+
+</script>
 
 </main>

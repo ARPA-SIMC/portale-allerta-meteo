@@ -6,6 +6,8 @@ dependencies {
 	compileOnly group: "org.osgi", name: "org.osgi.core"
 	compileOnly group: "org.osgi", name: "org.osgi.service.component.annotations"
 	
+	compileOnly group: "com.liferay", name: "com.liferay.blogs.api", version: "5.0.4"
+	
 	compileOnly 'biz.aQute.bnd:biz.aQute.bnd.annotation:4.2.0'
 	
 	compileOnly group: "javax.portlet", name: "portlet-api"
@@ -14,7 +16,10 @@ dependencies {
 	compileOnly group: 'javax.mail', name: 'mail', version: '1.4.7'
 	
 	compileOnly project(":modules:allerta-base")
+	
 	compileOnly project(":modules:allerta-allertaer:allerta-allertaer-api")
+	compileOnly project(":modules:allerta-radarmeteo:allerta-radarmeteo-api")
+	compileOnly project(":modules:allerta-cache:allerta-cache-api")
 }
 
 group = "allerta.bollettino"

@@ -26,26 +26,13 @@ export class GroupPanel extends Component<any,any> {
     selected: [],
     loading: false,
     filter: '',
+    categoria: 1,
     data: [],
     timestamp: 0,
     error: null,
     total: 0,
     
-    /*dataSource: IDatasource = {
-    getRows: (params: IGetRowsParams) => {
 
-      // Use startRow and endRow for sending pagination to Backend
-      // params.startRow : Start Page
-      // params.endRow : End Page
-
-      const response = await client.groups.all(this.state.filter,params.endRow-params.startRow,params.startRow);
-        params.successCallback(
-          response.data, response.total
-        );
-
-   
-    }
-  }*/
   }
 
   gridApi: GridApi | null = null;
@@ -89,14 +76,15 @@ export class GroupPanel extends Component<any,any> {
 	}
   }
 
+
   componentWillUnmount() {
     window.removeEventListener('resize', this.onResize)
   }
 
   refetch = async () => {
     try {
-
-      const {data, timestamp} = await client.groups.all(this.state.filter);
+      //if (!this.context.rubriche) return
+      const {data, timestamp} = await client.groups.all(this.state.filter,(this.hasMenuCategorie()?this.state.categoria:-1));
       console.log('Compare TS: ' + timestamp + ' and ' + this.state.timestamp)
       if (timestamp<this.state.timestamp) return;
 
@@ -108,6 +96,11 @@ export class GroupPanel extends Component<any,any> {
       this.setState({loading: false, data: [], error: 'API Error'})
       this.context.setCache(this.props.id,'groupData',null)
     }
+  }
+
+  hasMenuCategorie = () => {
+    console.log('hasMenuCategorie '+(this.context.rubriche && this.context.rubriche['20181']))
+    return (this.context.rubriche && this.context.rubriche['20181']!=null)
   }
 
   handleGroupDeletion = (id: any) => async () => {
@@ -147,7 +140,7 @@ export class GroupPanel extends Component<any,any> {
 
   handleNewGroup = () => {
     Modal.show('Crea Gruppo',
-      <CreateGroupForm refetch={this.refetch} />
+      <CreateGroupForm refetch={this.refetch} categories={this.context.categories}  />
     )
   }
 
@@ -198,12 +191,29 @@ export class GroupPanel extends Component<any,any> {
     this.refetch()
   }
 
- 
+ changeCategoria = async (e) => {
+   console.log('categoria '+e.target.value)
+   this.context.setCache(this.props.id,'groupCategoria',e.target.value)
+   this.setState({categoria: e.target.value},this.refetch)
+   
+}
+
+ menuCategorie = (def) => {
+   return (
+     <select style={{"margin":"10px"}} id="categoria" defaultValue={def} name="categoria" onChange={this.changeCategoria}>
+	<option key="-1" value="-1"> </option>
+	{this.context.categories.map((category) =>(
+		<option key={category.ID_CATEGORIA} value={category.ID_CATEGORIA}>{category.DESCRIZIONE}</option>
+		))}
+     </select>
+   )
+}
 
   render() {
     const {loading, error, selected} = this.state;
     console.log(this.context.loggedUser)
     var filt = this.context.getCache(this.props.id,'groupFilter')
+    var cat = this.context.getCache(this.props.id,'groupCategoria')
 
     return (
       <>
@@ -223,8 +233,16 @@ export class GroupPanel extends Component<any,any> {
                 </>
             )}
           </div>
-          <label htmlFor="filtro">Filtra:</label>
-          <input defaultValue={filt? filt : ""} name="filtro-gruppo" id="filtro" type="text" onChange={debounced(this.filterData, 350)} />
+          <div>
+          	<label htmlFor="filtro">Filtra:</label>
+          	<input defaultValue={filt? filt : ""} name="filtro-gruppo" id="filtro" type="text" onChange={debounced(this.filterData, 350)} />
+          </div>
+          {this.hasMenuCategorie() && 
+           <div>
+	  	<label htmlFor="categoria">Categoria:</label>
+	  	{this.menuCategorie(cat!=null?cat:1)}
+          </div>
+          }
           <div className="ag-theme-material" style={{flex: 1}}>
             <AgGridReact {...this.props}
               columnDefs={[

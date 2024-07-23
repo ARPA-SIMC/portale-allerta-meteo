@@ -183,6 +183,9 @@ public interface RubricaGruppoLocalService
 	public ActionableDynamicQuery getActionableDynamicQuery();
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public ArrayList<Object[]> getGerarchia(Long site);
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public List<Object[]> getGroup(Long id);
 
 	/**
@@ -194,6 +197,10 @@ public interface RubricaGruppoLocalService
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public ArrayList<Object[]> getGruppiByName(
 		Long site, String groupName, Long limit, Long offset);
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public ArrayList<Object[]> getGruppiByNameCategoria(
+		Long site, String groupName, Long categoria, Long limit, Long offset);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public Object[] getGruppiByOwnerAndName(Long idOwner, String groupName);

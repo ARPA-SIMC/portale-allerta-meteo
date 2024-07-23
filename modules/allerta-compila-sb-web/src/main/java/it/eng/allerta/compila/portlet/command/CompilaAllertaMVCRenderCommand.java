@@ -31,7 +31,7 @@ public class CompilaAllertaMVCRenderCommand implements MVCRenderCommand{
 			throws PortletException {
 		
 		
-		return "/allerta/compila.jsp";
+		return "/allerta/compila2.jsp";
 	}
 	
 }

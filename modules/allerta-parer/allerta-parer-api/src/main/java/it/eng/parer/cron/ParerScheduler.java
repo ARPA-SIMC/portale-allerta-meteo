@@ -102,7 +102,13 @@ public class ParerScheduler extends BaseMessageListener implements IJavaToXMLPar
 					parerService.comunicaDatiSpecificiInvioSuperamentoMail(datiSpecificiBean);
 				}else if (TipoDatoDaInviare.SUPERAMENTO_SMS.getTipoDatoDaInviare().equals(tipoInvio)) {
 					parerService.comunicaDatiSpecificiInvioSuperamentoSms(datiSpecificiBean);
-				}				
+				}else if(TipoDatoDaInviare.VALANGHE.getTipoDatoDaInviare().equals(tipoInvio)){
+					parerService.comunicaDatiSpecificiInvioValanghe(datiSpecificiBean);
+				}else if(TipoDatoDaInviare.VALANGHE_MAIL.getTipoDatoDaInviare().equals(tipoInvio)) {
+					parerService.comunicaDatiSpecificiInvioValangheMail(datiSpecificiBean);
+				}else if (TipoDatoDaInviare.VALANGHE_SMS.getTipoDatoDaInviare().equals(tipoInvio)) {
+					parerService.comunicaDatiSpecificiInvioValangheSms(datiSpecificiBean);
+				}		
 			}			
 		} 
 		catch (Exception e) {

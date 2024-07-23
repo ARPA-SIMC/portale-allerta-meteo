@@ -93,7 +93,8 @@ public interface RubricaGruppoService extends BaseService {
 	@JSONWebService
 	@AccessControlled(guestAccessEnabled = false)
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public Map<String, Object> getGroups(String name, int limit, int offset);
+	public Map<String, Object> getGroups(
+		String name, Long categoria, int limit, int offset);
 
 	/**
 	 * Returns the OSGi service identifier.

@@ -58,6 +58,7 @@ am.DataMap = (function ($) {
 
     	if( 
     		this.mapContainerId != "map--animazione--radar" &&
+    		this.mapContainerId != "map--animazione--nowcasting" &&
     		this.mapContainerId != "map--dato-osservato--pressione" &&
     		this.mapContainerId != "map--dato-osservato--umidita" &&
     		this.mapContainerId != "map--dato-osservato--vento" &&

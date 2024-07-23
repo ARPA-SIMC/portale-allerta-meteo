@@ -156,7 +156,7 @@ BollettinoBean bollettinoBean = (BollettinoBean) portletSession.getAttribute(All
 					            $(function () {
 					                $('#datetimepicker1').datetimepicker({
 					                	
-					                	<%if( bollettinoBean.getBollettinoId() <=0) {%>
+					                	<%if( bollettinoBean.getBollettinoId() <=0 || "".equals(bollettinoBean.getDataInizioString())) {%>
 					                		useCurrent: false,
 					                	 	date: moment().add('h', 1).startOf('hour').toDate(),
 					                	 <%}%>
@@ -196,7 +196,7 @@ BollettinoBean bollettinoBean = (BollettinoBean) portletSession.getAttribute(All
 							   <script type="text/javascript">
 					            $(function () {
 					                $('#datetimepicker2').datetimepicker({
-					                	<%if( bollettinoBean.getBollettinoId() <=0) {%>
+					                	<%if( bollettinoBean.getBollettinoId() <=0 || "".equals(bollettinoBean.getDataFineString())) {%>
 					                		useCurrent: false,
 					                	 	date: moment().add('h', 7).startOf('hour').toDate(),
 					                	 <%}%>
@@ -457,9 +457,9 @@ BollettinoBean bollettinoBean = (BollettinoBean) portletSession.getAttribute(All
 													name="<portlet:namespace/>osserv_${stazione.stazione.id }"
 													${not stazione.selezionata ? 'readonly' : ''}>
 											</td>
-											<td style="text-align:center;">${stazione.stazioneVariabile.soglia1}</td>
-											<td style="text-align:center;">${stazione.stazioneVariabile.soglia2}</td>
-											<td style="text-align:center;">${stazione.stazioneVariabile.soglia3}</td>
+											<td style="text-align:center;">${stazione.stazioneVariabile.soglia1 eq 0.0? '' : stazione.stazioneVariabile.soglia1}</td>
+											<td style="text-align:center;">${stazione.stazioneVariabile.soglia2 eq 0.0? '' : stazione.stazioneVariabile.soglia2}</td>
+											<td style="text-align:center;">${stazione.stazioneVariabile.soglia3 eq 0.0? '' : stazione.stazioneVariabile.soglia3}</td>
 										</tr>
 									</tbody>
 									</c:forEach>
@@ -505,7 +505,7 @@ BollettinoBean bollettinoBean = (BollettinoBean) portletSession.getAttribute(All
 				
 				<%if( bollettinoBean.isMostraSalva()) { %>
 				<div class="col-4">
-					<button 
+					<button id="salvaMonitoraggioBtn"
 						type="button" 
 						onclick="<portlet:namespace/>submitBollettinoForm('<%=salvaURL.toString()%>')"
 						class="btn btn-primary">Salva monitoraggio
@@ -608,7 +608,7 @@ BollettinoBean bollettinoBean = (BollettinoBean) portletSession.getAttribute(All
 		
 		})(jQuery);	 
 	}
-	function <portlet:namespace/>submitBollettinoForm(actionUrl) {
+	function <portlet:namespace/>submitBollettinoForm(actionUrl, prevDef=false) {
 		
 		(function($) {
 		$('.stazionecbx:checkbox:checked').each(function(stazione) {
@@ -630,7 +630,21 @@ BollettinoBean bollettinoBean = (BollettinoBean) portletSession.getAttribute(All
 	
 		document.forms.<portlet:namespace/>fmCompila.action = actionUrl;
 		
-		document.forms.<portlet:namespace/>fmCompila.submit();
+		if (prevDef) {
+		        $.ajax({
+		            url : '/web/guest/monitoraggio-eventi?p_p_id=AllertaCompilaMonitoraggioPortlet&p_p_lifecycle=1&p_p_state=maximized&p_p_mode=view&_AllertaCompilaMonitoraggioPortlet_javax.portlet.action=%2Fallertaer%2Fmonitoraggio%2Fsalva&_AllertaCompilaMonitoraggioPortlet_bollettinoId=<%=bollettinoBean.getBollettinoId() %>&p_auth='+Liferay.authToken,
+		            type: "POST",
+		            data: $("[name='_AllertaCompilaMonitoraggioPortlet_fmCompila']").serialize(),
+		            success: function (data) {
+		                console.log("Salvataggio automatico avvenuto con successo.")
+		            },
+		            error: function (jXHR, textStatus, errorThrown) {
+		                alert(errorThrown);
+		            }
+		        })
+		
+		}
+		else document.forms.<portlet:namespace/>fmCompila.submit();
 		
 		})(jQuery);	 
 	}
@@ -661,3 +675,43 @@ BollettinoBean bollettinoBean = (BollettinoBean) portletSession.getAttribute(All
 	
 
 </script>
+
+<script type="text/javascript">
+   Liferay.on('allPortletsReady', function(event) {
+	   console.log('Creo timer heartbeat')
+   		if (!window.allertaTimer) window.allertaTimer = setInterval(function() {
+   			
+   		      console.log("Attivazione timer heartbeat");
+   		      if (window.location.href.lastIndexOf("AllertaCompilaMonitoraggioPortlet")!=-1) {
+   		    	console.log("Salvataggio automatico monitoraggio");
+   		    	if ($("#salvaMonitoraggioBtn").length && $("[name='_AllertaCompilaMonitoraggioPortlet_bollettinoId']").length) {
+   		    		var idb = $("[name='_AllertaCompilaMonitoraggioPortlet_bollettinoId']").val()
+   		    		if (idb && idb!="0") {
+   		    			<portlet:namespace/>submitBollettinoForm('<%=salvaURL.toString()%>',true)
+   		    		} else {
+   		    			console.log("Impossibile salvare automatica prima di del primo salvataggio manuale")
+   		    		}
+   		    	}
+   		    	/*$.ajax({
+  			      url: '/o/api/heartbeat/'+new Date().getTime(),
+  			      method: 'GET',
+  			    }).then(function (resp) {
+			   
+  			    	console.log("Heartbeat ricevuto");
+			      	
+			    })*/
+			    
+   		      }
+   		     if (window.location.href.lastIndexOf("monitoraggio-eventi")==-1) {
+   			  console.log("Cancellazione timer heartbeat");
+   			  clearInterval(window.allertaTimer);
+   			  window.allertaTimer=null;
+   		   }
+   		      	
+   		   
+   		}, 180000);
+   
+   });
+  
+		
+	</script>

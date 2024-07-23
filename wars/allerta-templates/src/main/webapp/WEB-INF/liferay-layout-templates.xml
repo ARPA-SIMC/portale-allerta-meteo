@@ -24,6 +24,11 @@
 			<thumbnail-path>/allerta-templates.png</thumbnail-path>
 		</layout-template>
 		
+		<layout-template id="allerta-template-valanghe" name="Valanghe">
+			<template-path>/allerta-template-valanghe.ftl</template-path>
+			<thumbnail-path>/allerta-templates.png</thumbnail-path>
+		</layout-template>
+		
 		<layout-template id="allerta-template-reportpostevento" name="Report Post Evento">
 			<template-path>/allerta-template-reportpostevento.ftl</template-path>
 			<thumbnail-path>/allerta-templates.png</thumbnail-path>

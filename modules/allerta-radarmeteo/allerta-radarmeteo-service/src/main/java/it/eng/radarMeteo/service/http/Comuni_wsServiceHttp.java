@@ -144,6 +144,36 @@ public class Comuni_wsServiceHttp {
 		}
 	}
 
+	public static java.util.List<Object[]> getStatoAllertaCap(
+		HttpPrincipal httpPrincipal, java.sql.Timestamp timestamp) {
+
+		try {
+			MethodKey methodKey = new MethodKey(
+				Comuni_wsServiceUtil.class, "getStatoAllertaCap",
+				_getStatoAllertaCapParameterTypes3);
+
+			MethodHandler methodHandler = new MethodHandler(
+				methodKey, timestamp);
+
+			Object returnObj = null;
+
+			try {
+				returnObj = TunnelUtil.invoke(httpPrincipal, methodHandler);
+			}
+			catch (Exception e) {
+				throw new com.liferay.portal.kernel.exception.SystemException(
+					e);
+			}
+
+			return (java.util.List<Object[]>)returnObj;
+		}
+		catch (com.liferay.portal.kernel.exception.SystemException se) {
+			_log.error(se, se);
+
+			throw se;
+		}
+	}
+
 	private static Log _log = LogFactoryUtil.getLog(Comuni_wsServiceHttp.class);
 
 	private static final Class<?>[] _getMeteomontParameterTypes0 = new Class[] {
@@ -152,6 +182,8 @@ public class Comuni_wsServiceHttp {
 	private static final Class<?>[] _getStatoAllertaParameterTypes1 =
 		new Class[] {};
 	private static final Class<?>[] _getStatoAllertaParameterTypes2 =
+		new Class[] {java.sql.Timestamp.class};
+	private static final Class<?>[] _getStatoAllertaCapParameterTypes3 =
 		new Class[] {java.sql.Timestamp.class};
 
 }

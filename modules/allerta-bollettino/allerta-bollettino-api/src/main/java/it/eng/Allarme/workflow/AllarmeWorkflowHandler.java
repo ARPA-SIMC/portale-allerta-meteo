@@ -238,19 +238,23 @@ public class AllarmeWorkflowHandler extends BaseWorkflowHandler<Allarme>  {
 					
 					double valor = 0.0;
 					if (soglia == 1) {
+						double quarto = BollettinoLocalServiceUtil.getSommaValori(s.getId(), "1,0,900/1,-,-,-/B13011", 4);
 						double mezzora = BollettinoLocalServiceUtil.getSommaValori(s.getId(), "1,0,1800/1,-,-,-/B13011", 2);
 						double ora = BollettinoLocalServiceUtil.getSommaValori(s.getId(), "1,0,3600/1,-,-,-/B13011", 1);
 						if (mezzora > ora)
 							valor = mezzora;
 						else
 							valor = ora;
+						if (quarto>valor) valor = quarto;
 					} else if (soglia == 2) {
+						double quarto = BollettinoLocalServiceUtil.getSommaValori(s.getId(), "1,0,900/1,-,-,-/B13011", 12);
 						double mezzora = BollettinoLocalServiceUtil.getSommaValori(s.getId(), "1,0,1800/1,-,-,-/B13011", 6);
 						double ora = BollettinoLocalServiceUtil.getSommaValori(s.getId(), "1,0,3600/1,-,-,-/B13011", 3);
 						if (mezzora > ora)
 							valor = mezzora;
 						else
 							valor = ora;
+						if (quarto>valor) valor = quarto;
 					} else {
 						double mezzora = BollettinoLocalServiceUtil.getSommaValori(s.getId(), "1,0,1800/1,-,-,-/B13011", 24);
 						double ora = BollettinoLocalServiceUtil.getSommaValori(s.getId(), "1,0,3600/1,-,-,-/B13011", 12);
@@ -280,8 +284,8 @@ public class AllarmeWorkflowHandler extends BaseWorkflowHandler<Allarme>  {
 					
 					String sog = "";
 					int vsg = (int)valSoglia;
-					if (soglia==1) sog = "30mm/ora";
-					if (soglia==2) sog = "70mm/3ore";
+					if (soglia==1) sog = vsg+"mm/ora";
+					if (soglia==2) sog = vsg+"mm/3ore";
 					if (soglia==3) sog = vsg+"mm/12ore";
 					
 					descNormale = descNormale.replace("%NOME%", s.getName());

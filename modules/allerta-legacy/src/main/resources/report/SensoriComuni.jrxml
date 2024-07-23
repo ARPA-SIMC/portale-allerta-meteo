@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="SMS" pageWidth="2100" pageHeight="595" orientation="Landscape" columnWidth="2060" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isIgnorePagination="true" uuid="c946c046-f138-4a80-99d9-26c8780d760b">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="1315"/>
+	<property name="ireport.y" value="0"/>
+	<queryString>
+		<![CDATA[select sensori_comuni_vw.*, case when idvariabile like '%13215%' then 'Idrometro' else 'Pluviometro' end as tiposensore from sensori_comuni_vw order by idvariabile desc, name ]]>
+	</queryString>
+	<field name="id_" class="java.lang.String"/>
+	<field name="name" class="java.lang.String"/>
+	<field name="idvariabile" class="java.lang.String"/>
+	<field name="namebasin" class="java.lang.String"/>
+	<field name="namesubbasin" class="java.lang.String"/>
+	<field name="attivo" class="java.lang.Boolean"/>
+	<field name="comuni" class="java.lang.String"/>
+	<field name="idcomuni" class="java.lang.String"/>
+	<field name="idvariabilevera" class="java.lang.String"/>
+	<field name="funzionante" class="java.lang.Boolean"/>
+	<field name="sogliaspike" class="java.lang.Float"/>
+	<field name="soglia1" class="java.lang.Double"/>
+	<field name="soglia2" class="java.lang.Double"/>
+	<field name="soglia3" class="java.lang.Double"/>
+	<field name="tiposensore" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="20" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="112" height="20" uuid="279fd0a9-0e37-4070-a717-d474f779015b"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Tipo sensore]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="112" y="0" width="176" height="20" uuid="586a2d0b-bb34-4439-8111-cd6c73e0ccc6"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ID stazione]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="288" y="0" width="121" height="20" uuid="9f8288b5-11cf-4120-9be5-fefca73e278f"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nome stazione]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="409" y="0" width="136" height="20" uuid="4579fbd3-0019-4411-aa2d-a5c15b598a73"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Bacino]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="545" y="0" width="129" height="20" uuid="b448ca38-8876-4510-b9c2-072fc5e1e3ee"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Sottobacino]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="674" y="0" width="163" height="20" uuid="c03c5a72-b65e-4b97-ad3f-319fecbd8836"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Riceve dati]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="837" y="0" width="128" height="20" uuid="357f6349-95e4-499f-a6bd-21ddf505f4cc"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Notifiche attive]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="965" y="0" width="494" height="20" uuid="13d49ca7-e52d-4c97-ada6-5f2ad3344eca"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Comuni associati]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1459" y="0" width="101" height="20" uuid="4a8508d0-cc8a-46a6-88d1-818c3193d8d7"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Soglia spike]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1560" y="0" width="210" height="20" uuid="b44c9792-b1ab-4f34-b6af-6199c76aa355"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Soglie per allertamento]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="0" y="0" width="112" height="20" uuid="2ac97d9c-1e6b-4ad5-8519-46045b5188d1"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{tiposensore}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="112" y="0" width="176" height="20" uuid="5754e4e0-9311-42e2-abf2-36aff888ec3f"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{id_}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="288" y="0" width="121" height="20" uuid="3248fbfc-c28d-42a4-a555-d3a0a79eb6c0"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="409" y="0" width="136" height="20" uuid="5c406417-d3bf-44cc-80ad-2ab3e29b02d8"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{namebasin}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="545" y="0" width="129" height="20" uuid="e3fe62cc-80b2-4645-9932-f668decf2bc4"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{namesubbasin}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="674" y="0" width="163" height="20" uuid="168e471c-5dee-4c71-89fe-71a240edb6da"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[($F{attivo}!=null && $F{attivo})?"SI":"NO"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy HH:mm" isBlankWhenNull="true">
+				<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="837" y="0" width="128" height="20" uuid="cc19ff76-74f9-4a5d-92c0-5331cf94f58a"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{funzionante}?"SI":"NO"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy HH:mm" isBlankWhenNull="true">
+				<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="965" y="0" width="494" height="20" uuid="ef2a87e5-0cf7-4069-9194-70ec6e140225"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{comuni}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="###.0" isBlankWhenNull="true">
+				<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="1459" y="0" width="101" height="20" uuid="6f989fa0-17b0-4b16-9c27-950d5a31a127"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{sogliaspike}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="###.0" isBlankWhenNull="true">
+				<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="1560" y="0" width="70" height="20" uuid="54120849-cbb7-4037-bfa4-703334219195"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{soglia1}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="###.0" isBlankWhenNull="true">
+				<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="1630" y="0" width="70" height="20" uuid="54732d2b-fc21-4398-9241-041688beb8de"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{soglia2}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="###.0" isBlankWhenNull="true">
+				<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="1700" y="0" width="70" height="20" uuid="b6dd4f80-df03-4c51-84b1-7f3c06baae92"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{soglia3}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

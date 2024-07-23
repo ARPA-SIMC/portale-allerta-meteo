@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Superamenti" pageWidth="1600" pageHeight="595" orientation="Landscape" columnWidth="1560" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isIgnorePagination="true" uuid="c946c046-f138-4a80-99d9-26c8780d760b">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="TIPO" class="java.lang.String"/>
+	<parameter name="DATADA" class="java.lang.String">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DATAA" class="java.lang.String">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<parameter name="BACINO" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="COMUNE" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="PROVINCIA" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="STAZIONE" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ZONA" class="java.lang.String"/>
+	<parameter name="SOGLIA" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select x.*,st.nameprovince,st.namebasin, st.namemunicipality, c.zona from (select *, to_char(sogliaregola,'FM9999990.09') as sr2 from elenco_superamenti_vw
+
+union
+
+select null as allarmeid, dataorainizio at time zone 'utc' at time zone 'europe/rome' as createdate, dataorainizio at time zone 'utc' at time zone 'europe/rome' as datafine, null as idregola,
+0 as colore, idvariabile, soglia, idstazione, nomestazione, round(valoresoglia::numeric,2) as soglia1,
+null as soglia2, null as soglia3, null as txt, to_char(dataorainizio at time zone 'utc' at time zone 'europe/rome','HH24:MI') as oralocale, 'idro' as tipo,
+replace(to_char(valore,'FM9999990.09'),'.',',') || ' m' as livello,
+round(valoresoglia::numeric,2) as sogliaregola, to_char(valoresoglia,'FM9999990.09') as sr2 from allerter_logsoglia)
+x join bollettino_stazione st on st.id_ = x.idstazione
+left join comune_translate c on st.namemunicipality=c.nome_db
+
+ where
+($P{TIPO} is null or $P{TIPO}::character varying = '' or $P{TIPO}::character varying = tipo)
+AND ($P{DATADA} is null or $P{DATADA}::character varying = '' or createdate >= $P{DATADA}::timestamp without time zone)
+AND ($P{DATAA} is null or $P{DATAA}::character varying = '' or createdate <= $P{DATAA}::timestamp without time zone)
+AND ($P{BACINO} is null or $P{BACINO}::character varying = '' or upper(namebasin) like '%' || upper($P{BACINO} || '%'))
+AND ($P{COMUNE} is null or $P{COMUNE}::character varying = '' or upper(namemunicipality) like '%' || upper($P{COMUNE} || '%'))
+AND ($P{PROVINCIA} is null or $P{PROVINCIA}::character varying = '' or upper(nameprovince) like '%' || upper($P{PROVINCIA} || '%'))
+AND ($P{STAZIONE} is null or $P{STAZIONE}::character varying = '' or upper(x.name) like '%' || upper($P{STAZIONE} || '%'))
+AND ($P{ZONA} is null or $P{ZONA}::character varying = '' or upper(c.zona) = upper($P{ZONA}))
+AND ($P{SOGLIA} is null or $P{SOGLIA}::character varying = '' or upper(''||soglia) = upper($P{SOGLIA}))
+order by createdate desc]]>
+	</queryString>
+	<field name="allarmeid" class="java.lang.Long"/>
+	<field name="createdate" class="java.sql.Timestamp"/>
+	<field name="datafine" class="java.sql.Timestamp"/>
+	<field name="idregola" class="java.lang.Long"/>
+	<field name="colore" class="java.lang.Integer"/>
+	<field name="idvariabile" class="java.lang.String"/>
+	<field name="soglia" class="java.lang.Integer"/>
+	<field name="idstazione" class="java.lang.String"/>
+	<field name="name" class="java.lang.String"/>
+	<field name="soglia1" class="java.lang.Double"/>
+	<field name="soglia2" class="java.lang.Double"/>
+	<field name="soglia3" class="java.lang.Double"/>
+	<field name="txt" class="java.lang.String"/>
+	<field name="oralocale" class="java.lang.String"/>
+	<field name="tipo" class="java.lang.String"/>
+	<field name="livello" class="java.lang.String"/>
+	<field name="sogliaregola" class="java.lang.Double"/>
+	<field name="sr2" class="java.lang.String"/>
+	<field name="nameprovince" class="java.lang.String"/>
+	<field name="namebasin" class="java.lang.String"/>
+	<field name="namemunicipality" class="java.lang.String"/>
+	<field name="zona" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="20" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="112" height="20" uuid="279fd0a9-0e37-4070-a717-d474f779015b"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Tipo]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="112" y="0" width="101" height="20" uuid="357f6349-95e4-499f-a6bd-21ddf505f4cc"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Data]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="213" y="0" width="101" height="20" uuid="5e0f48d2-db86-4e4b-bdb2-cfe39bc3a5d9"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Ora locale]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="314" y="0" width="211" height="20" uuid="dffef16e-5799-4b15-ad92-3f327e94ed5c"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Stazione]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1167" y="0" width="71" height="20" uuid="47fc9496-8d2c-4f85-8653-ed6ed24b6e11"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Soglia]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1238" y="0" width="150" height="20" uuid="d454662c-5682-420e-bf1c-eb0e39d71f8c"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Valore osservato]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1388" y="0" width="150" height="20" uuid="e1e2d39d-4890-4925-91a2-fb329b9c47c3"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Valore soglia]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="525" y="0" width="211" height="20" uuid="9cf71b91-ceb2-4aa6-9f1a-d2fb62152908"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Bacino]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="736" y="0" width="111" height="20" uuid="5e1590fe-e08f-4f7f-9023-b578ec751899"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Provincia]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="847" y="0" width="242" height="20" uuid="91407d30-0680-4914-9b7b-a505999a3745"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Comune]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1089" y="0" width="78" height="20" uuid="477053ca-e25a-41af-927f-158bf460922c"/>
+				<box>
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Zona]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="112" height="20" uuid="2ac97d9c-1e6b-4ad5-8519-46045b5188d1"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{tipo}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy" isBlankWhenNull="false">
+				<reportElement x="112" y="0" width="101" height="20" uuid="cc19ff76-74f9-4a5d-92c0-5331cf94f58a"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{createdate}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="HH:mm" isBlankWhenNull="true">
+				<reportElement x="213" y="0" width="101" height="20" uuid="13072375-72e8-45e0-86f6-aa35c66ecf0e"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{createdate}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="314" y="0" width="211" height="20" uuid="ad85cd23-924b-479b-9ea1-06de4ada2179"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="1167" y="0" width="71" height="20" uuid="02461ff0-792c-4af5-8975-b39abd641486"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{soglia}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="1238" y="0" width="150" height="20" uuid="fe8c8055-36db-4744-a8ff-216e89528595"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{livello}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="1388" y="0" width="150" height="20" uuid="dcdf9668-cb10-4b6b-ac95-8f3ac1cdcdec"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{sr2}!=null?(""+$F{sr2}.toString()+
+    ("idro".equals($F{tipo})?" m":" mm")).replace(".",","):""]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="525" y="0" width="211" height="20" uuid="176770ba-63af-4171-a7dd-fc8caef1ad21"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{namebasin}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="736" y="0" width="111" height="20" uuid="07839cbe-7ed5-4db5-8dde-fbc5a867ac83"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{nameprovince}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="847" y="0" width="242" height="20" uuid="a17f4925-1722-4939-8df5-8bcb622947cd"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{namemunicipality}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="1089" y="0" width="78" height="20" uuid="e5b59dc3-c6b4-45f4-84b4-51c18057b0c1"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{zona}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

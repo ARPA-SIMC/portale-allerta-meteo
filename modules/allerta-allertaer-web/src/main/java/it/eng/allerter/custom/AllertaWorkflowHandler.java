@@ -7,6 +7,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -73,14 +74,14 @@ import it.eng.parer.service.DatiSpecificiInvioLocalService;
 		)
 public class AllertaWorkflowHandler extends BaseWorkflowHandler<Allerta> {
 
-	public static AssetCategory pubblicato;
-	public static AssetCategory lavorazione;
-	public static AssetCategory revisione;
+	public static final long pubblicato = 153999L;
+	public static final long lavorazione = 154001L;
+	public static final long revisione = 154000L;
 
-	public static AssetCategory homepage;
+	public static final long homepage = 155477L;
 
-	public static AssetCategory allerta;
-	public static AssetCategory bollettino;
+	public static final long allerta = 168560L;
+	public static final long bollettino = 168562L;
 	
 	private Log logger = LogFactoryUtil.getLog(AllertaWorkflowHandler.class);
 
@@ -118,14 +119,17 @@ public class AllertaWorkflowHandler extends BaseWorkflowHandler<Allerta> {
 		String textPlusOne = null;
 		String subjectPlusOne = null;
 
-		System.out.println("ALLERTA WORKFLOW " + status);
+		System.out.println("ALLERTA WORKFLOW  " + status);
 
-		if (pubblicato == null || revisione == null || lavorazione == null)
-			caricaPubblicatoTag();
-
+		//if (pubblicato == null || revisione == null || lavorazione == null)
+			//caricaPubblicatoTag();
+  
 		long resourcePrimKey = GetterUtil.getLong(workflowContext.get(WorkflowConstants.CONTEXT_ENTRY_CLASS_PK));
-		long userId = allertaLocalService.getIdApprovatore(resourcePrimKey);
+		//long userId = allertaLocalService.getIdApprovatore(resourcePrimKey);
 		Allerta feedback = allertaLocalService.getAllerta(resourcePrimKey);
+		 
+		if (feedback.getStato()==WorkflowConstants.STATUS_APPROVED) return feedback;
+		if (feedback.getStato()==1000 && status==1) return feedback;
 		
 		logCambioStato(feedback.getTipoAllerta(), feedback.getNumero(), status);
 		//logInternoLocalService.log("AllertaWorkflow", "updateStatus " + status, "stato " + feedback.getStato(), "");
@@ -157,14 +161,14 @@ public class AllertaWorkflowHandler extends BaseWorkflowHandler<Allerta> {
 
 		boolean rigenera = false;
 
-		if (userId != 0) {
+		//if (userId != 0) { 
 			if (status == 1000) {
-				feedback.setUtenteFirmaArpaId(userId);
+				//feedback.setUtenteFirmaArpaId(userId);
 				feedback.setDataFirmaArpa(new Date());
-				rigenera = true;
+				//rigenera = true; 
 
 				if (status != WorkflowConstants.STATUS_DENIED) {
-					mandaNotificaSoloEmail(userId, tipo, sottotipo, l + 1);
+					mandaNotificaSoloEmail(feedback.getUtenteFirmaArpaId(), tipo, sottotipo, l + 1);
 					mandaNotifica(feedback.getUtenteFirmaProtId(),
 							"Il documento " + feedback.getNumero()
 									+ " è in attesa di approvazione su https://allertameteo.regione.emilia-romagna.it",
@@ -180,12 +184,12 @@ public class AllertaWorkflowHandler extends BaseWorkflowHandler<Allerta> {
 				}
 			}
 			if (status == 0) {
-				feedback.setUtenteFirmaProtId(userId);
+				//feedback.setUtenteFirmaProtId(userId);
 				feedback.setDataFirmaProt(new Date());
 				rigenera = true;
 
 				if (status != WorkflowConstants.STATUS_DENIED) {
-					mandaNotificaSoloEmail(userId, tipo, sottotipo, l + 1);
+					mandaNotificaSoloEmail(feedback.getUtenteFirmaProtId(), tipo, sottotipo, l + 1);
 					mandaNotificaSoloEmail(getParam("EMAIL_APPROVA_ALLERTA", ""), tipo, sottotipo, l + 1);
 
 					textPlusOne = "<html><head></head><body>Il documento " + feedback.getNumero()
@@ -195,7 +199,7 @@ public class AllertaWorkflowHandler extends BaseWorkflowHandler<Allerta> {
 
 			}
 
-		}
+		//}
 		if (status == WorkflowConstants.STATUS_APPROVED) {
 			feedback.setDataEmissione(new Date());
 			rigenera = true;
@@ -203,8 +207,8 @@ public class AllertaWorkflowHandler extends BaseWorkflowHandler<Allerta> {
 
 		if (status == WorkflowConstants.STATUS_DENIED) {
 			feedback.setStato(WorkflowConstants.STATUS_DENIED);
-			if (pubblicato == null || lavorazione == null || revisione == null)
-				caricaPubblicatoTag();
+			//if (pubblicato == null || lavorazione == null || revisione == null)
+				//caricaPubblicatoTag();
 			feedback.setDataFirmaArpa(null);
 			feedback.setDataFirmaProt(null);
 			feedback = allertaLocalService.updateAllerta(feedback);
@@ -225,8 +229,8 @@ public class AllertaWorkflowHandler extends BaseWorkflowHandler<Allerta> {
 			long id = assetEntryLocalService.getEntry(Allerta.class.getName(), feedback.getAllertaId())
 					.getEntryId();
 			assetCategoryLocalService.clearAssetEntryAssetCategories(id);
-			if (lavorazione != null)
-				assetCategoryLocalService.addAssetEntryAssetCategory(id, lavorazione);
+			
+			assetCategoryLocalService.addAssetEntryAssetCategory(id, lavorazione);
 		}
 
 		if (status == WorkflowConstants.STATUS_PENDING) {
@@ -243,17 +247,16 @@ public class AllertaWorkflowHandler extends BaseWorkflowHandler<Allerta> {
 			long id = assetEntryLocalService.getEntry(Allerta.class.getName(), feedback.getAllertaId())
 					.getEntryId();
 
-			if (revisione != null)
-				assetCategoryLocalService.addAssetEntryAssetCategory(id, revisione);
+			
+			assetCategoryLocalService.addAssetEntryAssetCategory(id, revisione);
 
-			if (allerta != null && feedback.isTipoAllerta())
+			if (feedback.isTipoAllerta())
 				assetCategoryLocalService.addAssetEntryAssetCategory(id, allerta);
-			if (bollettino != null && !feedback.isTipoAllerta())
+			if (!feedback.isTipoAllerta())
 				assetCategoryLocalService.addAssetEntryAssetCategory(id, bollettino);
 
 			try {
-				if (lavorazione != null)
-					assetCategoryLocalService.deleteAssetEntryAssetCategory(id, lavorazione);
+				assetCategoryLocalService.deleteAssetEntryAssetCategory(id, lavorazione);
 			} catch (Exception e) {
 
 				logger.error(e);
@@ -330,29 +333,34 @@ public class AllertaWorkflowHandler extends BaseWorkflowHandler<Allerta> {
 					url = ap.getValore();
 			} catch (Exception e) {
 			}
-			sendToChannel(feedback.getTitolo() + " - " + url + feedback.getLink());
-
-			if (pubblicato == null || revisione == null)
-				caricaPubblicatoTag();
+			
+			try {
+				String titolo = feedback.getTitolo();
+				String colore = getColore(feedback);
+				if (!"".equals(colore))
+					titolo = titolo.replace("Allerta", "Allerta "+colore);
+				sendToChannel(titolo + " - " + url + feedback.getLink());
+			} catch (Exception e) {
+				logger.error(e);
+			}
+			//if (pubblicato == null || revisione == null)
+			//	caricaPubblicatoTag();
 
 			long id = assetEntryLocalService.getEntry(Allerta.class.getName(), feedback.getAllertaId())
 					.getEntryId();
 
 			try {
-				if (lavorazione != null)
-					assetCategoryLocalService.deleteAssetEntryAssetCategory(id, lavorazione);
+				assetCategoryLocalService.deleteAssetEntryAssetCategory(id, lavorazione);
 			} catch (Exception e) {
+				e.printStackTrace();
 			}
 			try {
-				if (revisione != null)
 					assetCategoryLocalService.deleteAssetEntryAssetCategory(id, revisione);
 			} catch (Exception e) {
+				e.printStackTrace();
 			}
-
-			if (pubblicato != null)
-				assetCategoryLocalService.addAssetEntryAssetCategory(id, pubblicato);
-			if (homepage != null)
-				assetCategoryLocalService.addAssetEntryAssetCategory(id, homepage);
+			assetCategoryLocalService.addAssetEntryAssetCategory(id, pubblicato);
+			assetCategoryLocalService.addAssetEntryAssetCategory(id, homepage);
 
 			if (isIdrogeologica(feedback)) {
 				// attiva il controllo del monitoraggio
@@ -392,7 +400,7 @@ public class AllertaWorkflowHandler extends BaseWorkflowHandler<Allerta> {
 
 	public static final String CLASS_NAME = Allerta.class.getName();
 
-	public void caricaPubblicatoTag() throws SystemException {
+	/*public void caricaPubblicatoTag() throws SystemException {
 
 		List<AssetCategory> list = assetCategoryLocalService.getCategories();
 
@@ -427,7 +435,7 @@ public class AllertaWorkflowHandler extends BaseWorkflowHandler<Allerta> {
 
 		// System.out.println("categoria non trovata");
 
-	}
+	}*/
 
 	public void mandaNotifica(long idUtente, String testo, Allerta a, String tipo, String sottotipo, long l) {
 		try {
@@ -579,7 +587,9 @@ public class AllertaWorkflowHandler extends BaseWorkflowHandler<Allerta> {
 
 		// trova tutte le zone
 		HashMap<String, String> zone = new HashMap<String, String>();
+		HashMap<String, String> zoneX = new HashMap<String, String>();
 		long peggiore = 0;
+		boolean nuovoTipo = false;
 
 		try {
 
@@ -591,138 +601,185 @@ public class AllertaWorkflowHandler extends BaseWorkflowHandler<Allerta> {
 			HashMap<Number, List<AllertaStato>> arancione = new HashMap<Number, List<AllertaStato>>();
 			HashMap<Number, List<AllertaStato>> giallo = new HashMap<Number, List<AllertaStato>>();
 
+			HashMap<Number, List<AllertaStato>> rossoX = new HashMap<Number, List<AllertaStato>>();
+			HashMap<Number, List<AllertaStato>> arancioneX = new HashMap<Number, List<AllertaStato>>();
+			HashMap<Number, List<AllertaStato>> gialloX = new HashMap<Number, List<AllertaStato>>();
+
+			
+			
 			for (AllertaStato ss : s) {
-
-				if (ss.getStatoId() == 0 || ss.getStatoId() == 1000)
-					continue;
-
-				HashMap<Number, List<AllertaStato>> lista = null;
-				if (ss.getStatoId() == 1)
-					lista = giallo;
-				if (ss.getStatoId() == 2)
-					lista = arancione;
-				if (ss.getStatoId() == 3)
-					lista = rosso;
-				if (lista != null) {
-					List<AllertaStato> l = lista.get(ss.getEventoId());
-					if (l == null) {
-						l = new ArrayList<AllertaStato>();
-						l.add(ss);
-						lista.put(ss.getEventoId(), l);
-					} else
-						l.add(ss);
+				if (ss.getAreaId()==43 || ss.getAreaId()==63) nuovoTipo=true;
+			}
+			
+			if (nuovoTipo) {
+				for (AllertaStato ss : s) {
+					if (ss.getStatoId() == 0 || ss.getStatoId() == 1000)
+						continue;
+					HashMap<Number, List<AllertaStato>> lista = null;
+					if (ss.getStatoId() == 1)
+						lista = ss.getAreaId()<0?gialloX:giallo; 
+					if (ss.getStatoId() == 2)
+						lista = ss.getAreaId()<0?arancioneX:arancione; 
+					if (ss.getStatoId() == 3)
+						lista = ss.getAreaId()<0?rossoX:rosso; 
+					if (lista != null) {
+						List<AllertaStato> l = lista.get(ss.getEventoId());
+						if (l == null) {
+							l = new ArrayList<AllertaStato>();
+							l.add(ss);
+							lista.put(ss.getEventoId(), l);
+						} else
+							l.add(ss);
+					}
+					
+					if (ss.getStatoId() > peggiore)
+						peggiore = ss.getStatoId();
+					
+					
+					HashMap<String, String> mappaZone = zone;
+					if (ss.getAreaId()<0) mappaZone = zoneX;
+					long l = ss.getAreaId();
+					if (l<0) l = -l;
+					char lettera = (char)('A' + (l/10)-1); //22 -> B2
+					char numero = (char)('0' + (l%10));
+					String zon = ""+lettera+""+numero;
+					mappaZone.put(""+lettera, ""+lettera); //A
+					mappaZone.put(zon, zon);  //A1
+					
 				}
-
-				if (ss.getStatoId() > peggiore)
-					peggiore = ss.getStatoId();
-
-				switch ((int) ss.getAreaId()) {
-				case 10:
-					zone.put("A", "A");
-					zone.put("A1", "A1");
-					zone.put("A2", "A2");
-					break;
-				case 11:
-					zone.put("A", "A");
-					zone.put("A1", "A1");
-					break;
-				case 12:
-					zone.put("A", "A");
-					zone.put("A2", "A2");
-					break;
-				case 20:
-					zone.put("B", "B");
-					zone.put("B1", "B1");
-					zone.put("B2", "B2");
-					break;
-				case 21:
-					zone.put("B", "B");
-					zone.put("B1", "B1");
-					break;
-				case 22:
-					zone.put("B", "B");
-					zone.put("B2", "B2");
-					break;
-				case 30:
-					zone.put("C", "C");
-					zone.put("C1", "C1");
-					zone.put("C2", "C2");
-					break;
-				case 31:
-					zone.put("C", "C");
-					zone.put("C1", "C1");
-					break;
-				case 32:
-					zone.put("C", "C");
-					zone.put("C2", "C2");
-					break;
-				case 40:
-					zone.put("D", "D");
-					zone.put("D1", "D1");
-					zone.put("D2", "D2");
-					break;
-				case 41:
-					zone.put("D", "D");
-					zone.put("D1", "D1");
-					break;
-				case 42:
-					zone.put("D", "D");
-					zone.put("D2", "D2");
-					break;
-				case 50:
-					zone.put("E", "E");
-					zone.put("E1", "E1");
-					zone.put("E2", "E2");
-					break;
-				case 51:
-					zone.put("E", "E");
-					zone.put("E1", "E1");
-					break;
-				case 52:
-					zone.put("E", "E");
-					zone.put("E2", "E2");
-					break;
-				case 60:
-					zone.put("F", "F");
-					break;
-				case 61:
-					zone.put("F", "F");
-					zone.put("F1", "F1");
-					break;
-				case 62:
-					zone.put("F", "F");
-					zone.put("F2", "F2");
-					break;
-				case 70:
-					zone.put("G", "G");
-					zone.put("G1", "G1");
-					zone.put("G2", "G2");
-					break;
-				case 71:
-					zone.put("G", "G");
-					zone.put("G1", "G1");
-					break;
-				case 72:
-					zone.put("G", "G");
-					zone.put("G2", "G2");
-					break;
-				case 80:
-					zone.put("H", "H");
-					zone.put("H1", "H1");
-					zone.put("H2", "H2");
-					break;
-				case 81:
-					zone.put("H", "H");
-					zone.put("H1", "H1");
-					break;
-				case 82:
-					zone.put("H", "H");
-					zone.put("H2", "H2");
-					break;
-
+			} else {
+				for (AllertaStato ss : s) {
+	
+					if (ss.getStatoId() == 0 || ss.getStatoId() == 1000)
+						continue;
+	
+					HashMap<Number, List<AllertaStato>> lista = null;
+					if (ss.getStatoId() == 1)
+						lista = giallo;
+					if (ss.getStatoId() == 2)
+						lista = arancione;
+					if (ss.getStatoId() == 3)
+						lista = rosso;
+					if (lista != null) {
+						List<AllertaStato> l = lista.get(ss.getEventoId());
+						if (l == null) {
+							l = new ArrayList<AllertaStato>();
+							l.add(ss);
+							lista.put(ss.getEventoId(), l);
+						} else
+							l.add(ss);
+					}
+	
+					if (ss.getStatoId() > peggiore)
+						peggiore = ss.getStatoId();
+	
+					switch ((int) ss.getAreaId()) {
+					case 10:
+						zone.put("A", "A");
+						zone.put("A1", "A1");
+						zone.put("A2", "A2");
+						break;
+					case 11:
+						zone.put("A", "A");
+						zone.put("A1", "A1");
+						break;
+					case 12:
+						zone.put("A", "A");
+						zone.put("A2", "A2");
+						break;
+					case 20:
+						zone.put("B", "B");
+						zone.put("B1", "B1");
+						zone.put("B2", "B2");
+						break;
+					case 21:
+						zone.put("B", "B");
+						zone.put("B1", "B1");
+						break;
+					case 22:
+						zone.put("B", "B");
+						zone.put("B2", "B2");
+						break;
+					case 30:
+						zone.put("C", "C");
+						zone.put("C1", "C1");
+						zone.put("C2", "C2");
+						break;
+					case 31:
+						zone.put("C", "C");
+						zone.put("C1", "C1");
+						break;
+					case 32:
+						zone.put("C", "C");
+						zone.put("C2", "C2");
+						break;
+					case 40:
+						zone.put("D", "D");
+						zone.put("D1", "D1");
+						zone.put("D2", "D2");
+						break;
+					case 41:
+						zone.put("D", "D");
+						zone.put("D1", "D1");
+						break;
+					case 42:
+						zone.put("D", "D");
+						zone.put("D2", "D2");
+						break;
+					case 50:
+						zone.put("E", "E");
+						zone.put("E1", "E1");
+						zone.put("E2", "E2");
+						break;
+					case 51:
+						zone.put("E", "E");
+						zone.put("E1", "E1");
+						break;
+					case 52:
+						zone.put("E", "E");
+						zone.put("E2", "E2");
+						break;
+					case 60:
+						zone.put("F", "F");
+						break;
+					case 61:
+						zone.put("F", "F");
+						zone.put("F1", "F1");
+						break;
+					case 62:
+						zone.put("F", "F");
+						zone.put("F2", "F2");
+						break;
+					case 70:
+						zone.put("G", "G");
+						zone.put("G1", "G1");
+						zone.put("G2", "G2");
+						break;
+					case 71:
+						zone.put("G", "G");
+						zone.put("G1", "G1");
+						break;
+					case 72:
+						zone.put("G", "G");
+						zone.put("G2", "G2");
+						break;
+					case 80:
+						zone.put("H", "H");
+						zone.put("H1", "H1");
+						zone.put("H2", "H2");
+						break;
+					case 81:
+						zone.put("H", "H");
+						zone.put("H1", "H1");
+						break;
+					case 82:
+						zone.put("H", "H");
+						zone.put("H2", "H2");
+						break;
+	
+					}
 				}
 			}
-
 			String colore = "";
 			if (peggiore == 1)
 				colore = "GIALLA";
@@ -739,33 +796,83 @@ public class AllertaWorkflowHandler extends BaseWorkflowHandler<Allerta> {
 					"per pioggia che gela", "per stato del mare", "per criticita' costiera" };
 
 			List<HashMap<Number, List<AllertaStato>>> ll = new ArrayList<HashMap<Number, List<AllertaStato>>>();
+			
+			boolean oggiVerde = false;
+			boolean domaniVerde = false;
+			
+			if (nuovoTipo && a.getParentId()>0) {
+				ll.add(rossoX);
+				ll.add(arancioneX);
+				ll.add(gialloX);
+				
+				oggiVerde = rossoX.isEmpty() && arancioneX.isEmpty() && gialloX.isEmpty();
+				domaniVerde = rosso.isEmpty() && arancione.isEmpty() && giallo.isEmpty();
+				
+			}
+			
 			ll.add(rosso);
 			ll.add(arancione);
 			ll.add(giallo);
+			
+			
+			
+			
 
 			for (int jj = 0; jj < ll.size(); jj++) {
+				
+				if (a.getParentId()>0 && (jj%3)==0) {
+					//intestazione della giornata di riferimento
+					Date d = a.getDataInizio();
+					if (jj==3) {
+						Calendar c = Calendar.getInstance(Locale.ITALY);
+						c.setTime(d);
+						c.set(Calendar.HOUR_OF_DAY, 0);
+						c.set(Calendar.MINUTE, 0);
+						c.set(Calendar.SECOND, 0);
+						c.set(Calendar.MILLISECOND, 0);
+						c.add(Calendar.DAY_OF_YEAR, 1);
+						d = c.getTime();
+					}
+					String ox = new SimpleDateFormat("HH:mm").format(d);
+					String gx = new SimpleDateFormat("dd-MM-yyyy").format(d);
+					String ux = new SimpleDateFormat("u").format(d);
+					String giorno = " ";
+					if ("1".equals(ux)) giorno = " lunedì ";
+					if ("2".equals(ux)) giorno = " martedì ";
+					if ("3".equals(ux)) giorno = " mercoledì ";
+					if ("4".equals(ux)) giorno = " giovedì ";
+					if ("5".equals(ux)) giorno = " venerdì ";
+					if ("6".equals(ux)) giorno = " sabato ";
+					if ("7".equals(ux)) giorno = " domenica ";
+					testoAllerta += "<br/><b>Dalle "+ox+" di"+giorno+gx+"</b><br/>";
+					if ((jj==0 && oggiVerde) || (jj==3 && domaniVerde))
+						testoAllerta+="CODICE COLORE VERDE: in tutte le zone di allerta.<br/>";
+				}
+				
 				HashMap<Number, List<AllertaStato>> rr = ll.get(jj);
 				if (rr != null && !rr.isEmpty()) {
-					if (jj == 0)
+					if ((jj%3) == 0)
 						testoAllerta += "CODICE COLORE ROSSO: ";
-					if (jj == 1)
+					if ((jj%3) == 1)
 						testoAllerta += "CODICE COLORE ARANCIONE: ";
-					if (jj == 2)
+					if ((jj%3) == 2)
 						testoAllerta += "CODICE COLORE GIALLO: ";
 					for (Number n : rr.keySet()) {
 						testoAllerta += eventi[n.intValue() - 1];
 						List<AllertaStato> as = rr.get(n);
-						if (n.intValue() < 4 && as.size() == 1)
+						if ((n.intValue() < 4 || nuovoTipo) && as.size() == 1)
 							testoAllerta += ", nella zona ";
-						if (n.intValue() < 4 && as.size() != 1)
+						if ((n.intValue() < 4 || nuovoTipo) && as.size() != 1)
 							testoAllerta += ", nelle zone ";
-						if (n.intValue() >= 4 && as.size() == 1)
+						if (n.intValue() >= 4 && !nuovoTipo && as.size() == 1)
 							testoAllerta += ", nella sottozona ";
-						if (n.intValue() >= 4 && as.size() != 1)
+						if (n.intValue() >= 4 && !nuovoTipo && as.size() != 1)
 							testoAllerta += ", nelle sottozone ";
 
+						List<String> elencoZone = new ArrayList<String>();
 						for (int k = 0; k < as.size(); k++) {
 							int id = (int) as.get(k).getAreaId();
+							if (id<0) id = -id;
 							String abc = null;
 							switch (id) {
 							case 10:
@@ -804,6 +911,9 @@ public class AllertaWorkflowHandler extends BaseWorkflowHandler<Allerta> {
 							case 42:
 								abc = "D2";
 								break;
+							case 43:
+								abc = "D3";
+								break;
 							case 50:
 								abc = "E";
 								break;
@@ -817,10 +927,13 @@ public class AllertaWorkflowHandler extends BaseWorkflowHandler<Allerta> {
 								abc = "F";
 								break;
 							case 61:
-								abc = "F";
+								abc = "F1";
 								break;
 							case 62:
-								abc = "F";
+								abc = "F2";
+								break;
+							case 63:
+								abc = "F3";
 								break;
 							case 70:
 								abc = "G";
@@ -843,13 +956,22 @@ public class AllertaWorkflowHandler extends BaseWorkflowHandler<Allerta> {
 
 							}
 
-							testoAllerta += abc;
+							/*testoAllerta += abc;
 							if (k < as.size() - 1)
+								testoAllerta += ",";*/
+							elencoZone.add(abc);
+						}
+						
+						elencoZone.sort(null);
+						for (int k=0; k<elencoZone.size(); k++) {
+							testoAllerta+=elencoZone.get(k);
+							if (k < elencoZone.size() - 1)
 								testoAllerta += ",";
 						}
 						testoAllerta += "; ";
 					}
 					testoAllerta += "<br/>";
+			
 				}
 			}
 
@@ -860,60 +982,54 @@ public class AllertaWorkflowHandler extends BaseWorkflowHandler<Allerta> {
 			logger.error(e);
 		}
 
-		List<String> gerarchia = new ArrayList<String>();
+		//List<String> gerarchia = new ArrayList<String>();
 
 		// aggiungi i destinatari per zone
-		for (String z : zone.values()) {
-
+		/*for (String z : zone.values()) {
 			try {
-
 				System.out.println("Aggiungo zona " + z);
 				gerarchia.add("Allerta Zona " + z);
-
-				/*
-				 * UserGroup ug = UserGroupLocalServiceUtil.fetchUserGroup(20154, "allerta-"+z);
-				 * if (ug!=null) smsLocalService.creaSMSUserGroup(fromSMS, desc, "allerta",
-				 * a.getNumero(), a.getAllertaId(), ug.getUserGroupId());
-				 */
-
 			} catch (Exception e) {
-				//logInternoLocalService.log("allerta.sendSms", a.getNumero(), e, null);
 				logger.error(e);
 			}
-
 		}
+		
+		if (nuovoTipo) {
+			for (String z : zoneX.values()) {
+				try {
+					System.out.println("Aggiungo zona " + z);
+					gerarchia.add("Allerta Zona " + z);
+				} catch (Exception e) {
+					logger.error(e);
+				}
+			}
+		}*/
+		
+		if (zoneX!=null && !zoneX.isEmpty()) zone.putAll(zoneX);
 
 		try {
 
-			boolean nuovaRubrica = smsLocalService.isNuovaRubricaAttiva();
 
-			if (nuovaRubrica) {
+			List<String> regole = new ArrayList<String>();
 
-				List<String> regole = new ArrayList<String>();
+			String[] macroaree = { "A", "B", "C", "D", "E", "F", "G", "H" };
+			String[] sottoaree = { "1", "2", "3" };
 
-				String[] macroaree = { "A", "B", "C", "D", "E", "F", "G", "H" };
-				String[] sottoaree = { "1", "2" };
-
-				for (String s : macroaree) {
-					if (!zone.containsKey(s))
+			for (String s : macroaree) {
+				if (!zone.containsKey(s))
 						regole.add("Allerta Zona " + s + "->false");
-					else
-						for (String s2 : sottoaree) {
-							if (!zone.containsKey(s + s2))
-								regole.add("Allerta Zona " + s + "/Allerta Zona " + s + s2 + "->false");
-						}
-				}
-				regole.add("*->true");
-
-				smsLocalService.creaNotificaGruppoRubrica(null, fromSMS, desc, "allerta", a.getNumero(),
-						a.getAllertaId(), 20181, "Rubrica Allerta", true, regole);
-
-			} else {
-
-				Organization o = organizationLocalService.fetchOrganization(20154, "Rubrica Allerta");
-				smsLocalService.creaSMSOrganization(fromSMS, desc, "allerta", a.getNumero(), a.getAllertaId(),
-						o.getOrganizationId(), 0, gerarchia);
+				else
+					for (String s2 : sottoaree) {
+						if (!zone.containsKey(s + s2))
+							regole.add("Allerta Zona " + s + "/Allerta Zona " + s + s2 + "->false");
+					}
 			}
+			regole.add("*->true");
+
+			smsLocalService.creaNotificaGruppoRubrica(null, fromSMS, desc, "allerta", a.getNumero(),
+					a.getAllertaId(), 20181, "Rubrica Allerta", true, regole);
+
+			
 
 			smsLocalService.inviaSMS("allerta", a.getNumero(), a.getAllertaId());
 
@@ -952,25 +1068,9 @@ public class AllertaWorkflowHandler extends BaseWorkflowHandler<Allerta> {
 		try {
 			
 			allertaUtils.invocaServizioRefreshAllerta(a.getAllertaId());
-			if (1==1) return;
-			
-			AllertaParametro ap = allertaParametroLocalService
-					.fetchAllertaParametro("ALLERTA_PDF_REFRESH_URL");
-
-			ap = null;
-			
-			String url = (ap != null ? ap.getValore()
-					: "http://localhost:" + portal.getPortalServerPort(false) + "/o/api/allerta/buildAllertaPdf");
-
-			url += ("?tipo=allerta&scope=" + scope + "&id=" + a.getAllertaId());
-
-			System.out.println(url);
-
-			new URL(url).openConnection().getInputStream();
 			
 		} catch (Exception e) {
 			logger.error(e);
-			//logInternoLocalService.log("AllertaWorkflow", "rigeneraPdf", e, null);
 		}
 
 	}
@@ -1069,7 +1169,7 @@ public class AllertaWorkflowHandler extends BaseWorkflowHandler<Allerta> {
 			return;
 		}
 		
-		String urlTest = "<URL_TELEGRAM>";
+		String urlTest = "https://api.telegram.org/bot524869072:AAEvFLpoFBHJUMNLhWn1aOvAPdZYPvkHBhM/sendMessage?chat_id=@AllertaMeteoEMR&text=";
 
 		try {
 			AllertaParametro ap = allertaParametroLocalService.fetchAllertaParametro("ALLERTA_TELEGRAM_URL");
@@ -1094,6 +1194,24 @@ public class AllertaWorkflowHandler extends BaseWorkflowHandler<Allerta> {
 			if (conn != null)
 				conn.disconnect();
 		}
+	}
+	
+	public String getColore(Allerta a) {
+		long peggiore = 0;
+		
+		DynamicQuery dyn = allertaStatoLocalService.dynamicQuery()
+				.add(PropertyFactoryUtil.forName("allertaId").eq(a.getAllertaId()));
+		List<AllertaStato> s = allertaStatoLocalService.dynamicQuery(dyn);
+		
+		for (AllertaStato ss : s) {
+			long  st = ss.getStatoId();
+			if (st!=1000 && st>peggiore) peggiore = st;
+		}
+		
+		if (peggiore==1) return "GIALLA";
+		if (peggiore==2) return "ARANCIONE";
+		if (peggiore==3) return "ROSSA";
+		return "";
 	}
 	
 	@Reference

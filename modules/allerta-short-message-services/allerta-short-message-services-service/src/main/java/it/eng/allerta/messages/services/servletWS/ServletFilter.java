@@ -53,7 +53,7 @@ public class ServletFilter implements Filter {
 		
 		_log.debug("token: "+token);
         
-		if(!token.equals("X")){
+		if(!token.equals("XG8ub2SNXoil5LWmdWUu")){
 			_log.warn("Accesso non autorizzato da ip: " + ip);
 			unauthorized(response, "Invalid authentication token");
 		}else{

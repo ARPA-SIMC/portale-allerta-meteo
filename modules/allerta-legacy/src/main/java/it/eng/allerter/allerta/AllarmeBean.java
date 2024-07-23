@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.portlet.PortletRequest;
 import javax.servlet.http.HttpServletRequest;
@@ -30,6 +31,10 @@ import com.liferay.portal.kernel.service.RoleLocalServiceUtil;
 import com.liferay.portal.kernel.service.UserGroupRoleLocalServiceUtil;
 import com.liferay.portal.kernel.service.UserLocalServiceUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
+
+import it.eng.allerte.model.RubricaGruppo;
+import it.eng.allerte.service.RubricaGruppoGruppiLocalServiceUtil;
+import it.eng.allerte.service.RubricaGruppoLocalServiceUtil;
 import it.eng.bollettino.model.BollettinoParametro;
 import it.eng.bollettino.model.Idrometro;
 import it.eng.bollettino.model.Pluviometro;
@@ -61,6 +66,10 @@ public class AllarmeBean implements Serializable {
 		String sensorePrimario;
 		String altriSensori;
 		String comuni;
+		String fiume;
+		String tratti;
+		boolean problemi=false;
+		
 		public long getIdRegola() {
 			return idRegola;
 		}
@@ -133,8 +142,26 @@ public class AllarmeBean implements Serializable {
 			if (attivo) return "Disattiva";
 			else return "Attiva";
 		}
+		public String getFiume() {
+			return fiume;
+		}
+		public void setFiume(String fiume) {
+			this.fiume = fiume;
+		}
+		public String getTratti() {
+			return tratti;
+		}
+		public void setTratti(String tratti) {
+			this.tratti = tratti;
+		}
+		public boolean isProblemi() {
+			return problemi;
+		}
+		public void setProblemi(boolean problemi) {
+			this.problemi = problemi;
+		}
 		
-
+		
 		
 	}
 	
@@ -152,7 +179,8 @@ public class AllarmeBean implements Serializable {
 		Idrometro idrometro;
 		Pluviometro pluviometro;
 		
-		
+		boolean problemi=false;
+		String nomeStaz=null;
 		
 		public Idrometro getIdrometro() {
 			return idrometro;
@@ -230,6 +258,20 @@ public class AllarmeBean implements Serializable {
 		public boolean getElimina() {
 			return isElimina();
 		}
+		public boolean isProblemi() {
+			return problemi;
+		}
+		public void setProblemi(boolean problemi) {
+			this.problemi = problemi;
+		}
+		public String getNomeStaz() {
+			return nomeStaz;
+		}
+		public void setNomeStaz(String nomeStaz) {
+			this.nomeStaz = nomeStaz;
+		}
+		
+		
 		
 	}
 	
@@ -298,13 +340,33 @@ public class AllarmeBean implements Serializable {
 	boolean canModifica;
 	boolean canDisattiva;
 	
+	Map<String,Boolean> condizioniProblemi;
+	boolean soloConProblemi = false;
+	
 	public AllarmeBean(long userId) {
 		init(userId);
 	}
 	
 	public void caricaRegole() {
+		
+		List problemi = BollettinoLocalServiceUtil.eseguiQueryGenericaLista("select distinct rac.idregola,rac.idstazione,rac.idvariabile from bollettino_regolaallarmecondizione rac left join " + 
+				"bollettino_stazione s on rac.idstazione = s.id_ left join " + 
+				"bollettino_stazionevariabile sv on sv.idstazione=rac.idstazione and sv.idvariabile=rac.idvariabile " + 
+				"where s.id_ is null or not s.attivo or sv.id_ is null");
+		
+		Map<Long,Boolean> conProblemi = new HashMap<Long, Boolean>();
+		condizioniProblemi = new HashMap<String, Boolean>();
+		for (Object oo : problemi) {
+			Object[] ooo = (Object[])oo;
+			if (ooo[0]==null || ooo[1]==null || ooo[2]==null) continue;
+			Long idd = new Long(ooo[0].toString());
+			conProblemi.put(idd, true);
+			
+			condizioniProblemi.put(ooo[1].toString()+ooo[2].toString(),true);
+		}
+		
 		regole = new ArrayList<RegolaManager>();
-		List ll = BollettinoLocalServiceUtil.eseguiQueryGenericaLista("select * from regole_allarme_vw");
+		List ll = BollettinoLocalServiceUtil.eseguiQueryGenericaLista("select * from regole_allarme2_vw");
 		
 		for (Object o : ll) {
 			Object[] o2 = (Object[])o;
@@ -318,8 +380,18 @@ public class AllarmeBean implements Serializable {
 			if (o2[6]!=null) rm.setSensorePrimario(o2[6].toString());
 			if (o2[7]!=null) rm.setAltriSensori(o2[7].toString());
 			if (o2[8]!=null) rm.setComuni(o2[8].toString());
+			if (o2[9]!=null) rm.setFiume(o2[9].toString());
+			if (o2[10]!=null) rm.setTratti(o2[10].toString());
+			
+			if (conProblemi.containsKey(rm.getIdRegola()))
+				rm.setProblemi(true);
 			
 			regole.add(rm);
+		}
+		
+		for (Object pp : problemi) {
+			Object[] oo = (Object[])pp;
+			
 		}
 		
 		filtra();
@@ -342,6 +414,9 @@ public class AllarmeBean implements Serializable {
 			else if (rm.sensorePrimario!=null && rm.sensorePrimario.toUpperCase().contains(f2)) includi = true;
 			else if (rm.altriSensori!=null && rm.altriSensori.toUpperCase().contains(f2)) includi = true;
 			else if (rm.comuni!=null && rm.comuni.toUpperCase().contains(f2)) includi = true;
+			
+			if (soloConProblemi && !rm.problemi) includi=false;
+			
 			
 			if (includi) filtrate.add(rm);
 		}
@@ -451,7 +526,9 @@ public class AllarmeBean implements Serializable {
 				List<Stazione> sv = StazioneLocalServiceUtil.getStazioni(s);
 				
 				for (Stazione st : sv) {
-					ss.add(new SelectItem(st.getId(),st.getName()+" ("+st.getId()+")"));
+					boolean cessato = false;
+					if (condizioniProblemi.containsKey(st.getId()+s)) cessato=true;
+					ss.add(new SelectItem(st.getId(),st.getName()+" ("+st.getId()+")"+(cessato?" - CESSATO":"")));
 				}
 				
 				stazioniVariabili.put(si.getValue().toString(), ss);
@@ -530,6 +607,15 @@ public class AllarmeBean implements Serializable {
 				c.condizione = rac;
 				c.variabile = rac.getIdVariabile();
 				c.stazione = rac.getIdStazione();
+				c.problemi = condizioniProblemi.containsKey(c.stazione+c.variabile);
+				if (c.problemi) {
+					//cerca se hai almeno il nome stazione
+					c.nomeStaz = "";
+					try {
+						Stazione ssss = StazioneLocalServiceUtil.fetchStazione(c.stazione);
+						if (ssss!=null) c.nomeStaz = ssss.getName();
+					} catch (Exception e) {}
+				}
 				c.lettera = rac.getLettera();
 				c.soglia = ""+rac.getSoglia();
 				c.index = inde;
@@ -1158,15 +1244,32 @@ public class AllarmeBean implements Serializable {
 			
 			if (org==null || org.equals("")) return "NOME RUBRICA NON SPECIFICATO";
 			
-			Organization o = OrganizationLocalServiceUtil.fetchOrganization(20154, org);
-			
+			//Organization o = OrganizationLocalServiceUtil.fetchOrganization(20154, org);
+			RubricaGruppo o = RubricaGruppoLocalServiceUtil.getGroupForOwnerByName(20181L, org);
 			if (o==null) return "\""+org+"\" NON ESISTE IN RUBRICA";
 			
-			List<User> u = UserLocalServiceUtil.getOrganizationUsers(o.getOrganizationId());
 			String comuni = null;
+			ArrayList<Object[]> u = RubricaGruppoGruppiLocalServiceUtil.getGruppiFigli(o.getID_GRUPPO());
+			for (Object[] gr : u) {
+				RubricaGruppo o2 = RubricaGruppoLocalServiceUtil.fetchRubricaGruppo((Long)gr[1]);
+				if (o2!=null) {
+					String n = o2.getNOME();
+					if (n==null) continue;
+					n = n.toUpperCase();
+					if (n.startsWith("COMUNE")) {
+						String sub = n.substring(7);
+						if (comuni==null) comuni = sub; else comuni+=", "+sub;
+					} else
+					if (n.startsWith("UNIONE")) {
+						if (comuni==null) comuni = n; else comuni+=", "+n;
+					}
+				}
+			}
+			//List<User> u = UserLocalServiceUtil.getOrganizationUsers(o.getOrganizationId());
 			
 			
-			if (u!=null) {
+			
+			/*if (u!=null) {
 				for (User uu : u) {
 					List<UserGroupRole> l = UserGroupRoleLocalServiceUtil.getUserGroupRoles(uu.getUserId());
 					if (l!=null) {
@@ -1182,10 +1285,10 @@ public class AllarmeBean implements Serializable {
 						}
 					}
 				}
-			}
+			}*/
 			
-			if (comuni==null) return "\""+org+"\" esiste ma non ha sindaci associati";
-			else return "\""+org+"\" esiste e ha i seguenti sindaci associati: " + comuni;
+			if (comuni==null) return "\""+org+"\" esiste ma non ha comuni associati";
+			else return "\""+org+"\" esiste e ha i seguenti comuni associati: " + comuni;
 			
 		} catch (Exception e) {
 			

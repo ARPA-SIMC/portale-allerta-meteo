@@ -24,6 +24,8 @@ am.MapDataScenarioAnimazioneMare = (function($){
     MapDataScenarioAnimazioneMare.prototype.renderTo = function(imageViewer, asyncUpdateCallback){
         if( console)  console.log("[MapDataScenarioAnimazioneMare.renderTo] Sto per essere aggiunto alla mappa o refreshato");
     
+        
+        
         if( imageViewer )
          this.viewer = imageViewer;
     
@@ -62,7 +64,8 @@ am.MapDataScenarioAnimazioneMare = (function($){
             this.refreshInterval = setTimeout( this.refresh.bind(this), 5*MINUTES);
 
         }).bind(this));
-
+        
+        
     }
 
     /**

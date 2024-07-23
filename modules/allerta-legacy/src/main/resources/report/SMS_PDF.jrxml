@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="SMS" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="822" leftMargin="10" rightMargin="10" topMargin="10" bottomMargin="10">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="SMS" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="822" leftMargin="10" rightMargin="10" topMargin="10" bottomMargin="10" uuid="7ba9b339-d590-4103-b693-976b96356c1e">
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
@@ -82,7 +82,7 @@ order by nomedestinatario,datainvio]]>
 	<pageHeader>
 		<band height="20" splitType="Stretch">
 			<staticText>
-				<reportElement x="0" y="0" width="49" height="20"/>
+				<reportElement x="0" y="0" width="49" height="20" uuid="587da1c3-428f-416a-b7c8-329e6ed3b9ab"/>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -96,7 +96,7 @@ order by nomedestinatario,datainvio]]>
 				<text><![CDATA[Tipo]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="49" y="0" width="62" height="20"/>
+				<reportElement x="49" y="0" width="62" height="20" uuid="ab94f85a-ab7c-44b6-88e7-d3182b3e5bcd"/>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -110,7 +110,7 @@ order by nomedestinatario,datainvio]]>
 				<text><![CDATA[Sottotipo]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="111" y="0" width="227" height="20"/>
+				<reportElement x="111" y="0" width="227" height="20" uuid="516a43e3-9fb8-4cf5-bde1-252b9cd7d93e"/>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -124,7 +124,7 @@ order by nomedestinatario,datainvio]]>
 				<text><![CDATA[Destinatario]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="338" y="0" width="74" height="20"/>
+				<reportElement x="338" y="0" width="74" height="20" uuid="d5df19c2-c0c3-4a47-9cd1-ab0782008194"/>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -138,7 +138,7 @@ order by nomedestinatario,datainvio]]>
 				<text><![CDATA[Numero]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="412" y="0" width="105" height="20"/>
+				<reportElement x="412" y="0" width="105" height="20" uuid="56175f32-f8f0-409a-a181-06c295f06e35"/>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -152,7 +152,7 @@ order by nomedestinatario,datainvio]]>
 				<text><![CDATA[Stato]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="517" y="0" width="76" height="20"/>
+				<reportElement x="517" y="0" width="76" height="20" uuid="e009ab60-ef50-41b8-8dbb-7a4261ea9912"/>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -166,7 +166,7 @@ order by nomedestinatario,datainvio]]>
 				<text><![CDATA[Generato]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="593" y="0" width="76" height="20"/>
+				<reportElement x="593" y="0" width="76" height="20" uuid="06a9fe7b-74bb-4ecf-8c6b-672744fc9884"/>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -180,7 +180,7 @@ order by nomedestinatario,datainvio]]>
 				<text><![CDATA[Spedito]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="669" y="0" width="76" height="20"/>
+				<reportElement x="669" y="0" width="76" height="20" uuid="139c1385-5ebb-4918-b257-1e16fd8a3429"/>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -194,7 +194,7 @@ order by nomedestinatario,datainvio]]>
 				<text><![CDATA[Consegnato]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="745" y="0" width="76" height="20"/>
+				<reportElement x="745" y="0" width="76" height="20" uuid="fbaba1c4-9852-4f9b-af42-0ad1a8a7f0ac"/>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -212,39 +212,39 @@ order by nomedestinatario,datainvio]]>
 	<detail>
 		<band height="20" splitType="Stretch">
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="0" y="0" width="49" height="20" isPrintWhenDetailOverflows="true"/>
+				<reportElement x="0" y="0" width="49" height="20" isPrintWhenDetailOverflows="true" uuid="9576693e-9bf7-4c5c-8842-74b7b42bdfce"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{tipo}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{tipo}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="49" y="0" width="62" height="20" isPrintWhenDetailOverflows="true"/>
+				<reportElement x="49" y="0" width="62" height="20" isPrintWhenDetailOverflows="true" uuid="a97fcb2c-b9be-45da-8b14-6309f50e5223"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{sottotipo}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{sottotipo}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="111" y="0" width="227" height="20" isPrintWhenDetailOverflows="true"/>
+				<reportElement x="111" y="0" width="227" height="20" isPrintWhenDetailOverflows="true" uuid="6e1f07e6-955e-468b-9954-2385137168f3"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{nomedestinatario}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{nomedestinatario}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="338" y="0" width="74" height="20" isPrintWhenDetailOverflows="true"/>
+				<reportElement x="338" y="0" width="74" height="20" isPrintWhenDetailOverflows="true" uuid="19a748d2-0607-40e0-a3b2-2e83910956ed"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{numero}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{numero}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="412" y="0" width="105" height="20" isPrintWhenDetailOverflows="true"/>
+				<reportElement x="412" y="0" width="105" height="20" isPrintWhenDetailOverflows="true" uuid="ba5b5930-b453-4ffb-8811-171d7051436a"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[($F{stato}.longValue()==0?"In preparazione":
+				<textFieldExpression><![CDATA[($F{stato}.longValue()==0?"In preparazione":
    $F{stato}.longValue()==1?"Generato":
    $F{stato}.longValue()==2?"In corso di spedizione":
    $F{stato}.longValue()==3?"Spedito":
@@ -255,32 +255,32 @@ order by nomedestinatario,datainvio]]>
    $F{stato}.longValue()==5?"Invio fallito":"")]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy HH:mm" isBlankWhenNull="true">
-				<reportElement x="517" y="0" width="76" height="20" isPrintWhenDetailOverflows="true"/>
+				<reportElement x="517" y="0" width="76" height="20" isPrintWhenDetailOverflows="true" uuid="86d45005-8b8e-4e67-831e-04eb1f1f85fd"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression class="java.util.Date"><![CDATA[$F{datainvio}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{datainvio}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy HH:mm" isBlankWhenNull="true">
-				<reportElement x="593" y="0" width="76" height="20" isPrintWhenDetailOverflows="true"/>
+				<reportElement x="593" y="0" width="76" height="20" isPrintWhenDetailOverflows="true" uuid="c9732675-7d1d-4c43-83dc-e1f9dcd133a0"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression class="java.util.Date"><![CDATA[$F{dataack}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{dataack}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy HH:mm" isBlankWhenNull="true">
-				<reportElement x="669" y="0" width="76" height="20" isPrintWhenDetailOverflows="true"/>
+				<reportElement x="669" y="0" width="76" height="20" isPrintWhenDetailOverflows="true" uuid="02709df7-19ed-4d28-90ce-657be4433c3f"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression class="java.util.Date"><![CDATA[$F{dataricevuta}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{dataricevuta}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy HH:mm" isBlankWhenNull="true">
-				<reportElement x="745" y="0" width="76" height="20" isPrintWhenDetailOverflows="true"/>
+				<reportElement x="745" y="0" width="76" height="20" isPrintWhenDetailOverflows="true" uuid="0faed852-314d-4e43-840a-90a778509776"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{codiceerrore}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{codiceerrore}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

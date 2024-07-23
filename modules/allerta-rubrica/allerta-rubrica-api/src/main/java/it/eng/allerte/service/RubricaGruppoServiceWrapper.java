@@ -72,9 +72,9 @@ public class RubricaGruppoServiceWrapper
 
 	@Override
 	public java.util.Map<String, Object> getGroups(
-		String name, int limit, int offset) {
+		String name, Long categoria, int limit, int offset) {
 
-		return _rubricaGruppoService.getGroups(name, limit, offset);
+		return _rubricaGruppoService.getGroups(name, categoria, limit, offset);
 	}
 
 	/**

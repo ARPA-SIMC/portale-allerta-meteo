@@ -64,6 +64,7 @@ public class AllertaSoap implements Serializable {
 		soapModel.setTitolo(model.getTitolo());
 		soapModel.setTipoAllerta(model.isTipoAllerta());
 		soapModel.setHash(model.getHash());
+		soapModel.setSintesiBriefing(model.getSintesiBriefing());
 
 		return soapModel;
 	}
@@ -361,6 +362,14 @@ public class AllertaSoap implements Serializable {
 		_hash = hash;
 	}
 
+	public String getSintesiBriefing() {
+		return _sintesiBriefing;
+	}
+
+	public void setSintesiBriefing(String sintesiBriefing) {
+		_sintesiBriefing = sintesiBriefing;
+	}
+
 	private String _uuid;
 	private long _allertaId;
 	private long _groupId;
@@ -391,5 +400,6 @@ public class AllertaSoap implements Serializable {
 	private String _titolo;
 	private boolean _tipoAllerta;
 	private String _hash;
+	private String _sintesiBriefing;
 
 }

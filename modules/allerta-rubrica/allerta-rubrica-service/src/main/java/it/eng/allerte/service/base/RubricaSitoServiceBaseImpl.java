@@ -30,6 +30,7 @@ import com.liferay.portal.spring.extender.service.ServiceReference;
 import it.eng.allerte.model.RubricaSito;
 import it.eng.allerte.service.RubricaSitoService;
 import it.eng.allerte.service.persistence.RubricaCanalePersistence;
+import it.eng.allerte.service.persistence.RubricaCategoriaPersistence;
 import it.eng.allerte.service.persistence.RubricaContattoFinder;
 import it.eng.allerte.service.persistence.RubricaContattoPersistence;
 import it.eng.allerte.service.persistence.RubricaGruppoFinder;
@@ -135,6 +136,72 @@ public abstract class RubricaSitoServiceBaseImpl
 		RubricaCanalePersistence rubricaCanalePersistence) {
 
 		this.rubricaCanalePersistence = rubricaCanalePersistence;
+	}
+
+	/**
+	 * Returns the rubrica categoria local service.
+	 *
+	 * @return the rubrica categoria local service
+	 */
+	public it.eng.allerte.service.RubricaCategoriaLocalService
+		getRubricaCategoriaLocalService() {
+
+		return rubricaCategoriaLocalService;
+	}
+
+	/**
+	 * Sets the rubrica categoria local service.
+	 *
+	 * @param rubricaCategoriaLocalService the rubrica categoria local service
+	 */
+	public void setRubricaCategoriaLocalService(
+		it.eng.allerte.service.RubricaCategoriaLocalService
+			rubricaCategoriaLocalService) {
+
+		this.rubricaCategoriaLocalService = rubricaCategoriaLocalService;
+	}
+
+	/**
+	 * Returns the rubrica categoria remote service.
+	 *
+	 * @return the rubrica categoria remote service
+	 */
+	public it.eng.allerte.service.RubricaCategoriaService
+		getRubricaCategoriaService() {
+
+		return rubricaCategoriaService;
+	}
+
+	/**
+	 * Sets the rubrica categoria remote service.
+	 *
+	 * @param rubricaCategoriaService the rubrica categoria remote service
+	 */
+	public void setRubricaCategoriaService(
+		it.eng.allerte.service.RubricaCategoriaService
+			rubricaCategoriaService) {
+
+		this.rubricaCategoriaService = rubricaCategoriaService;
+	}
+
+	/**
+	 * Returns the rubrica categoria persistence.
+	 *
+	 * @return the rubrica categoria persistence
+	 */
+	public RubricaCategoriaPersistence getRubricaCategoriaPersistence() {
+		return rubricaCategoriaPersistence;
+	}
+
+	/**
+	 * Sets the rubrica categoria persistence.
+	 *
+	 * @param rubricaCategoriaPersistence the rubrica categoria persistence
+	 */
+	public void setRubricaCategoriaPersistence(
+		RubricaCategoriaPersistence rubricaCategoriaPersistence) {
+
+		this.rubricaCategoriaPersistence = rubricaCategoriaPersistence;
 	}
 
 	/**
@@ -1246,6 +1313,19 @@ public abstract class RubricaSitoServiceBaseImpl
 
 	@BeanReference(type = RubricaCanalePersistence.class)
 	protected RubricaCanalePersistence rubricaCanalePersistence;
+
+	@BeanReference(
+		type = it.eng.allerte.service.RubricaCategoriaLocalService.class
+	)
+	protected it.eng.allerte.service.RubricaCategoriaLocalService
+		rubricaCategoriaLocalService;
+
+	@BeanReference(type = it.eng.allerte.service.RubricaCategoriaService.class)
+	protected it.eng.allerte.service.RubricaCategoriaService
+		rubricaCategoriaService;
+
+	@BeanReference(type = RubricaCategoriaPersistence.class)
+	protected RubricaCategoriaPersistence rubricaCategoriaPersistence;
 
 	@BeanReference(
 		type = it.eng.allerte.service.RubricaContattoLocalService.class

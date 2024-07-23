@@ -1,0 +1,120 @@
+<?xml version="1.0"?>
+<!DOCTYPE service-builder PUBLIC "-//Liferay//DTD Service Builder 7.1.0//EN" "http://www.liferay.com/dtd/liferay-service-builder_7_1_0.dtd">
+
+<service-builder  package-path="allerta.catasto">
+	<namespace>CATASTO</namespace>
+	<!--<entity data-source="sampleDataSource" local-service="true" name="Foo" remote-service="false" session-factory="sampleSessionFactory" table="foo" tx-manager="sampleTransactionManager uuid="true"">-->
+	<entity local-service="true" name="Segnalazione" remote-service="true" >
+
+		<!-- PK fields -->
+
+		<column name="id" primary="true" type="long" />
+
+		<!-- Group instance -->
+
+		<column name="groupId" type="long" />
+
+		<!-- Audit fields -->
+
+		<column name="companyId" type="long" />
+		<column name="userId" type="long" />
+		<column name="userName" type="String" />
+		<column name="createDate" type="Date" />
+		<column name="modifiedDate" type="Date" />
+
+		<!-- Other fields -->
+
+		<column name="documentoAssociato" type="long" />
+		<column name="dataEvento" type="Date" />
+		<column name="enteSegnalante" type="String" />
+		<column name="fonte" type="long" />
+		<column name="categoria" type="long" />
+		<column name="sottocategoria" type="long" />
+		<column name="riferimento" type="String" />
+		<column name="descrizione" type="String" />
+		<column name="note" type="String" />
+		<column name="area" type="String" />
+		<column name="provincia" type="String" />
+		<column name="comune" type="String" />
+		<column name="indirizzo" type="String" />
+		<column name="civico" type="String" />
+		<column name="lat" type="double" />
+		<column name="lon" type="double" />
+		<column name="effetti" type="long" />
+		<column name="effettiSub" type="long" />
+
+		<!-- Order -->
+
+		<order by="asc">
+			<order-column name="id" />
+		</order>
+
+		<!-- Finder methods -->
+
+		<finder name="DocumentoAssociato" return-type="Collection">
+			<finder-column name="documentoAssociato" />
+		</finder>
+
+		<!-- References -->
+
+	
+	</entity>
+	
+	
+	<entity local-service="true" name="Fonte" remote-service="true" >
+	
+		<column name="id" primary="true" type="long" />
+		<column name="descrizione" type="String" />
+
+		<order by="asc">
+			<order-column name="id" />
+		</order>
+	
+	</entity>
+	
+	<entity local-service="true" name="Categoria" remote-service="true" >
+	
+		<column name="id" primary="true" type="long" />
+		<column name="descrizione" type="String" />
+
+		<order by="asc">
+			<order-column name="id" />
+		</order>
+	
+	</entity>
+	
+	<entity local-service="true" name="Sottocategoria" remote-service="true" >
+	
+		<column name="id" primary="true" type="long" />
+		<column name="idCategoria" primary="true" type="long" />
+		<column name="descrizione" type="String" />
+
+		<order by="asc">
+			<order-column name="id" />
+		</order>
+	
+	</entity>
+	
+	<entity local-service="true" name="Effetti" remote-service="true" >
+	
+		<column name="id" primary="true" type="long" />
+		<column name="descrizione" type="String" />
+
+		<order by="asc">
+			<order-column name="id" />
+		</order>
+	
+	</entity>
+	
+	<entity local-service="true" name="EffettiSub" remote-service="true" >
+	
+		<column name="id" primary="true" type="long" />
+		<column name="idEffetti" primary="true" type="long" />
+		<column name="descrizione" type="String" />
+
+		<order by="asc">
+			<order-column name="id" />
+		</order>
+	
+	</entity>
+</service-builder>
