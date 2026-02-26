@@ -1,31 +1,16 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.animaeteo.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -36,22 +21,12 @@ import java.util.Objects;
  * @see AnimeteoSmallImg
  * @generated
  */
-@ProviderType
 public class AnimeteoSmallImgWrapper
+	extends BaseModelWrapper<AnimeteoSmallImg>
 	implements AnimeteoSmallImg, ModelWrapper<AnimeteoSmallImg> {
 
 	public AnimeteoSmallImgWrapper(AnimeteoSmallImg animeteoSmallImg) {
-		_animeteoSmallImg = animeteoSmallImg;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return AnimeteoSmallImg.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return AnimeteoSmallImg.class.getName();
+		super(animeteoSmallImg);
 	}
 
 	@Override
@@ -101,16 +76,8 @@ public class AnimeteoSmallImgWrapper
 	}
 
 	@Override
-	public Object clone() {
-		return new AnimeteoSmallImgWrapper(
-			(AnimeteoSmallImg)_animeteoSmallImg.clone());
-	}
-
-	@Override
-	public int compareTo(
-		it.eng.animaeteo.model.AnimeteoSmallImg animeteoSmallImg) {
-
-		return _animeteoSmallImg.compareTo(animeteoSmallImg);
+	public AnimeteoSmallImg cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -120,12 +87,7 @@ public class AnimeteoSmallImgWrapper
 	 */
 	@Override
 	public String getData() {
-		return _animeteoSmallImg.getData();
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _animeteoSmallImg.getExpandoBridge();
+		return model.getData();
 	}
 
 	/**
@@ -135,7 +97,7 @@ public class AnimeteoSmallImgWrapper
 	 */
 	@Override
 	public long getId() {
-		return _animeteoSmallImg.getId();
+		return model.getId();
 	}
 
 	/**
@@ -145,7 +107,7 @@ public class AnimeteoSmallImgWrapper
 	 */
 	@Override
 	public Date getInserted() {
-		return _animeteoSmallImg.getInserted();
+		return model.getInserted();
 	}
 
 	/**
@@ -155,7 +117,7 @@ public class AnimeteoSmallImgWrapper
 	 */
 	@Override
 	public String getName() {
-		return _animeteoSmallImg.getName();
+		return model.getName();
 	}
 
 	/**
@@ -165,12 +127,7 @@ public class AnimeteoSmallImgWrapper
 	 */
 	@Override
 	public long getPrimaryKey() {
-		return _animeteoSmallImg.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _animeteoSmallImg.getPrimaryKeyObj();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -180,37 +137,12 @@ public class AnimeteoSmallImgWrapper
 	 */
 	@Override
 	public String getType() {
-		return _animeteoSmallImg.getType();
-	}
-
-	@Override
-	public int hashCode() {
-		return _animeteoSmallImg.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _animeteoSmallImg.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _animeteoSmallImg.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _animeteoSmallImg.isNew();
+		return model.getType();
 	}
 
 	@Override
 	public void persist() {
-		_animeteoSmallImg.persist();
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_animeteoSmallImg.setCachedModel(cachedModel);
+		model.persist();
 	}
 
 	/**
@@ -220,24 +152,7 @@ public class AnimeteoSmallImgWrapper
 	 */
 	@Override
 	public void setData(String data) {
-		_animeteoSmallImg.setData(data);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_animeteoSmallImg.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_animeteoSmallImg.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_animeteoSmallImg.setExpandoBridgeAttributes(serviceContext);
+		model.setData(data);
 	}
 
 	/**
@@ -247,7 +162,7 @@ public class AnimeteoSmallImgWrapper
 	 */
 	@Override
 	public void setId(long id) {
-		_animeteoSmallImg.setId(id);
+		model.setId(id);
 	}
 
 	/**
@@ -257,7 +172,7 @@ public class AnimeteoSmallImgWrapper
 	 */
 	@Override
 	public void setInserted(Date inserted) {
-		_animeteoSmallImg.setInserted(inserted);
+		model.setInserted(inserted);
 	}
 
 	/**
@@ -267,12 +182,7 @@ public class AnimeteoSmallImgWrapper
 	 */
 	@Override
 	public void setName(String name) {
-		_animeteoSmallImg.setName(name);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_animeteoSmallImg.setNew(n);
+		model.setName(name);
 	}
 
 	/**
@@ -282,12 +192,7 @@ public class AnimeteoSmallImgWrapper
 	 */
 	@Override
 	public void setPrimaryKey(long primaryKey) {
-		_animeteoSmallImg.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_animeteoSmallImg.setPrimaryKeyObj(primaryKeyObj);
+		model.setPrimaryKey(primaryKey);
 	}
 
 	/**
@@ -297,79 +202,17 @@ public class AnimeteoSmallImgWrapper
 	 */
 	@Override
 	public void setType(String type) {
-		_animeteoSmallImg.setType(type);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<it.eng.animaeteo.model.AnimeteoSmallImg> toCacheModel() {
-
-		return _animeteoSmallImg.toCacheModel();
-	}
-
-	@Override
-	public it.eng.animaeteo.model.AnimeteoSmallImg toEscapedModel() {
-		return new AnimeteoSmallImgWrapper(_animeteoSmallImg.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _animeteoSmallImg.toString();
-	}
-
-	@Override
-	public it.eng.animaeteo.model.AnimeteoSmallImg toUnescapedModel() {
-		return new AnimeteoSmallImgWrapper(
-			_animeteoSmallImg.toUnescapedModel());
+		model.setType(type);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _animeteoSmallImg.toXmlString();
+		return model.toXmlString();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-
-		if (!(obj instanceof AnimeteoSmallImgWrapper)) {
-			return false;
-		}
-
-		AnimeteoSmallImgWrapper animeteoSmallImgWrapper =
-			(AnimeteoSmallImgWrapper)obj;
-
-		if (Objects.equals(
-				_animeteoSmallImg, animeteoSmallImgWrapper._animeteoSmallImg)) {
-
-			return true;
-		}
-
-		return false;
+	protected AnimeteoSmallImgWrapper wrap(AnimeteoSmallImg animeteoSmallImg) {
+		return new AnimeteoSmallImgWrapper(animeteoSmallImg);
 	}
-
-	@Override
-	public AnimeteoSmallImg getWrappedModel() {
-		return _animeteoSmallImg;
-	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _animeteoSmallImg.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _animeteoSmallImg.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_animeteoSmallImg.resetOriginalValues();
-	}
-
-	private final AnimeteoSmallImg _animeteoSmallImg;
 
 }

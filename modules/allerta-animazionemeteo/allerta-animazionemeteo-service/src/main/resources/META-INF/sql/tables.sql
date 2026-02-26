@@ -3,7 +3,7 @@ create table animeteo_AnimeteoImg (
 	name VARCHAR(75) null,
 	type_ VARCHAR(75) null,
 	inserted DATE null,
-	data_ TEXT null
+	data_ VARCHAR(75) null
 );
 
 create table animeteo_AnimeteoSmallImg (
@@ -11,5 +11,5 @@ create table animeteo_AnimeteoSmallImg (
 	name VARCHAR(75) null,
 	type_ VARCHAR(75) null,
 	inserted DATE null,
-	data_ TEXT null
+	data_ VARCHAR(75) null
 );

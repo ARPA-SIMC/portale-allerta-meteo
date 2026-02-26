@@ -1,24 +1,23 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.animazione.image.service;
 
-import aQute.bnd.annotation.ProviderType;
+import com.liferay.petra.sql.dsl.query.DSLQuery;
+import com.liferay.portal.kernel.dao.orm.DynamicQuery;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.model.PersistedModel;
+import com.liferay.portal.kernel.module.service.Snapshot;
+import com.liferay.portal.kernel.util.OrderByComparator;
 
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.util.tracker.ServiceTracker;
+import it.eng.animazione.image.model.PioggiaCumulativa;
+
+import java.io.Serializable;
+
+import java.util.List;
 
 /**
  * Provides the local service utility for PioggiaCumulativa. This utility wraps
@@ -32,7 +31,6 @@ import org.osgi.util.tracker.ServiceTracker;
  * @see PioggiaCumulativaLocalService
  * @generated
  */
-@ProviderType
 public class PioggiaCumulativaLocalServiceUtil {
 
 	/*
@@ -44,14 +42,27 @@ public class PioggiaCumulativaLocalServiceUtil {
 	/**
 	 * Adds the pioggia cumulativa to the database. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect PioggiaCumulativaLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param pioggiaCumulativa the pioggia cumulativa
 	 * @return the pioggia cumulativa that was added
 	 */
-	public static it.eng.animazione.image.model.PioggiaCumulativa
-		addPioggiaCumulativa(
-			it.eng.animazione.image.model.PioggiaCumulativa pioggiaCumulativa) {
+	public static PioggiaCumulativa addPioggiaCumulativa(
+		PioggiaCumulativa pioggiaCumulativa) {
 
 		return getService().addPioggiaCumulativa(pioggiaCumulativa);
+	}
+
+	/**
+	 * @throws PortalException
+	 */
+	public static PersistedModel createPersistedModel(
+			Serializable primaryKeyObj)
+		throws PortalException {
+
+		return getService().createPersistedModel(primaryKeyObj);
 	}
 
 	/**
@@ -60,19 +71,16 @@ public class PioggiaCumulativaLocalServiceUtil {
 	 * @param id the primary key for the new pioggia cumulativa
 	 * @return the new pioggia cumulativa
 	 */
-	public static it.eng.animazione.image.model.PioggiaCumulativa
-		createPioggiaCumulativa(long id) {
-
+	public static PioggiaCumulativa createPioggiaCumulativa(long id) {
 		return getService().createPioggiaCumulativa(id);
 	}
 
 	/**
 	 * @throws PortalException
 	 */
-	public static com.liferay.portal.kernel.model.PersistedModel
-			deletePersistedModel(
-				com.liferay.portal.kernel.model.PersistedModel persistedModel)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	public static PersistedModel deletePersistedModel(
+			PersistedModel persistedModel)
+		throws PortalException {
 
 		return getService().deletePersistedModel(persistedModel);
 	}
@@ -80,13 +88,16 @@ public class PioggiaCumulativaLocalServiceUtil {
 	/**
 	 * Deletes the pioggia cumulativa with the primary key from the database. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect PioggiaCumulativaLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param id the primary key of the pioggia cumulativa
 	 * @return the pioggia cumulativa that was removed
 	 * @throws PortalException if a pioggia cumulativa with the primary key could not be found
 	 */
-	public static it.eng.animazione.image.model.PioggiaCumulativa
-			deletePioggiaCumulativa(long id)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	public static PioggiaCumulativa deletePioggiaCumulativa(long id)
+		throws PortalException {
 
 		return getService().deletePioggiaCumulativa(id);
 	}
@@ -94,19 +105,28 @@ public class PioggiaCumulativaLocalServiceUtil {
 	/**
 	 * Deletes the pioggia cumulativa from the database. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect PioggiaCumulativaLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param pioggiaCumulativa the pioggia cumulativa
 	 * @return the pioggia cumulativa that was removed
 	 */
-	public static it.eng.animazione.image.model.PioggiaCumulativa
-		deletePioggiaCumulativa(
-			it.eng.animazione.image.model.PioggiaCumulativa pioggiaCumulativa) {
+	public static PioggiaCumulativa deletePioggiaCumulativa(
+		PioggiaCumulativa pioggiaCumulativa) {
 
 		return getService().deletePioggiaCumulativa(pioggiaCumulativa);
 	}
 
-	public static com.liferay.portal.kernel.dao.orm.DynamicQuery
-		dynamicQuery() {
+	public static <T> T dslQuery(DSLQuery dslQuery) {
+		return getService().dslQuery(dslQuery);
+	}
 
+	public static int dslQueryCount(DSLQuery dslQuery) {
+		return getService().dslQueryCount(dslQuery);
+	}
+
+	public static DynamicQuery dynamicQuery() {
 		return getService().dynamicQuery();
 	}
 
@@ -116,9 +136,7 @@ public class PioggiaCumulativaLocalServiceUtil {
 	 * @param dynamicQuery the dynamic query
 	 * @return the matching rows
 	 */
-	public static <T> java.util.List<T> dynamicQuery(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery) {
-
+	public static <T> List<T> dynamicQuery(DynamicQuery dynamicQuery) {
 		return getService().dynamicQuery(dynamicQuery);
 	}
 
@@ -126,7 +144,7 @@ public class PioggiaCumulativaLocalServiceUtil {
 	 * Performs a dynamic query on the database and returns a range of the matching rows.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>it.eng.animazione.image.model.impl.PioggiaCumulativaModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>it.eng.animazione.image.model.impl.PioggiaCumulativaModelImpl</code>.
 	 * </p>
 	 *
 	 * @param dynamicQuery the dynamic query
@@ -134,9 +152,8 @@ public class PioggiaCumulativaLocalServiceUtil {
 	 * @param end the upper bound of the range of model instances (not inclusive)
 	 * @return the range of matching rows
 	 */
-	public static <T> java.util.List<T> dynamicQuery(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery, int start,
-		int end) {
+	public static <T> List<T> dynamicQuery(
+		DynamicQuery dynamicQuery, int start, int end) {
 
 		return getService().dynamicQuery(dynamicQuery, start, end);
 	}
@@ -145,7 +162,7 @@ public class PioggiaCumulativaLocalServiceUtil {
 	 * Performs a dynamic query on the database and returns an ordered range of the matching rows.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>it.eng.animazione.image.model.impl.PioggiaCumulativaModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>it.eng.animazione.image.model.impl.PioggiaCumulativaModelImpl</code>.
 	 * </p>
 	 *
 	 * @param dynamicQuery the dynamic query
@@ -154,10 +171,9 @@ public class PioggiaCumulativaLocalServiceUtil {
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching rows
 	 */
-	public static <T> java.util.List<T> dynamicQuery(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery, int start,
-		int end,
-		com.liferay.portal.kernel.util.OrderByComparator<T> orderByComparator) {
+	public static <T> List<T> dynamicQuery(
+		DynamicQuery dynamicQuery, int start, int end,
+		OrderByComparator<T> orderByComparator) {
 
 		return getService().dynamicQuery(
 			dynamicQuery, start, end, orderByComparator);
@@ -169,9 +185,7 @@ public class PioggiaCumulativaLocalServiceUtil {
 	 * @param dynamicQuery the dynamic query
 	 * @return the number of rows matching the dynamic query
 	 */
-	public static long dynamicQueryCount(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery) {
-
+	public static long dynamicQueryCount(DynamicQuery dynamicQuery) {
 		return getService().dynamicQueryCount(dynamicQuery);
 	}
 
@@ -183,33 +197,28 @@ public class PioggiaCumulativaLocalServiceUtil {
 	 * @return the number of rows matching the dynamic query
 	 */
 	public static long dynamicQueryCount(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery,
+		DynamicQuery dynamicQuery,
 		com.liferay.portal.kernel.dao.orm.Projection projection) {
 
 		return getService().dynamicQueryCount(dynamicQuery, projection);
 	}
 
-	public static it.eng.animazione.image.model.PioggiaCumulativa
-		fetchPioggiaCumulativa(long id) {
-
+	public static PioggiaCumulativa fetchPioggiaCumulativa(long id) {
 		return getService().fetchPioggiaCumulativa(id);
 	}
 
-	public static java.util.List
-		<it.eng.animazione.image.model.PioggiaCumulativa> findByCumulazione(
-				String cumulazione)
-			throws com.liferay.portal.kernel.exception.SystemException,
-				   it.eng.animazione.image.exception.
-					   NoSuchPioggiaCumulativaException {
+	public static List<PioggiaCumulativa> findByCumulazione(String cumulazione)
+		throws it.eng.animazione.image.exception.
+			NoSuchPioggiaCumulativaException,
+			   SystemException {
 
 		return getService().findByCumulazione(cumulazione);
 	}
 
-	public static it.eng.animazione.image.model.PioggiaCumulativa findByID(
-			long id)
-		throws com.liferay.portal.kernel.exception.SystemException,
-			   it.eng.animazione.image.exception.
-				   NoSuchPioggiaCumulativaException {
+	public static PioggiaCumulativa findByID(long id)
+		throws it.eng.animazione.image.exception.
+			NoSuchPioggiaCumulativaException,
+			   SystemException {
 
 		return getService().findByID(id);
 	}
@@ -236,9 +245,11 @@ public class PioggiaCumulativaLocalServiceUtil {
 		return getService().getOSGiServiceIdentifier();
 	}
 
-	public static com.liferay.portal.kernel.model.PersistedModel
-			getPersistedModel(java.io.Serializable primaryKeyObj)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	/**
+	 * @throws PortalException
+	 */
+	public static PersistedModel getPersistedModel(Serializable primaryKeyObj)
+		throws PortalException {
 
 		return getService().getPersistedModel(primaryKeyObj);
 	}
@@ -250,9 +261,8 @@ public class PioggiaCumulativaLocalServiceUtil {
 	 * @return the pioggia cumulativa
 	 * @throws PortalException if a pioggia cumulativa with the primary key could not be found
 	 */
-	public static it.eng.animazione.image.model.PioggiaCumulativa
-			getPioggiaCumulativa(long id)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	public static PioggiaCumulativa getPioggiaCumulativa(long id)
+		throws PortalException {
 
 		return getService().getPioggiaCumulativa(id);
 	}
@@ -261,16 +271,15 @@ public class PioggiaCumulativaLocalServiceUtil {
 	 * Returns a range of all the pioggia cumulativas.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>it.eng.animazione.image.model.impl.PioggiaCumulativaModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>it.eng.animazione.image.model.impl.PioggiaCumulativaModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of pioggia cumulativas
 	 * @param end the upper bound of the range of pioggia cumulativas (not inclusive)
 	 * @return the range of pioggia cumulativas
 	 */
-	public static java.util.List
-		<it.eng.animazione.image.model.PioggiaCumulativa> getPioggiaCumulativas(
-			int start, int end) {
+	public static List<PioggiaCumulativa> getPioggiaCumulativas(
+		int start, int end) {
 
 		return getService().getPioggiaCumulativas(start, end);
 	}
@@ -287,40 +296,26 @@ public class PioggiaCumulativaLocalServiceUtil {
 	/**
 	 * Updates the pioggia cumulativa in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect PioggiaCumulativaLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param pioggiaCumulativa the pioggia cumulativa
 	 * @return the pioggia cumulativa that was updated
 	 */
-	public static it.eng.animazione.image.model.PioggiaCumulativa
-		updatePioggiaCumulativa(
-			it.eng.animazione.image.model.PioggiaCumulativa pioggiaCumulativa) {
+	public static PioggiaCumulativa updatePioggiaCumulativa(
+		PioggiaCumulativa pioggiaCumulativa) {
 
 		return getService().updatePioggiaCumulativa(pioggiaCumulativa);
 	}
 
 	public static PioggiaCumulativaLocalService getService() {
-		return _serviceTracker.getService();
+		return _serviceSnapshot.get();
 	}
 
-	private static ServiceTracker
-		<PioggiaCumulativaLocalService, PioggiaCumulativaLocalService>
-			_serviceTracker;
-
-	static {
-		Bundle bundle = FrameworkUtil.getBundle(
+	private static final Snapshot<PioggiaCumulativaLocalService>
+		_serviceSnapshot = new Snapshot<>(
+			PioggiaCumulativaLocalServiceUtil.class,
 			PioggiaCumulativaLocalService.class);
-
-		ServiceTracker
-			<PioggiaCumulativaLocalService, PioggiaCumulativaLocalService>
-				serviceTracker =
-					new ServiceTracker
-						<PioggiaCumulativaLocalService,
-						 PioggiaCumulativaLocalService>(
-							 bundle.getBundleContext(),
-							 PioggiaCumulativaLocalService.class, null);
-
-		serviceTracker.open();
-
-		_serviceTracker = serviceTracker;
-	}
 
 }

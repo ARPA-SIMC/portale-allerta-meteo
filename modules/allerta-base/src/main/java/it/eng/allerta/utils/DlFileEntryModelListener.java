@@ -4,6 +4,7 @@ import com.liferay.document.library.kernel.model.DLFileEntry;
 import com.liferay.document.library.kernel.model.DLFileEntryMetadata;
 import com.liferay.document.library.kernel.service.DLFileEntryLocalServiceUtil;
 import com.liferay.document.library.kernel.service.DLFileEntryMetadataLocalServiceUtil;
+import com.liferay.document.library.kernel.store.DLStoreUtil;
 import com.liferay.portal.kernel.exception.ModelListenerException;
 import com.liferay.portal.kernel.model.BaseModelListener;
 import com.liferay.portal.kernel.model.ModelListener;
@@ -23,13 +24,15 @@ public class DlFileEntryModelListener extends BaseModelListener<DLFileEntryMetad
 	@Override
 	public void onAfterCreate(DLFileEntryMetadata md) throws ModelListenerException {
 		// TODO Auto-generated method stub
+		
 		DLFileEntry model = DLFileEntryLocalServiceUtil.fetchDLFileEntry(md.getFileEntryId());
 		boolean elimina = false;
 		
 		
 		
 		try {
-		File f = DLFileEntryLocalServiceUtil.getFile(model.getPrimaryKey(), model.getVersion(), false);
+			File f = FileUtil.createTempFile(model.getContentStream());
+		//File f = DLFileEntryLocalServiceUtil.getFile(model.getPrimaryKey(), model.getVersion(), false);
 		String mime = MimeTypesUtil.getContentType(f);
 		if (mime!=null) mime = mime.toLowerCase();
 		String extension = model.getExtension();
@@ -55,6 +58,10 @@ public class DlFileEntryModelListener extends BaseModelListener<DLFileEntryMetad
 			if (!extension.equals("png")) elimina = true;
 		} else elimina = true;
 		
+		if (f!=null) {
+			f.delete();
+		}
+		
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -62,6 +69,7 @@ public class DlFileEntryModelListener extends BaseModelListener<DLFileEntryMetad
 			DLFileEntryMetadataLocalServiceUtil.deleteDLFileEntryMetadata(md);
 			DLFileEntryLocalServiceUtil.deleteDLFileEntry(model);
 		}
+
 	}
 	
 	public static String checkMagicNumber(byte[] b) {

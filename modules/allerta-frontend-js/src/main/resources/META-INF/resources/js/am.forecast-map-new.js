@@ -503,7 +503,8 @@ am.ForecastMap2 = (function($){
                     }
     
                     // Echo area allertamento in the panel
-                    $('.map-component__panel__area-allertamento',  $(this.options.container)).append("Area di allertamento "+fAreaCodeLabel);
+                    var loca = Liferay.ThemeDisplay.getLanguageId()=='en_GB'?"Alert area ":"Area di allertamento "
+                    $('.map-component__panel__area-allertamento',  $(this.options.container)).append(loca+fAreaCodeLabel);
 
                     // Center the map on me (the pan is done as the last action of the rendering, se the end of the method)
                     this.options.center= [fLatlng.lat, fLatlng.lng];
@@ -580,7 +581,7 @@ am.ForecastMap2 = (function($){
                 this.selectedLayers.push( layerEl );
   
                 // attach tooltip on popup inner content
-                $(e.popup._wrapper).find("[data-toggle=tooltip]").tooltip();
+                //$(e.popup._wrapper).find("[data-toggle=tooltip]").tooltip();
             }
         }).bind(this));
         this.map.on('popupclose', (function(e) {
@@ -668,7 +669,7 @@ am.ForecastMap2 = (function($){
                 // happens after added to map
                 var container = L.DomUtil.create('div', 'map-accessibility-toggle-control');
                 $(container).html( $('.map-templates .map-accessibility-toggle-tpl').html() );
-                $('[data-toggle="tooltip"]', $(container)).tooltip();
+                //$('[data-toggle="tooltip"]', $(container)).tooltip();
                 return container;
             },
           });
@@ -712,7 +713,7 @@ am.ForecastMap2 = (function($){
                 // happens after added to map
                 var container = L.DomUtil.create('div', 'map-rtdata-dropdown');
                 $(container).html( $('.map-templates .map-rtdata-dropdown-tpl').html() );
-                $(container).find("*[data-toggle=tooltip]").tooltip();
+                //$(container).find("*[data-toggle=tooltip]").tooltip();
 
                 return container;
             },

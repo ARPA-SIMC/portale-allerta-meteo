@@ -1,30 +1,15 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.bollettino.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -35,21 +20,12 @@ import java.util.Objects;
  * @see Idrometro
  * @generated
  */
-@ProviderType
-public class IdrometroWrapper implements Idrometro, ModelWrapper<Idrometro> {
+public class IdrometroWrapper
+	extends BaseModelWrapper<Idrometro>
+	implements Idrometro, ModelWrapper<Idrometro> {
 
 	public IdrometroWrapper(Idrometro idrometro) {
-		_idrometro = idrometro;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return Idrometro.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return Idrometro.class.getName();
+		super(idrometro);
 	}
 
 	@Override
@@ -99,18 +75,8 @@ public class IdrometroWrapper implements Idrometro, ModelWrapper<Idrometro> {
 	}
 
 	@Override
-	public Object clone() {
-		return new IdrometroWrapper((Idrometro)_idrometro.clone());
-	}
-
-	@Override
-	public int compareTo(it.eng.bollettino.model.Idrometro idrometro) {
-		return _idrometro.compareTo(idrometro);
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _idrometro.getExpandoBridge();
+	public Idrometro cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -120,7 +86,7 @@ public class IdrometroWrapper implements Idrometro, ModelWrapper<Idrometro> {
 	 */
 	@Override
 	public String getNomeBacino() {
-		return _idrometro.getNomeBacino();
+		return model.getNomeBacino();
 	}
 
 	/**
@@ -130,7 +96,7 @@ public class IdrometroWrapper implements Idrometro, ModelWrapper<Idrometro> {
 	 */
 	@Override
 	public String getNomeRubrica() {
-		return _idrometro.getNomeRubrica();
+		return model.getNomeRubrica();
 	}
 
 	/**
@@ -140,7 +106,7 @@ public class IdrometroWrapper implements Idrometro, ModelWrapper<Idrometro> {
 	 */
 	@Override
 	public String getNomeSottobacino() {
-		return _idrometro.getNomeSottobacino();
+		return model.getNomeSottobacino();
 	}
 
 	/**
@@ -150,12 +116,7 @@ public class IdrometroWrapper implements Idrometro, ModelWrapper<Idrometro> {
 	 */
 	@Override
 	public String getPrimaryKey() {
-		return _idrometro.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _idrometro.getPrimaryKeyObj();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -165,7 +126,7 @@ public class IdrometroWrapper implements Idrometro, ModelWrapper<Idrometro> {
 	 */
 	@Override
 	public double getSogliaSpike() {
-		return _idrometro.getSogliaSpike();
+		return model.getSogliaSpike();
 	}
 
 	/**
@@ -175,59 +136,12 @@ public class IdrometroWrapper implements Idrometro, ModelWrapper<Idrometro> {
 	 */
 	@Override
 	public String getStazioneId() {
-		return _idrometro.getStazioneId();
-	}
-
-	@Override
-	public int hashCode() {
-		return _idrometro.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _idrometro.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _idrometro.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _idrometro.isNew();
+		return model.getStazioneId();
 	}
 
 	@Override
 	public void persist() {
-		_idrometro.persist();
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_idrometro.setCachedModel(cachedModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_idrometro.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_idrometro.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_idrometro.setExpandoBridgeAttributes(serviceContext);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_idrometro.setNew(n);
+		model.persist();
 	}
 
 	/**
@@ -237,7 +151,7 @@ public class IdrometroWrapper implements Idrometro, ModelWrapper<Idrometro> {
 	 */
 	@Override
 	public void setNomeBacino(String nomeBacino) {
-		_idrometro.setNomeBacino(nomeBacino);
+		model.setNomeBacino(nomeBacino);
 	}
 
 	/**
@@ -247,7 +161,7 @@ public class IdrometroWrapper implements Idrometro, ModelWrapper<Idrometro> {
 	 */
 	@Override
 	public void setNomeRubrica(String nomeRubrica) {
-		_idrometro.setNomeRubrica(nomeRubrica);
+		model.setNomeRubrica(nomeRubrica);
 	}
 
 	/**
@@ -257,7 +171,7 @@ public class IdrometroWrapper implements Idrometro, ModelWrapper<Idrometro> {
 	 */
 	@Override
 	public void setNomeSottobacino(String nomeSottobacino) {
-		_idrometro.setNomeSottobacino(nomeSottobacino);
+		model.setNomeSottobacino(nomeSottobacino);
 	}
 
 	/**
@@ -267,12 +181,7 @@ public class IdrometroWrapper implements Idrometro, ModelWrapper<Idrometro> {
 	 */
 	@Override
 	public void setPrimaryKey(String primaryKey) {
-		_idrometro.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_idrometro.setPrimaryKeyObj(primaryKeyObj);
+		model.setPrimaryKey(primaryKey);
 	}
 
 	/**
@@ -282,7 +191,7 @@ public class IdrometroWrapper implements Idrometro, ModelWrapper<Idrometro> {
 	 */
 	@Override
 	public void setSogliaSpike(double sogliaSpike) {
-		_idrometro.setSogliaSpike(sogliaSpike);
+		model.setSogliaSpike(sogliaSpike);
 	}
 
 	/**
@@ -292,75 +201,17 @@ public class IdrometroWrapper implements Idrometro, ModelWrapper<Idrometro> {
 	 */
 	@Override
 	public void setStazioneId(String stazioneId) {
-		_idrometro.setStazioneId(stazioneId);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<it.eng.bollettino.model.Idrometro> toCacheModel() {
-
-		return _idrometro.toCacheModel();
-	}
-
-	@Override
-	public it.eng.bollettino.model.Idrometro toEscapedModel() {
-		return new IdrometroWrapper(_idrometro.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _idrometro.toString();
-	}
-
-	@Override
-	public it.eng.bollettino.model.Idrometro toUnescapedModel() {
-		return new IdrometroWrapper(_idrometro.toUnescapedModel());
+		model.setStazioneId(stazioneId);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _idrometro.toXmlString();
+		return model.toXmlString();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-
-		if (!(obj instanceof IdrometroWrapper)) {
-			return false;
-		}
-
-		IdrometroWrapper idrometroWrapper = (IdrometroWrapper)obj;
-
-		if (Objects.equals(_idrometro, idrometroWrapper._idrometro)) {
-			return true;
-		}
-
-		return false;
+	protected IdrometroWrapper wrap(Idrometro idrometro) {
+		return new IdrometroWrapper(idrometro);
 	}
-
-	@Override
-	public Idrometro getWrappedModel() {
-		return _idrometro;
-	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _idrometro.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _idrometro.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_idrometro.resetOriginalValues();
-	}
-
-	private final Idrometro _idrometro;
 
 }

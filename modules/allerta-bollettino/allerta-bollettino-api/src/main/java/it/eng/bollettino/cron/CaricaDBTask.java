@@ -1,5 +1,46 @@
 package it.eng.bollettino.cron;
 
+import com.liferay.asset.entry.rel.service.AssetEntryAssetCategoryRelLocalServiceUtil;
+import com.liferay.asset.kernel.model.AssetEntry;
+import com.liferay.asset.kernel.service.AssetCategoryLocalService;
+import com.liferay.asset.kernel.service.AssetEntryLocalService;
+import com.liferay.asset.kernel.service.persistence.AssetEntryQuery;
+import com.liferay.blogs.model.BlogsEntry;
+import com.liferay.blogs.service.BlogsEntryLocalServiceUtil;
+import com.liferay.counter.kernel.service.CounterLocalService;
+import com.liferay.dispatch.executor.BaseDispatchTaskExecutor;
+import com.liferay.dispatch.executor.DispatchTaskExecutor;
+import com.liferay.dispatch.executor.DispatchTaskExecutorOutput;
+import com.liferay.dispatch.model.DispatchTrigger;
+import com.liferay.portal.kernel.dao.orm.DynamicQuery;
+import com.liferay.portal.kernel.dao.orm.OrderFactoryUtil;
+import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
+import com.liferay.portal.kernel.dao.orm.QueryUtil;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.json.JSONDeserializer;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.json.JSONSerializer;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.Company;
+import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.model.WorkflowDefinitionLink;
+import com.liferay.portal.kernel.scheduler.SchedulerEngineHelper;
+import com.liferay.portal.kernel.scheduler.TriggerFactory;
+import com.liferay.portal.kernel.security.permission.PermissionChecker;
+import com.liferay.portal.kernel.security.permission.PermissionCheckerFactoryUtil;
+import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
+import com.liferay.portal.kernel.service.CompanyLocalService;
+import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.service.UserLocalServiceUtil;
+import com.liferay.portal.kernel.service.WorkflowDefinitionLinkLocalService;
+import com.liferay.portal.kernel.util.Base64;
+import com.liferay.portal.kernel.util.StreamUtil;
+import com.liferay.portal.kernel.workflow.WorkflowConstants;
+import com.liferay.portal.kernel.workflow.WorkflowHandlerRegistryUtil;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -14,7 +55,6 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -24,65 +64,10 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.TimeZone;
 
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 
-import com.liferay.asset.kernel.model.AssetCategory;
-import com.liferay.asset.kernel.model.AssetEntry;
-import com.liferay.asset.kernel.service.AssetCategoryLocalService;
-import com.liferay.asset.kernel.service.AssetEntryLocalService;
-import com.liferay.asset.kernel.service.persistence.AssetEntryQuery;
-import com.liferay.blogs.model.BlogsEntry;
-import com.liferay.blogs.service.BlogsEntryLocalServiceUtil;
-import com.liferay.counter.kernel.service.CounterLocalService;
-import com.liferay.counter.kernel.service.CounterLocalServiceUtil;
-import com.liferay.expando.kernel.util.ExpandoBridgeUtil;
-import com.liferay.portal.kernel.dao.orm.DynamicQuery;
-import com.liferay.portal.kernel.dao.orm.OrderFactoryUtil;
-import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
-import com.liferay.portal.kernel.dao.orm.QueryUtil;
-import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.exception.SystemException;
-import com.liferay.portal.kernel.json.JSONDeserializer;
-import com.liferay.portal.kernel.json.JSONFactoryUtil;
-import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.kernel.json.JSONSerializer;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.messaging.BaseMessageListener;
-import com.liferay.portal.kernel.messaging.DestinationNames;
-import com.liferay.portal.kernel.messaging.Message;
-import com.liferay.portal.kernel.messaging.MessageListener;
-import com.liferay.portal.kernel.model.Company;
-import com.liferay.portal.kernel.model.User;
-import com.liferay.portal.kernel.model.WorkflowDefinitionLink;
-import com.liferay.portal.kernel.scheduler.SchedulerEngineHelper;
-import com.liferay.portal.kernel.scheduler.SchedulerEngineHelperUtil;
-import com.liferay.portal.kernel.scheduler.SchedulerEntry;
-import com.liferay.portal.kernel.scheduler.SchedulerEntryImpl;
-import com.liferay.portal.kernel.scheduler.TimeUnit;
-import com.liferay.portal.kernel.scheduler.Trigger;
-import com.liferay.portal.kernel.scheduler.TriggerFactory;
-import com.liferay.portal.kernel.scheduler.TriggerFactoryUtil;
-import com.liferay.portal.kernel.security.permission.PermissionChecker;
-import com.liferay.portal.kernel.security.permission.PermissionCheckerFactoryUtil;
-import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
-import com.liferay.portal.kernel.service.CompanyLocalService;
-import com.liferay.portal.kernel.service.ServiceContext;
-import com.liferay.portal.kernel.service.UserLocalServiceUtil;
-import com.liferay.portal.kernel.service.WorkflowDefinitionLinkLocalService;
-import com.liferay.portal.kernel.util.Base64;
-import com.liferay.portal.kernel.util.StreamUtil;
-import com.liferay.portal.kernel.workflow.WorkflowConstants;
-import com.liferay.portal.kernel.workflow.WorkflowHandlerRegistryUtil;
-
-import it.eng.allerta.configuration.AllertaBaseConfiguration;
-import it.eng.allerta.configuration.schedulers.AllertaBaseSchedulersConfiguration;
 import it.eng.allerta.utils.AllertaTracker;
-import it.eng.allerta.utils.BlogsRenderFilter;
 import it.eng.allerter.model.Allerta;
 import it.eng.allerter.model.AllertaValanghe;
 import it.eng.allerter.service.AllertaLocalService;
@@ -90,12 +75,10 @@ import it.eng.allerter.service.AllertaValangheLocalService;
 import it.eng.allerter.service.LogInternoLocalService;
 import it.eng.allerter.service.LogInternoLocalServiceUtil;
 import it.eng.allerter.service.SMSLocalService;
-import it.eng.allerter.service.SMSLocalServiceUtil;
 import it.eng.bollettino.model.Allarme;
 import it.eng.bollettino.model.Bollettino;
 import it.eng.bollettino.model.BollettinoParametro;
 import it.eng.bollettino.model.RegolaAllarme;
-import it.eng.bollettino.model.RegolaAllarmeComune;
 import it.eng.bollettino.model.RegolaAllarmeCondizione;
 import it.eng.bollettino.model.Stazione;
 import it.eng.bollettino.model.StazioneVariabile;
@@ -105,11 +88,7 @@ import it.eng.bollettino.service.AllarmeLocalService;
 import it.eng.bollettino.service.AllarmeLocalServiceUtil;
 import it.eng.bollettino.service.BollettinoLocalServiceUtil;
 import it.eng.bollettino.service.BollettinoParametroLocalServiceUtil;
-import it.eng.radarMeteo.service.ImgLocalService;
-import it.eng.radarMeteo.service.ImgLocalServiceUtil;
-import it.eng.radarMeteo.service.ImgService;
 import it.eng.bollettino.service.RegolaAllarmeComuneLocalService;
-import it.eng.bollettino.service.RegolaAllarmeComuneLocalServiceUtil;
 import it.eng.bollettino.service.RegolaAllarmeCondizioneLocalService;
 import it.eng.bollettino.service.RegolaAllarmeCondizioneLocalServiceUtil;
 import it.eng.bollettino.service.RegolaAllarmeLocalServiceUtil;
@@ -121,13 +100,18 @@ import it.eng.bollettino.service.ValoreSensoreLocalService;
 import it.eng.bollettino.service.ValoreSensoreLocalServiceUtil;
 import it.eng.bollettino.service.VariabileLocalService;
 import it.eng.bollettino.service.VariabileLocalServiceUtil;
+import it.eng.bollettino.service.persistence.BollettinoParametroUtil;
 import it.eng.cache.service.DatiLocalServiceUtil;
+import it.eng.radarMeteo.service.ImgService;
 
 @Component(
-		  immediate = true, 			  
-		  service = MessageListener.class
+		  property = {
+			"dispatch.task.executor.name=Controllo soglie",
+			"dispatch.task.executor.type=task-controllo-soglie"
+		  },
+		  service = DispatchTaskExecutor.class
 		)
-public class CaricaDBTask extends BaseMessageListener {
+public class CaricaDBTask extends BaseDispatchTaskExecutor {
 
 	public static Object o = new Object();
 	public static boolean busy = false;
@@ -166,15 +150,17 @@ public class CaricaDBTask extends BaseMessageListener {
 	
 	public static void forzaEsecuzione(String richiedente) {
 		LogInternoLocalServiceUtil.log("rt_data","Scaricamento forzato","Inizio scaricamento",richiedente);
-		lastInstance.deactivate();
-		lastInstance.activate(null);
+		//lastInstance.deactivate();
+		//lastInstance.activate(null);
+		
 	}
 	
 	public void forza(String richiedente) {
 		try {
 			logInternoLocalService.log("rt_data","Scaricamento forzato","Inizio scaricamento",richiedente);
 			
-			String className = this.getClass().getName();
+			doExecute(null,null);
+			/*String className = this.getClass().getName();
 			
 			Trigger trigger = 
 					_triggerFactory.createTrigger(className, className, new Date(), new Date(), 1, TimeUnit.MINUTE);
@@ -183,7 +169,7 @@ public class CaricaDBTask extends BaseMessageListener {
 				className, trigger);
 					
 			baseScheduler.register(
-				this, schedulerEntry, DestinationNames.SCHEDULER_DISPATCH);
+				this, schedulerEntry, DestinationNames.SCHEDULER_DISPATCH);*/
 			
 		} catch (Exception e) {
 			logger.error(e);
@@ -191,7 +177,7 @@ public class CaricaDBTask extends BaseMessageListener {
 	}
 
 	@Override
-	protected void doReceive(Message message) throws Exception {
+	public void doExecute(DispatchTrigger dispatchTrigger, DispatchTaskExecutorOutput output){
 		
 		//aggiornaValori("254,0,0/1,-,-,-/B10004", "-/1213623,4369223/simnbo");
 		//return;
@@ -199,6 +185,12 @@ public class CaricaDBTask extends BaseMessageListener {
 		// synchronized(this) {
 
 		BollettinoParametro bp = null;
+		
+		try {
+			BollettinoParametroUtil.clearCache();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		try {
 
@@ -226,8 +218,9 @@ public class CaricaDBTask extends BaseMessageListener {
 			}
 			
 			if (!prosegui) {
-				logger.info("Scheduler già in esecuzione, esco");
+				logger.info("Scheduler giï¿½ in esecuzione, esco");
 				logger.info("rt_data Scheduler END");
+				output.setOutput("Controllo soglie interrotto");
 				return;
 			}
 			
@@ -386,6 +379,7 @@ public class CaricaDBTask extends BaseMessageListener {
 		executions++;
 		logger.info("rt_data Scheduler END");
 		//lastInstance = this;
+		output.setOutput("Controllo soglie completato");
 		
 	}
 	
@@ -473,7 +467,7 @@ public class CaricaDBTask extends BaseMessageListener {
 			//if (aggiornaValoriSuperficiale("1,0,86400/1,-,-,-/B13011"))
 				//aggiornato = true;
 			
-			if (aggiornaValoriSuperficiale("254,0,0/103,2000,-,-/B13003","umidità",stringa))
+			if (aggiornaValoriSuperficiale("254,0,0/103,2000,-,-/B13003","umiditï¿½",stringa))
 				aggiornato = true;
 			if (aggiornaValoriSuperficiale("254,0,0/103,10000,-,-/B11002","vel. vento",stringa))
 				aggiornato = true;
@@ -542,7 +536,7 @@ public class CaricaDBTask extends BaseMessageListener {
 							cc[i++] = l;
 					}
 					
-					assetEntryLocalService.deleteAssetCategoryAssetEntry(idCat, allertaAssetEntry);
+					AssetEntryAssetCategoryRelLocalServiceUtil.deleteAssetEntryAssetCategoryRel(allertaAssetEntry.getEntryId(), idCat);
 					assetEntryLocalService.updateEntry(
 							allertaAssetEntry.getUserId(), 
 							allertaAssetEntry.getGroupId(), 
@@ -578,7 +572,7 @@ public class CaricaDBTask extends BaseMessageListener {
 							cc[i++] = l;
 					}
 					
-					assetEntryLocalService.deleteAssetCategoryAssetEntry(idCat, bollettinoAssetEntry);
+					AssetEntryAssetCategoryRelLocalServiceUtil.deleteAssetEntryAssetCategoryRel(bollettinoAssetEntry.getEntryId(), idCat);
 					assetEntryLocalService.updateEntry(
 							bollettinoAssetEntry.getUserId(), 
 							bollettinoAssetEntry.getGroupId(), 
@@ -618,7 +612,7 @@ public class CaricaDBTask extends BaseMessageListener {
 							cc[i++] = l;
 					}
 					
-					assetEntryLocalService.deleteAssetCategoryAssetEntry(idCat, allertaAssetEntry);
+					AssetEntryAssetCategoryRelLocalServiceUtil.deleteAssetEntryAssetCategoryRel(allertaAssetEntry.getEntryId() , idCat );
 					assetEntryLocalService.updateEntry(
 							allertaAssetEntry.getUserId(), 
 							allertaAssetEntry.getGroupId(), 
@@ -656,7 +650,7 @@ public class CaricaDBTask extends BaseMessageListener {
 					if (b.getExpandoBridge().hasAttribute("Data uscita banner")) {
 						Date dd = (Date) b.getExpandoBridge().getAttribute("Data uscita banner");
 						if (dd!=null && new Date().after(dd)) {
-							assetEntryLocalService.deleteAssetCategoryAssetEntry(idCat, allertaAssetEntry);
+							AssetEntryAssetCategoryRelLocalServiceUtil.deleteAssetEntryAssetCategoryRel(allertaAssetEntry.getEntryId(),idCat);
 							assetEntryLocalService.updateEntry(
 									allertaAssetEntry.getUserId(), 
 									allertaAssetEntry.getGroupId(), 
@@ -1585,7 +1579,7 @@ public class CaricaDBTask extends BaseMessageListener {
 			List<String> idroDisattivati = BollettinoLocalServiceUtil.eseguiQueryGenericaLista("select idstazione from bollettino_disattivazionesensore where idvariabile='254,0,0/1,-,-,-/B13215'");
 			List<String> pluvioDisattivati = BollettinoLocalServiceUtil.eseguiQueryGenericaLista("select idstazione from bollettino_disattivazionesensore where idvariabile like '%B13011'");
 			
-			//elenco di tutte le condizioni superate; se una regola non compare qui, non può essere superata
+			//elenco di tutte le condizioni superate; se una regola non compare qui, non puï¿½ essere superata
 			List<Object[]> condizioniSuperate = BollettinoLocalServiceUtil.eseguiQueryGenericaLista("select idregola, nome, idcondizione, lettera, soglia, idstazione, soglia1, soglia2, soglia3, v1, v2, v3 from vw_stato_regole where superata");
 			HashMap<Long,Boolean> regoleDaControllare = new HashMap<Long, Boolean>();
 			HashMap<Long,Object[]> mappaCondizioni = new HashMap<Long, Object[]>();
@@ -1629,9 +1623,14 @@ public class CaricaDBTask extends BaseMessageListener {
 
 					boolean pioggia = false;
 					boolean primaPioggia = false;
+					
+					boolean condizionePrincipale = false;
+					
 					if (rac!=null && rac.size()>0 && rac.get(0)!=null && rac.get(0).getIdVariabile()!=null && rac.get(0).getIdVariabile().contains("B13011"))
 						primaPioggia = true;
 				
+					if (rac!=null && rac.size()>0 && rac.get(0)!=null && rac.get(0).getId()!=0 && mappaCondizioni.get(rac.get(0).getId())!=null)
+						condizionePrincipale = true;
 
 					for (RegolaAllarmeCondizione c : rac) {
 	
@@ -1644,154 +1643,14 @@ public class CaricaDBTask extends BaseMessageListener {
 						
 						Object[] datiSuperamento = mappaCondizioni.get(c.getId());
 						if (datiSuperamento==null) {
-							//non è stata superata
+							//non ï¿½ stata superata
 							espressione = espressione.replaceAll(id, "0");
 						} else {
 							espressione = espressione.replaceAll(id, "1");
 						}
+					}
 	
-						/*Stazione t = StazioneLocalServiceUtil.getStazione(st);
 					
-					//disattivato lato RT_DATA?
-					if (t == null || !t.getAttivo()) {
-						espressione = espressione.replaceAll(id, "0");
-						//if (debugMode) logInternoLocalService.log("CaricaDBTask.regoleAllarme", "debug", "Condizione su sensore che non riceve", "");
-						continue;
-					}
-					
-
-					// pioggia? facciamo tutto diverso
-					pioggia = false;
-					if (var.contains("B13011")) {
-						pioggia = true;
-					}
-					
-					//disattivato lato portale Allerte?
-					boolean disatt = false;
-					List<String> disattivati = (pioggia?pluvioDisattivati:idroDisattivati);
-					for (String dis : disattivati) {
-						if (t.getId().equals(dis)) {
-							
-							disatt = true; 
-						}
-					}
-					
-					if (disatt) {
-						espressione = espressione.replaceAll(id, "0");
-						//if (debugMode) logInternoLocalService.log("CaricaDBTask.regoleAllarme", "debug", "Condizione su sensore che non riceve", "");
-						continue;
-					}
-
-					if (!pioggia && !monitoraggioAttivo) {
-						// ignora il superamento idrometrico, dev'essere un
-						// falso positivo
-						espressione = espressione.replaceAll(id, "0");
-						//if (debugMode) logInternoLocalService.log("CaricaDBTask.regoleAllarme", "debug", "Condizione su idrometro ma non siamo in monitoraggio", "");
-						continue;
-					}
-					
-					if (!pioggia && spikeIdrometri.size()>0) {
-						for (String s : spikeIdrometri) {
-							if (s.equals(st)) {
-								//SPIKE
-								espressione = espressione.replaceAll(id, "0");
-								//if (debugMode) logInternoLocalService.log("CaricaDBTask.regoleAllarme", "debug", "Condizione ritenuta spike", "");
-								continue;
-							}
-						}
-					}
-
-					DynamicQuery sens = valoreSensoreLocalService.dynamicQuery()
-							.add(PropertyFactoryUtil.forName("idStazione").eq(st))
-							.add(PropertyFactoryUtil.forName("idVariabile").eq(var))
-							.addOrder(OrderFactoryUtil.desc("datetime"));
-					List<ValoreSensore> vs = ValoreSensoreLocalServiceUtil.dynamicQuery(sens, 0, 1);
-					if (vs == null || vs.size() == 0) {
-						espressione = espressione.replaceAll(id, "0");
-						//if (debugMode) logInternoLocalService.log("CaricaDBTask.regoleAllarme", "debug", "Nessun valore sensore trovato", "");
-						continue;
-					}
-
-					ValoreSensore val = vs.get(0);
-					
-					//GPF 2020-03-05 Se il valore del dato è vecchio rischiamo di
-					// generare un allarme per un sensore inattivo il cui ultimo
-					// valore era in superamento soglia. Limitiamo l'età del dato.
-					//
-					if (val.getDatetime().getTime()<cutoffTime) {
-						espressione = espressione.replaceAll(id, "0");
-						continue;
-					}
-					
-					double valoreSoglia = 1000000.0;
-
-					DynamicQuery varStaz = stazioneVariabileLocalService.dynamicQuery()
-							.add(PropertyFactoryUtil.forName("idStazione").eq(st))
-							.add(PropertyFactoryUtil.forName("idVariabile").eq(var));
-					List<StazioneVariabile> stazVar = StazioneVariabileLocalServiceUtil.dynamicQuery(varStaz);
-					if (stazVar == null || stazVar.size() == 0) {
-						espressione = espressione.replace(id, "0");
-						//if (debugMode) logInternoLocalService.log("CaricaDBTask.regoleAllarme", "debug", "Nessuna stazione-variabile trovata", "");
-						continue;
-					}
-					StazioneVariabile ssvv = stazVar.get(0);
-
-					if (c.getSoglia() == 1)
-						valoreSoglia = ssvv.getSoglia1();
-					else if (c.getSoglia() == 2)
-						valoreSoglia = ssvv.getSoglia2();
-					else if (c.getSoglia() == 3)
-						valoreSoglia = ssvv.getSoglia3();
-					
-					if (valoreSoglia==0.0) valoreSoglia = 1000000.0; //ignora le soglie a 0
-
-					double valor = 0.0;
-
-					if (pioggia && c.getSoglia() == 1) {
-						double quarto = BollettinoLocalServiceUtil.getSommaValori(st, "1,0,900/1,-,-,-/B13011", 4);
-						double mezzora = BollettinoLocalServiceUtil.getSommaValori(st, "1,0,1800/1,-,-,-/B13011", 2);
-						double ora = BollettinoLocalServiceUtil.getSommaValori(st, "1,0,3600/1,-,-,-/B13011", 1);
-						if (mezzora > ora)
-							valor = mezzora;
-						else
-							valor = ora;
-						if (quarto>valor) valor = quarto;
-						
-					} else if (pioggia && c.getSoglia() == 2) {
-						double quarto = BollettinoLocalServiceUtil.getSommaValori(st, "1,0,900/1,-,-,-/B13011", 12);
-						double mezzora = BollettinoLocalServiceUtil.getSommaValori(st, "1,0,1800/1,-,-,-/B13011", 6);
-						double ora = BollettinoLocalServiceUtil.getSommaValori(st, "1,0,3600/1,-,-,-/B13011", 3);
-						if (mezzora > ora)
-							valor = mezzora;
-						else
-							valor = ora;
-						
-						if (quarto>valor) valor = quarto;
-						
-					} else if (pioggia && c.getSoglia() == 3) {
-						double mezzora = BollettinoLocalServiceUtil.getSommaValori(st, "1,0,1800/1,-,-,-/B13011", 24);
-						double ora = BollettinoLocalServiceUtil.getSommaValori(st, "1,0,3600/1,-,-,-/B13011", 12);
-						if (mezzora > ora)
-							valor = mezzora;
-						else
-							valor = ora;
-					} else
-						valor = val.getValue();
-					
-					//if (debugMode) logInternoLocalService.log("CaricaDBTask.regoleAllarme", "debug", "Confronto "+valor+" con "+valoreSoglia, "");
-					if (valor >= valoreSoglia) {
-						// logger.info("CONFRONTO "+val.getValue()+" ->
-						// "+valoreSoglia);
-						espressione = espressione.replaceAll(id, "1");
-					} else
-						espressione = espressione.replaceAll(id, "0");
-					*/
-				}
-
-				
-
-				// logger.info("espressione "+espressione);
-
 				//try {
 					logger.info("valuto regola "+r.getId()+" ("+r.getNome()+"): "+r.getEspressione()+" -> "+espressione);
 					double d = ValutatoreEspressioni.eval(espressione);
@@ -1806,7 +1665,38 @@ public class CaricaDBTask extends BaseMessageListener {
 							regoleSoddisfatte.add(r);
 							//if (debugMode) logInternoLocalService.log("CaricaDBTask.regoleAllarme", "debug", "Regola soddisfatta idro: "+r.getNome(), "");
 						}
-					}
+						
+						try {
+							BollettinoLocalServiceUtil.eseguiQueryGenerica("delete from allerter_sup_principali where idregola="+r.getId());
+						} catch (Exception e) {
+							LogInternoLocalServiceUtil.log("CaricaDBTask", "notificaRegolaPrincipale", e, "");
+						}
+						
+					} else {
+						if (condizionePrincipale) {
+							//regola NON soddisfatta ma lo ï¿½ la condizione principale:
+							//vuol dire che un idrometro ï¿½ sopra soglia ma nessuno dei
+							//suoi pluviometri lo ï¿½.
+							try {
+								String queryX = "select * from allerter_sup_principali where idregola=" + r.getId();
+								List<Object> l = BollettinoLocalServiceUtil.eseguiQueryGenericaLista(queryX);
+								if (l!=null && l.size()==0) { //evento non ancora segnalato?
+									String queryX2 = "insert into allerter_sup_principali (idregola) values (" + r.getId()+")";
+									BollettinoLocalServiceUtil.eseguiQueryGenerica(queryX2);
+									
+									String cont = "select * from bollettino_allarme where idregola=" + r.getId()+" and datafine>now()-cast('6 hours' as interval)";
+									List<Object> l2 = BollettinoLocalServiceUtil.eseguiQueryGenericaLista(cont);
+
+									//notifica, ma solo se la regola non ï¿½ scattata da poco (creerebbe confusione).
+									if (l2!=null && l2.size()==0) notificaRegolaPrincipale(r, rac);
+									
+								}
+							} catch (Exception e) {
+								LogInternoLocalServiceUtil.log("CaricaDBTask", "notificaRegolaPrincipale", e, "");
+							}
+							}
+						}
+					
 				} catch (Exception ex) {
 					logger.error(ex);
 					//logInternoLocalService.log("caricaDbTask.regoleAllarme", r.getNome(), ex, null);
@@ -1844,7 +1734,7 @@ public class CaricaDBTask extends BaseMessageListener {
 			}
 
 
-			// cerca gli allarmi già collegati alle regole, per crearne di nuovi
+			// cerca gli allarmi giï¿½ collegati alle regole, per crearne di nuovi
 			// dove non presenti
 			for (RegolaAllarme ra : regoleSoddisfatte) {
 
@@ -1859,7 +1749,7 @@ public class CaricaDBTask extends BaseMessageListener {
 
 				if (!trovato) {
 					
-					//allarme attivo, ma la sua regola non è tra quelle soddisfatte,
+					//allarme attivo, ma la sua regola non ï¿½ tra quelle soddisfatte,
 					//quindi deve cessare.
 
 					long inc = counterLocalService.increment(Allarme.class.getName());
@@ -1910,7 +1800,12 @@ public class CaricaDBTask extends BaseMessageListener {
 						if (workflowDefinitionLink != null)
 							WorkflowHandlerRegistryUtil.startWorkflowInstance(company.getCompanyId(), al.getGroupId(),
 									0, Allarme.class.getName(), al.getPrimaryKey(), al, sc);
-
+						
+						//evitiamo di generare notifiche nello stesso secondo per limiti invio email
+						try {
+							Thread.sleep(1000);
+						} catch (Exception e) {}
+						
 					} catch (Exception ex) {
 						logger.error(ex);
 
@@ -1978,7 +1873,12 @@ public class CaricaDBTask extends BaseMessageListener {
 							if (workflowDefinitionLink != null)
 								WorkflowHandlerRegistryUtil.startWorkflowInstance(company.getCompanyId(), al.getGroupId(),
 										0, Allarme.class.getName(), al.getPrimaryKey(), al, sc);
-
+							
+							//evitiamo di generare notifiche nello stesso secondo per limiti invio email
+							try {
+								Thread.sleep(1000);
+							} catch (Exception e) {}
+							
 						} catch (Exception ex) {
 							logger.error(ex);
 							//logInternoLocalService.log("caricaDbTask.regoleAllarme", ""+al.getAllarmeId(), ex, "");
@@ -2002,6 +1902,39 @@ public class CaricaDBTask extends BaseMessageListener {
 
 		}
 
+	}
+	
+	private void notificaRegolaPrincipale(RegolaAllarme ra, List<RegolaAllarmeCondizione> rac) {
+		// TODO Auto-generated method stub
+		try {
+			long ts = new Date().getTime();
+			
+			String elenco = "";
+			for (int k=1; k<rac.size(); k++) {
+				if (k>1) elenco+=", ";
+				Stazione s = StazioneLocalServiceUtil.fetchStazione(rac.get(k).getIdStazione());
+				if (s!=null) elenco+=s.getName();
+			}
+		String sms = "Attenzione: notifica non inviata per superamento "+ra.getNome()+". Il sensore ha superato la soglia, ma i pluviometri associati ("+elenco+") sono sotto soglia 3. "
+				+" La notifica sara' inviata normalmente se uno dei pluviometri dovesse superare soglia 3 / 12h mentre l'idrometro rimane sopra soglia.";
+		long org = 0;
+			String s = ""+ra.getId();
+			long canale[] = new long[1];
+			//canale[0] = 1; //solo email
+			smsLocalService.creaNotificaGruppoRubrica(null, "AllerteER", "", "spike2", s, ts, 20181, "Rubrica spike", true, null);
+			//smsLocalService.creaSMSOrganization("AllerteER", sms, "spike", s, ts, org);
+			smsLocalService.eliminaDuplicati("spike2", s, ts);
+			smsLocalService.eliminaDuplicatiEmail("spike2", s, ts);
+			smsLocalService.inviaSMS("spike2", s, ts);
+			smsLocalService.inviaEmail("spike2", s, ts,
+					"Portale Web allerte: notifica non inviata per superamento idrometrico "+ra.getNome(), sms, "no-reply@regione.emilia-romagna.it");
+			
+		} catch (Exception e) {
+			logger.error(e);
+			//logInternoLocalService.log("caricaDbTask.notificaSpike", "", e, "");
+			return;
+		}
+		
 	}
 
 	private void notificaSpike(String s, String nom, Date d, double delta, double soglia) {
@@ -2225,7 +2158,7 @@ public class CaricaDBTask extends BaseMessageListener {
 	
 	/**
 	 * Controlla l'eventuale accensione della mappa di monitoraggio quando
-	 * non si è in corso di allerta idrogeologica. In questo caso usa una
+	 * non si ï¿½ in corso di allerta idrogeologica. In questo caso usa una
 	 * vista che controlla il superamento di soglia 1 in un idrometro a cui
 	 * si abbina un superamento soglia 3 di un pluviometro ad esso associato.
 	 */
@@ -2233,6 +2166,7 @@ public class CaricaDBTask extends BaseMessageListener {
 		
 		String idrometro = "";
 		String pluviometro = "";
+		DecimalFormat df = new DecimalFormat("#.##");
 		
 		BollettinoParametro bp = BollettinoParametroLocalServiceUtil.fetchBollettinoParametro("GESTIONE_MONITORAGGIO");
 		if (bp!=null && bp.getValore()!=null && bp.getValore().equals("true")) return;
@@ -2259,8 +2193,13 @@ public class CaricaDBTask extends BaseMessageListener {
 			String valoreIdro = (o[3]!=null?o[3].toString():"");
 			pluviometro = (o[4]!=null?o[4].toString():"");
 			String sogliaPluvio = (o[5]!=null?o[5].toString():"");
-			String valorePluvio = (o[6]!=null?o[6].toString():"");
-			
+			String valorePluvio = "";
+			try {
+				valorePluvio = (o[6]!=null?df.format(Double.parseDouble(o[6].toString())):"");
+			} catch (Exception e) {
+				logInternoLocalService.log("monitoraggio","Attivazione monitoraggio",e,"");
+
+			}
 			testo = testo.replaceAll("%IDRO%", idrometro);
 			testo = testo.replaceAll("%SOGLIAIDRO%", sogliaIdro);
 			testo = testo.replaceAll("%VALOREIDRO%", valoreIdro);
@@ -2305,7 +2244,7 @@ public class CaricaDBTask extends BaseMessageListener {
 	public void controlloPioggiaMonitoraggio() {
 		
 		String query1 = "select count(*) from allerter_allerta a where a.datafine > current_timestamp and a.stato = 0 and exists (select * from allerter_allertastato s where "+
-				" s.allertaid = a.allertaid and s.eventoid<4 and s.statoid in (1,2,3))";
+				" s.allertaid = a.allertaid and s.eventoid<4 and s.areaid>0 and s.statoid in (1,2,3))";
 		//String query2 = "select max(value) from bollettino_valoresensore v join bollettino_stazionevariabile sv on v.idstazione = sv.idstazione and v.idvariabile = sv.idvariabile  where v.datetime=sv.dataultimovalore and v.idvariabile in ('1,0,3600/1,-,-,-/B13011','1,0,1800/1,-,-,-/B13011','1,0,900/1,-,-,-/B13011')";
 		String query2 = "select greatest((select max(value) from bollettino_valoresensore v  " + 
 				"join bollettino_stazionevariabile sv on v.idstazione = sv.idstazione  " + 
@@ -2326,16 +2265,16 @@ public class CaricaDBTask extends BaseMessageListener {
 		
 		try {
 			
-			//se la mappa è già accesa
+			//se la mappa ï¿½ giï¿½ accesa
 			BollettinoParametro accesa = BollettinoParametroLocalServiceUtil.fetchBollettinoParametro("GESTIONE_MONITORAGGIO");
 			if (accesa!=null && accesa.getValore()!=null && accesa.getValore().equals("true")) {
-				//20240513 se il monitoraggio è acceso E siamo in verde idro-geo-temporali E questo è il documento più recente,
+				//20240513 se il monitoraggio ï¿½ acceso E siamo in verde idro-geo-temporali E questo ï¿½ il documento piï¿½ recente,
 				//ALLORA spegni il monitoraggio e notifica
 				Calendar adesso = Calendar.getInstance(Locale.ITALY);
 				int ora = adesso.get(Calendar.HOUR_OF_DAY);
 				int minuto = adesso.get(Calendar.MINUTE);
 				if (ora>0 || minuto>=10) {
-					//esegui il controllo solo verso mezzanotte, così da non impedire
+					//esegui il controllo solo verso mezzanotte, cosï¿½ da non impedire
 					//successive accensioni
 					return;
 				}
@@ -2348,11 +2287,35 @@ public class CaricaDBTask extends BaseMessageListener {
 				if (i.intValue()<1) {
 					accesa.setValore("false");
 					BollettinoParametroLocalServiceUtil.updateBollettinoParametro(accesa);
+					
+					try {
+						BollettinoParametro accesa2 = BollettinoParametroLocalServiceUtil.fetchBollettinoParametro("CONTROLLO_MONITORAGGIO");
+						if (accesa2!=null) {
+							accesa2.setValore("false");
+							BollettinoParametroLocalServiceUtil.updateBollettinoParametro(accesa2);
+						}
+
+					} catch (Exception e) {
+						
+					}
+					
+					try {
+						BollettinoLocalServiceUtil.eseguiQueryGenerica("delete from allerter_sup_principali");
+					} catch (Exception e) {
+						LogInternoLocalServiceUtil.log("CaricaDBTask", "controlloPioggiaMonitoraggio", e, "");
+					}
+					
+					try {
+						BollettinoLocalServiceUtil.eseguiQueryGenerica("update bollettino_attivazionefiume set attivo=false");
+					} catch (Exception e) {
+						LogInternoLocalServiceUtil.log("CaricaDBTask", "controlloPioggiaMonitoraggio", e, "");
+					}
+					
 					LogInternoLocalServiceUtil.log("controlloMonitoraggio", "spegnimentoAutomatico", "Spegnimento automatico mappa monitoraggio", "");
 
 					try {
 						String testo = "Spegnimento automatico mappa monitoraggio";
-						String testoMail = "Si comunica lo spegnimento automatico della mappa di monitoraggio in quanto non ci sono allerte idro-geo-temporali in corso di validità presente o futura.";
+						String testoMail = "Si comunica lo spegnimento automatico della mappa di monitoraggio in quanto non ci sono allerte idro-geo-temporali in corso di validitï¿½ presente o futura.";
 												
 						BollettinoParametro gruppo = BollettinoParametroLocalServiceUtil.fetchBollettinoParametro("GRUPPO_ACCENSIONE_MAPPA");
 						if (gruppo!=null) {
@@ -2510,7 +2473,7 @@ public class CaricaDBTask extends BaseMessageListener {
 
 	
 	
-	@Activate
+	/*@Activate
 	@Modified
 	protected void activate(Map<String, Object> properties) {
 		
@@ -2538,7 +2501,7 @@ public class CaricaDBTask extends BaseMessageListener {
 		baseScheduler.register(
 			this, schedulerEntry, DestinationNames.SCHEDULER_DISPATCH);
 		
-	}
+	}*/
 	
 	public int aggiornaTuttoMare() {
 		int out = 0;
@@ -2569,7 +2532,7 @@ public class CaricaDBTask extends BaseMessageListener {
 			variabili.put("altezza_significativa_onde_30min", "0,0,1800/1,-,-,-/M00002");
 			
 			//stazioni.put(14387, "-/1224944,4467667/marefe");
-			stazioni.put(53146, "-/1247587,4421458/boa");
+			stazioni.put(53146, "53146");
 			//stazioni.put(53155, "-/1235751,4426714/boa");
 			//stazioni.put(53156, "-/1275067,4397027/boa");
 			
@@ -2641,10 +2604,10 @@ public class CaricaDBTask extends BaseMessageListener {
 	}
 	
 
-	@Deactivate
+	/*@Deactivate
 	protected void deactivate() {
 		baseScheduler.unregister(this);
-	}
+	}*/
 	
 
 	@Reference
@@ -2703,5 +2666,12 @@ public class CaricaDBTask extends BaseMessageListener {
 	
 	@Reference
 	ImgService imgLocalService;
+
+	@Override
+	public String getName() {
+		// TODO Auto-generated method stub
+		return "Controllo soglie";
+	}
+
 	
 }

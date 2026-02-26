@@ -19,7 +19,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -182,7 +182,7 @@ public class JavaToXMLParer implements IJavaToXMLParerConstants {
 			
 			datiSpecifici.setTIPOLOGIA_UNITA_DOCUMENTARIA(TIPOLOGIA_UNITA_DOCUMENTARIA_ALLERTA);
 			
-			datiSpecifici.setOGGETTO_UNITA_DOCUMENTARIA(StringEscapeUtils.escapeXml("Allerta numero "+ datiSpecifici.getCHIAVE_NUMERO() + " emanata il " + dateUtilToString(datiSpecifici.getDATA_UNITA_DOCUMENTARIA())));
+			datiSpecifici.setOGGETTO_UNITA_DOCUMENTARIA(StringEscapeUtils.escapeXml10("Allerta numero "+ datiSpecifici.getCHIAVE_NUMERO() + " emanata il " + dateUtilToString(datiSpecifici.getDATA_UNITA_DOCUMENTARIA())));
 			
 			datiSpecifici.setINVIO_RESPONSABILE_TERRITORIO(INVIO_RESP_TERRITORIO_SI);
 			
@@ -202,7 +202,7 @@ public class JavaToXMLParer implements IJavaToXMLParerConstants {
 			
 			datiSpecifici.setTIPOLOGIA_UNITA_DOCUMENTARIA(TIPOLOGIA_UNITA_DOCUMENTARIA_BOLLETTINO);
 			
-			datiSpecifici.setOGGETTO_UNITA_DOCUMENTARIA(StringEscapeUtils.escapeXml("Bollettino numero "+ datiSpecifici.getCHIAVE_NUMERO() + " emanato il " + dateUtilToString(datiSpecifici.getDATA_UNITA_DOCUMENTARIA() ) ) );
+			datiSpecifici.setOGGETTO_UNITA_DOCUMENTARIA(StringEscapeUtils.escapeXml10("Bollettino numero "+ datiSpecifici.getCHIAVE_NUMERO() + " emanato il " + dateUtilToString(datiSpecifici.getDATA_UNITA_DOCUMENTARIA() ) ) );
 			
 			datiSpecifici.setINVIO_RESPONSABILE_TERRITORIO(INVIO_RESP_TERRITORIO_NO);
 			
@@ -225,7 +225,7 @@ public class JavaToXMLParer implements IJavaToXMLParerConstants {
 			
 			String numeroAllertoUD [] = datiSpecifici.getIDENTIFICATIVO_DATO_SPECIFICO().split("/");
 			
-			datiSpecifici.setOGGETTO_UNITA_DOCUMENTARIA(StringEscapeUtils.escapeXml("Report di invio degli avvisi trasmessi via mail, relativi ad allerta numero " + numeroAllertoUD[0] +
+			datiSpecifici.setOGGETTO_UNITA_DOCUMENTARIA(StringEscapeUtils.escapeXml10("Report di invio degli avvisi trasmessi via mail, relativi ad allerta numero " + numeroAllertoUD[0] +
 														 " emanata il "+  dateUtilToString(datiSpecifici.getDATA_UNITA_DOCUMENTARIA()) +", generato il " +  dateUtilToString(datiSpecifici.getDATA_GENERAZIONE())));
 			
 			
@@ -255,7 +255,7 @@ public class JavaToXMLParer implements IJavaToXMLParerConstants {
 			
 			String numeroAllertoUD [] = datiSpecifici.getIDENTIFICATIVO_DATO_SPECIFICO().split("/");
 			
-			datiSpecifici.setOGGETTO_UNITA_DOCUMENTARIA(StringEscapeUtils.escapeXml("Report di invio degli avvisi trasmessi via sms, relativi ad allerta numero " + numeroAllertoUD[0] +
+			datiSpecifici.setOGGETTO_UNITA_DOCUMENTARIA(StringEscapeUtils.escapeXml10("Report di invio degli avvisi trasmessi via sms, relativi ad allerta numero " + numeroAllertoUD[0] +
 														 " emanata il "+  dateUtilToString(datiSpecifici.getDATA_UNITA_DOCUMENTARIA()) +", generato il " +  dateUtilToString(datiSpecifici.getDATA_GENERAZIONE())) );
 			
 			
@@ -284,7 +284,7 @@ public class JavaToXMLParer implements IJavaToXMLParerConstants {
 			
 			datiSpecifici.setTIPOLOGIA_UNITA_DOCUMENTARIA(TIPOLOGIA_UNITA_DOCUMENTARIA_MONITORAGGI);
 			
-			datiSpecifici.setOGGETTO_UNITA_DOCUMENTARIA(StringEscapeUtils.escapeXml("Monitoraggio meteo idrologico e idraulico "+ datiSpecifici.getCHIAVE_NUMERO() + " emanato il " +  dateUtilToString(datiSpecifici.getDATA_UNITA_DOCUMENTARIA())));
+			datiSpecifici.setOGGETTO_UNITA_DOCUMENTARIA(StringEscapeUtils.escapeXml10("Monitoraggio meteo idrologico e idraulico "+ datiSpecifici.getCHIAVE_NUMERO() + " emanato il " +  dateUtilToString(datiSpecifici.getDATA_UNITA_DOCUMENTARIA())));
 			
 			datiSpecifici.setINVIO_RESPONSABILE_TERRITORIO(INVIO_RESP_TERRITORIO_SI);	
 			
@@ -306,7 +306,7 @@ public class JavaToXMLParer implements IJavaToXMLParerConstants {
 			
 			String numeroAllertoUD [] = datiSpecifici.getIDENTIFICATIVO_DATO_SPECIFICO().split("/");
 			
-			datiSpecifici.setOGGETTO_UNITA_DOCUMENTARIA(StringEscapeUtils.escapeXml("Report di invio degli avvisi trasmessi via mail, relativi al monitoraggio " +  numeroAllertoUD[0] +
+			datiSpecifici.setOGGETTO_UNITA_DOCUMENTARIA(StringEscapeUtils.escapeXml10("Report di invio degli avvisi trasmessi via mail, relativi al monitoraggio " +  numeroAllertoUD[0] +
 														 " emanato il "+  dateUtilToString(datiSpecifici.getDATA_UNITA_DOCUMENTARIA()) +", generato il " +  dateUtilToString(datiSpecifici.getDATA_GENERAZIONE())) );
 			
 			
@@ -336,7 +336,7 @@ public class JavaToXMLParer implements IJavaToXMLParerConstants {
 			
 			String numeroAllertoUD [] = datiSpecifici.getIDENTIFICATIVO_DATO_SPECIFICO().split("/");
 			
-			datiSpecifici.setOGGETTO_UNITA_DOCUMENTARIA(StringEscapeUtils.escapeXml("Report di invio degli avvisi trasmessi via sms, relativi al monitoraggio " +  numeroAllertoUD[0] +
+			datiSpecifici.setOGGETTO_UNITA_DOCUMENTARIA(StringEscapeUtils.escapeXml10("Report di invio degli avvisi trasmessi via sms, relativi al monitoraggio " +  numeroAllertoUD[0] +
 														 " emanato il "+  dateUtilToString(datiSpecifici.getDATA_UNITA_DOCUMENTARIA()) +", generato il " +  dateUtilToString(datiSpecifici.getDATA_GENERAZIONE())));
 			
 			
@@ -364,7 +364,7 @@ public class JavaToXMLParer implements IJavaToXMLParerConstants {
 			
 			datiSpecifici.setTIPOLOGIA_UNITA_DOCUMENTARIA(TIPOLOGIA_UNITA_DOCUMENTARIA_SUPERAMENTI_MAIL);
 			
-			datiSpecifici.setOGGETTO_UNITA_DOCUMENTARIA(StringEscapeUtils.escapeXml("Report di invio degli avvisi trasmessi via mail, relativi al superamento di soglia "+ datiSpecifici.getCHIAVE_NUMERO() +
+			datiSpecifici.setOGGETTO_UNITA_DOCUMENTARIA(StringEscapeUtils.escapeXml10("Report di invio degli avvisi trasmessi via mail, relativi al superamento di soglia "+ datiSpecifici.getCHIAVE_NUMERO() +
 														 "avvenuto il " +  dateUtilToString(datiSpecifici.getDATA_UNITA_DOCUMENTARIA()) +", generato il " +  dateUtilToString(datiSpecifici.getDATA_GENERAZIONE())));
 			
 			
@@ -392,7 +392,7 @@ public class JavaToXMLParer implements IJavaToXMLParerConstants {
 			
 			datiSpecifici.setTIPOLOGIA_UNITA_DOCUMENTARIA(TIPOLOGIA_UNITA_DOCUMENTARIA_SUPERAMENTI_SMS);
 			
-			datiSpecifici.setOGGETTO_UNITA_DOCUMENTARIA(StringEscapeUtils.escapeXml("Report di invio degli avvisi trasmessi via sms, relativi al superamento di soglia "+ datiSpecifici.getCHIAVE_NUMERO() +
+			datiSpecifici.setOGGETTO_UNITA_DOCUMENTARIA(StringEscapeUtils.escapeXml10("Report di invio degli avvisi trasmessi via sms, relativi al superamento di soglia "+ datiSpecifici.getCHIAVE_NUMERO() +
 														 "avvenuto il " +  dateUtilToString(datiSpecifici.getDATA_UNITA_DOCUMENTARIA()) +", generato il " +  dateUtilToString(datiSpecifici.getDATA_GENERAZIONE())) );
 			
 			
@@ -423,7 +423,7 @@ public class JavaToXMLParer implements IJavaToXMLParerConstants {
 			String num = all?datiSpecifici.getCHIAVE_NUMERO().substring(1):datiSpecifici.getCHIAVE_NUMERO();
 			String ogg = all?"Allerta valanghe "+num+" emanata il ":"Bollettino valanghe "+num+" emanato il ";
 			ogg += dateUtilToString(datiSpecifici.getDATA_UNITA_DOCUMENTARIA());
-			datiSpecifici.setOGGETTO_UNITA_DOCUMENTARIA(StringEscapeUtils.escapeXml(ogg));
+			datiSpecifici.setOGGETTO_UNITA_DOCUMENTARIA(StringEscapeUtils.escapeXml10(ogg));
 			
 			datiSpecifici.setINVIO_RESPONSABILE_TERRITORIO(INVIO_RESP_TERRITORIO_SI);
 			
@@ -448,7 +448,7 @@ public class JavaToXMLParer implements IJavaToXMLParerConstants {
 			
 			String numeroAllertoUD [] = num.split("/");
 			
-			datiSpecifici.setOGGETTO_UNITA_DOCUMENTARIA(StringEscapeUtils.escapeXml("Report di invio degli avvisi trasmessi via mail, relativi "+(all?"ad allerta valanghe":"a bollettino valanghe")+" " + numeroAllertoUD[0] +
+			datiSpecifici.setOGGETTO_UNITA_DOCUMENTARIA(StringEscapeUtils.escapeXml10("Report di invio degli avvisi trasmessi via mail, relativi "+(all?"ad allerta valanghe":"a bollettino valanghe")+" " + numeroAllertoUD[0] +
 														 " del "+  dateUtilToString(datiSpecifici.getDATA_UNITA_DOCUMENTARIA()) +", generato il " +  dateUtilToString(datiSpecifici.getDATA_GENERAZIONE())));
 			
 			
@@ -481,7 +481,7 @@ public class JavaToXMLParer implements IJavaToXMLParerConstants {
 			
 			String numeroAllertoUD [] = num.split("/");
 			
-			datiSpecifici.setOGGETTO_UNITA_DOCUMENTARIA(StringEscapeUtils.escapeXml("Report di invio degli avvisi trasmessi via sms, relativi "+(all?"ad allerta valanghe":"a bollettino valanghe")+" " + numeroAllertoUD[0] +
+			datiSpecifici.setOGGETTO_UNITA_DOCUMENTARIA(StringEscapeUtils.escapeXml10("Report di invio degli avvisi trasmessi via sms, relativi "+(all?"ad allerta valanghe":"a bollettino valanghe")+" " + numeroAllertoUD[0] +
 					 " del "+  dateUtilToString(datiSpecifici.getDATA_UNITA_DOCUMENTARIA()) +", generato il " +  dateUtilToString(datiSpecifici.getDATA_GENERAZIONE())));
 
 			
@@ -536,16 +536,16 @@ public class JavaToXMLParer implements IJavaToXMLParerConstants {
 	    UnitaDocumentaria unDoc = new UnitaDocumentaria();
 		  
 		//Elementi
-		//1° ELEMENTO - Intestazione
+		//1ï¿½ ELEMENTO - Intestazione
 		IntestazioneType intestazione = buildIntestazione(datiSpec, tipoDatiSpecifici);
 		  
-		//2° ELEMENTO - CONFIGURAZIONE
+		//2ï¿½ ELEMENTO - CONFIGURAZIONE
 		ConfigType configurazione = buildConfigurazione(datiSpec, tipoDatiSpecifici);
 		  
-		//3° ELEMENTO - PROFILO UNITA DOCUMENTARIA
+		//3ï¿½ ELEMENTO - PROFILO UNITA DOCUMENTARIA
 		ProfiloUnitaDocumentariaType profiloUnitaDocumentaria = buildProfiloUnitaDocumentaria(datiSpec, tipoDatiSpecifici);
 		  
-		//4° ELEMENTO - DATI SPECIFICI
+		//4ï¿½ ELEMENTO - DATI SPECIFICI
 		if(TipoDatoDaInviare.ALLERTA.getTipoDatoDaInviare().equals(tipoDatiSpecifici)){
 			JAXBElement<DatiSpecificiTypeAllerta> datiSpecAllerta = buildDatiSpecificiAllerta(datiSpec);
 			unDoc.setDatiSpecifici(datiSpecAllerta);					
@@ -584,10 +584,10 @@ public class JavaToXMLParer implements IJavaToXMLParerConstants {
 			unDoc.setDatiSpecifici(datiSpecSuperamentoSms);	
 		}
 	  
-		//5° ELEMENTO - DOCUMENTI COLLEGATI
+		//5ï¿½ ELEMENTO - DOCUMENTI COLLEGATI
 		DocumentoCollegatoType documentiCollegati = buildDocumentoCollegato(listaDocCollegati, tipoDatiSpecifici);
 		  
-		//6° ELEMENTO - DOCUMENTO PRINCIPALE
+		//6ï¿½ ELEMENTO - DOCUMENTO PRINCIPALE
 		DocumentoType documentoPrincipale = buildDocumentoPrincipale(datiSpec, listaComponenti, tipoDatiSpecifici);
 		  	  
 		//Setting sul nodo radice dei restanti elementi
@@ -610,7 +610,7 @@ public class JavaToXMLParer implements IJavaToXMLParerConstants {
 	
 		IntestazioneType intestazione = new IntestazioneType();
 		
-		intestazione.setVersione(StringEscapeUtils.escapeXml(VERSIONE)); //FIXME dovrebbe essere fissa
+		intestazione.setVersione(StringEscapeUtils.escapeXml10(VERSIONE)); //FIXME dovrebbe essere fissa
 		datiSpecificiInvio.setVERSIONE(Double.parseDouble(VERSIONE));
 		//Intestazione -> Versatore
 		VersatoreType versatore = buildVersatore(datiSpecificiInvio);
@@ -623,7 +623,7 @@ public class JavaToXMLParer implements IJavaToXMLParerConstants {
 		intestazione.setChiave(chiave);
 		  
 		//Intestazione -> Tipologia Unita Documentaria
-		intestazione.setTipologiaUnitaDocumentaria(StringEscapeUtils.escapeXml(datiSpecificiInvio.getTIPOLOGIA_UNITA_DOCUMENTARIA()));
+		intestazione.setTipologiaUnitaDocumentaria(StringEscapeUtils.escapeXml10(datiSpecificiInvio.getTIPOLOGIA_UNITA_DOCUMENTARIA()));
 		
 		return intestazione;
 	}
@@ -637,8 +637,8 @@ public class JavaToXMLParer implements IJavaToXMLParerConstants {
 		
 		ChiaveType chiave = new ChiaveType();
 		chiave.setAnno((int) datiSpecificiInvio.getCHIAVE_ANNO());
-		chiave.setNumero(StringEscapeUtils.escapeXml(datiSpecificiInvio.getCHIAVE_NUMERO()));
-		chiave.setTipoRegistro(StringEscapeUtils.escapeXml(datiSpecificiInvio.getCHIAVE_TIPO_REGISTRO()));
+		chiave.setNumero(StringEscapeUtils.escapeXml10(datiSpecificiInvio.getCHIAVE_NUMERO()));
+		chiave.setTipoRegistro(StringEscapeUtils.escapeXml10(datiSpecificiInvio.getCHIAVE_TIPO_REGISTRO()));
 		
 		return chiave;
 	}
@@ -651,10 +651,10 @@ public class JavaToXMLParer implements IJavaToXMLParerConstants {
 	private static VersatoreType buildVersatore(DatiSpecificiInvio datiSpecificiInvio) {
 		
 		VersatoreType versatore = new VersatoreType();
-	    versatore.setAmbiente(StringEscapeUtils.escapeXml(datiSpecificiInvio.getAMBIENTE()));
-	    versatore.setEnte(StringEscapeUtils.escapeXml(datiSpecificiInvio.getVERSATORE_ENTE()));
-		versatore.setStruttura(StringEscapeUtils.escapeXml(datiSpecificiInvio.getVERSATORE_STRUTTURA()));
-		versatore.setUserID(StringEscapeUtils.escapeXml(datiSpecificiInvio.getVERSATORE_USER_ID()));
+	    versatore.setAmbiente(StringEscapeUtils.escapeXml10(datiSpecificiInvio.getAMBIENTE()));
+	    versatore.setEnte(StringEscapeUtils.escapeXml10(datiSpecificiInvio.getVERSATORE_ENTE()));
+		versatore.setStruttura(StringEscapeUtils.escapeXml10(datiSpecificiInvio.getVERSATORE_STRUTTURA()));
+		versatore.setUserID(StringEscapeUtils.escapeXml10(datiSpecificiInvio.getVERSATORE_USER_ID()));
 		
 		return versatore;
 	}
@@ -748,7 +748,7 @@ public class JavaToXMLParer implements IJavaToXMLParerConstants {
 		XMLGregorianCalendar xgcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(format.format(datiSpecificiInvio.getDATA_UNITA_DOCUMENTARIA()));
 		
 		profiloUnitaDocumentaria.setData(xgcal);
-		profiloUnitaDocumentaria.setOggetto(StringEscapeUtils.escapeXml(datiSpecificiInvio.getOGGETTO_UNITA_DOCUMENTARIA()));
+		profiloUnitaDocumentaria.setOggetto(StringEscapeUtils.escapeXml10(datiSpecificiInvio.getOGGETTO_UNITA_DOCUMENTARIA()));
 		
 		return profiloUnitaDocumentaria;
 	}
@@ -773,11 +773,11 @@ public class JavaToXMLParer implements IJavaToXMLParerConstants {
 				ChiaveType chiaveDocumentoCollegato = new ChiaveType();
 				
 				chiaveDocumentoCollegato.setAnno(docCollegato.getDOC_COLLEGATO_ANNO());
-				chiaveDocumentoCollegato.setNumero(StringEscapeUtils.escapeXml(docCollegato.getDOC_COLLEGATO_NUMERO()));
-				chiaveDocumentoCollegato.setTipoRegistro(StringEscapeUtils.escapeXml(docCollegato.getDOC_COLLEGATO_TIPO_REGISTRO()));
+				chiaveDocumentoCollegato.setNumero(StringEscapeUtils.escapeXml10(docCollegato.getDOC_COLLEGATO_NUMERO()));
+				chiaveDocumentoCollegato.setTipoRegistro(StringEscapeUtils.escapeXml10(docCollegato.getDOC_COLLEGATO_TIPO_REGISTRO()));
 				
 				documentoCollegato.setChiaveCollegamento(chiaveDocumentoCollegato);
-				documentoCollegato.setDescrizioneCollegamento(StringEscapeUtils.escapeXml(docCollegato.getDESCRIZIONE_COLLEGAMENTO()));
+				documentoCollegato.setDescrizioneCollegamento(StringEscapeUtils.escapeXml10(docCollegato.getDESCRIZIONE_COLLEGAMENTO()));
 				documentiCollegati.getDocumentoCollegato().add(documentoCollegato);
 			}
 			
@@ -796,10 +796,10 @@ public class JavaToXMLParer implements IJavaToXMLParerConstants {
 	private static DocumentoType buildDocumentoPrincipale(DatiSpecificiInvio datiSpecificiInvio, List<ComponentiInvio> listaComponenti, String tipoDatiSpecifici) {
 		
 		DocumentoType documentoPrincipale = new DocumentoType();
-		documentoPrincipale.setIDDocumento(StringEscapeUtils.escapeXml(String.valueOf(datiSpecificiInvio.getID_DOCUMENTO_PRINCIPALE())));
-		documentoPrincipale.setTipoDocumento(StringEscapeUtils.escapeXml(datiSpecificiInvio.getTIPO_DOCUMENTO()));
+		documentoPrincipale.setIDDocumento(StringEscapeUtils.escapeXml10(String.valueOf(datiSpecificiInvio.getID_DOCUMENTO_PRINCIPALE())));
+		documentoPrincipale.setTipoDocumento(StringEscapeUtils.escapeXml10(datiSpecificiInvio.getTIPO_DOCUMENTO()));
 		StrutturaType strutturaOriginale = new StrutturaType();
-		strutturaOriginale.setTipoStruttura(StringEscapeUtils.escapeXml(TIPO_STRUTTURA)); 
+		strutturaOriginale.setTipoStruttura(StringEscapeUtils.escapeXml10(TIPO_STRUTTURA)); 
 		
 		//Creo le componenti
 		Componenti componenti = new Componenti();
@@ -807,15 +807,15 @@ public class JavaToXMLParer implements IJavaToXMLParerConstants {
 		for(ComponentiInvio compInvio : listaComponenti) {
 		
 			ComponenteType componente = new ComponenteType();
-			componente.setID(StringEscapeUtils.escapeXml(String.valueOf(compInvio.getID_COMPONENTE())));
+			componente.setID(StringEscapeUtils.escapeXml10(String.valueOf(compInvio.getID_COMPONENTE())));
 			componente.setOrdinePresentazione((int)compInvio.getORDINE_PRESENTAZIONE());
-			componente.setTipoComponente(StringEscapeUtils.escapeXml(compInvio.getTIPO_COMPONENTE()));
+			componente.setTipoComponente(StringEscapeUtils.escapeXml10(compInvio.getTIPO_COMPONENTE()));
 			componente.setTipoSupportoComponente(TipoSupportoType.fromValue(TipoSupportoType.FILE.value()));
-			componente.setNomeComponente(StringEscapeUtils.escapeXml(compInvio.getNOME_COMPONENTE()));
-			componente.setFormatoFileVersato(StringEscapeUtils.escapeXml(compInvio.getFORMATO_FILE_VERSATO())); //arriva già valorizzato
-			componente.setHashVersato(StringEscapeUtils.escapeXml(compInvio.getHASH_VERSATO()));
-			componente.setUrnVersato(StringEscapeUtils.escapeXml(compInvio.getURN_VERSATO()));
-			componente.setIDComponenteVersato(StringEscapeUtils.escapeXml(String.valueOf(compInvio.getID_COMPONENTE_VERSATO())));
+			componente.setNomeComponente(StringEscapeUtils.escapeXml10(compInvio.getNOME_COMPONENTE()));
+			componente.setFormatoFileVersato(StringEscapeUtils.escapeXml10(compInvio.getFORMATO_FILE_VERSATO())); //arriva giï¿½ valorizzato
+			componente.setHashVersato(StringEscapeUtils.escapeXml10(compInvio.getHASH_VERSATO()));
+			componente.setUrnVersato(StringEscapeUtils.escapeXml10(compInvio.getURN_VERSATO()));
+			componente.setIDComponenteVersato(StringEscapeUtils.escapeXml10(String.valueOf(compInvio.getID_COMPONENTE_VERSATO())));
 			
 			//aggiungo la componente alla lista
 			componenti.getComponente().add(componente);
@@ -857,15 +857,15 @@ public class JavaToXMLParer implements IJavaToXMLParerConstants {
 		
 		ObjectFactory obj = new ObjectFactory();
 	    DatiSpecificiTypeMail datiSpecificiMail =  obj.createDatiSpecificiType();
-	    datiSpecificiMail.setVersioneDatiSpecifici(StringEscapeUtils.escapeXml(String.valueOf(datiSpecificiInvio.getVERSIONE_DATI_SPECIFICI())));
+	    datiSpecificiMail.setVersioneDatiSpecifici(StringEscapeUtils.escapeXml10(String.valueOf(datiSpecificiInvio.getVERSIONE_DATI_SPECIFICI())));
 			  
-		datiSpecificiMail.setDataGenerazione(StringEscapeUtils.escapeXml(formattaData(datiSpecificiInvio.getDATA_GENERAZIONE())));
+		datiSpecificiMail.setDataGenerazione(StringEscapeUtils.escapeXml10(formattaData(datiSpecificiInvio.getDATA_GENERAZIONE())));
 
-		datiSpecificiMail.setNumeroComunicazione((StringEscapeUtils.escapeXml(datiSpecificiInvio.getIDENTIFICATIVO_DATO_SPECIFICO())));
-		datiSpecificiMail.setTipoComunicazione(StringEscapeUtils.escapeXml(TIPO_COMUNICAZIONE_ALLERTA));		
-		datiSpecificiMail.setOggettoMail(StringEscapeUtils.escapeXml(datiSpecificiInvio.getOGGETTO_MAIL()));
-		datiSpecificiMail.setTestoMail(StringEscapeUtils.escapeXml(datiSpecificiInvio.getTESTO_MAIL()));
-		datiSpecificiMail.setDenominazioneApplicativo(StringEscapeUtils.escapeXml(datiSpecificiInvio.getDENOMINAZIONE_APPLICATIVO()));
+		datiSpecificiMail.setNumeroComunicazione((StringEscapeUtils.escapeXml10(datiSpecificiInvio.getIDENTIFICATIVO_DATO_SPECIFICO())));
+		datiSpecificiMail.setTipoComunicazione(StringEscapeUtils.escapeXml10(TIPO_COMUNICAZIONE_ALLERTA));		
+		datiSpecificiMail.setOggettoMail(StringEscapeUtils.escapeXml10(datiSpecificiInvio.getOGGETTO_MAIL()));
+		datiSpecificiMail.setTestoMail(StringEscapeUtils.escapeXml10(datiSpecificiInvio.getTESTO_MAIL()));
+		datiSpecificiMail.setDenominazioneApplicativo(StringEscapeUtils.escapeXml10(datiSpecificiInvio.getDENOMINAZIONE_APPLICATIVO()));
 		  
 		JAXBElement<DatiSpecificiTypeMail> datiSpec = obj.createDatiSpecifici(datiSpecificiMail);
 		
@@ -876,15 +876,15 @@ public class JavaToXMLParer implements IJavaToXMLParerConstants {
 		
 		it.eng.parer.xmlGen.valanghe.mail.ObjectFactory obj = new it.eng.parer.xmlGen.valanghe.mail.ObjectFactory();
 	    DatiSpecificiTypeValangheMail datiSpecificiMail =  obj.createDatiSpecificiType();
-	    datiSpecificiMail.setVersioneDatiSpecifici(StringEscapeUtils.escapeXml(String.valueOf(datiSpecificiInvio.getVERSIONE_DATI_SPECIFICI())));
+	    datiSpecificiMail.setVersioneDatiSpecifici(StringEscapeUtils.escapeXml10(String.valueOf(datiSpecificiInvio.getVERSIONE_DATI_SPECIFICI())));
 			  
-		datiSpecificiMail.setDataGenerazione(StringEscapeUtils.escapeXml(formattaData(datiSpecificiInvio.getDATA_GENERAZIONE())));
+		datiSpecificiMail.setDataGenerazione(StringEscapeUtils.escapeXml10(formattaData(datiSpecificiInvio.getDATA_GENERAZIONE())));
 
-		datiSpecificiMail.setNumeroComunicazione((StringEscapeUtils.escapeXml(datiSpecificiInvio.getIDENTIFICATIVO_DATO_SPECIFICO())));
-		datiSpecificiMail.setTipoComunicazione(StringEscapeUtils.escapeXml(TIPO_COMUNICAZIONE_VALANGHE));		
-		datiSpecificiMail.setOggettoMail(StringEscapeUtils.escapeXml(datiSpecificiInvio.getOGGETTO_MAIL()));
-		datiSpecificiMail.setTestoMail(StringEscapeUtils.escapeXml(datiSpecificiInvio.getTESTO_MAIL()));
-		datiSpecificiMail.setDenominazioneApplicativo(StringEscapeUtils.escapeXml(datiSpecificiInvio.getDENOMINAZIONE_APPLICATIVO()));
+		datiSpecificiMail.setNumeroComunicazione((StringEscapeUtils.escapeXml10(datiSpecificiInvio.getIDENTIFICATIVO_DATO_SPECIFICO())));
+		datiSpecificiMail.setTipoComunicazione(StringEscapeUtils.escapeXml10(TIPO_COMUNICAZIONE_VALANGHE));		
+		datiSpecificiMail.setOggettoMail(StringEscapeUtils.escapeXml10(datiSpecificiInvio.getOGGETTO_MAIL()));
+		datiSpecificiMail.setTestoMail(StringEscapeUtils.escapeXml10(datiSpecificiInvio.getTESTO_MAIL()));
+		datiSpecificiMail.setDenominazioneApplicativo(StringEscapeUtils.escapeXml10(datiSpecificiInvio.getDENOMINAZIONE_APPLICATIVO()));
 		  
 		JAXBElement<DatiSpecificiTypeValangheMail> datiSpec = obj.createDatiSpecifici(datiSpecificiMail);
 		
@@ -895,20 +895,20 @@ public class JavaToXMLParer implements IJavaToXMLParerConstants {
 	private static JAXBElement<DatiSpecificiTypeSuperamentoSms> buildDatiSpecificiSuperamentoSms(DatiSpecificiInvio datiSpec) throws DatatypeConfigurationException {
 		it.eng.parer.xmlGen.superamento.sms.ObjectFactory obj = new it.eng.parer.xmlGen.superamento.sms.ObjectFactory();
 		DatiSpecificiTypeSuperamentoSms datiSpecificiSuperamentoSms =  obj.createDatiSpecificiType();
-		datiSpecificiSuperamentoSms.setVersioneDatiSpecifici(StringEscapeUtils.escapeXml(String.valueOf(datiSpec.getVERSIONE_DATI_SPECIFICI())));
+		datiSpecificiSuperamentoSms.setVersioneDatiSpecifici(StringEscapeUtils.escapeXml10(String.valueOf(datiSpec.getVERSIONE_DATI_SPECIFICI())));
 
 		
-		datiSpecificiSuperamentoSms.setDataGenerazione(StringEscapeUtils.escapeXml(formattaData(datiSpec.getDATA_GENERAZIONE())));
+		datiSpecificiSuperamentoSms.setDataGenerazione(StringEscapeUtils.escapeXml10(formattaData(datiSpec.getDATA_GENERAZIONE())));
 
-		datiSpecificiSuperamentoSms.setNumeroSuperamento(StringEscapeUtils.escapeXml(datiSpec.getIDENTIFICATIVO_DATO_SPECIFICO()));
-		datiSpecificiSuperamentoSms.setDenominazioneSensoreRilevamento(StringEscapeUtils.escapeXml(datiSpec.getDENOMINAZIONE_SENSORE_RILEVAMENTO()));
-		datiSpecificiSuperamentoSms.setRegolaAllarmeDescrizione(StringEscapeUtils.escapeXml(datiSpec.getREGOLA_ALLARME_DESCRIZIONE()));
-		datiSpecificiSuperamentoSms.setRegolaAllarmeid(StringEscapeUtils.escapeXml(datiSpec.getREGOLA_ALLARME_ID()));
-		datiSpecificiSuperamentoSms.setRegolaAllarmeNome(StringEscapeUtils.escapeXml(datiSpec.getREGOLA_ALLARME_NOME()));
+		datiSpecificiSuperamentoSms.setNumeroSuperamento(StringEscapeUtils.escapeXml10(datiSpec.getIDENTIFICATIVO_DATO_SPECIFICO()));
+		datiSpecificiSuperamentoSms.setDenominazioneSensoreRilevamento(StringEscapeUtils.escapeXml10(datiSpec.getDENOMINAZIONE_SENSORE_RILEVAMENTO()));
+		datiSpecificiSuperamentoSms.setRegolaAllarmeDescrizione(StringEscapeUtils.escapeXml10(datiSpec.getREGOLA_ALLARME_DESCRIZIONE()));
+		datiSpecificiSuperamentoSms.setRegolaAllarmeid(StringEscapeUtils.escapeXml10(datiSpec.getREGOLA_ALLARME_ID()));
+		datiSpecificiSuperamentoSms.setRegolaAllarmeNome(StringEscapeUtils.escapeXml10(datiSpec.getREGOLA_ALLARME_NOME()));
 		datiSpecificiSuperamentoSms.setNumeroNotificheDiRicezione(new BigInteger(String.valueOf(datiSpec.getNUM_NOTIFICHE_RICEZIONE())));
 		datiSpecificiSuperamentoSms.setNumeroSMSGenerati(new BigInteger( String.valueOf(datiSpec.getNUM_SMS_GENERATI())));
 		datiSpecificiSuperamentoSms.setNumeroSMSInviati(new BigInteger (String.valueOf( datiSpec.getNUM_SMS_INVIATI())));
-		datiSpecificiSuperamentoSms.setDenominazioneApplicativo(StringEscapeUtils.escapeXml(datiSpec.getDENOMINAZIONE_APPLICATIVO()));
+		datiSpecificiSuperamentoSms.setDenominazioneApplicativo(StringEscapeUtils.escapeXml10(datiSpec.getDENOMINAZIONE_APPLICATIVO()));
 		  
 		JAXBElement<DatiSpecificiTypeSuperamentoSms> datiSpecSupSms = obj.createDatiSpecifici(datiSpecificiSuperamentoSms);
 		
@@ -919,18 +919,18 @@ public class JavaToXMLParer implements IJavaToXMLParerConstants {
 	private static JAXBElement<DatiSpecificiTypeSuperamentoMail> buildDatiSpecificiSuperamentoMail(DatiSpecificiInvio datiSpec) throws DatatypeConfigurationException {
 		it.eng.parer.xmlGen.superamento.mail.ObjectFactory obj = new it.eng.parer.xmlGen.superamento.mail.ObjectFactory();
 		DatiSpecificiTypeSuperamentoMail datiSpecificiSuperamentoMail =  obj.createDatiSpecificiType();
-		datiSpecificiSuperamentoMail.setVersioneDatiSpecifici(StringEscapeUtils.escapeXml(String.valueOf(datiSpec.getVERSIONE_DATI_SPECIFICI())));
+		datiSpecificiSuperamentoMail.setVersioneDatiSpecifici(StringEscapeUtils.escapeXml10(String.valueOf(datiSpec.getVERSIONE_DATI_SPECIFICI())));
 
-		datiSpecificiSuperamentoMail.setDataGenerazione(StringEscapeUtils.escapeXml(formattaData(datiSpec.getDATA_GENERAZIONE())));
+		datiSpecificiSuperamentoMail.setDataGenerazione(StringEscapeUtils.escapeXml10(formattaData(datiSpec.getDATA_GENERAZIONE())));
 
-		datiSpecificiSuperamentoMail.setNumeroSuperamento(StringEscapeUtils.escapeXml(datiSpec.getIDENTIFICATIVO_DATO_SPECIFICO()));
-		datiSpecificiSuperamentoMail.setDenominazioneSensoreRilevamento(StringEscapeUtils.escapeXml(datiSpec.getDENOMINAZIONE_SENSORE_RILEVAMENTO()));
-		datiSpecificiSuperamentoMail.setRegolaAllarmeDescrizione(StringEscapeUtils.escapeXml(datiSpec.getREGOLA_ALLARME_DESCRIZIONE()));
-		datiSpecificiSuperamentoMail.setRegolaAllarmeid(StringEscapeUtils.escapeXml(datiSpec.getREGOLA_ALLARME_ID()));
-		datiSpecificiSuperamentoMail.setRegolaAllarmeNome(StringEscapeUtils.escapeXml(datiSpec.getREGOLA_ALLARME_NOME()));
-		datiSpecificiSuperamentoMail.setOggettoMail(StringEscapeUtils.escapeXml(datiSpec.getOGGETTO_MAIL()));
-		datiSpecificiSuperamentoMail.setTestoMail(StringEscapeUtils.escapeXml(datiSpec.getTESTO_MAIL()));
-		datiSpecificiSuperamentoMail.setDenominazioneApplicativo(StringEscapeUtils.escapeXml(datiSpec.getDENOMINAZIONE_APPLICATIVO()));
+		datiSpecificiSuperamentoMail.setNumeroSuperamento(StringEscapeUtils.escapeXml10(datiSpec.getIDENTIFICATIVO_DATO_SPECIFICO()));
+		datiSpecificiSuperamentoMail.setDenominazioneSensoreRilevamento(StringEscapeUtils.escapeXml10(datiSpec.getDENOMINAZIONE_SENSORE_RILEVAMENTO()));
+		datiSpecificiSuperamentoMail.setRegolaAllarmeDescrizione(StringEscapeUtils.escapeXml10(datiSpec.getREGOLA_ALLARME_DESCRIZIONE()));
+		datiSpecificiSuperamentoMail.setRegolaAllarmeid(StringEscapeUtils.escapeXml10(datiSpec.getREGOLA_ALLARME_ID()));
+		datiSpecificiSuperamentoMail.setRegolaAllarmeNome(StringEscapeUtils.escapeXml10(datiSpec.getREGOLA_ALLARME_NOME()));
+		datiSpecificiSuperamentoMail.setOggettoMail(StringEscapeUtils.escapeXml10(datiSpec.getOGGETTO_MAIL()));
+		datiSpecificiSuperamentoMail.setTestoMail(StringEscapeUtils.escapeXml10(datiSpec.getTESTO_MAIL()));
+		datiSpecificiSuperamentoMail.setDenominazioneApplicativo(StringEscapeUtils.escapeXml10(datiSpec.getDENOMINAZIONE_APPLICATIVO()));
 		  
 		JAXBElement<DatiSpecificiTypeSuperamentoMail> datiSpecSupMail = obj.createDatiSpecifici(datiSpecificiSuperamentoMail);
 		
@@ -941,16 +941,16 @@ public class JavaToXMLParer implements IJavaToXMLParerConstants {
 	private static JAXBElement<DatiSpecificiTypeMonitoraggioSms> buildDatiSpecificiMonitoraggioSms(DatiSpecificiInvio datiSpec) throws DatatypeConfigurationException {
 		it.eng.parer.xmlGen.monitoraggio.sms.ObjectFactory obj = new it.eng.parer.xmlGen.monitoraggio.sms.ObjectFactory();
 		DatiSpecificiTypeMonitoraggioSms datiSpecificiSuperamentoMonitorSms =  obj.createDatiSpecificiType();
-		datiSpecificiSuperamentoMonitorSms.setVersioneDatiSpecifici(StringEscapeUtils.escapeXml(String.valueOf(datiSpec.getVERSIONE_DATI_SPECIFICI())));
+		datiSpecificiSuperamentoMonitorSms.setVersioneDatiSpecifici(StringEscapeUtils.escapeXml10(String.valueOf(datiSpec.getVERSIONE_DATI_SPECIFICI())));
 
-		datiSpecificiSuperamentoMonitorSms.setDataGenerazione(StringEscapeUtils.escapeXml(formattaData(datiSpec.getDATA_GENERAZIONE())));
+		datiSpecificiSuperamentoMonitorSms.setDataGenerazione(StringEscapeUtils.escapeXml10(formattaData(datiSpec.getDATA_GENERAZIONE())));
 		
-		datiSpecificiSuperamentoMonitorSms.setNumeroComunicazione(StringEscapeUtils.escapeXml(datiSpec.getIDENTIFICATIVO_DATO_SPECIFICO()));
-		datiSpecificiSuperamentoMonitorSms.setTipoComunicazione(StringEscapeUtils.escapeXml(TIPO_COMUNICAZIONE_MONITORAGGIO));
+		datiSpecificiSuperamentoMonitorSms.setNumeroComunicazione(StringEscapeUtils.escapeXml10(datiSpec.getIDENTIFICATIVO_DATO_SPECIFICO()));
+		datiSpecificiSuperamentoMonitorSms.setTipoComunicazione(StringEscapeUtils.escapeXml10(TIPO_COMUNICAZIONE_MONITORAGGIO));
 		datiSpecificiSuperamentoMonitorSms.setNumeroNotificheDiRicezione(new BigInteger(String.valueOf(datiSpec.getNUM_NOTIFICHE_RICEZIONE())));
 		datiSpecificiSuperamentoMonitorSms.setNumeroSMSGenerati(new BigInteger( String.valueOf(datiSpec.getNUM_SMS_GENERATI())));
 		datiSpecificiSuperamentoMonitorSms.setNumeroSMSInviati(new BigInteger (String.valueOf( datiSpec.getNUM_SMS_INVIATI())));
-		datiSpecificiSuperamentoMonitorSms.setDenominazioneApplicativo(StringEscapeUtils.escapeXml(datiSpec.getDENOMINAZIONE_APPLICATIVO()));
+		datiSpecificiSuperamentoMonitorSms.setDenominazioneApplicativo(StringEscapeUtils.escapeXml10(datiSpec.getDENOMINAZIONE_APPLICATIVO()));
 		  
 		JAXBElement<DatiSpecificiTypeMonitoraggioSms> datiSpecMonitorSms = obj.createDatiSpecifici(datiSpecificiSuperamentoMonitorSms);
 		
@@ -961,15 +961,15 @@ public class JavaToXMLParer implements IJavaToXMLParerConstants {
 	private static JAXBElement<DatiSpecificiTypeMonitoraggioMail> buildDatiSpecificiMonitoraggioMail(DatiSpecificiInvio datiSpec) throws DatatypeConfigurationException {
 		it.eng.parer.xmlGen.monitoraggio.mail.ObjectFactory obj = new it.eng.parer.xmlGen.monitoraggio.mail.ObjectFactory();
 		DatiSpecificiTypeMonitoraggioMail datiSpecificiMonitorMail =  obj.createDatiSpecificiType();
-		datiSpecificiMonitorMail.setVersioneDatiSpecifici(StringEscapeUtils.escapeXml(String.valueOf(datiSpec.getVERSIONE_DATI_SPECIFICI())));
+		datiSpecificiMonitorMail.setVersioneDatiSpecifici(StringEscapeUtils.escapeXml10(String.valueOf(datiSpec.getVERSIONE_DATI_SPECIFICI())));
 	
-		datiSpecificiMonitorMail.setDataGenerazione(StringEscapeUtils.escapeXml(formattaData(datiSpec.getDATA_GENERAZIONE())));
+		datiSpecificiMonitorMail.setDataGenerazione(StringEscapeUtils.escapeXml10(formattaData(datiSpec.getDATA_GENERAZIONE())));
 
-		datiSpecificiMonitorMail.setNumeroComunicazione(StringEscapeUtils.escapeXml(datiSpec.getIDENTIFICATIVO_DATO_SPECIFICO()));
-		datiSpecificiMonitorMail.setTipoComunicazione(StringEscapeUtils.escapeXml(TIPO_COMUNICAZIONE_MONITORAGGIO));
-		datiSpecificiMonitorMail.setOggettoMail(StringEscapeUtils.escapeXml(datiSpec.getOGGETTO_MAIL()));
-		datiSpecificiMonitorMail.setTestoMail(StringEscapeUtils.escapeXml(datiSpec.getTESTO_MAIL()));
-		datiSpecificiMonitorMail.setDenominazioneApplicativo(StringEscapeUtils.escapeXml(datiSpec.getDENOMINAZIONE_APPLICATIVO()));
+		datiSpecificiMonitorMail.setNumeroComunicazione(StringEscapeUtils.escapeXml10(datiSpec.getIDENTIFICATIVO_DATO_SPECIFICO()));
+		datiSpecificiMonitorMail.setTipoComunicazione(StringEscapeUtils.escapeXml10(TIPO_COMUNICAZIONE_MONITORAGGIO));
+		datiSpecificiMonitorMail.setOggettoMail(StringEscapeUtils.escapeXml10(datiSpec.getOGGETTO_MAIL()));
+		datiSpecificiMonitorMail.setTestoMail(StringEscapeUtils.escapeXml10(datiSpec.getTESTO_MAIL()));
+		datiSpecificiMonitorMail.setDenominazioneApplicativo(StringEscapeUtils.escapeXml10(datiSpec.getDENOMINAZIONE_APPLICATIVO()));
 		  
 		JAXBElement<DatiSpecificiTypeMonitoraggioMail> datiSpecMonitorMail = obj.createDatiSpecifici(datiSpecificiMonitorMail);
 		
@@ -980,18 +980,18 @@ public class JavaToXMLParer implements IJavaToXMLParerConstants {
 	private static JAXBElement<DatiSpecificiTypeMonitoraggio> buildDatiSpecificiMonitoraggio(DatiSpecificiInvio datiSpec) throws DatatypeConfigurationException {
 		it.eng.parer.xmlGen.monitoraggio.ObjectFactory obj = new it.eng.parer.xmlGen.monitoraggio.ObjectFactory();
 		DatiSpecificiTypeMonitoraggio datiSpecificiMonitoraggio =  obj.createDatiSpecificiType();
-		datiSpecificiMonitoraggio.setVersioneDatiSpecifici(StringEscapeUtils.escapeXml(String.valueOf(datiSpec.getVERSIONE_DATI_SPECIFICI())));
-		datiSpecificiMonitoraggio.setApprovatoreARPAE(StringEscapeUtils.escapeXml(datiSpec.getAPPROVATORE_ARPAE()));
-		datiSpecificiMonitoraggio.setCompilatore(StringEscapeUtils.escapeXml(datiSpec.getCOMPILATORE_ARPAE()));
+		datiSpecificiMonitoraggio.setVersioneDatiSpecifici(StringEscapeUtils.escapeXml10(String.valueOf(datiSpec.getVERSIONE_DATI_SPECIFICI())));
+		datiSpecificiMonitoraggio.setApprovatoreARPAE(StringEscapeUtils.escapeXml10(datiSpec.getAPPROVATORE_ARPAE()));
+		datiSpecificiMonitoraggio.setCompilatore(StringEscapeUtils.escapeXml10(datiSpec.getCOMPILATORE_ARPAE()));
 
 			
-		datiSpecificiMonitoraggio.setDataCreazione(StringEscapeUtils.escapeXml(formattaData(datiSpec.getDATA_GENERAZIONE())));
-		datiSpecificiMonitoraggio.setDataFineValidita(StringEscapeUtils.escapeXml(formattaData(datiSpec.getDATA_FINE_VALIDITA())));
-		datiSpecificiMonitoraggio.setDataInizioValidita(StringEscapeUtils.escapeXml(formattaData(datiSpec.getDATA_INIZIO_VALIDITA())));
-		datiSpecificiMonitoraggio.setDataFirmaARPAE(StringEscapeUtils.escapeXml(formattaData(datiSpec.getDATA_FIRMA_ARPAE())));
+		datiSpecificiMonitoraggio.setDataCreazione(StringEscapeUtils.escapeXml10(formattaData(datiSpec.getDATA_GENERAZIONE())));
+		datiSpecificiMonitoraggio.setDataFineValidita(StringEscapeUtils.escapeXml10(formattaData(datiSpec.getDATA_FINE_VALIDITA())));
+		datiSpecificiMonitoraggio.setDataInizioValidita(StringEscapeUtils.escapeXml10(formattaData(datiSpec.getDATA_INIZIO_VALIDITA())));
+		datiSpecificiMonitoraggio.setDataFirmaARPAE(StringEscapeUtils.escapeXml10(formattaData(datiSpec.getDATA_FIRMA_ARPAE())));
 		
-		datiSpecificiMonitoraggio.setInvioResponsabiliTerritorio(StringEscapeUtils.escapeXml(datiSpec.getINVIO_RESPONSABILE_TERRITORIO()));
-		datiSpecificiMonitoraggio.setMonitoraggioID(StringEscapeUtils.escapeXml(datiSpec.getIDENTIFICATIVO_DATO_SPECIFICO()));
+		datiSpecificiMonitoraggio.setInvioResponsabiliTerritorio(StringEscapeUtils.escapeXml10(datiSpec.getINVIO_RESPONSABILE_TERRITORIO()));
+		datiSpecificiMonitoraggio.setMonitoraggioID(StringEscapeUtils.escapeXml10(datiSpec.getIDENTIFICATIVO_DATO_SPECIFICO()));
 		  
 		JAXBElement<DatiSpecificiTypeMonitoraggio> datiSpecMonitor = obj.createDatiSpecifici(datiSpecificiMonitoraggio);
 		
@@ -1002,16 +1002,16 @@ public class JavaToXMLParer implements IJavaToXMLParerConstants {
 	private static JAXBElement<DatiSpecificiTypeSms> buildDatiSpecificiAllertaSms(DatiSpecificiInvio datiSpec) throws DatatypeConfigurationException {
 		it.eng.parer.xmlGen.allerta.sms.ObjectFactory obj = new it.eng.parer.xmlGen.allerta.sms.ObjectFactory();
 		DatiSpecificiTypeSms datiSpecificiAllertaSms =  obj.createDatiSpecificiType();
-		datiSpecificiAllertaSms.setVersioneDatiSpecifici(StringEscapeUtils.escapeXml(String.valueOf(datiSpec.getVERSIONE_DATI_SPECIFICI())));
+		datiSpecificiAllertaSms.setVersioneDatiSpecifici(StringEscapeUtils.escapeXml10(String.valueOf(datiSpec.getVERSIONE_DATI_SPECIFICI())));
 
-		datiSpecificiAllertaSms.setDataGenerazione(StringEscapeUtils.escapeXml(formattaData(datiSpec.getDATA_GENERAZIONE())));
+		datiSpecificiAllertaSms.setDataGenerazione(StringEscapeUtils.escapeXml10(formattaData(datiSpec.getDATA_GENERAZIONE())));
 		
-		datiSpecificiAllertaSms.setNumeroComunicazione(StringEscapeUtils.escapeXml(datiSpec.getIDENTIFICATIVO_DATO_SPECIFICO()));
-		datiSpecificiAllertaSms.setTipoComunicazione(StringEscapeUtils.escapeXml(TIPO_COMUNICAZIONE_ALLERTA));
+		datiSpecificiAllertaSms.setNumeroComunicazione(StringEscapeUtils.escapeXml10(datiSpec.getIDENTIFICATIVO_DATO_SPECIFICO()));
+		datiSpecificiAllertaSms.setTipoComunicazione(StringEscapeUtils.escapeXml10(TIPO_COMUNICAZIONE_ALLERTA));
 		datiSpecificiAllertaSms.setNumeroNotificheDiRicezione(new BigInteger(String.valueOf(datiSpec.getNUM_NOTIFICHE_RICEZIONE())));
 		datiSpecificiAllertaSms.setNumeroSMSGenerati(new BigInteger( String.valueOf(datiSpec.getNUM_SMS_GENERATI())));
 		datiSpecificiAllertaSms.setNumeroSMSInviati(new BigInteger (String.valueOf( datiSpec.getNUM_SMS_INVIATI())));
-		datiSpecificiAllertaSms.setDenominazioneApplicativo(StringEscapeUtils.escapeXml(datiSpec.getDENOMINAZIONE_APPLICATIVO()));
+		datiSpecificiAllertaSms.setDenominazioneApplicativo(StringEscapeUtils.escapeXml10(datiSpec.getDENOMINAZIONE_APPLICATIVO()));
 		  
 		JAXBElement<DatiSpecificiTypeSms> datiSpecAllertaSms = obj.createDatiSpecifici(datiSpecificiAllertaSms);
 		
@@ -1021,16 +1021,16 @@ public class JavaToXMLParer implements IJavaToXMLParerConstants {
 	private static JAXBElement<DatiSpecificiTypeValangheSms> buildDatiSpecificiValangheSms(DatiSpecificiInvio datiSpec) throws DatatypeConfigurationException {
 		it.eng.parer.xmlGen.valanghe.sms.ObjectFactory obj = new it.eng.parer.xmlGen.valanghe.sms.ObjectFactory();
 		DatiSpecificiTypeValangheSms datiSpecificiAllertaSms =  obj.createDatiSpecificiType();
-		datiSpecificiAllertaSms.setVersioneDatiSpecifici(StringEscapeUtils.escapeXml(String.valueOf(datiSpec.getVERSIONE_DATI_SPECIFICI())));
+		datiSpecificiAllertaSms.setVersioneDatiSpecifici(StringEscapeUtils.escapeXml10(String.valueOf(datiSpec.getVERSIONE_DATI_SPECIFICI())));
 
-		datiSpecificiAllertaSms.setDataGenerazione(StringEscapeUtils.escapeXml(formattaData(datiSpec.getDATA_GENERAZIONE())));
+		datiSpecificiAllertaSms.setDataGenerazione(StringEscapeUtils.escapeXml10(formattaData(datiSpec.getDATA_GENERAZIONE())));
 		
-		datiSpecificiAllertaSms.setNumeroComunicazione(StringEscapeUtils.escapeXml(datiSpec.getIDENTIFICATIVO_DATO_SPECIFICO()));
-		datiSpecificiAllertaSms.setTipoComunicazione(StringEscapeUtils.escapeXml(TIPO_COMUNICAZIONE_VALANGHE));
+		datiSpecificiAllertaSms.setNumeroComunicazione(StringEscapeUtils.escapeXml10(datiSpec.getIDENTIFICATIVO_DATO_SPECIFICO()));
+		datiSpecificiAllertaSms.setTipoComunicazione(StringEscapeUtils.escapeXml10(TIPO_COMUNICAZIONE_VALANGHE));
 		datiSpecificiAllertaSms.setNumeroNotificheDiRicezione(new BigInteger(String.valueOf(datiSpec.getNUM_NOTIFICHE_RICEZIONE())));
 		datiSpecificiAllertaSms.setNumeroSMSGenerati(new BigInteger( String.valueOf(datiSpec.getNUM_SMS_GENERATI())));
 		datiSpecificiAllertaSms.setNumeroSMSInviati(new BigInteger (String.valueOf( datiSpec.getNUM_SMS_INVIATI())));
-		datiSpecificiAllertaSms.setDenominazioneApplicativo(StringEscapeUtils.escapeXml(datiSpec.getDENOMINAZIONE_APPLICATIVO()));
+		datiSpecificiAllertaSms.setDenominazioneApplicativo(StringEscapeUtils.escapeXml10(datiSpec.getDENOMINAZIONE_APPLICATIVO()));
 		  
 		JAXBElement<DatiSpecificiTypeValangheSms> datiSpecAllertaSms = obj.createDatiSpecifici(datiSpecificiAllertaSms);
 		
@@ -1040,21 +1040,21 @@ public class JavaToXMLParer implements IJavaToXMLParerConstants {
 	private static JAXBElement<DatiSpecificiTypeAllerta> buildDatiSpecificiAllerta(DatiSpecificiInvio datiSpec) throws DatatypeConfigurationException {
 		it.eng.parer.xmlGen.allerta.ObjectFactory obj = new it.eng.parer.xmlGen.allerta.ObjectFactory();
 		DatiSpecificiTypeAllerta datiSpecificiAllerta =  obj.createDatiSpecificiType();
-		datiSpecificiAllerta.setVersioneDatiSpecifici(StringEscapeUtils.escapeXml(String.valueOf(datiSpec.getVERSIONE_DATI_SPECIFICI())));
+		datiSpecificiAllerta.setVersioneDatiSpecifici(StringEscapeUtils.escapeXml10(String.valueOf(datiSpec.getVERSIONE_DATI_SPECIFICI())));
 
-		datiSpecificiAllerta.setDataCreazione(StringEscapeUtils.escapeXml(formattaData(datiSpec.getDATA_GENERAZIONE())));
-		datiSpecificiAllerta.setAllertaID(StringEscapeUtils.escapeXml(datiSpec.getIDENTIFICATIVO_DATO_SPECIFICO()));
-		datiSpecificiAllerta.setApprovatoreARPAE(StringEscapeUtils.escapeXml(datiSpec.getAPPROVATORE_ARPAE()));
-		datiSpecificiAllerta.setApprovatoreProtezioneCivile(StringEscapeUtils.escapeXml(datiSpec.getAPPROVATORE_PROTEZIONE_CIVILE()));
-		datiSpecificiAllerta.setCompilatoreARPAE(StringEscapeUtils.escapeXml(datiSpec.getCOMPILATORE_ARPAE()));
-		datiSpecificiAllerta.setCompilatoreProtezioneCivile(StringEscapeUtils.escapeXml(datiSpec.getCOMPILATORE_PROTEZIONE_CIVILE()));
+		datiSpecificiAllerta.setDataCreazione(StringEscapeUtils.escapeXml10(formattaData(datiSpec.getDATA_GENERAZIONE())));
+		datiSpecificiAllerta.setAllertaID(StringEscapeUtils.escapeXml10(datiSpec.getIDENTIFICATIVO_DATO_SPECIFICO()));
+		datiSpecificiAllerta.setApprovatoreARPAE(StringEscapeUtils.escapeXml10(datiSpec.getAPPROVATORE_ARPAE()));
+		datiSpecificiAllerta.setApprovatoreProtezioneCivile(StringEscapeUtils.escapeXml10(datiSpec.getAPPROVATORE_PROTEZIONE_CIVILE()));
+		datiSpecificiAllerta.setCompilatoreARPAE(StringEscapeUtils.escapeXml10(datiSpec.getCOMPILATORE_ARPAE()));
+		datiSpecificiAllerta.setCompilatoreProtezioneCivile(StringEscapeUtils.escapeXml10(datiSpec.getCOMPILATORE_PROTEZIONE_CIVILE()));
 
-		datiSpecificiAllerta.setDataInizioValidita(StringEscapeUtils.escapeXml(formattaData(datiSpec.getDATA_INIZIO_VALIDITA())));
-		datiSpecificiAllerta.setDataFineValidita(StringEscapeUtils.escapeXml(formattaData(datiSpec.getDATA_FINE_VALIDITA())));
-		datiSpecificiAllerta.setDataFirmaARPAE(StringEscapeUtils.escapeXml(formattaData(datiSpec.getDATA_FIRMA_ARPAE())));
-		datiSpecificiAllerta.setDataFirmaProtezioneCivile(StringEscapeUtils.escapeXml(formattaData(datiSpec.getDATA_FIRMA_PROTEZIONE_CIVILE())));
+		datiSpecificiAllerta.setDataInizioValidita(StringEscapeUtils.escapeXml10(formattaData(datiSpec.getDATA_INIZIO_VALIDITA())));
+		datiSpecificiAllerta.setDataFineValidita(StringEscapeUtils.escapeXml10(formattaData(datiSpec.getDATA_FINE_VALIDITA())));
+		datiSpecificiAllerta.setDataFirmaARPAE(StringEscapeUtils.escapeXml10(formattaData(datiSpec.getDATA_FIRMA_ARPAE())));
+		datiSpecificiAllerta.setDataFirmaProtezioneCivile(StringEscapeUtils.escapeXml10(formattaData(datiSpec.getDATA_FIRMA_PROTEZIONE_CIVILE())));
 		
-		datiSpecificiAllerta.setInvioResponsabiliTerritorio(StringEscapeUtils.escapeXml(datiSpec.getINVIO_RESPONSABILE_TERRITORIO()));		
+		datiSpecificiAllerta.setInvioResponsabiliTerritorio(StringEscapeUtils.escapeXml10(datiSpec.getINVIO_RESPONSABILE_TERRITORIO()));		
 		  
 		JAXBElement<DatiSpecificiTypeAllerta> datiSpecAllerta = obj.createDatiSpecifici(datiSpecificiAllerta);
 		
@@ -1064,18 +1064,18 @@ public class JavaToXMLParer implements IJavaToXMLParerConstants {
 	private static JAXBElement<DatiSpecificiTypeValanghe> buildDatiSpecificiValanghe(DatiSpecificiInvio datiSpec) throws DatatypeConfigurationException {
 		it.eng.parer.xmlGen.valanghe.ObjectFactory obj = new it.eng.parer.xmlGen.valanghe.ObjectFactory();
 		DatiSpecificiTypeValanghe datiSpecificiAllerta =  obj.createDatiSpecificiType();
-		datiSpecificiAllerta.setVersioneDatiSpecifici(StringEscapeUtils.escapeXml(String.valueOf(datiSpec.getVERSIONE_DATI_SPECIFICI())));
+		datiSpecificiAllerta.setVersioneDatiSpecifici(StringEscapeUtils.escapeXml10(String.valueOf(datiSpec.getVERSIONE_DATI_SPECIFICI())));
 
-		datiSpecificiAllerta.setDataCreazione(StringEscapeUtils.escapeXml(formattaData(datiSpec.getDATA_GENERAZIONE())));
-		datiSpecificiAllerta.setBollettinoValangheID(StringEscapeUtils.escapeXml(datiSpec.getIDENTIFICATIVO_DATO_SPECIFICO()));
-		datiSpecificiAllerta.setApprovatoreProtezioneCivile(StringEscapeUtils.escapeXml(datiSpec.getAPPROVATORE_PROTEZIONE_CIVILE()));
-		datiSpecificiAllerta.setCompilatoreARPAE(StringEscapeUtils.escapeXml(datiSpec.getCOMPILATORE_ARPAE()));
+		datiSpecificiAllerta.setDataCreazione(StringEscapeUtils.escapeXml10(formattaData(datiSpec.getDATA_GENERAZIONE())));
+		datiSpecificiAllerta.setBollettinoValangheID(StringEscapeUtils.escapeXml10(datiSpec.getIDENTIFICATIVO_DATO_SPECIFICO()));
+		datiSpecificiAllerta.setApprovatoreProtezioneCivile(StringEscapeUtils.escapeXml10(datiSpec.getAPPROVATORE_PROTEZIONE_CIVILE()));
+		datiSpecificiAllerta.setCompilatoreARPAE(StringEscapeUtils.escapeXml10(datiSpec.getCOMPILATORE_ARPAE()));
 
-		datiSpecificiAllerta.setDataInizioValidita(StringEscapeUtils.escapeXml(formattaData(datiSpec.getDATA_INIZIO_VALIDITA())));
-		datiSpecificiAllerta.setDataFineValidita(StringEscapeUtils.escapeXml(formattaData(datiSpec.getDATA_FINE_VALIDITA())));
-		datiSpecificiAllerta.setDataFirmaProtezioneCivile(StringEscapeUtils.escapeXml(formattaData(datiSpec.getDATA_FIRMA_PROTEZIONE_CIVILE())));
+		datiSpecificiAllerta.setDataInizioValidita(StringEscapeUtils.escapeXml10(formattaData(datiSpec.getDATA_INIZIO_VALIDITA())));
+		datiSpecificiAllerta.setDataFineValidita(StringEscapeUtils.escapeXml10(formattaData(datiSpec.getDATA_FINE_VALIDITA())));
+		datiSpecificiAllerta.setDataFirmaProtezioneCivile(StringEscapeUtils.escapeXml10(formattaData(datiSpec.getDATA_FIRMA_PROTEZIONE_CIVILE())));
 		
-		datiSpecificiAllerta.setInvioResponsabiliTerritorio(StringEscapeUtils.escapeXml(datiSpec.getINVIO_RESPONSABILE_TERRITORIO()));		
+		datiSpecificiAllerta.setInvioResponsabiliTerritorio(StringEscapeUtils.escapeXml10(datiSpec.getINVIO_RESPONSABILE_TERRITORIO()));		
 		  
 		JAXBElement<DatiSpecificiTypeValanghe> datiSpecAllerta = obj.createDatiSpecifici(datiSpecificiAllerta);
 		
@@ -1085,22 +1085,22 @@ public class JavaToXMLParer implements IJavaToXMLParerConstants {
 	private static JAXBElement<DatiSpecificiTypeBollettino> buildDatiSpecificiBollettino(DatiSpecificiInvio datiSpec) throws DatatypeConfigurationException {
 		it.eng.parer.xmlGen.allerta.bollettino.ObjectFactory obj = new it.eng.parer.xmlGen.allerta.bollettino.ObjectFactory();
 		DatiSpecificiTypeBollettino datiSpecificiAllertaBollettino =  obj.createDatiSpecificiType();
-		datiSpecificiAllertaBollettino.setVersioneDatiSpecifici(StringEscapeUtils.escapeXml(String.valueOf(datiSpec.getVERSIONE_DATI_SPECIFICI())));
+		datiSpecificiAllertaBollettino.setVersioneDatiSpecifici(StringEscapeUtils.escapeXml10(String.valueOf(datiSpec.getVERSIONE_DATI_SPECIFICI())));
 
-		datiSpecificiAllertaBollettino.setDataCreazione(StringEscapeUtils.escapeXml(formattaData(datiSpec.getDATA_GENERAZIONE())));
+		datiSpecificiAllertaBollettino.setDataCreazione(StringEscapeUtils.escapeXml10(formattaData(datiSpec.getDATA_GENERAZIONE())));
 		
-		datiSpecificiAllertaBollettino.setAllertaID(StringEscapeUtils.escapeXml(datiSpec.getIDENTIFICATIVO_DATO_SPECIFICO()));
-		datiSpecificiAllertaBollettino.setApprovatoreARPAE(StringEscapeUtils.escapeXml(datiSpec.getAPPROVATORE_ARPAE()));
-		datiSpecificiAllertaBollettino.setApprovatoreProtezioneCivile(StringEscapeUtils.escapeXml(datiSpec.getAPPROVATORE_PROTEZIONE_CIVILE()));
-		datiSpecificiAllertaBollettino.setCompilatoreARPAE(StringEscapeUtils.escapeXml(datiSpec.getCOMPILATORE_ARPAE()));
-		datiSpecificiAllertaBollettino.setCompilatoreProtezioneCivile(StringEscapeUtils.escapeXml(datiSpec.getCOMPILATORE_PROTEZIONE_CIVILE()));
+		datiSpecificiAllertaBollettino.setAllertaID(StringEscapeUtils.escapeXml10(datiSpec.getIDENTIFICATIVO_DATO_SPECIFICO()));
+		datiSpecificiAllertaBollettino.setApprovatoreARPAE(StringEscapeUtils.escapeXml10(datiSpec.getAPPROVATORE_ARPAE()));
+		datiSpecificiAllertaBollettino.setApprovatoreProtezioneCivile(StringEscapeUtils.escapeXml10(datiSpec.getAPPROVATORE_PROTEZIONE_CIVILE()));
+		datiSpecificiAllertaBollettino.setCompilatoreARPAE(StringEscapeUtils.escapeXml10(datiSpec.getCOMPILATORE_ARPAE()));
+		datiSpecificiAllertaBollettino.setCompilatoreProtezioneCivile(StringEscapeUtils.escapeXml10(datiSpec.getCOMPILATORE_PROTEZIONE_CIVILE()));
 
-		datiSpecificiAllertaBollettino.setDataInizioValidita(StringEscapeUtils.escapeXml(formattaData(datiSpec.getDATA_INIZIO_VALIDITA())));
-		datiSpecificiAllertaBollettino.setDataFineValidita(StringEscapeUtils.escapeXml(formattaData(datiSpec.getDATA_FINE_VALIDITA())));
-		datiSpecificiAllertaBollettino.setDataFirmaARPAE(StringEscapeUtils.escapeXml(formattaData(datiSpec.getDATA_FIRMA_ARPAE())));
-		datiSpecificiAllertaBollettino.setDataFirmaProtezioneCivile(StringEscapeUtils.escapeXml(formattaData(datiSpec.getDATA_FIRMA_PROTEZIONE_CIVILE())));
+		datiSpecificiAllertaBollettino.setDataInizioValidita(StringEscapeUtils.escapeXml10(formattaData(datiSpec.getDATA_INIZIO_VALIDITA())));
+		datiSpecificiAllertaBollettino.setDataFineValidita(StringEscapeUtils.escapeXml10(formattaData(datiSpec.getDATA_FINE_VALIDITA())));
+		datiSpecificiAllertaBollettino.setDataFirmaARPAE(StringEscapeUtils.escapeXml10(formattaData(datiSpec.getDATA_FIRMA_ARPAE())));
+		datiSpecificiAllertaBollettino.setDataFirmaProtezioneCivile(StringEscapeUtils.escapeXml10(formattaData(datiSpec.getDATA_FIRMA_PROTEZIONE_CIVILE())));
 		
-		datiSpecificiAllertaBollettino.setInvioResponsabiliTerritorio(StringEscapeUtils.escapeXml(datiSpec.getINVIO_RESPONSABILE_TERRITORIO()));		
+		datiSpecificiAllertaBollettino.setInvioResponsabiliTerritorio(StringEscapeUtils.escapeXml10(datiSpec.getINVIO_RESPONSABILE_TERRITORIO()));		
 		  
 		JAXBElement<DatiSpecificiTypeBollettino> datiSpecAllertaBollettino = obj.createDatiSpecifici(datiSpecificiAllertaBollettino);
 		

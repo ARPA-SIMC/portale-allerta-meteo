@@ -70,13 +70,15 @@ public class CatastoExport extends HttpServlet {
 	String dataFine = null;
 	Date d1 = null;
 	Date d2 = null;
+	String area;
+	String comune;
+	String categoria;
 	
 	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 	SimpleDateFormat ora = new SimpleDateFormat("HH:mm");
 	
 	Map<String,CellStyle> styles;
 	List<Segnalazione> segnalazioni;
-	List<Allerta> allerte;
 	
 	public String[] FOGLI = {"Catasto segnalazioni"};
 	public String[] CATEGORIE = {"N.D.","Crit. idraulica","Crit. idrogeologica","Crit. temporali"
@@ -93,9 +95,9 @@ public class CatastoExport extends HttpServlet {
 	List<Effetti> effetti;
 	List<EffettiSub> effettiSub;
 	
-	static Map<String, String> labels = new HashMap<String, String>();
-	static Map<String, String> defaultStyles = new HashMap<String, String>();
-	static Map<String, String> intestazioneStyles = new HashMap<String, String>();
+	static final Map<String, String> labels = new HashMap<String, String>();
+	static final Map<String, String> defaultStyles = new HashMap<String, String>();
+	static final Map<String, String> intestazioneStyles = new HashMap<String, String>();
 
 	
 	static {
@@ -103,8 +105,8 @@ public class CatastoExport extends HttpServlet {
 		labels.put("numero_documento", "Numero documento");
 		labels.put("numero_documento_semplice", "Numero doc.");
 		labels.put("data_emissione", "Data emissione");
-		labels.put("inizio_validita_codice_colore", "Inizio validità \ncodice colore");
-		labels.put("fine_validita_codice_colore", "Fine validità \ncodice colore");
+		labels.put("inizio_validita_codice_colore", "Inizio validitï¿½ \ncodice colore");
+		labels.put("fine_validita_codice_colore", "Fine validitï¿½ \ncodice colore");
 		labels.put("data", "Data");
 		labels.put("ora", "Ora");
 		labels.put("post_briefing", "POST-BRIEFING");
@@ -185,6 +187,9 @@ public class CatastoExport extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		String datada = req.getParameter("datada");
 		String dataa = req.getParameter("dataa");
+		comune = req.getParameter("comune");
+		area = req.getParameter("area");
+		categoria = req.getParameter("categoria");
 		
 		styles = new HashMap<String, CellStyle>();
 		
@@ -260,31 +265,22 @@ public class CatastoExport extends HttpServlet {
 		DynamicQuery dq = SegnalazioneLocalServiceUtil.dynamicQuery();
 		try {
 			if (d1!=null)
-				dq = dq.add(PropertyFactoryUtil.forName("dataEvento").gt(d1));
+				dq = dq.add(PropertyFactoryUtil.forName("dataEvento").ge(d1));
 			if (d2!=null)
 				dq = dq.add(PropertyFactoryUtil.forName("dataEvento").le(d2));
+
+			if (area!=null && !area.equals(""))
+				dq = dq.add(PropertyFactoryUtil.forName("area").like(area.toUpperCase()+"%"));
+			if (comune!=null && !comune.equals(""))
+				dq = dq.add(PropertyFactoryUtil.forName("comune").like("%"+comune.toUpperCase()+"%"));
+			if (categoria!=null && !categoria.equals("") && !categoria.equals("0"))
+				dq = dq.add(PropertyFactoryUtil.forName("categoria").eq(new Long(categoria)));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		dq = dq.addOrder(OrderFactoryUtil.asc("dataEvento"));
 	
 		segnalazioni = SegnalazioneLocalServiceUtil.dynamicQuery(dq);
-
-		dq = AllertaLocalServiceUtil.dynamicQuery();
-		try {
-			
-			dq = dq.add(PropertyFactoryUtil.forName("stato").eq(0));
-			
-			if (d1!=null)
-				dq = dq.add(PropertyFactoryUtil.forName("dataFine").gt(d1));
-			if (d2!=null)
-				dq = dq.add(PropertyFactoryUtil.forName("dataInizio").le(d2));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		dq = dq.addOrder(OrderFactoryUtil.asc("dataInizio"));
-	
-		allerte = AllertaLocalServiceUtil.dynamicQuery(dq);
 		
 		
 	}
@@ -510,7 +506,7 @@ public class CatastoExport extends HttpServlet {
 	            header1.setDataFormat(format.getFormat("#,##0.00"));
 	        } else if (st.contains("currency")) {
 	            DataFormat format = wb.createDataFormat();
-	            header1.setDataFormat(format.getFormat("€ #,##0.00"));
+	            header1.setDataFormat(format.getFormat("ï¿½ #,##0.00"));
 	        }
 	        
 	        System.out.println("inserisco stile "+st);

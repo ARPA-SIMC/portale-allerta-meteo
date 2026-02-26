@@ -1,15 +1,6 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerter.model.impl;
@@ -39,16 +30,10 @@ import it.eng.allerter.service.AllertaValangheStatoLocalServiceUtil;
 import it.eng.allerter.service.LogInternoLocalServiceUtil;
 
 /**
- * The extended model implementation for the AllertaValanghe service. Represents a row in the &quot;ALLERTER_AllertaValanghe&quot; database table, with each column mapped to a property of this class.
- *
- * <p>
- * Helper methods and all application logic should be put in this class. Whenever methods are added, rerun ServiceBuilder to copy their definitions into the <code>it.eng.allerter.model.AllertaValanghe<code> interface.
- * </p>
- *
  * @author GFAVINI
  */
-@ProviderType
 public class AllertaValangheImpl extends AllertaValangheBaseImpl {
+	
 
 	/*
 	 * NOTE FOR DEVELOPERS:
@@ -110,7 +95,7 @@ public class AllertaValangheImpl extends AllertaValangheBaseImpl {
 	public String getFileLinkRelative(String folderName, String fileName) {
 		long repositoryId = getGroupId();
 		Long parentFolderId = DLFolderConstants.DEFAULT_PARENT_FOLDER_ID;
-
+		System.out.println("getFileRelative1");
 		try {
 			AllertaParametro ap = AllertaParametroLocalServiceUtil.fetchAllertaParametro("VALANGHE_PARENT_FOLDER_ID");
 			
@@ -118,22 +103,26 @@ public class AllertaValangheImpl extends AllertaValangheBaseImpl {
 				parentFolderId = Long.parseLong(ap.getValore());
 		} catch (Exception e) {
 		}
+		System.out.println("getFileRelative2");
 
 		try {
 			Folder folder = DLAppServiceUtil.getFolder(getGroupId(), parentFolderId, folderName);
+			System.out.println("getFileRelative3");
+
 			List<FileEntry> fileEntries = DLAppServiceUtil.getFileEntries(repositoryId, folder.getFolderId());
-			
+			System.out.println("getFileRelative4");
+
 			for (FileEntry file : fileEntries) {
 				String url = "/documents/" + getGroupId() + "/" + file.getFolderId() + "/" + file.getTitle();
-				_log.debug("Link=>" + url);
+				System.out.println("Link=>" + url);
 				
 				if (file.getTitle().equals(fileName))
 					return url;
 			}
-			
+			System.out.println("getFileRelative5");
 			return null;
 		} catch (Exception e) {
-			_log.error(e);
+			e.printStackTrace();
 			LogInternoLocalServiceUtil.log("allertaValangheBean", "getFileLinkRelative", e, "");
 			
 			return null;
@@ -163,7 +152,7 @@ public class AllertaValangheImpl extends AllertaValangheBaseImpl {
 			
 			return null;
 		} catch (Exception e) {
-			_log.error(e);
+			e.printStackTrace();
 			LogInternoLocalServiceUtil.log("allertaValangheBean", "getFile", e, "");
 			
 			return null;

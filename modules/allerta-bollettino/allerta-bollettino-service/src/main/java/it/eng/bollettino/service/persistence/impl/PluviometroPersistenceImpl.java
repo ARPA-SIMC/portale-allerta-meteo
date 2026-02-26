@@ -1,21 +1,12 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.bollettino.service.persistence.impl;
 
-import aQute.bnd.annotation.ProviderType;
-
+import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
@@ -23,32 +14,40 @@ import com.liferay.portal.kernel.dao.orm.Query;
 import com.liferay.portal.kernel.dao.orm.QueryPos;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
+import com.liferay.portal.kernel.dao.orm.SessionFactory;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.kernel.util.PropsKeys;
+import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.ProxyUtil;
-import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.spring.extender.service.ServiceReference;
 
 import it.eng.bollettino.exception.NoSuchPluviometroException;
 import it.eng.bollettino.model.Pluviometro;
+import it.eng.bollettino.model.PluviometroTable;
 import it.eng.bollettino.model.impl.PluviometroImpl;
 import it.eng.bollettino.model.impl.PluviometroModelImpl;
 import it.eng.bollettino.service.persistence.PluviometroPersistence;
+import it.eng.bollettino.service.persistence.PluviometroUtil;
+import it.eng.bollettino.service.persistence.impl.constants.BOLLETTINOPersistenceConstants;
 
 import java.io.Serializable;
 
 import java.lang.reflect.InvocationHandler;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+
+import javax.sql.DataSource;
+
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The persistence implementation for the pluviometro service.
@@ -60,7 +59,7 @@ import java.util.Set;
  * @author GFAVINI
  * @generated
  */
-@ProviderType
+@Component(service = PluviometroPersistence.class)
 public class PluviometroPersistenceImpl
 	extends BasePersistenceImpl<Pluviometro> implements PluviometroPersistence {
 
@@ -101,7 +100,7 @@ public class PluviometroPersistenceImpl
 	 * Returns a range of all the pluviometros where nomeGruppo = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>PluviometroModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>PluviometroModelImpl</code>.
 	 * </p>
 	 *
 	 * @param nomeGruppo the nome gruppo
@@ -120,7 +119,7 @@ public class PluviometroPersistenceImpl
 	 * Returns an ordered range of all the pluviometros where nomeGruppo = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>PluviometroModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>PluviometroModelImpl</code>.
 	 * </p>
 	 *
 	 * @param nomeGruppo the nome gruppo
@@ -142,36 +141,36 @@ public class PluviometroPersistenceImpl
 	 * Returns an ordered range of all the pluviometros where nomeGruppo = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>PluviometroModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>PluviometroModelImpl</code>.
 	 * </p>
 	 *
 	 * @param nomeGruppo the nome gruppo
 	 * @param start the lower bound of the range of pluviometros
 	 * @param end the upper bound of the range of pluviometros (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching pluviometros
 	 */
 	@Override
 	public List<Pluviometro> findByNomeGruppo(
 		String nomeGruppo, int start, int end,
 		OrderByComparator<Pluviometro> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
 		nomeGruppo = Objects.toString(nomeGruppo, "");
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindByNomeGruppo;
-			finderArgs = new Object[] {nomeGruppo};
+			if (useFinderCache) {
+				finderPath = _finderPathWithoutPaginationFindByNomeGruppo;
+				finderArgs = new Object[] {nomeGruppo};
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByNomeGruppo;
 			finderArgs = new Object[] {
 				nomeGruppo, start, end, orderByComparator
@@ -180,7 +179,7 @@ public class PluviometroPersistenceImpl
 
 		List<Pluviometro> list = null;
 
-		if (retrieveFromCache) {
+		if (useFinderCache) {
 			list = (List<Pluviometro>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
@@ -196,73 +195,63 @@ public class PluviometroPersistenceImpl
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					3 + (orderByComparator.getOrderByFields().length * 2));
 			}
 			else {
-				query = new StringBundler(3);
+				sb = new StringBundler(3);
 			}
 
-			query.append(_SQL_SELECT_PLUVIOMETRO_WHERE);
+			sb.append(_SQL_SELECT_PLUVIOMETRO_WHERE);
 
 			boolean bindNomeGruppo = false;
 
 			if (nomeGruppo.isEmpty()) {
-				query.append(_FINDER_COLUMN_NOMEGRUPPO_NOMEGRUPPO_3);
+				sb.append(_FINDER_COLUMN_NOMEGRUPPO_NOMEGRUPPO_3);
 			}
 			else {
 				bindNomeGruppo = true;
 
-				query.append(_FINDER_COLUMN_NOMEGRUPPO_NOMEGRUPPO_2);
+				sb.append(_FINDER_COLUMN_NOMEGRUPPO_NOMEGRUPPO_2);
 			}
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 			}
-			else if (pagination) {
-				query.append(PluviometroModelImpl.ORDER_BY_JPQL);
+			else {
+				sb.append(PluviometroModelImpl.ORDER_BY_JPQL);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindNomeGruppo) {
-					qPos.add(nomeGruppo);
+					queryPos.add(nomeGruppo);
 				}
 
-				if (!pagination) {
-					list = (List<Pluviometro>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<Pluviometro>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<Pluviometro>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					finderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -292,16 +281,16 @@ public class PluviometroPersistenceImpl
 			return pluviometro;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("nomeGruppo=");
-		msg.append(nomeGruppo);
+		sb.append("nomeGruppo=");
+		sb.append(nomeGruppo);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchPluviometroException(msg.toString());
+		throw new NoSuchPluviometroException(sb.toString());
 	}
 
 	/**
@@ -345,16 +334,16 @@ public class PluviometroPersistenceImpl
 			return pluviometro;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("nomeGruppo=");
-		msg.append(nomeGruppo);
+		sb.append("nomeGruppo=");
+		sb.append(nomeGruppo);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchPluviometroException(msg.toString());
+		throw new NoSuchPluviometroException(sb.toString());
 	}
 
 	/**
@@ -420,8 +409,8 @@ public class PluviometroPersistenceImpl
 
 			return array;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -432,28 +421,28 @@ public class PluviometroPersistenceImpl
 		Session session, Pluviometro pluviometro, String nomeGruppo,
 		OrderByComparator<Pluviometro> orderByComparator, boolean previous) {
 
-		StringBundler query = null;
+		StringBundler sb = null;
 
 		if (orderByComparator != null) {
-			query = new StringBundler(
+			sb = new StringBundler(
 				4 + (orderByComparator.getOrderByConditionFields().length * 3) +
 					(orderByComparator.getOrderByFields().length * 3));
 		}
 		else {
-			query = new StringBundler(3);
+			sb = new StringBundler(3);
 		}
 
-		query.append(_SQL_SELECT_PLUVIOMETRO_WHERE);
+		sb.append(_SQL_SELECT_PLUVIOMETRO_WHERE);
 
 		boolean bindNomeGruppo = false;
 
 		if (nomeGruppo.isEmpty()) {
-			query.append(_FINDER_COLUMN_NOMEGRUPPO_NOMEGRUPPO_3);
+			sb.append(_FINDER_COLUMN_NOMEGRUPPO_NOMEGRUPPO_3);
 		}
 		else {
 			bindNomeGruppo = true;
 
-			query.append(_FINDER_COLUMN_NOMEGRUPPO_NOMEGRUPPO_2);
+			sb.append(_FINDER_COLUMN_NOMEGRUPPO_NOMEGRUPPO_2);
 		}
 
 		if (orderByComparator != null) {
@@ -461,83 +450,83 @@ public class PluviometroPersistenceImpl
 				orderByComparator.getOrderByConditionFields();
 
 			if (orderByConditionFields.length > 0) {
-				query.append(WHERE_AND);
+				sb.append(WHERE_AND);
 			}
 
 			for (int i = 0; i < orderByConditionFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByConditionFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByConditionFields[i]);
 
 				if ((i + 1) < orderByConditionFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+						sb.append(WHERE_GREATER_THAN_HAS_NEXT);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+						sb.append(WHERE_LESSER_THAN_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN);
+						sb.append(WHERE_GREATER_THAN);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN);
+						sb.append(WHERE_LESSER_THAN);
 					}
 				}
 			}
 
-			query.append(ORDER_BY_CLAUSE);
+			sb.append(ORDER_BY_CLAUSE);
 
 			String[] orderByFields = orderByComparator.getOrderByFields();
 
 			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByFields[i]);
 
 				if ((i + 1) < orderByFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC_HAS_NEXT);
+						sb.append(ORDER_BY_ASC_HAS_NEXT);
 					}
 					else {
-						query.append(ORDER_BY_DESC_HAS_NEXT);
+						sb.append(ORDER_BY_DESC_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC);
+						sb.append(ORDER_BY_ASC);
 					}
 					else {
-						query.append(ORDER_BY_DESC);
+						sb.append(ORDER_BY_DESC);
 					}
 				}
 			}
 		}
 		else {
-			query.append(PluviometroModelImpl.ORDER_BY_JPQL);
+			sb.append(PluviometroModelImpl.ORDER_BY_JPQL);
 		}
 
-		String sql = query.toString();
+		String sql = sb.toString();
 
-		Query q = session.createQuery(sql);
+		Query query = session.createQuery(sql);
 
-		q.setFirstResult(0);
-		q.setMaxResults(2);
+		query.setFirstResult(0);
+		query.setMaxResults(2);
 
-		QueryPos qPos = QueryPos.getInstance(q);
+		QueryPos queryPos = QueryPos.getInstance(query);
 
 		if (bindNomeGruppo) {
-			qPos.add(nomeGruppo);
+			queryPos.add(nomeGruppo);
 		}
 
 		if (orderByComparator != null) {
 			for (Object orderByConditionValue :
 					orderByComparator.getOrderByConditionValues(pluviometro)) {
 
-				qPos.add(orderByConditionValue);
+				queryPos.add(orderByConditionValue);
 			}
 		}
 
-		List<Pluviometro> list = q.list();
+		List<Pluviometro> list = query.list();
 
 		if (list.size() == 2) {
 			return list.get(1);
@@ -579,44 +568,42 @@ public class PluviometroPersistenceImpl
 		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
-			StringBundler query = new StringBundler(2);
+			StringBundler sb = new StringBundler(2);
 
-			query.append(_SQL_COUNT_PLUVIOMETRO_WHERE);
+			sb.append(_SQL_COUNT_PLUVIOMETRO_WHERE);
 
 			boolean bindNomeGruppo = false;
 
 			if (nomeGruppo.isEmpty()) {
-				query.append(_FINDER_COLUMN_NOMEGRUPPO_NOMEGRUPPO_3);
+				sb.append(_FINDER_COLUMN_NOMEGRUPPO_NOMEGRUPPO_3);
 			}
 			else {
 				bindNomeGruppo = true;
 
-				query.append(_FINDER_COLUMN_NOMEGRUPPO_NOMEGRUPPO_2);
+				sb.append(_FINDER_COLUMN_NOMEGRUPPO_NOMEGRUPPO_2);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindNomeGruppo) {
-					qPos.add(nomeGruppo);
+					queryPos.add(nomeGruppo);
 				}
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
 				finderCache.putResult(finderPath, finderArgs, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -652,7 +639,7 @@ public class PluviometroPersistenceImpl
 	 * Returns a range of all the pluviometros where nomeRubrica = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>PluviometroModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>PluviometroModelImpl</code>.
 	 * </p>
 	 *
 	 * @param nomeRubrica the nome rubrica
@@ -671,7 +658,7 @@ public class PluviometroPersistenceImpl
 	 * Returns an ordered range of all the pluviometros where nomeRubrica = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>PluviometroModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>PluviometroModelImpl</code>.
 	 * </p>
 	 *
 	 * @param nomeRubrica the nome rubrica
@@ -693,36 +680,36 @@ public class PluviometroPersistenceImpl
 	 * Returns an ordered range of all the pluviometros where nomeRubrica = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>PluviometroModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>PluviometroModelImpl</code>.
 	 * </p>
 	 *
 	 * @param nomeRubrica the nome rubrica
 	 * @param start the lower bound of the range of pluviometros
 	 * @param end the upper bound of the range of pluviometros (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching pluviometros
 	 */
 	@Override
 	public List<Pluviometro> findByNomeRubrica(
 		String nomeRubrica, int start, int end,
 		OrderByComparator<Pluviometro> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
 		nomeRubrica = Objects.toString(nomeRubrica, "");
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindByNomeRubrica;
-			finderArgs = new Object[] {nomeRubrica};
+			if (useFinderCache) {
+				finderPath = _finderPathWithoutPaginationFindByNomeRubrica;
+				finderArgs = new Object[] {nomeRubrica};
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByNomeRubrica;
 			finderArgs = new Object[] {
 				nomeRubrica, start, end, orderByComparator
@@ -731,7 +718,7 @@ public class PluviometroPersistenceImpl
 
 		List<Pluviometro> list = null;
 
-		if (retrieveFromCache) {
+		if (useFinderCache) {
 			list = (List<Pluviometro>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
@@ -747,73 +734,63 @@ public class PluviometroPersistenceImpl
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					3 + (orderByComparator.getOrderByFields().length * 2));
 			}
 			else {
-				query = new StringBundler(3);
+				sb = new StringBundler(3);
 			}
 
-			query.append(_SQL_SELECT_PLUVIOMETRO_WHERE);
+			sb.append(_SQL_SELECT_PLUVIOMETRO_WHERE);
 
 			boolean bindNomeRubrica = false;
 
 			if (nomeRubrica.isEmpty()) {
-				query.append(_FINDER_COLUMN_NOMERUBRICA_NOMERUBRICA_3);
+				sb.append(_FINDER_COLUMN_NOMERUBRICA_NOMERUBRICA_3);
 			}
 			else {
 				bindNomeRubrica = true;
 
-				query.append(_FINDER_COLUMN_NOMERUBRICA_NOMERUBRICA_2);
+				sb.append(_FINDER_COLUMN_NOMERUBRICA_NOMERUBRICA_2);
 			}
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 			}
-			else if (pagination) {
-				query.append(PluviometroModelImpl.ORDER_BY_JPQL);
+			else {
+				sb.append(PluviometroModelImpl.ORDER_BY_JPQL);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindNomeRubrica) {
-					qPos.add(nomeRubrica);
+					queryPos.add(nomeRubrica);
 				}
 
-				if (!pagination) {
-					list = (List<Pluviometro>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<Pluviometro>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<Pluviometro>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					finderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -844,16 +821,16 @@ public class PluviometroPersistenceImpl
 			return pluviometro;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("nomeRubrica=");
-		msg.append(nomeRubrica);
+		sb.append("nomeRubrica=");
+		sb.append(nomeRubrica);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchPluviometroException(msg.toString());
+		throw new NoSuchPluviometroException(sb.toString());
 	}
 
 	/**
@@ -898,16 +875,16 @@ public class PluviometroPersistenceImpl
 			return pluviometro;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("nomeRubrica=");
-		msg.append(nomeRubrica);
+		sb.append("nomeRubrica=");
+		sb.append(nomeRubrica);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchPluviometroException(msg.toString());
+		throw new NoSuchPluviometroException(sb.toString());
 	}
 
 	/**
@@ -973,8 +950,8 @@ public class PluviometroPersistenceImpl
 
 			return array;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -985,28 +962,28 @@ public class PluviometroPersistenceImpl
 		Session session, Pluviometro pluviometro, String nomeRubrica,
 		OrderByComparator<Pluviometro> orderByComparator, boolean previous) {
 
-		StringBundler query = null;
+		StringBundler sb = null;
 
 		if (orderByComparator != null) {
-			query = new StringBundler(
+			sb = new StringBundler(
 				4 + (orderByComparator.getOrderByConditionFields().length * 3) +
 					(orderByComparator.getOrderByFields().length * 3));
 		}
 		else {
-			query = new StringBundler(3);
+			sb = new StringBundler(3);
 		}
 
-		query.append(_SQL_SELECT_PLUVIOMETRO_WHERE);
+		sb.append(_SQL_SELECT_PLUVIOMETRO_WHERE);
 
 		boolean bindNomeRubrica = false;
 
 		if (nomeRubrica.isEmpty()) {
-			query.append(_FINDER_COLUMN_NOMERUBRICA_NOMERUBRICA_3);
+			sb.append(_FINDER_COLUMN_NOMERUBRICA_NOMERUBRICA_3);
 		}
 		else {
 			bindNomeRubrica = true;
 
-			query.append(_FINDER_COLUMN_NOMERUBRICA_NOMERUBRICA_2);
+			sb.append(_FINDER_COLUMN_NOMERUBRICA_NOMERUBRICA_2);
 		}
 
 		if (orderByComparator != null) {
@@ -1014,83 +991,83 @@ public class PluviometroPersistenceImpl
 				orderByComparator.getOrderByConditionFields();
 
 			if (orderByConditionFields.length > 0) {
-				query.append(WHERE_AND);
+				sb.append(WHERE_AND);
 			}
 
 			for (int i = 0; i < orderByConditionFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByConditionFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByConditionFields[i]);
 
 				if ((i + 1) < orderByConditionFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+						sb.append(WHERE_GREATER_THAN_HAS_NEXT);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+						sb.append(WHERE_LESSER_THAN_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN);
+						sb.append(WHERE_GREATER_THAN);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN);
+						sb.append(WHERE_LESSER_THAN);
 					}
 				}
 			}
 
-			query.append(ORDER_BY_CLAUSE);
+			sb.append(ORDER_BY_CLAUSE);
 
 			String[] orderByFields = orderByComparator.getOrderByFields();
 
 			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByFields[i]);
 
 				if ((i + 1) < orderByFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC_HAS_NEXT);
+						sb.append(ORDER_BY_ASC_HAS_NEXT);
 					}
 					else {
-						query.append(ORDER_BY_DESC_HAS_NEXT);
+						sb.append(ORDER_BY_DESC_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC);
+						sb.append(ORDER_BY_ASC);
 					}
 					else {
-						query.append(ORDER_BY_DESC);
+						sb.append(ORDER_BY_DESC);
 					}
 				}
 			}
 		}
 		else {
-			query.append(PluviometroModelImpl.ORDER_BY_JPQL);
+			sb.append(PluviometroModelImpl.ORDER_BY_JPQL);
 		}
 
-		String sql = query.toString();
+		String sql = sb.toString();
 
-		Query q = session.createQuery(sql);
+		Query query = session.createQuery(sql);
 
-		q.setFirstResult(0);
-		q.setMaxResults(2);
+		query.setFirstResult(0);
+		query.setMaxResults(2);
 
-		QueryPos qPos = QueryPos.getInstance(q);
+		QueryPos queryPos = QueryPos.getInstance(query);
 
 		if (bindNomeRubrica) {
-			qPos.add(nomeRubrica);
+			queryPos.add(nomeRubrica);
 		}
 
 		if (orderByComparator != null) {
 			for (Object orderByConditionValue :
 					orderByComparator.getOrderByConditionValues(pluviometro)) {
 
-				qPos.add(orderByConditionValue);
+				queryPos.add(orderByConditionValue);
 			}
 		}
 
-		List<Pluviometro> list = q.list();
+		List<Pluviometro> list = query.list();
 
 		if (list.size() == 2) {
 			return list.get(1);
@@ -1132,44 +1109,42 @@ public class PluviometroPersistenceImpl
 		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
-			StringBundler query = new StringBundler(2);
+			StringBundler sb = new StringBundler(2);
 
-			query.append(_SQL_COUNT_PLUVIOMETRO_WHERE);
+			sb.append(_SQL_COUNT_PLUVIOMETRO_WHERE);
 
 			boolean bindNomeRubrica = false;
 
 			if (nomeRubrica.isEmpty()) {
-				query.append(_FINDER_COLUMN_NOMERUBRICA_NOMERUBRICA_3);
+				sb.append(_FINDER_COLUMN_NOMERUBRICA_NOMERUBRICA_3);
 			}
 			else {
 				bindNomeRubrica = true;
 
-				query.append(_FINDER_COLUMN_NOMERUBRICA_NOMERUBRICA_2);
+				sb.append(_FINDER_COLUMN_NOMERUBRICA_NOMERUBRICA_2);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindNomeRubrica) {
-					qPos.add(nomeRubrica);
+					queryPos.add(nomeRubrica);
 				}
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
 				finderCache.putResult(finderPath, finderArgs, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -1187,6 +1162,11 @@ public class PluviometroPersistenceImpl
 
 	public PluviometroPersistenceImpl() {
 		setModelClass(Pluviometro.class);
+
+		setModelImplClass(PluviometroImpl.class);
+		setModelPKClass(String.class);
+
+		setTable(PluviometroTable.INSTANCE);
 	}
 
 	/**
@@ -1197,11 +1177,10 @@ public class PluviometroPersistenceImpl
 	@Override
 	public void cacheResult(Pluviometro pluviometro) {
 		entityCache.putResult(
-			PluviometroModelImpl.ENTITY_CACHE_ENABLED, PluviometroImpl.class,
-			pluviometro.getPrimaryKey(), pluviometro);
-
-		pluviometro.resetOriginalValues();
+			PluviometroImpl.class, pluviometro.getPrimaryKey(), pluviometro);
 	}
+
+	private int _valueObjectFinderCacheListThreshold;
 
 	/**
 	 * Caches the pluviometros in the entity cache if it is enabled.
@@ -1210,16 +1189,19 @@ public class PluviometroPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(List<Pluviometro> pluviometros) {
+		if ((_valueObjectFinderCacheListThreshold == 0) ||
+			((_valueObjectFinderCacheListThreshold > 0) &&
+			 (pluviometros.size() > _valueObjectFinderCacheListThreshold))) {
+
+			return;
+		}
+
 		for (Pluviometro pluviometro : pluviometros) {
 			if (entityCache.getResult(
-					PluviometroModelImpl.ENTITY_CACHE_ENABLED,
 					PluviometroImpl.class, pluviometro.getPrimaryKey()) ==
 						null) {
 
 				cacheResult(pluviometro);
-			}
-			else {
-				pluviometro.resetOriginalValues();
 			}
 		}
 	}
@@ -1235,9 +1217,7 @@ public class PluviometroPersistenceImpl
 	public void clearCache() {
 		entityCache.clearCache(PluviometroImpl.class);
 
-		finderCache.clearCache(FINDER_CLASS_NAME_ENTITY);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		finderCache.clearCache(PluviometroImpl.class);
 	}
 
 	/**
@@ -1249,23 +1229,22 @@ public class PluviometroPersistenceImpl
 	 */
 	@Override
 	public void clearCache(Pluviometro pluviometro) {
-		entityCache.removeResult(
-			PluviometroModelImpl.ENTITY_CACHE_ENABLED, PluviometroImpl.class,
-			pluviometro.getPrimaryKey());
-
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		entityCache.removeResult(PluviometroImpl.class, pluviometro);
 	}
 
 	@Override
 	public void clearCache(List<Pluviometro> pluviometros) {
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
-
 		for (Pluviometro pluviometro : pluviometros) {
-			entityCache.removeResult(
-				PluviometroModelImpl.ENTITY_CACHE_ENABLED,
-				PluviometroImpl.class, pluviometro.getPrimaryKey());
+			entityCache.removeResult(PluviometroImpl.class, pluviometro);
+		}
+	}
+
+	@Override
+	public void clearCache(Set<Serializable> primaryKeys) {
+		finderCache.clearCache(PluviometroImpl.class);
+
+		for (Serializable primaryKey : primaryKeys) {
+			entityCache.removeResult(PluviometroImpl.class, primaryKey);
 		}
 	}
 
@@ -1329,11 +1308,11 @@ public class PluviometroPersistenceImpl
 
 			return remove(pluviometro);
 		}
-		catch (NoSuchPluviometroException nsee) {
-			throw nsee;
+		catch (NoSuchPluviometroException noSuchEntityException) {
+			throw noSuchEntityException;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -1356,8 +1335,8 @@ public class PluviometroPersistenceImpl
 				session.delete(pluviometro);
 			}
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -1398,87 +1377,26 @@ public class PluviometroPersistenceImpl
 		try {
 			session = openSession();
 
-			if (pluviometro.isNew()) {
+			if (isNew) {
 				session.save(pluviometro);
-
-				pluviometro.setNew(false);
 			}
 			else {
 				pluviometro = (Pluviometro)session.merge(pluviometro);
 			}
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
 		}
 
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-
-		if (!PluviometroModelImpl.COLUMN_BITMASK_ENABLED) {
-			finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
-		}
-		else if (isNew) {
-			Object[] args = new Object[] {pluviometroModelImpl.getNomeGruppo()};
-
-			finderCache.removeResult(_finderPathCountByNomeGruppo, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByNomeGruppo, args);
-
-			args = new Object[] {pluviometroModelImpl.getNomeRubrica()};
-
-			finderCache.removeResult(_finderPathCountByNomeRubrica, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByNomeRubrica, args);
-
-			finderCache.removeResult(_finderPathCountAll, FINDER_ARGS_EMPTY);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindAll, FINDER_ARGS_EMPTY);
-		}
-		else {
-			if ((pluviometroModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByNomeGruppo.
-					 getColumnBitmask()) != 0) {
-
-				Object[] args = new Object[] {
-					pluviometroModelImpl.getOriginalNomeGruppo()
-				};
-
-				finderCache.removeResult(_finderPathCountByNomeGruppo, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByNomeGruppo, args);
-
-				args = new Object[] {pluviometroModelImpl.getNomeGruppo()};
-
-				finderCache.removeResult(_finderPathCountByNomeGruppo, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByNomeGruppo, args);
-			}
-
-			if ((pluviometroModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByNomeRubrica.
-					 getColumnBitmask()) != 0) {
-
-				Object[] args = new Object[] {
-					pluviometroModelImpl.getOriginalNomeRubrica()
-				};
-
-				finderCache.removeResult(_finderPathCountByNomeRubrica, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByNomeRubrica, args);
-
-				args = new Object[] {pluviometroModelImpl.getNomeRubrica()};
-
-				finderCache.removeResult(_finderPathCountByNomeRubrica, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByNomeRubrica, args);
-			}
-		}
-
 		entityCache.putResult(
-			PluviometroModelImpl.ENTITY_CACHE_ENABLED, PluviometroImpl.class,
-			pluviometro.getPrimaryKey(), pluviometro, false);
+			PluviometroImpl.class, pluviometroModelImpl, false, true);
+
+		if (isNew) {
+			pluviometro.setNew(false);
+		}
 
 		pluviometro.resetOriginalValues();
 
@@ -1527,167 +1445,12 @@ public class PluviometroPersistenceImpl
 	/**
 	 * Returns the pluviometro with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the pluviometro
-	 * @return the pluviometro, or <code>null</code> if a pluviometro with the primary key could not be found
-	 */
-	@Override
-	public Pluviometro fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(
-			PluviometroModelImpl.ENTITY_CACHE_ENABLED, PluviometroImpl.class,
-			primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		Pluviometro pluviometro = (Pluviometro)serializable;
-
-		if (pluviometro == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				pluviometro = (Pluviometro)session.get(
-					PluviometroImpl.class, primaryKey);
-
-				if (pluviometro != null) {
-					cacheResult(pluviometro);
-				}
-				else {
-					entityCache.putResult(
-						PluviometroModelImpl.ENTITY_CACHE_ENABLED,
-						PluviometroImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(
-					PluviometroModelImpl.ENTITY_CACHE_ENABLED,
-					PluviometroImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return pluviometro;
-	}
-
-	/**
-	 * Returns the pluviometro with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param stazioneId the primary key of the pluviometro
 	 * @return the pluviometro, or <code>null</code> if a pluviometro with the primary key could not be found
 	 */
 	@Override
 	public Pluviometro fetchByPrimaryKey(String stazioneId) {
 		return fetchByPrimaryKey((Serializable)stazioneId);
-	}
-
-	@Override
-	public Map<Serializable, Pluviometro> fetchByPrimaryKeys(
-		Set<Serializable> primaryKeys) {
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, Pluviometro> map =
-			new HashMap<Serializable, Pluviometro>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			Pluviometro pluviometro = fetchByPrimaryKey(primaryKey);
-
-			if (pluviometro != null) {
-				map.put(primaryKey, pluviometro);
-			}
-
-			return map;
-		}
-
-		Set<Serializable> uncachedPrimaryKeys = null;
-
-		for (Serializable primaryKey : primaryKeys) {
-			Serializable serializable = entityCache.getResult(
-				PluviometroModelImpl.ENTITY_CACHE_ENABLED,
-				PluviometroImpl.class, primaryKey);
-
-			if (serializable != nullModel) {
-				if (serializable == null) {
-					if (uncachedPrimaryKeys == null) {
-						uncachedPrimaryKeys = new HashSet<Serializable>();
-					}
-
-					uncachedPrimaryKeys.add(primaryKey);
-				}
-				else {
-					map.put(primaryKey, (Pluviometro)serializable);
-				}
-			}
-		}
-
-		if (uncachedPrimaryKeys == null) {
-			return map;
-		}
-
-		StringBundler query = new StringBundler(
-			uncachedPrimaryKeys.size() * 2 + 1);
-
-		query.append(_SQL_SELECT_PLUVIOMETRO_WHERE_PKS_IN);
-
-		for (int i = 0; i < uncachedPrimaryKeys.size(); i++) {
-			query.append("?");
-
-			query.append(",");
-		}
-
-		query.setIndex(query.index() - 1);
-
-		query.append(")");
-
-		String sql = query.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query q = session.createQuery(sql);
-
-			QueryPos qPos = QueryPos.getInstance(q);
-
-			for (Serializable primaryKey : uncachedPrimaryKeys) {
-				qPos.add((String)primaryKey);
-			}
-
-			for (Pluviometro pluviometro : (List<Pluviometro>)q.list()) {
-				map.put(pluviometro.getPrimaryKeyObj(), pluviometro);
-
-				cacheResult(pluviometro);
-
-				uncachedPrimaryKeys.remove(pluviometro.getPrimaryKeyObj());
-			}
-
-			for (Serializable primaryKey : uncachedPrimaryKeys) {
-				entityCache.putResult(
-					PluviometroModelImpl.ENTITY_CACHE_ENABLED,
-					PluviometroImpl.class, primaryKey, nullModel);
-			}
-		}
-		catch (Exception e) {
-			throw processException(e);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**
@@ -1704,7 +1467,7 @@ public class PluviometroPersistenceImpl
 	 * Returns a range of all the pluviometros.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>PluviometroModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>PluviometroModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of pluviometros
@@ -1720,7 +1483,7 @@ public class PluviometroPersistenceImpl
 	 * Returns an ordered range of all the pluviometros.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>PluviometroModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>PluviometroModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of pluviometros
@@ -1739,64 +1502,62 @@ public class PluviometroPersistenceImpl
 	 * Returns an ordered range of all the pluviometros.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>PluviometroModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>PluviometroModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of pluviometros
 	 * @param end the upper bound of the range of pluviometros (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of pluviometros
 	 */
 	@Override
 	public List<Pluviometro> findAll(
 		int start, int end, OrderByComparator<Pluviometro> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindAll;
-			finderArgs = FINDER_ARGS_EMPTY;
+			if (useFinderCache) {
+				finderPath = _finderPathWithoutPaginationFindAll;
+				finderArgs = FINDER_ARGS_EMPTY;
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
 			finderArgs = new Object[] {start, end, orderByComparator};
 		}
 
 		List<Pluviometro> list = null;
 
-		if (retrieveFromCache) {
+		if (useFinderCache) {
 			list = (List<Pluviometro>)finderCache.getResult(
 				finderPath, finderArgs, this);
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 			String sql = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					2 + (orderByComparator.getOrderByFields().length * 2));
 
-				query.append(_SQL_SELECT_PLUVIOMETRO);
+				sb.append(_SQL_SELECT_PLUVIOMETRO);
 
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 
-				sql = query.toString();
+				sql = sb.toString();
 			}
 			else {
 				sql = _SQL_SELECT_PLUVIOMETRO;
 
-				if (pagination) {
-					sql = sql.concat(PluviometroModelImpl.ORDER_BY_JPQL);
-				}
+				sql = sql.concat(PluviometroModelImpl.ORDER_BY_JPQL);
 			}
 
 			Session session = null;
@@ -1804,29 +1565,19 @@ public class PluviometroPersistenceImpl
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				if (!pagination) {
-					list = (List<Pluviometro>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<Pluviometro>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<Pluviometro>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					finderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -1863,18 +1614,15 @@ public class PluviometroPersistenceImpl
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(_SQL_COUNT_PLUVIOMETRO);
+				Query query = session.createQuery(_SQL_COUNT_PLUVIOMETRO);
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
 				finderCache.putResult(
 					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -1885,6 +1633,21 @@ public class PluviometroPersistenceImpl
 	}
 
 	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
+	}
+
+	@Override
+	protected String getPKDBName() {
+		return "stazioneId";
+	}
+
+	@Override
+	protected String getSelectSQL() {
+		return _SQL_SELECT_PLUVIOMETRO;
+	}
+
+	@Override
 	protected Map<String, Integer> getTableColumnsMap() {
 		return PluviometroModelImpl.TABLE_COLUMNS_MAP;
 	}
@@ -1892,87 +1655,103 @@ public class PluviometroPersistenceImpl
 	/**
 	 * Initializes the pluviometro persistence.
 	 */
-	public void afterPropertiesSet() {
+	@Activate
+	public void activate() {
+		_valueObjectFinderCacheListThreshold = GetterUtil.getInteger(
+			PropsUtil.get(PropsKeys.VALUE_OBJECT_FINDER_CACHE_LIST_THRESHOLD));
+
 		_finderPathWithPaginationFindAll = new FinderPath(
-			PluviometroModelImpl.ENTITY_CACHE_ENABLED,
-			PluviometroModelImpl.FINDER_CACHE_ENABLED, PluviometroImpl.class,
-			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findAll", new String[0]);
+			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findAll", new String[0],
+			new String[0], true);
 
 		_finderPathWithoutPaginationFindAll = new FinderPath(
-			PluviometroModelImpl.ENTITY_CACHE_ENABLED,
-			PluviometroModelImpl.FINDER_CACHE_ENABLED, PluviometroImpl.class,
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findAll",
-			new String[0]);
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findAll", new String[0],
+			new String[0], true);
 
 		_finderPathCountAll = new FinderPath(
-			PluviometroModelImpl.ENTITY_CACHE_ENABLED,
-			PluviometroModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countAll",
-			new String[0]);
+			new String[0], new String[0], false);
 
 		_finderPathWithPaginationFindByNomeGruppo = new FinderPath(
-			PluviometroModelImpl.ENTITY_CACHE_ENABLED,
-			PluviometroModelImpl.FINDER_CACHE_ENABLED, PluviometroImpl.class,
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByNomeGruppo",
 			new String[] {
 				String.class.getName(), Integer.class.getName(),
 				Integer.class.getName(), OrderByComparator.class.getName()
-			});
+			},
+			new String[] {"nomeGruppo"}, true);
 
 		_finderPathWithoutPaginationFindByNomeGruppo = new FinderPath(
-			PluviometroModelImpl.ENTITY_CACHE_ENABLED,
-			PluviometroModelImpl.FINDER_CACHE_ENABLED, PluviometroImpl.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByNomeGruppo",
-			new String[] {String.class.getName()},
-			PluviometroModelImpl.NOMEGRUPPO_COLUMN_BITMASK);
+			new String[] {String.class.getName()}, new String[] {"nomeGruppo"},
+			true);
 
 		_finderPathCountByNomeGruppo = new FinderPath(
-			PluviometroModelImpl.ENTITY_CACHE_ENABLED,
-			PluviometroModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByNomeGruppo",
-			new String[] {String.class.getName()});
+			new String[] {String.class.getName()}, new String[] {"nomeGruppo"},
+			false);
 
 		_finderPathWithPaginationFindByNomeRubrica = new FinderPath(
-			PluviometroModelImpl.ENTITY_CACHE_ENABLED,
-			PluviometroModelImpl.FINDER_CACHE_ENABLED, PluviometroImpl.class,
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByNomeRubrica",
 			new String[] {
 				String.class.getName(), Integer.class.getName(),
 				Integer.class.getName(), OrderByComparator.class.getName()
-			});
+			},
+			new String[] {"nomeRubrica"}, true);
 
 		_finderPathWithoutPaginationFindByNomeRubrica = new FinderPath(
-			PluviometroModelImpl.ENTITY_CACHE_ENABLED,
-			PluviometroModelImpl.FINDER_CACHE_ENABLED, PluviometroImpl.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByNomeRubrica",
-			new String[] {String.class.getName()},
-			PluviometroModelImpl.NOMERUBRICA_COLUMN_BITMASK);
+			new String[] {String.class.getName()}, new String[] {"nomeRubrica"},
+			true);
 
 		_finderPathCountByNomeRubrica = new FinderPath(
-			PluviometroModelImpl.ENTITY_CACHE_ENABLED,
-			PluviometroModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByNomeRubrica",
-			new String[] {String.class.getName()});
+			new String[] {String.class.getName()}, new String[] {"nomeRubrica"},
+			false);
+
+		PluviometroUtil.setPersistence(this);
 	}
 
-	public void destroy() {
+	@Deactivate
+	public void deactivate() {
+		PluviometroUtil.setPersistence(null);
+
 		entityCache.removeCache(PluviometroImpl.class.getName());
-		finderCache.removeCache(FINDER_CLASS_NAME_ENTITY);
-		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 	}
 
-	@ServiceReference(type = EntityCache.class)
+	@Override
+	@Reference(
+		target = BOLLETTINOPersistenceConstants.SERVICE_CONFIGURATION_FILTER,
+		unbind = "-"
+	)
+	public void setConfiguration(Configuration configuration) {
+	}
+
+	@Override
+	@Reference(
+		target = BOLLETTINOPersistenceConstants.ORIGIN_BUNDLE_SYMBOLIC_NAME_FILTER,
+		unbind = "-"
+	)
+	public void setDataSource(DataSource dataSource) {
+		super.setDataSource(dataSource);
+	}
+
+	@Override
+	@Reference(
+		target = BOLLETTINOPersistenceConstants.ORIGIN_BUNDLE_SYMBOLIC_NAME_FILTER,
+		unbind = "-"
+	)
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		super.setSessionFactory(sessionFactory);
+	}
+
+	@Reference
 	protected EntityCache entityCache;
 
-	@ServiceReference(type = FinderCache.class)
+	@Reference
 	protected FinderCache finderCache;
 
 	private static final String _SQL_SELECT_PLUVIOMETRO =
 		"SELECT pluviometro FROM Pluviometro pluviometro";
-
-	private static final String _SQL_SELECT_PLUVIOMETRO_WHERE_PKS_IN =
-		"SELECT pluviometro FROM Pluviometro pluviometro WHERE stazioneId IN (";
 
 	private static final String _SQL_SELECT_PLUVIOMETRO_WHERE =
 		"SELECT pluviometro FROM Pluviometro pluviometro WHERE ";
@@ -1993,5 +1772,10 @@ public class PluviometroPersistenceImpl
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		PluviometroPersistenceImpl.class);
+
+	@Override
+	protected FinderCache getFinderCache() {
+		return finderCache;
+	}
 
 }

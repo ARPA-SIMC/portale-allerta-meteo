@@ -188,6 +188,36 @@ am.MapDataScenarioRadar = (function($){
      * @return {Array<Object>} An array of object with two fields "value" and "label" to build the UI component
      */
     MapDataScenarioRadar.prototype.getAnimationOptions = function(){
+    	
+    	if (Liferay && Liferay.ThemeDisplay && Liferay.ThemeDisplay.getLanguageId()=='en_GB') {
+    		return [
+                { 'value':'1', 'label':'Last hour'},
+                { 'value':'2', 'label':'Last 2 hours'},
+                { 'value':'3', 'label':'Last 3 hours'},
+                { 'value':'4', 'label':'Last 4 hours'},
+                { 'value':'5', 'label':'Last 5 hours'},
+                { 'value':'6', 'label':'Last 6 hours'},
+                { 'value':'7', 'label':'Last 7 hours'},
+                { 'value':'8', 'label':'Last 8 hours'},
+                { 'value':'9', 'label':'Last 9 hours'},
+                { 'value':'10', 'label':'Last 10 hours'},
+                { 'value':'11', 'label':'Last 11 hours'},
+                { 'value':'12', 'label':'Last 12 hours'},
+                { 'value':'13', 'label':'Last 13 hours'},
+                { 'value':'14', 'label':'Last 14 hours'},
+                { 'value':'15', 'label':'Last 15 hours'},
+                { 'value':'16', 'label':'Last 16 hours'},
+                { 'value':'17', 'label':'Last 17 hours'},
+                { 'value':'18', 'label':'Last 18 hours'},
+                { 'value':'19', 'label':'Last 19 hours'},
+                { 'value':'20', 'label':'Last 20 hours'},
+                { 'value':'21', 'label':'Last 21 hours'},
+                { 'value':'22', 'label':'Last 22 hours'},
+                { 'value':'23', 'label':'Last 23 hours'},
+                { 'value':'24', 'label':'Last 24 hours'}
+            ];
+    	}
+    	
         return [
             { 'value':'1', 'label':'Ultima 1 ora'},
             { 'value':'2', 'label':'Ultime 2 ore'},

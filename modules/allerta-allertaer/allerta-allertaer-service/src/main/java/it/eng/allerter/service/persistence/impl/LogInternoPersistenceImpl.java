@@ -1,49 +1,48 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerter.service.persistence.impl;
 
-import aQute.bnd.annotation.ProviderType;
-
+import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
 import com.liferay.portal.kernel.dao.orm.Query;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
+import com.liferay.portal.kernel.dao.orm.SessionFactory;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
-import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.spring.extender.service.ServiceReference;
+import com.liferay.portal.kernel.util.PropsKeys;
+import com.liferay.portal.kernel.util.PropsUtil;
 
 import it.eng.allerter.exception.NoSuchLogInternoException;
 import it.eng.allerter.model.LogInterno;
+import it.eng.allerter.model.LogInternoTable;
 import it.eng.allerter.model.impl.LogInternoImpl;
 import it.eng.allerter.model.impl.LogInternoModelImpl;
 import it.eng.allerter.service.persistence.LogInternoPersistence;
+import it.eng.allerter.service.persistence.LogInternoUtil;
+import it.eng.allerter.service.persistence.impl.constants.ALLERTERPersistenceConstants;
 
 import java.io.Serializable;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.sql.DataSource;
+
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The persistence implementation for the log interno service.
@@ -55,7 +54,7 @@ import java.util.Set;
  * @author GFAVINI
  * @generated
  */
-@ProviderType
+@Component(service = LogInternoPersistence.class)
 public class LogInternoPersistenceImpl
 	extends BasePersistenceImpl<LogInterno> implements LogInternoPersistence {
 
@@ -79,6 +78,11 @@ public class LogInternoPersistenceImpl
 
 	public LogInternoPersistenceImpl() {
 		setModelClass(LogInterno.class);
+
+		setModelImplClass(LogInternoImpl.class);
+		setModelPKClass(long.class);
+
+		setTable(LogInternoTable.INSTANCE);
 	}
 
 	/**
@@ -89,11 +93,10 @@ public class LogInternoPersistenceImpl
 	@Override
 	public void cacheResult(LogInterno logInterno) {
 		entityCache.putResult(
-			LogInternoModelImpl.ENTITY_CACHE_ENABLED, LogInternoImpl.class,
-			logInterno.getPrimaryKey(), logInterno);
-
-		logInterno.resetOriginalValues();
+			LogInternoImpl.class, logInterno.getPrimaryKey(), logInterno);
 	}
+
+	private int _valueObjectFinderCacheListThreshold;
 
 	/**
 	 * Caches the log internos in the entity cache if it is enabled.
@@ -102,15 +105,18 @@ public class LogInternoPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(List<LogInterno> logInternos) {
+		if ((_valueObjectFinderCacheListThreshold == 0) ||
+			((_valueObjectFinderCacheListThreshold > 0) &&
+			 (logInternos.size() > _valueObjectFinderCacheListThreshold))) {
+
+			return;
+		}
+
 		for (LogInterno logInterno : logInternos) {
 			if (entityCache.getResult(
-					LogInternoModelImpl.ENTITY_CACHE_ENABLED,
 					LogInternoImpl.class, logInterno.getPrimaryKey()) == null) {
 
 				cacheResult(logInterno);
-			}
-			else {
-				logInterno.resetOriginalValues();
 			}
 		}
 	}
@@ -126,9 +132,7 @@ public class LogInternoPersistenceImpl
 	public void clearCache() {
 		entityCache.clearCache(LogInternoImpl.class);
 
-		finderCache.clearCache(FINDER_CLASS_NAME_ENTITY);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		finderCache.clearCache(LogInternoImpl.class);
 	}
 
 	/**
@@ -140,23 +144,22 @@ public class LogInternoPersistenceImpl
 	 */
 	@Override
 	public void clearCache(LogInterno logInterno) {
-		entityCache.removeResult(
-			LogInternoModelImpl.ENTITY_CACHE_ENABLED, LogInternoImpl.class,
-			logInterno.getPrimaryKey());
-
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		entityCache.removeResult(LogInternoImpl.class, logInterno);
 	}
 
 	@Override
 	public void clearCache(List<LogInterno> logInternos) {
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
-
 		for (LogInterno logInterno : logInternos) {
-			entityCache.removeResult(
-				LogInternoModelImpl.ENTITY_CACHE_ENABLED, LogInternoImpl.class,
-				logInterno.getPrimaryKey());
+			entityCache.removeResult(LogInternoImpl.class, logInterno);
+		}
+	}
+
+	@Override
+	public void clearCache(Set<Serializable> primaryKeys) {
+		finderCache.clearCache(LogInternoImpl.class);
+
+		for (Serializable primaryKey : primaryKeys) {
+			entityCache.removeResult(LogInternoImpl.class, primaryKey);
 		}
 	}
 
@@ -218,11 +221,11 @@ public class LogInternoPersistenceImpl
 
 			return remove(logInterno);
 		}
-		catch (NoSuchLogInternoException nsee) {
-			throw nsee;
+		catch (NoSuchLogInternoException noSuchEntityException) {
+			throw noSuchEntityException;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -245,8 +248,8 @@ public class LogInternoPersistenceImpl
 				session.delete(logInterno);
 			}
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -268,33 +271,25 @@ public class LogInternoPersistenceImpl
 		try {
 			session = openSession();
 
-			if (logInterno.isNew()) {
+			if (isNew) {
 				session.save(logInterno);
-
-				logInterno.setNew(false);
 			}
 			else {
 				logInterno = (LogInterno)session.merge(logInterno);
 			}
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
 		}
 
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		entityCache.putResult(LogInternoImpl.class, logInterno, false, true);
 
 		if (isNew) {
-			finderCache.removeResult(_finderPathCountAll, FINDER_ARGS_EMPTY);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindAll, FINDER_ARGS_EMPTY);
+			logInterno.setNew(false);
 		}
-
-		entityCache.putResult(
-			LogInternoModelImpl.ENTITY_CACHE_ENABLED, LogInternoImpl.class,
-			logInterno.getPrimaryKey(), logInterno, false);
 
 		logInterno.resetOriginalValues();
 
@@ -343,161 +338,12 @@ public class LogInternoPersistenceImpl
 	/**
 	 * Returns the log interno with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the log interno
-	 * @return the log interno, or <code>null</code> if a log interno with the primary key could not be found
-	 */
-	@Override
-	public LogInterno fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(
-			LogInternoModelImpl.ENTITY_CACHE_ENABLED, LogInternoImpl.class,
-			primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		LogInterno logInterno = (LogInterno)serializable;
-
-		if (logInterno == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				logInterno = (LogInterno)session.get(
-					LogInternoImpl.class, primaryKey);
-
-				if (logInterno != null) {
-					cacheResult(logInterno);
-				}
-				else {
-					entityCache.putResult(
-						LogInternoModelImpl.ENTITY_CACHE_ENABLED,
-						LogInternoImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(
-					LogInternoModelImpl.ENTITY_CACHE_ENABLED,
-					LogInternoImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return logInterno;
-	}
-
-	/**
-	 * Returns the log interno with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param logId the primary key of the log interno
 	 * @return the log interno, or <code>null</code> if a log interno with the primary key could not be found
 	 */
 	@Override
 	public LogInterno fetchByPrimaryKey(long logId) {
 		return fetchByPrimaryKey((Serializable)logId);
-	}
-
-	@Override
-	public Map<Serializable, LogInterno> fetchByPrimaryKeys(
-		Set<Serializable> primaryKeys) {
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, LogInterno> map =
-			new HashMap<Serializable, LogInterno>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			LogInterno logInterno = fetchByPrimaryKey(primaryKey);
-
-			if (logInterno != null) {
-				map.put(primaryKey, logInterno);
-			}
-
-			return map;
-		}
-
-		Set<Serializable> uncachedPrimaryKeys = null;
-
-		for (Serializable primaryKey : primaryKeys) {
-			Serializable serializable = entityCache.getResult(
-				LogInternoModelImpl.ENTITY_CACHE_ENABLED, LogInternoImpl.class,
-				primaryKey);
-
-			if (serializable != nullModel) {
-				if (serializable == null) {
-					if (uncachedPrimaryKeys == null) {
-						uncachedPrimaryKeys = new HashSet<Serializable>();
-					}
-
-					uncachedPrimaryKeys.add(primaryKey);
-				}
-				else {
-					map.put(primaryKey, (LogInterno)serializable);
-				}
-			}
-		}
-
-		if (uncachedPrimaryKeys == null) {
-			return map;
-		}
-
-		StringBundler query = new StringBundler(
-			uncachedPrimaryKeys.size() * 2 + 1);
-
-		query.append(_SQL_SELECT_LOGINTERNO_WHERE_PKS_IN);
-
-		for (Serializable primaryKey : uncachedPrimaryKeys) {
-			query.append((long)primaryKey);
-
-			query.append(",");
-		}
-
-		query.setIndex(query.index() - 1);
-
-		query.append(")");
-
-		String sql = query.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query q = session.createQuery(sql);
-
-			for (LogInterno logInterno : (List<LogInterno>)q.list()) {
-				map.put(logInterno.getPrimaryKeyObj(), logInterno);
-
-				cacheResult(logInterno);
-
-				uncachedPrimaryKeys.remove(logInterno.getPrimaryKeyObj());
-			}
-
-			for (Serializable primaryKey : uncachedPrimaryKeys) {
-				entityCache.putResult(
-					LogInternoModelImpl.ENTITY_CACHE_ENABLED,
-					LogInternoImpl.class, primaryKey, nullModel);
-			}
-		}
-		catch (Exception e) {
-			throw processException(e);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**
@@ -514,7 +360,7 @@ public class LogInternoPersistenceImpl
 	 * Returns a range of all the log internos.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>LogInternoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>LogInternoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of log internos
@@ -530,7 +376,7 @@ public class LogInternoPersistenceImpl
 	 * Returns an ordered range of all the log internos.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>LogInternoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>LogInternoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of log internos
@@ -549,64 +395,62 @@ public class LogInternoPersistenceImpl
 	 * Returns an ordered range of all the log internos.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>LogInternoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>LogInternoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of log internos
 	 * @param end the upper bound of the range of log internos (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of log internos
 	 */
 	@Override
 	public List<LogInterno> findAll(
 		int start, int end, OrderByComparator<LogInterno> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindAll;
-			finderArgs = FINDER_ARGS_EMPTY;
+			if (useFinderCache) {
+				finderPath = _finderPathWithoutPaginationFindAll;
+				finderArgs = FINDER_ARGS_EMPTY;
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
 			finderArgs = new Object[] {start, end, orderByComparator};
 		}
 
 		List<LogInterno> list = null;
 
-		if (retrieveFromCache) {
+		if (useFinderCache) {
 			list = (List<LogInterno>)finderCache.getResult(
 				finderPath, finderArgs, this);
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 			String sql = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					2 + (orderByComparator.getOrderByFields().length * 2));
 
-				query.append(_SQL_SELECT_LOGINTERNO);
+				sb.append(_SQL_SELECT_LOGINTERNO);
 
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 
-				sql = query.toString();
+				sql = sb.toString();
 			}
 			else {
 				sql = _SQL_SELECT_LOGINTERNO;
 
-				if (pagination) {
-					sql = sql.concat(LogInternoModelImpl.ORDER_BY_JPQL);
-				}
+				sql = sql.concat(LogInternoModelImpl.ORDER_BY_JPQL);
 			}
 
 			Session session = null;
@@ -614,29 +458,19 @@ public class LogInternoPersistenceImpl
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				if (!pagination) {
-					list = (List<LogInterno>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<LogInterno>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<LogInterno>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					finderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -673,18 +507,15 @@ public class LogInternoPersistenceImpl
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(_SQL_COUNT_LOGINTERNO);
+				Query query = session.createQuery(_SQL_COUNT_LOGINTERNO);
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
 				finderCache.putResult(
 					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -695,6 +526,21 @@ public class LogInternoPersistenceImpl
 	}
 
 	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
+	}
+
+	@Override
+	protected String getPKDBName() {
+		return "logId";
+	}
+
+	@Override
+	protected String getSelectSQL() {
+		return _SQL_SELECT_LOGINTERNO;
+	}
+
+	@Override
 	protected Map<String, Integer> getTableColumnsMap() {
 		return LogInternoModelImpl.TABLE_COLUMNS_MAP;
 	}
@@ -702,43 +548,67 @@ public class LogInternoPersistenceImpl
 	/**
 	 * Initializes the log interno persistence.
 	 */
-	public void afterPropertiesSet() {
+	@Activate
+	public void activate() {
+		_valueObjectFinderCacheListThreshold = GetterUtil.getInteger(
+			PropsUtil.get(PropsKeys.VALUE_OBJECT_FINDER_CACHE_LIST_THRESHOLD));
+
 		_finderPathWithPaginationFindAll = new FinderPath(
-			LogInternoModelImpl.ENTITY_CACHE_ENABLED,
-			LogInternoModelImpl.FINDER_CACHE_ENABLED, LogInternoImpl.class,
-			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findAll", new String[0]);
+			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findAll", new String[0],
+			new String[0], true);
 
 		_finderPathWithoutPaginationFindAll = new FinderPath(
-			LogInternoModelImpl.ENTITY_CACHE_ENABLED,
-			LogInternoModelImpl.FINDER_CACHE_ENABLED, LogInternoImpl.class,
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findAll",
-			new String[0]);
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findAll", new String[0],
+			new String[0], true);
 
 		_finderPathCountAll = new FinderPath(
-			LogInternoModelImpl.ENTITY_CACHE_ENABLED,
-			LogInternoModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countAll",
-			new String[0]);
+			new String[0], new String[0], false);
+
+		LogInternoUtil.setPersistence(this);
 	}
 
-	public void destroy() {
+	@Deactivate
+	public void deactivate() {
+		LogInternoUtil.setPersistence(null);
+
 		entityCache.removeCache(LogInternoImpl.class.getName());
-		finderCache.removeCache(FINDER_CLASS_NAME_ENTITY);
-		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 	}
 
-	@ServiceReference(type = EntityCache.class)
+	@Override
+	@Reference(
+		target = ALLERTERPersistenceConstants.SERVICE_CONFIGURATION_FILTER,
+		unbind = "-"
+	)
+	public void setConfiguration(Configuration configuration) {
+	}
+
+	@Override
+	@Reference(
+		target = ALLERTERPersistenceConstants.ORIGIN_BUNDLE_SYMBOLIC_NAME_FILTER,
+		unbind = "-"
+	)
+	public void setDataSource(DataSource dataSource) {
+		super.setDataSource(dataSource);
+	}
+
+	@Override
+	@Reference(
+		target = ALLERTERPersistenceConstants.ORIGIN_BUNDLE_SYMBOLIC_NAME_FILTER,
+		unbind = "-"
+	)
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		super.setSessionFactory(sessionFactory);
+	}
+
+	@Reference
 	protected EntityCache entityCache;
 
-	@ServiceReference(type = FinderCache.class)
+	@Reference
 	protected FinderCache finderCache;
 
 	private static final String _SQL_SELECT_LOGINTERNO =
 		"SELECT logInterno FROM LogInterno logInterno";
-
-	private static final String _SQL_SELECT_LOGINTERNO_WHERE_PKS_IN =
-		"SELECT logInterno FROM LogInterno logInterno WHERE logId IN (";
 
 	private static final String _SQL_COUNT_LOGINTERNO =
 		"SELECT COUNT(logInterno) FROM LogInterno logInterno";
@@ -750,5 +620,10 @@ public class LogInternoPersistenceImpl
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		LogInternoPersistenceImpl.class);
+
+	@Override
+	protected FinderCache getFinderCache() {
+		return finderCache;
+	}
 
 }

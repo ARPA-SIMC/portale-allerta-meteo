@@ -1,31 +1,20 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerter.service.base;
-
-import aQute.bnd.annotation.ProviderType;
 
 import com.liferay.exportimport.kernel.lar.ExportImportHelperUtil;
 import com.liferay.exportimport.kernel.lar.ManifestSummary;
 import com.liferay.exportimport.kernel.lar.PortletDataContext;
 import com.liferay.exportimport.kernel.lar.StagedModelDataHandlerUtil;
 import com.liferay.exportimport.kernel.lar.StagedModelType;
-import com.liferay.portal.kernel.bean.BeanReference;
+import com.liferay.petra.sql.dsl.query.DSLQuery;
+import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.dao.db.DB;
 import com.liferay.portal.kernel.dao.db.DBManagerUtil;
-import com.liferay.portal.kernel.dao.jdbc.SqlUpdate;
-import com.liferay.portal.kernel.dao.jdbc.SqlUpdateFactoryUtil;
+import com.liferay.portal.kernel.dao.jdbc.CurrentConnectionUtil;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DefaultActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
@@ -35,18 +24,18 @@ import com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.Projection;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.PersistedModel;
 import com.liferay.portal.kernel.module.framework.service.IdentifiableOSGiService;
 import com.liferay.portal.kernel.search.Indexable;
 import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.service.BaseLocalServiceImpl;
-import com.liferay.portal.kernel.service.PersistedModelLocalServiceRegistry;
-import com.liferay.portal.kernel.service.persistence.ClassNamePersistence;
-import com.liferay.portal.kernel.service.persistence.UserPersistence;
+import com.liferay.portal.kernel.service.PersistedModelLocalService;
+import com.liferay.portal.kernel.service.persistence.BasePersistence;
 import com.liferay.portal.kernel.transaction.Transactional;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.PortalUtil;
-import com.liferay.portal.spring.extender.service.ServiceReference;
 
 import it.eng.allerter.model.AllertaStato;
 import it.eng.allerter.service.AllertaStatoLocalService;
@@ -69,9 +58,14 @@ import it.eng.allerter.service.persistence.TipoEventoPersistence;
 
 import java.io.Serializable;
 
+import java.sql.Connection;
+
 import java.util.List;
 
 import javax.sql.DataSource;
+
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * Provides the base implementation for the allerta stato local service.
@@ -84,10 +78,9 @@ import javax.sql.DataSource;
  * @see it.eng.allerter.service.impl.AllertaStatoLocalServiceImpl
  * @generated
  */
-@ProviderType
 public abstract class AllertaStatoLocalServiceBaseImpl
 	extends BaseLocalServiceImpl
-	implements AllertaStatoLocalService, IdentifiableOSGiService {
+	implements AllertaStatoLocalService, AopService, IdentifiableOSGiService {
 
 	/*
 	 * NOTE FOR DEVELOPERS:
@@ -97,6 +90,10 @@ public abstract class AllertaStatoLocalServiceBaseImpl
 
 	/**
 	 * Adds the allerta stato to the database. Also notifies the appropriate model listeners.
+	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect AllertaStatoLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
 	 *
 	 * @param allertaStato the allerta stato
 	 * @return the allerta stato that was added
@@ -124,6 +121,10 @@ public abstract class AllertaStatoLocalServiceBaseImpl
 	/**
 	 * Deletes the allerta stato with the primary key from the database. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect AllertaStatoLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param allertaStatoId the primary key of the allerta stato
 	 * @return the allerta stato that was removed
 	 * @throws PortalException if a allerta stato with the primary key could not be found
@@ -139,6 +140,10 @@ public abstract class AllertaStatoLocalServiceBaseImpl
 	/**
 	 * Deletes the allerta stato from the database. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect AllertaStatoLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param allertaStato the allerta stato
 	 * @return the allerta stato that was removed
 	 */
@@ -146,6 +151,18 @@ public abstract class AllertaStatoLocalServiceBaseImpl
 	@Override
 	public AllertaStato deleteAllertaStato(AllertaStato allertaStato) {
 		return allertaStatoPersistence.remove(allertaStato);
+	}
+
+	@Override
+	public <T> T dslQuery(DSLQuery dslQuery) {
+		return allertaStatoPersistence.dslQuery(dslQuery);
+	}
+
+	@Override
+	public int dslQueryCount(DSLQuery dslQuery) {
+		Long count = dslQuery(dslQuery);
+
+		return count.intValue();
 	}
 
 	@Override
@@ -171,7 +188,7 @@ public abstract class AllertaStatoLocalServiceBaseImpl
 	 * Performs a dynamic query on the database and returns a range of the matching rows.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>it.eng.allerter.model.impl.AllertaStatoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>it.eng.allerter.model.impl.AllertaStatoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param dynamicQuery the dynamic query
@@ -191,7 +208,7 @@ public abstract class AllertaStatoLocalServiceBaseImpl
 	 * Performs a dynamic query on the database and returns an ordered range of the matching rows.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>it.eng.allerter.model.impl.AllertaStatoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>it.eng.allerter.model.impl.AllertaStatoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param dynamicQuery the dynamic query
@@ -380,13 +397,37 @@ public abstract class AllertaStatoLocalServiceBaseImpl
 	 * @throws PortalException
 	 */
 	@Override
+	public PersistedModel createPersistedModel(Serializable primaryKeyObj)
+		throws PortalException {
+
+		return allertaStatoPersistence.create(
+			((Long)primaryKeyObj).longValue());
+	}
+
+	/**
+	 * @throws PortalException
+	 */
+	@Override
 	public PersistedModel deletePersistedModel(PersistedModel persistedModel)
 		throws PortalException {
+
+		if (_log.isWarnEnabled()) {
+			_log.warn(
+				"Implement AllertaStatoLocalServiceImpl#deleteAllertaStato(AllertaStato) to avoid orphaned data");
+		}
 
 		return allertaStatoLocalService.deleteAllertaStato(
 			(AllertaStato)persistedModel);
 	}
 
+	@Override
+	public BasePersistence<AllertaStato> getBasePersistence() {
+		return allertaStatoPersistence;
+	}
+
+	/**
+	 * @throws PortalException
+	 */
 	@Override
 	public PersistedModel getPersistedModel(Serializable primaryKeyObj)
 		throws PortalException {
@@ -447,7 +488,7 @@ public abstract class AllertaStatoLocalServiceBaseImpl
 	 * Returns a range of all the allerta statos.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>it.eng.allerter.model.impl.AllertaStatoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>it.eng.allerter.model.impl.AllertaStatoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of allerta statos
@@ -472,6 +513,10 @@ public abstract class AllertaStatoLocalServiceBaseImpl
 	/**
 	 * Updates the allerta stato in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect AllertaStatoLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param allertaStato the allerta stato
 	 * @return the allerta stato that was updated
 	 */
@@ -481,732 +526,21 @@ public abstract class AllertaStatoLocalServiceBaseImpl
 		return allertaStatoPersistence.update(allertaStato);
 	}
 
-	/**
-	 * Returns the allerta local service.
-	 *
-	 * @return the allerta local service
-	 */
-	public it.eng.allerter.service.AllertaLocalService
-		getAllertaLocalService() {
-
-		return allertaLocalService;
-	}
-
-	/**
-	 * Sets the allerta local service.
-	 *
-	 * @param allertaLocalService the allerta local service
-	 */
-	public void setAllertaLocalService(
-		it.eng.allerter.service.AllertaLocalService allertaLocalService) {
-
-		this.allertaLocalService = allertaLocalService;
-	}
-
-	/**
-	 * Returns the allerta persistence.
-	 *
-	 * @return the allerta persistence
-	 */
-	public AllertaPersistence getAllertaPersistence() {
-		return allertaPersistence;
-	}
-
-	/**
-	 * Sets the allerta persistence.
-	 *
-	 * @param allertaPersistence the allerta persistence
-	 */
-	public void setAllertaPersistence(AllertaPersistence allertaPersistence) {
-		this.allertaPersistence = allertaPersistence;
-	}
-
-	/**
-	 * Returns the allerta finder.
-	 *
-	 * @return the allerta finder
-	 */
-	public AllertaFinder getAllertaFinder() {
-		return allertaFinder;
-	}
-
-	/**
-	 * Sets the allerta finder.
-	 *
-	 * @param allertaFinder the allerta finder
-	 */
-	public void setAllertaFinder(AllertaFinder allertaFinder) {
-		this.allertaFinder = allertaFinder;
-	}
-
-	/**
-	 * Returns the allerta parametro local service.
-	 *
-	 * @return the allerta parametro local service
-	 */
-	public it.eng.allerter.service.AllertaParametroLocalService
-		getAllertaParametroLocalService() {
-
-		return allertaParametroLocalService;
-	}
-
-	/**
-	 * Sets the allerta parametro local service.
-	 *
-	 * @param allertaParametroLocalService the allerta parametro local service
-	 */
-	public void setAllertaParametroLocalService(
-		it.eng.allerter.service.AllertaParametroLocalService
-			allertaParametroLocalService) {
-
-		this.allertaParametroLocalService = allertaParametroLocalService;
-	}
-
-	/**
-	 * Returns the allerta parametro persistence.
-	 *
-	 * @return the allerta parametro persistence
-	 */
-	public AllertaParametroPersistence getAllertaParametroPersistence() {
-		return allertaParametroPersistence;
-	}
-
-	/**
-	 * Sets the allerta parametro persistence.
-	 *
-	 * @param allertaParametroPersistence the allerta parametro persistence
-	 */
-	public void setAllertaParametroPersistence(
-		AllertaParametroPersistence allertaParametroPersistence) {
-
-		this.allertaParametroPersistence = allertaParametroPersistence;
-	}
-
-	/**
-	 * Returns the allerta stato local service.
-	 *
-	 * @return the allerta stato local service
-	 */
-	public AllertaStatoLocalService getAllertaStatoLocalService() {
-		return allertaStatoLocalService;
-	}
-
-	/**
-	 * Sets the allerta stato local service.
-	 *
-	 * @param allertaStatoLocalService the allerta stato local service
-	 */
-	public void setAllertaStatoLocalService(
-		AllertaStatoLocalService allertaStatoLocalService) {
-
-		this.allertaStatoLocalService = allertaStatoLocalService;
-	}
-
-	/**
-	 * Returns the allerta stato persistence.
-	 *
-	 * @return the allerta stato persistence
-	 */
-	public AllertaStatoPersistence getAllertaStatoPersistence() {
-		return allertaStatoPersistence;
-	}
-
-	/**
-	 * Sets the allerta stato persistence.
-	 *
-	 * @param allertaStatoPersistence the allerta stato persistence
-	 */
-	public void setAllertaStatoPersistence(
-		AllertaStatoPersistence allertaStatoPersistence) {
-
-		this.allertaStatoPersistence = allertaStatoPersistence;
-	}
-
-	/**
-	 * Returns the allerta valanghe local service.
-	 *
-	 * @return the allerta valanghe local service
-	 */
-	public it.eng.allerter.service.AllertaValangheLocalService
-		getAllertaValangheLocalService() {
-
-		return allertaValangheLocalService;
-	}
-
-	/**
-	 * Sets the allerta valanghe local service.
-	 *
-	 * @param allertaValangheLocalService the allerta valanghe local service
-	 */
-	public void setAllertaValangheLocalService(
-		it.eng.allerter.service.AllertaValangheLocalService
-			allertaValangheLocalService) {
-
-		this.allertaValangheLocalService = allertaValangheLocalService;
-	}
-
-	/**
-	 * Returns the allerta valanghe persistence.
-	 *
-	 * @return the allerta valanghe persistence
-	 */
-	public AllertaValanghePersistence getAllertaValanghePersistence() {
-		return allertaValanghePersistence;
-	}
-
-	/**
-	 * Sets the allerta valanghe persistence.
-	 *
-	 * @param allertaValanghePersistence the allerta valanghe persistence
-	 */
-	public void setAllertaValanghePersistence(
-		AllertaValanghePersistence allertaValanghePersistence) {
-
-		this.allertaValanghePersistence = allertaValanghePersistence;
-	}
-
-	/**
-	 * Returns the allerta valanghe finder.
-	 *
-	 * @return the allerta valanghe finder
-	 */
-	public AllertaValangheFinder getAllertaValangheFinder() {
-		return allertaValangheFinder;
-	}
-
-	/**
-	 * Sets the allerta valanghe finder.
-	 *
-	 * @param allertaValangheFinder the allerta valanghe finder
-	 */
-	public void setAllertaValangheFinder(
-		AllertaValangheFinder allertaValangheFinder) {
-
-		this.allertaValangheFinder = allertaValangheFinder;
-	}
-
-	/**
-	 * Returns the allerta valanghe stato local service.
-	 *
-	 * @return the allerta valanghe stato local service
-	 */
-	public it.eng.allerter.service.AllertaValangheStatoLocalService
-		getAllertaValangheStatoLocalService() {
-
-		return allertaValangheStatoLocalService;
-	}
-
-	/**
-	 * Sets the allerta valanghe stato local service.
-	 *
-	 * @param allertaValangheStatoLocalService the allerta valanghe stato local service
-	 */
-	public void setAllertaValangheStatoLocalService(
-		it.eng.allerter.service.AllertaValangheStatoLocalService
-			allertaValangheStatoLocalService) {
-
-		this.allertaValangheStatoLocalService =
-			allertaValangheStatoLocalService;
-	}
-
-	/**
-	 * Returns the allerta valanghe stato persistence.
-	 *
-	 * @return the allerta valanghe stato persistence
-	 */
-	public AllertaValangheStatoPersistence
-		getAllertaValangheStatoPersistence() {
-
-		return allertaValangheStatoPersistence;
-	}
-
-	/**
-	 * Sets the allerta valanghe stato persistence.
-	 *
-	 * @param allertaValangheStatoPersistence the allerta valanghe stato persistence
-	 */
-	public void setAllertaValangheStatoPersistence(
-		AllertaValangheStatoPersistence allertaValangheStatoPersistence) {
-
-		this.allertaValangheStatoPersistence = allertaValangheStatoPersistence;
-	}
-
-	/**
-	 * Returns the area local service.
-	 *
-	 * @return the area local service
-	 */
-	public it.eng.allerter.service.AreaLocalService getAreaLocalService() {
-		return areaLocalService;
-	}
-
-	/**
-	 * Sets the area local service.
-	 *
-	 * @param areaLocalService the area local service
-	 */
-	public void setAreaLocalService(
-		it.eng.allerter.service.AreaLocalService areaLocalService) {
-
-		this.areaLocalService = areaLocalService;
-	}
-
-	/**
-	 * Returns the area persistence.
-	 *
-	 * @return the area persistence
-	 */
-	public AreaPersistence getAreaPersistence() {
-		return areaPersistence;
-	}
-
-	/**
-	 * Sets the area persistence.
-	 *
-	 * @param areaPersistence the area persistence
-	 */
-	public void setAreaPersistence(AreaPersistence areaPersistence) {
-		this.areaPersistence = areaPersistence;
-	}
-
-	/**
-	 * Returns the email local service.
-	 *
-	 * @return the email local service
-	 */
-	public it.eng.allerter.service.EmailLocalService getEmailLocalService() {
-		return emailLocalService;
-	}
-
-	/**
-	 * Sets the email local service.
-	 *
-	 * @param emailLocalService the email local service
-	 */
-	public void setEmailLocalService(
-		it.eng.allerter.service.EmailLocalService emailLocalService) {
-
-		this.emailLocalService = emailLocalService;
-	}
-
-	/**
-	 * Returns the email persistence.
-	 *
-	 * @return the email persistence
-	 */
-	public EmailPersistence getEmailPersistence() {
-		return emailPersistence;
-	}
-
-	/**
-	 * Sets the email persistence.
-	 *
-	 * @param emailPersistence the email persistence
-	 */
-	public void setEmailPersistence(EmailPersistence emailPersistence) {
-		this.emailPersistence = emailPersistence;
-	}
-
-	/**
-	 * Returns the feed local service.
-	 *
-	 * @return the feed local service
-	 */
-	public it.eng.allerter.service.FeedLocalService getFeedLocalService() {
-		return feedLocalService;
-	}
-
-	/**
-	 * Sets the feed local service.
-	 *
-	 * @param feedLocalService the feed local service
-	 */
-	public void setFeedLocalService(
-		it.eng.allerter.service.FeedLocalService feedLocalService) {
-
-		this.feedLocalService = feedLocalService;
-	}
-
-	/**
-	 * Returns the feed persistence.
-	 *
-	 * @return the feed persistence
-	 */
-	public FeedPersistence getFeedPersistence() {
-		return feedPersistence;
-	}
-
-	/**
-	 * Sets the feed persistence.
-	 *
-	 * @param feedPersistence the feed persistence
-	 */
-	public void setFeedPersistence(FeedPersistence feedPersistence) {
-		this.feedPersistence = feedPersistence;
-	}
-
-	/**
-	 * Returns the geografia local service.
-	 *
-	 * @return the geografia local service
-	 */
-	public it.eng.allerter.service.GeografiaLocalService
-		getGeografiaLocalService() {
-
-		return geografiaLocalService;
-	}
-
-	/**
-	 * Sets the geografia local service.
-	 *
-	 * @param geografiaLocalService the geografia local service
-	 */
-	public void setGeografiaLocalService(
-		it.eng.allerter.service.GeografiaLocalService geografiaLocalService) {
-
-		this.geografiaLocalService = geografiaLocalService;
-	}
-
-	/**
-	 * Returns the geografia persistence.
-	 *
-	 * @return the geografia persistence
-	 */
-	public GeografiaPersistence getGeografiaPersistence() {
-		return geografiaPersistence;
-	}
-
-	/**
-	 * Sets the geografia persistence.
-	 *
-	 * @param geografiaPersistence the geografia persistence
-	 */
-	public void setGeografiaPersistence(
-		GeografiaPersistence geografiaPersistence) {
-
-		this.geografiaPersistence = geografiaPersistence;
-	}
-
-	/**
-	 * Returns the log interno local service.
-	 *
-	 * @return the log interno local service
-	 */
-	public it.eng.allerter.service.LogInternoLocalService
-		getLogInternoLocalService() {
-
-		return logInternoLocalService;
-	}
-
-	/**
-	 * Sets the log interno local service.
-	 *
-	 * @param logInternoLocalService the log interno local service
-	 */
-	public void setLogInternoLocalService(
-		it.eng.allerter.service.LogInternoLocalService logInternoLocalService) {
-
-		this.logInternoLocalService = logInternoLocalService;
-	}
-
-	/**
-	 * Returns the log interno persistence.
-	 *
-	 * @return the log interno persistence
-	 */
-	public LogInternoPersistence getLogInternoPersistence() {
-		return logInternoPersistence;
-	}
-
-	/**
-	 * Sets the log interno persistence.
-	 *
-	 * @param logInternoPersistence the log interno persistence
-	 */
-	public void setLogInternoPersistence(
-		LogInternoPersistence logInternoPersistence) {
-
-		this.logInternoPersistence = logInternoPersistence;
-	}
-
-	/**
-	 * Returns the sms local service.
-	 *
-	 * @return the sms local service
-	 */
-	public it.eng.allerter.service.SMSLocalService getSMSLocalService() {
-		return smsLocalService;
-	}
-
-	/**
-	 * Sets the sms local service.
-	 *
-	 * @param smsLocalService the sms local service
-	 */
-	public void setSMSLocalService(
-		it.eng.allerter.service.SMSLocalService smsLocalService) {
-
-		this.smsLocalService = smsLocalService;
-	}
-
-	/**
-	 * Returns the sms persistence.
-	 *
-	 * @return the sms persistence
-	 */
-	public SMSPersistence getSMSPersistence() {
-		return smsPersistence;
-	}
-
-	/**
-	 * Sets the sms persistence.
-	 *
-	 * @param smsPersistence the sms persistence
-	 */
-	public void setSMSPersistence(SMSPersistence smsPersistence) {
-		this.smsPersistence = smsPersistence;
-	}
-
-	/**
-	 * Returns the sms finder.
-	 *
-	 * @return the sms finder
-	 */
-	public SMSFinder getSMSFinder() {
-		return smsFinder;
-	}
-
-	/**
-	 * Sets the sms finder.
-	 *
-	 * @param smsFinder the sms finder
-	 */
-	public void setSMSFinder(SMSFinder smsFinder) {
-		this.smsFinder = smsFinder;
-	}
-
-	/**
-	 * Returns the stato allertamento local service.
-	 *
-	 * @return the stato allertamento local service
-	 */
-	public it.eng.allerter.service.StatoAllertamentoLocalService
-		getStatoAllertamentoLocalService() {
-
-		return statoAllertamentoLocalService;
-	}
-
-	/**
-	 * Sets the stato allertamento local service.
-	 *
-	 * @param statoAllertamentoLocalService the stato allertamento local service
-	 */
-	public void setStatoAllertamentoLocalService(
-		it.eng.allerter.service.StatoAllertamentoLocalService
-			statoAllertamentoLocalService) {
-
-		this.statoAllertamentoLocalService = statoAllertamentoLocalService;
-	}
-
-	/**
-	 * Returns the stato allertamento persistence.
-	 *
-	 * @return the stato allertamento persistence
-	 */
-	public StatoAllertamentoPersistence getStatoAllertamentoPersistence() {
-		return statoAllertamentoPersistence;
-	}
-
-	/**
-	 * Sets the stato allertamento persistence.
-	 *
-	 * @param statoAllertamentoPersistence the stato allertamento persistence
-	 */
-	public void setStatoAllertamentoPersistence(
-		StatoAllertamentoPersistence statoAllertamentoPersistence) {
-
-		this.statoAllertamentoPersistence = statoAllertamentoPersistence;
-	}
-
-	/**
-	 * Returns the tipo evento local service.
-	 *
-	 * @return the tipo evento local service
-	 */
-	public it.eng.allerter.service.TipoEventoLocalService
-		getTipoEventoLocalService() {
-
-		return tipoEventoLocalService;
-	}
-
-	/**
-	 * Sets the tipo evento local service.
-	 *
-	 * @param tipoEventoLocalService the tipo evento local service
-	 */
-	public void setTipoEventoLocalService(
-		it.eng.allerter.service.TipoEventoLocalService tipoEventoLocalService) {
-
-		this.tipoEventoLocalService = tipoEventoLocalService;
-	}
-
-	/**
-	 * Returns the tipo evento persistence.
-	 *
-	 * @return the tipo evento persistence
-	 */
-	public TipoEventoPersistence getTipoEventoPersistence() {
-		return tipoEventoPersistence;
-	}
-
-	/**
-	 * Sets the tipo evento persistence.
-	 *
-	 * @param tipoEventoPersistence the tipo evento persistence
-	 */
-	public void setTipoEventoPersistence(
-		TipoEventoPersistence tipoEventoPersistence) {
-
-		this.tipoEventoPersistence = tipoEventoPersistence;
-	}
-
-	/**
-	 * Returns the counter local service.
-	 *
-	 * @return the counter local service
-	 */
-	public com.liferay.counter.kernel.service.CounterLocalService
-		getCounterLocalService() {
-
-		return counterLocalService;
-	}
-
-	/**
-	 * Sets the counter local service.
-	 *
-	 * @param counterLocalService the counter local service
-	 */
-	public void setCounterLocalService(
-		com.liferay.counter.kernel.service.CounterLocalService
-			counterLocalService) {
-
-		this.counterLocalService = counterLocalService;
-	}
-
-	/**
-	 * Returns the class name local service.
-	 *
-	 * @return the class name local service
-	 */
-	public com.liferay.portal.kernel.service.ClassNameLocalService
-		getClassNameLocalService() {
-
-		return classNameLocalService;
-	}
-
-	/**
-	 * Sets the class name local service.
-	 *
-	 * @param classNameLocalService the class name local service
-	 */
-	public void setClassNameLocalService(
-		com.liferay.portal.kernel.service.ClassNameLocalService
-			classNameLocalService) {
-
-		this.classNameLocalService = classNameLocalService;
-	}
-
-	/**
-	 * Returns the class name persistence.
-	 *
-	 * @return the class name persistence
-	 */
-	public ClassNamePersistence getClassNamePersistence() {
-		return classNamePersistence;
-	}
-
-	/**
-	 * Sets the class name persistence.
-	 *
-	 * @param classNamePersistence the class name persistence
-	 */
-	public void setClassNamePersistence(
-		ClassNamePersistence classNamePersistence) {
-
-		this.classNamePersistence = classNamePersistence;
-	}
-
-	/**
-	 * Returns the resource local service.
-	 *
-	 * @return the resource local service
-	 */
-	public com.liferay.portal.kernel.service.ResourceLocalService
-		getResourceLocalService() {
-
-		return resourceLocalService;
-	}
-
-	/**
-	 * Sets the resource local service.
-	 *
-	 * @param resourceLocalService the resource local service
-	 */
-	public void setResourceLocalService(
-		com.liferay.portal.kernel.service.ResourceLocalService
-			resourceLocalService) {
-
-		this.resourceLocalService = resourceLocalService;
-	}
-
-	/**
-	 * Returns the user local service.
-	 *
-	 * @return the user local service
-	 */
-	public com.liferay.portal.kernel.service.UserLocalService
-		getUserLocalService() {
-
-		return userLocalService;
-	}
-
-	/**
-	 * Sets the user local service.
-	 *
-	 * @param userLocalService the user local service
-	 */
-	public void setUserLocalService(
-		com.liferay.portal.kernel.service.UserLocalService userLocalService) {
-
-		this.userLocalService = userLocalService;
-	}
-
-	/**
-	 * Returns the user persistence.
-	 *
-	 * @return the user persistence
-	 */
-	public UserPersistence getUserPersistence() {
-		return userPersistence;
-	}
-
-	/**
-	 * Sets the user persistence.
-	 *
-	 * @param userPersistence the user persistence
-	 */
-	public void setUserPersistence(UserPersistence userPersistence) {
-		this.userPersistence = userPersistence;
+	@Deactivate
+	protected void deactivate() {
 	}
 
-	public void afterPropertiesSet() {
-		persistedModelLocalServiceRegistry.register(
-			"it.eng.allerter.model.AllertaStato", allertaStatoLocalService);
+	@Override
+	public Class<?>[] getAopInterfaces() {
+		return new Class<?>[] {
+			AllertaStatoLocalService.class, IdentifiableOSGiService.class,
+			PersistedModelLocalService.class
+		};
 	}
 
-	public void destroy() {
-		persistedModelLocalServiceRegistry.unregister(
-			"it.eng.allerter.model.AllertaStato");
+	@Override
+	public void setAopProxy(Object aopProxy) {
+		allertaStatoLocalService = (AllertaStatoLocalService)aopProxy;
 	}
 
 	/**
@@ -1233,158 +567,96 @@ public abstract class AllertaStatoLocalServiceBaseImpl
 	 * @param sql the sql query
 	 */
 	protected void runSQL(String sql) {
+		DataSource dataSource = allertaStatoPersistence.getDataSource();
+
+		DB db = DBManagerUtil.getDB();
+
+		Connection currentConnection = CurrentConnectionUtil.getConnection(
+			dataSource);
+
 		try {
-			DataSource dataSource = allertaStatoPersistence.getDataSource();
+			if (currentConnection != null) {
+				db.runSQL(currentConnection, new String[] {sql});
 
-			DB db = DBManagerUtil.getDB();
+				return;
+			}
 
-			sql = db.buildSQL(sql);
-			sql = PortalUtil.transformSQL(sql);
-
-			SqlUpdate sqlUpdate = SqlUpdateFactoryUtil.getSqlUpdate(
-				dataSource, sql);
-
-			sqlUpdate.update();
+			try (Connection connection = dataSource.getConnection()) {
+				db.runSQL(connection, new String[] {sql});
+			}
 		}
-		catch (Exception e) {
-			throw new SystemException(e);
+		catch (Exception exception) {
+			throw new SystemException(exception);
 		}
 	}
 
-	@BeanReference(type = it.eng.allerter.service.AllertaLocalService.class)
-	protected it.eng.allerter.service.AllertaLocalService allertaLocalService;
-
-	@BeanReference(type = AllertaPersistence.class)
+	@Reference
 	protected AllertaPersistence allertaPersistence;
 
-	@BeanReference(type = AllertaFinder.class)
+	@Reference
 	protected AllertaFinder allertaFinder;
 
-	@BeanReference(
-		type = it.eng.allerter.service.AllertaParametroLocalService.class
-	)
-	protected it.eng.allerter.service.AllertaParametroLocalService
-		allertaParametroLocalService;
-
-	@BeanReference(type = AllertaParametroPersistence.class)
+	@Reference
 	protected AllertaParametroPersistence allertaParametroPersistence;
 
-	@BeanReference(type = AllertaStatoLocalService.class)
 	protected AllertaStatoLocalService allertaStatoLocalService;
 
-	@BeanReference(type = AllertaStatoPersistence.class)
+	@Reference
 	protected AllertaStatoPersistence allertaStatoPersistence;
 
-	@BeanReference(
-		type = it.eng.allerter.service.AllertaValangheLocalService.class
-	)
-	protected it.eng.allerter.service.AllertaValangheLocalService
-		allertaValangheLocalService;
-
-	@BeanReference(type = AllertaValanghePersistence.class)
+	@Reference
 	protected AllertaValanghePersistence allertaValanghePersistence;
 
-	@BeanReference(type = AllertaValangheFinder.class)
+	@Reference
 	protected AllertaValangheFinder allertaValangheFinder;
 
-	@BeanReference(
-		type = it.eng.allerter.service.AllertaValangheStatoLocalService.class
-	)
-	protected it.eng.allerter.service.AllertaValangheStatoLocalService
-		allertaValangheStatoLocalService;
-
-	@BeanReference(type = AllertaValangheStatoPersistence.class)
+	@Reference
 	protected AllertaValangheStatoPersistence allertaValangheStatoPersistence;
 
-	@BeanReference(type = it.eng.allerter.service.AreaLocalService.class)
-	protected it.eng.allerter.service.AreaLocalService areaLocalService;
-
-	@BeanReference(type = AreaPersistence.class)
+	@Reference
 	protected AreaPersistence areaPersistence;
 
-	@BeanReference(type = it.eng.allerter.service.EmailLocalService.class)
-	protected it.eng.allerter.service.EmailLocalService emailLocalService;
-
-	@BeanReference(type = EmailPersistence.class)
+	@Reference
 	protected EmailPersistence emailPersistence;
 
-	@BeanReference(type = it.eng.allerter.service.FeedLocalService.class)
-	protected it.eng.allerter.service.FeedLocalService feedLocalService;
-
-	@BeanReference(type = FeedPersistence.class)
+	@Reference
 	protected FeedPersistence feedPersistence;
 
-	@BeanReference(type = it.eng.allerter.service.GeografiaLocalService.class)
-	protected it.eng.allerter.service.GeografiaLocalService
-		geografiaLocalService;
-
-	@BeanReference(type = GeografiaPersistence.class)
+	@Reference
 	protected GeografiaPersistence geografiaPersistence;
 
-	@BeanReference(type = it.eng.allerter.service.LogInternoLocalService.class)
-	protected it.eng.allerter.service.LogInternoLocalService
-		logInternoLocalService;
-
-	@BeanReference(type = LogInternoPersistence.class)
+	@Reference
 	protected LogInternoPersistence logInternoPersistence;
 
-	@BeanReference(type = it.eng.allerter.service.SMSLocalService.class)
-	protected it.eng.allerter.service.SMSLocalService smsLocalService;
-
-	@BeanReference(type = SMSPersistence.class)
+	@Reference
 	protected SMSPersistence smsPersistence;
 
-	@BeanReference(type = SMSFinder.class)
+	@Reference
 	protected SMSFinder smsFinder;
 
-	@BeanReference(
-		type = it.eng.allerter.service.StatoAllertamentoLocalService.class
-	)
-	protected it.eng.allerter.service.StatoAllertamentoLocalService
-		statoAllertamentoLocalService;
-
-	@BeanReference(type = StatoAllertamentoPersistence.class)
+	@Reference
 	protected StatoAllertamentoPersistence statoAllertamentoPersistence;
 
-	@BeanReference(type = it.eng.allerter.service.TipoEventoLocalService.class)
-	protected it.eng.allerter.service.TipoEventoLocalService
-		tipoEventoLocalService;
-
-	@BeanReference(type = TipoEventoPersistence.class)
+	@Reference
 	protected TipoEventoPersistence tipoEventoPersistence;
 
-	@ServiceReference(
-		type = com.liferay.counter.kernel.service.CounterLocalService.class
-	)
+	@Reference
 	protected com.liferay.counter.kernel.service.CounterLocalService
 		counterLocalService;
 
-	@ServiceReference(
-		type = com.liferay.portal.kernel.service.ClassNameLocalService.class
-	)
+	@Reference
 	protected com.liferay.portal.kernel.service.ClassNameLocalService
 		classNameLocalService;
 
-	@ServiceReference(type = ClassNamePersistence.class)
-	protected ClassNamePersistence classNamePersistence;
-
-	@ServiceReference(
-		type = com.liferay.portal.kernel.service.ResourceLocalService.class
-	)
+	@Reference
 	protected com.liferay.portal.kernel.service.ResourceLocalService
 		resourceLocalService;
 
-	@ServiceReference(
-		type = com.liferay.portal.kernel.service.UserLocalService.class
-	)
+	@Reference
 	protected com.liferay.portal.kernel.service.UserLocalService
 		userLocalService;
 
-	@ServiceReference(type = UserPersistence.class)
-	protected UserPersistence userPersistence;
-
-	@ServiceReference(type = PersistedModelLocalServiceRegistry.class)
-	protected PersistedModelLocalServiceRegistry
-		persistedModelLocalServiceRegistry;
+	private static final Log _log = LogFactoryUtil.getLog(
+		AllertaStatoLocalServiceBaseImpl.class);
 
 }

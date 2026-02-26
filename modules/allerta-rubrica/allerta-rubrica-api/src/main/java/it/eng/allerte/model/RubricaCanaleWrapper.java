@@ -1,30 +1,15 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerte.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -35,22 +20,12 @@ import java.util.Objects;
  * @see RubricaCanale
  * @generated
  */
-@ProviderType
 public class RubricaCanaleWrapper
-	implements RubricaCanale, ModelWrapper<RubricaCanale> {
+	extends BaseModelWrapper<RubricaCanale>
+	implements ModelWrapper<RubricaCanale>, RubricaCanale {
 
 	public RubricaCanaleWrapper(RubricaCanale rubricaCanale) {
-		_rubricaCanale = rubricaCanale;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return RubricaCanale.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return RubricaCanale.class.getName();
+		super(rubricaCanale);
 	}
 
 	@Override
@@ -93,18 +68,8 @@ public class RubricaCanaleWrapper
 	}
 
 	@Override
-	public Object clone() {
-		return new RubricaCanaleWrapper((RubricaCanale)_rubricaCanale.clone());
-	}
-
-	@Override
-	public int compareTo(it.eng.allerte.model.RubricaCanale rubricaCanale) {
-		return _rubricaCanale.compareTo(rubricaCanale);
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _rubricaCanale.getExpandoBridge();
+	public RubricaCanale cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -114,7 +79,7 @@ public class RubricaCanaleWrapper
 	 */
 	@Override
 	public String getICONA() {
-		return _rubricaCanale.getICONA();
+		return model.getICONA();
 	}
 
 	/**
@@ -124,7 +89,7 @@ public class RubricaCanaleWrapper
 	 */
 	@Override
 	public long getID_CANALE() {
-		return _rubricaCanale.getID_CANALE();
+		return model.getID_CANALE();
 	}
 
 	/**
@@ -134,7 +99,7 @@ public class RubricaCanaleWrapper
 	 */
 	@Override
 	public String getNOME() {
-		return _rubricaCanale.getNOME();
+		return model.getNOME();
 	}
 
 	/**
@@ -144,12 +109,7 @@ public class RubricaCanaleWrapper
 	 */
 	@Override
 	public long getPrimaryKey() {
-		return _rubricaCanale.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _rubricaCanale.getPrimaryKeyObj();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -159,54 +119,12 @@ public class RubricaCanaleWrapper
 	 */
 	@Override
 	public String getREGEX() {
-		return _rubricaCanale.getREGEX();
-	}
-
-	@Override
-	public int hashCode() {
-		return _rubricaCanale.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _rubricaCanale.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _rubricaCanale.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _rubricaCanale.isNew();
+		return model.getREGEX();
 	}
 
 	@Override
 	public void persist() {
-		_rubricaCanale.persist();
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_rubricaCanale.setCachedModel(cachedModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_rubricaCanale.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_rubricaCanale.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_rubricaCanale.setExpandoBridgeAttributes(serviceContext);
+		model.persist();
 	}
 
 	/**
@@ -216,7 +134,7 @@ public class RubricaCanaleWrapper
 	 */
 	@Override
 	public void setICONA(String ICONA) {
-		_rubricaCanale.setICONA(ICONA);
+		model.setICONA(ICONA);
 	}
 
 	/**
@@ -226,12 +144,7 @@ public class RubricaCanaleWrapper
 	 */
 	@Override
 	public void setID_CANALE(long ID_CANALE) {
-		_rubricaCanale.setID_CANALE(ID_CANALE);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_rubricaCanale.setNew(n);
+		model.setID_CANALE(ID_CANALE);
 	}
 
 	/**
@@ -241,7 +154,7 @@ public class RubricaCanaleWrapper
 	 */
 	@Override
 	public void setNOME(String NOME) {
-		_rubricaCanale.setNOME(NOME);
+		model.setNOME(NOME);
 	}
 
 	/**
@@ -251,12 +164,7 @@ public class RubricaCanaleWrapper
 	 */
 	@Override
 	public void setPrimaryKey(long primaryKey) {
-		_rubricaCanale.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_rubricaCanale.setPrimaryKeyObj(primaryKeyObj);
+		model.setPrimaryKey(primaryKey);
 	}
 
 	/**
@@ -266,77 +174,17 @@ public class RubricaCanaleWrapper
 	 */
 	@Override
 	public void setREGEX(String REGEX) {
-		_rubricaCanale.setREGEX(REGEX);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<it.eng.allerte.model.RubricaCanale> toCacheModel() {
-
-		return _rubricaCanale.toCacheModel();
-	}
-
-	@Override
-	public it.eng.allerte.model.RubricaCanale toEscapedModel() {
-		return new RubricaCanaleWrapper(_rubricaCanale.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _rubricaCanale.toString();
-	}
-
-	@Override
-	public it.eng.allerte.model.RubricaCanale toUnescapedModel() {
-		return new RubricaCanaleWrapper(_rubricaCanale.toUnescapedModel());
+		model.setREGEX(REGEX);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _rubricaCanale.toXmlString();
+		return model.toXmlString();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-
-		if (!(obj instanceof RubricaCanaleWrapper)) {
-			return false;
-		}
-
-		RubricaCanaleWrapper rubricaCanaleWrapper = (RubricaCanaleWrapper)obj;
-
-		if (Objects.equals(
-				_rubricaCanale, rubricaCanaleWrapper._rubricaCanale)) {
-
-			return true;
-		}
-
-		return false;
+	protected RubricaCanaleWrapper wrap(RubricaCanale rubricaCanale) {
+		return new RubricaCanaleWrapper(rubricaCanale);
 	}
-
-	@Override
-	public RubricaCanale getWrappedModel() {
-		return _rubricaCanale;
-	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _rubricaCanale.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _rubricaCanale.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_rubricaCanale.resetOriginalValues();
-	}
-
-	private final RubricaCanale _rubricaCanale;
 
 }

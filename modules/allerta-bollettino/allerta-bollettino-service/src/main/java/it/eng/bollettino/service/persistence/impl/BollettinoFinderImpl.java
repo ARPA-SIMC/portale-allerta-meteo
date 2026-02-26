@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.util.List;
 
+import org.osgi.service.component.annotations.Component;
+
 import com.liferay.portal.kernel.dao.orm.SQLQuery;
 import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.log.Log;
@@ -12,6 +14,7 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import it.eng.bollettino.model.Bollettino;
 import it.eng.bollettino.service.persistence.BollettinoFinder;
 
+@Component(service = BollettinoFinder.class)
 public class BollettinoFinderImpl extends BollettinoFinderBaseImpl implements BollettinoFinder {
 	
 	public List<Object> getFiumiBollettino(long id) {
@@ -20,7 +23,8 @@ public class BollettinoFinderImpl extends BollettinoFinderBaseImpl implements Bo
 	    try {
 	        session = openSession();
 
-	        String sql = "select distinct b2.nomebacino from bollettino_bollettinobacino b2 join bollettino_bollettinosensore bs on b2.id_ = bs.idbollettinobacino where bs.idbollettino="+id+" and bs.tendenza<>-100";
+	        //String sql = "select distinct b2.nomebacino from bollettino_bollettinobacino b2 join bollettino_bollettinosensore bs on b2.id_ = bs.idbollettinobacino where bs.idbollettino="+id+" and bs.tendenza<>-100";
+	        String sql = "select distinct nomebacino from bollettino_bacinoincluso where idbollettino="+id;
 	        		
 	        SQLQuery q = session.createSQLQuery(sql);
 	        q.setCacheable(false);

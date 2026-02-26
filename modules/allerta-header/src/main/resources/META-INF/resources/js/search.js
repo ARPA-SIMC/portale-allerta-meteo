@@ -75,7 +75,7 @@
             if( !debug ) 
               hide();
           } else if( $(this).val().length < minSearchLength ){
-            $(results__list).html('<p class="p-2">Digita  3 caratteri per cercare il comune.</p>');
+            $(results__list).html('<p class="p-2">'+Liferay.Language.get('allertaheader_threechars')+'</p>');
           }
         }
 
@@ -96,10 +96,10 @@
                 var i=0,I=data.length, out = '';
                 for(;i<I;++i){
                   out += '<a class="search-menu__results__item" href="'+data[i].href+'" '
-                  +   ' title="Vai a '+data[i].place+'">'
+                  +   ' title="'+ Liferay.Language.get('allertaheader_goto') + ' '+data[i].place+'">'
                   +   '<div class="icon i-map-marker" aria-hidden="true"></div>'
                   +   '<div>'+data[i].place+'</div>'
-                  +   (data[i].isFavourite ? '<div class="icon i-heart u-favourite-icon" title="Luogo preferito"></div>':'')
+                  +   (data[i].isFavourite ? '<div class="icon i-heart u-favourite-icon" title="'+ Liferay.Language.get('allertaheader_preferito')+'"></div>':'')
                   + '</a>';
                 }
                 $(results__list).html( out );

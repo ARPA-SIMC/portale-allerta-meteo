@@ -1,21 +1,12 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.radarMeteo.service.persistence.impl;
 
-import aQute.bnd.annotation.ProviderType;
-
+import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
@@ -23,32 +14,40 @@ import com.liferay.portal.kernel.dao.orm.Query;
 import com.liferay.portal.kernel.dao.orm.QueryPos;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
+import com.liferay.portal.kernel.dao.orm.SessionFactory;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.kernel.util.PropsKeys;
+import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.ProxyUtil;
-import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.spring.extender.service.ServiceReference;
 
 import it.eng.radarMeteo.exception.NoSuchComuni_bacini_wsException;
 import it.eng.radarMeteo.model.Comuni_bacini_ws;
+import it.eng.radarMeteo.model.Comuni_bacini_wsTable;
 import it.eng.radarMeteo.model.impl.Comuni_bacini_wsImpl;
 import it.eng.radarMeteo.model.impl.Comuni_bacini_wsModelImpl;
 import it.eng.radarMeteo.service.persistence.Comuni_bacini_wsPersistence;
+import it.eng.radarMeteo.service.persistence.Comuni_bacini_wsUtil;
+import it.eng.radarMeteo.service.persistence.impl.constants.rt_portletPersistenceConstants;
 
 import java.io.Serializable;
 
 import java.lang.reflect.InvocationHandler;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+
+import javax.sql.DataSource;
+
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The persistence implementation for the comuni_bacini_ws service.
@@ -60,7 +59,7 @@ import java.util.Set;
  * @author Francesco
  * @generated
  */
-@ProviderType
+@Component(service = Comuni_bacini_wsPersistence.class)
 public class Comuni_bacini_wsPersistenceImpl
 	extends BasePersistenceImpl<Comuni_bacini_ws>
 	implements Comuni_bacini_wsPersistence {
@@ -101,7 +100,7 @@ public class Comuni_bacini_wsPersistenceImpl
 	 * Returns a range of all the comuni_bacini_wses where bacino = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>Comuni_bacini_wsModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>Comuni_bacini_wsModelImpl</code>.
 	 * </p>
 	 *
 	 * @param bacino the bacino
@@ -120,7 +119,7 @@ public class Comuni_bacini_wsPersistenceImpl
 	 * Returns an ordered range of all the comuni_bacini_wses where bacino = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>Comuni_bacini_wsModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>Comuni_bacini_wsModelImpl</code>.
 	 * </p>
 	 *
 	 * @param bacino the bacino
@@ -141,43 +140,43 @@ public class Comuni_bacini_wsPersistenceImpl
 	 * Returns an ordered range of all the comuni_bacini_wses where bacino = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>Comuni_bacini_wsModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>Comuni_bacini_wsModelImpl</code>.
 	 * </p>
 	 *
 	 * @param bacino the bacino
 	 * @param start the lower bound of the range of comuni_bacini_wses
 	 * @param end the upper bound of the range of comuni_bacini_wses (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching comuni_bacini_wses
 	 */
 	@Override
 	public List<Comuni_bacini_ws> findByBacino(
 		String bacino, int start, int end,
 		OrderByComparator<Comuni_bacini_ws> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
 		bacino = Objects.toString(bacino, "");
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindByBacino;
-			finderArgs = new Object[] {bacino};
+			if (useFinderCache) {
+				finderPath = _finderPathWithoutPaginationFindByBacino;
+				finderArgs = new Object[] {bacino};
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByBacino;
 			finderArgs = new Object[] {bacino, start, end, orderByComparator};
 		}
 
 		List<Comuni_bacini_ws> list = null;
 
-		if (retrieveFromCache) {
+		if (useFinderCache) {
 			list = (List<Comuni_bacini_ws>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
@@ -193,73 +192,63 @@ public class Comuni_bacini_wsPersistenceImpl
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					3 + (orderByComparator.getOrderByFields().length * 2));
 			}
 			else {
-				query = new StringBundler(3);
+				sb = new StringBundler(3);
 			}
 
-			query.append(_SQL_SELECT_COMUNI_BACINI_WS_WHERE);
+			sb.append(_SQL_SELECT_COMUNI_BACINI_WS_WHERE);
 
 			boolean bindBacino = false;
 
 			if (bacino.isEmpty()) {
-				query.append(_FINDER_COLUMN_BACINO_BACINO_3);
+				sb.append(_FINDER_COLUMN_BACINO_BACINO_3);
 			}
 			else {
 				bindBacino = true;
 
-				query.append(_FINDER_COLUMN_BACINO_BACINO_2);
+				sb.append(_FINDER_COLUMN_BACINO_BACINO_2);
 			}
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 			}
-			else if (pagination) {
-				query.append(Comuni_bacini_wsModelImpl.ORDER_BY_JPQL);
+			else {
+				sb.append(Comuni_bacini_wsModelImpl.ORDER_BY_JPQL);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindBacino) {
-					qPos.add(bacino);
+					queryPos.add(bacino);
 				}
 
-				if (!pagination) {
-					list = (List<Comuni_bacini_ws>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<Comuni_bacini_ws>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<Comuni_bacini_ws>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					finderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -290,16 +279,16 @@ public class Comuni_bacini_wsPersistenceImpl
 			return comuni_bacini_ws;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("bacino=");
-		msg.append(bacino);
+		sb.append("bacino=");
+		sb.append(bacino);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchComuni_bacini_wsException(msg.toString());
+		throw new NoSuchComuni_bacini_wsException(sb.toString());
 	}
 
 	/**
@@ -344,16 +333,16 @@ public class Comuni_bacini_wsPersistenceImpl
 			return comuni_bacini_ws;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("bacino=");
-		msg.append(bacino);
+		sb.append("bacino=");
+		sb.append(bacino);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchComuni_bacini_wsException(msg.toString());
+		throw new NoSuchComuni_bacini_wsException(sb.toString());
 	}
 
 	/**
@@ -419,8 +408,8 @@ public class Comuni_bacini_wsPersistenceImpl
 
 			return array;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -432,28 +421,28 @@ public class Comuni_bacini_wsPersistenceImpl
 		OrderByComparator<Comuni_bacini_ws> orderByComparator,
 		boolean previous) {
 
-		StringBundler query = null;
+		StringBundler sb = null;
 
 		if (orderByComparator != null) {
-			query = new StringBundler(
+			sb = new StringBundler(
 				4 + (orderByComparator.getOrderByConditionFields().length * 3) +
 					(orderByComparator.getOrderByFields().length * 3));
 		}
 		else {
-			query = new StringBundler(3);
+			sb = new StringBundler(3);
 		}
 
-		query.append(_SQL_SELECT_COMUNI_BACINI_WS_WHERE);
+		sb.append(_SQL_SELECT_COMUNI_BACINI_WS_WHERE);
 
 		boolean bindBacino = false;
 
 		if (bacino.isEmpty()) {
-			query.append(_FINDER_COLUMN_BACINO_BACINO_3);
+			sb.append(_FINDER_COLUMN_BACINO_BACINO_3);
 		}
 		else {
 			bindBacino = true;
 
-			query.append(_FINDER_COLUMN_BACINO_BACINO_2);
+			sb.append(_FINDER_COLUMN_BACINO_BACINO_2);
 		}
 
 		if (orderByComparator != null) {
@@ -461,72 +450,72 @@ public class Comuni_bacini_wsPersistenceImpl
 				orderByComparator.getOrderByConditionFields();
 
 			if (orderByConditionFields.length > 0) {
-				query.append(WHERE_AND);
+				sb.append(WHERE_AND);
 			}
 
 			for (int i = 0; i < orderByConditionFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByConditionFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByConditionFields[i]);
 
 				if ((i + 1) < orderByConditionFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+						sb.append(WHERE_GREATER_THAN_HAS_NEXT);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+						sb.append(WHERE_LESSER_THAN_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN);
+						sb.append(WHERE_GREATER_THAN);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN);
+						sb.append(WHERE_LESSER_THAN);
 					}
 				}
 			}
 
-			query.append(ORDER_BY_CLAUSE);
+			sb.append(ORDER_BY_CLAUSE);
 
 			String[] orderByFields = orderByComparator.getOrderByFields();
 
 			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByFields[i]);
 
 				if ((i + 1) < orderByFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC_HAS_NEXT);
+						sb.append(ORDER_BY_ASC_HAS_NEXT);
 					}
 					else {
-						query.append(ORDER_BY_DESC_HAS_NEXT);
+						sb.append(ORDER_BY_DESC_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC);
+						sb.append(ORDER_BY_ASC);
 					}
 					else {
-						query.append(ORDER_BY_DESC);
+						sb.append(ORDER_BY_DESC);
 					}
 				}
 			}
 		}
 		else {
-			query.append(Comuni_bacini_wsModelImpl.ORDER_BY_JPQL);
+			sb.append(Comuni_bacini_wsModelImpl.ORDER_BY_JPQL);
 		}
 
-		String sql = query.toString();
+		String sql = sb.toString();
 
-		Query q = session.createQuery(sql);
+		Query query = session.createQuery(sql);
 
-		q.setFirstResult(0);
-		q.setMaxResults(2);
+		query.setFirstResult(0);
+		query.setMaxResults(2);
 
-		QueryPos qPos = QueryPos.getInstance(q);
+		QueryPos queryPos = QueryPos.getInstance(query);
 
 		if (bindBacino) {
-			qPos.add(bacino);
+			queryPos.add(bacino);
 		}
 
 		if (orderByComparator != null) {
@@ -534,11 +523,11 @@ public class Comuni_bacini_wsPersistenceImpl
 					orderByComparator.getOrderByConditionValues(
 						comuni_bacini_ws)) {
 
-				qPos.add(orderByConditionValue);
+				queryPos.add(orderByConditionValue);
 			}
 		}
 
-		List<Comuni_bacini_ws> list = q.list();
+		List<Comuni_bacini_ws> list = query.list();
 
 		if (list.size() == 2) {
 			return list.get(1);
@@ -580,44 +569,42 @@ public class Comuni_bacini_wsPersistenceImpl
 		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
-			StringBundler query = new StringBundler(2);
+			StringBundler sb = new StringBundler(2);
 
-			query.append(_SQL_COUNT_COMUNI_BACINI_WS_WHERE);
+			sb.append(_SQL_COUNT_COMUNI_BACINI_WS_WHERE);
 
 			boolean bindBacino = false;
 
 			if (bacino.isEmpty()) {
-				query.append(_FINDER_COLUMN_BACINO_BACINO_3);
+				sb.append(_FINDER_COLUMN_BACINO_BACINO_3);
 			}
 			else {
 				bindBacino = true;
 
-				query.append(_FINDER_COLUMN_BACINO_BACINO_2);
+				sb.append(_FINDER_COLUMN_BACINO_BACINO_2);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindBacino) {
-					qPos.add(bacino);
+					queryPos.add(bacino);
 				}
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
 				finderCache.putResult(finderPath, finderArgs, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -635,6 +622,11 @@ public class Comuni_bacini_wsPersistenceImpl
 
 	public Comuni_bacini_wsPersistenceImpl() {
 		setModelClass(Comuni_bacini_ws.class);
+
+		setModelImplClass(Comuni_bacini_wsImpl.class);
+		setModelPKClass(int.class);
+
+		setTable(Comuni_bacini_wsTable.INSTANCE);
 	}
 
 	/**
@@ -645,12 +637,11 @@ public class Comuni_bacini_wsPersistenceImpl
 	@Override
 	public void cacheResult(Comuni_bacini_ws comuni_bacini_ws) {
 		entityCache.putResult(
-			Comuni_bacini_wsModelImpl.ENTITY_CACHE_ENABLED,
 			Comuni_bacini_wsImpl.class, comuni_bacini_ws.getPrimaryKey(),
 			comuni_bacini_ws);
-
-		comuni_bacini_ws.resetOriginalValues();
 	}
+
+	private int _valueObjectFinderCacheListThreshold;
 
 	/**
 	 * Caches the comuni_bacini_wses in the entity cache if it is enabled.
@@ -659,16 +650,20 @@ public class Comuni_bacini_wsPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(List<Comuni_bacini_ws> comuni_bacini_wses) {
+		if ((_valueObjectFinderCacheListThreshold == 0) ||
+			((_valueObjectFinderCacheListThreshold > 0) &&
+			 (comuni_bacini_wses.size() >
+				 _valueObjectFinderCacheListThreshold))) {
+
+			return;
+		}
+
 		for (Comuni_bacini_ws comuni_bacini_ws : comuni_bacini_wses) {
 			if (entityCache.getResult(
-					Comuni_bacini_wsModelImpl.ENTITY_CACHE_ENABLED,
 					Comuni_bacini_wsImpl.class,
 					comuni_bacini_ws.getPrimaryKey()) == null) {
 
 				cacheResult(comuni_bacini_ws);
-			}
-			else {
-				comuni_bacini_ws.resetOriginalValues();
 			}
 		}
 	}
@@ -684,9 +679,7 @@ public class Comuni_bacini_wsPersistenceImpl
 	public void clearCache() {
 		entityCache.clearCache(Comuni_bacini_wsImpl.class);
 
-		finderCache.clearCache(FINDER_CLASS_NAME_ENTITY);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		finderCache.clearCache(Comuni_bacini_wsImpl.class);
 	}
 
 	/**
@@ -698,23 +691,23 @@ public class Comuni_bacini_wsPersistenceImpl
 	 */
 	@Override
 	public void clearCache(Comuni_bacini_ws comuni_bacini_ws) {
-		entityCache.removeResult(
-			Comuni_bacini_wsModelImpl.ENTITY_CACHE_ENABLED,
-			Comuni_bacini_wsImpl.class, comuni_bacini_ws.getPrimaryKey());
-
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		entityCache.removeResult(Comuni_bacini_wsImpl.class, comuni_bacini_ws);
 	}
 
 	@Override
 	public void clearCache(List<Comuni_bacini_ws> comuni_bacini_wses) {
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
-
 		for (Comuni_bacini_ws comuni_bacini_ws : comuni_bacini_wses) {
 			entityCache.removeResult(
-				Comuni_bacini_wsModelImpl.ENTITY_CACHE_ENABLED,
-				Comuni_bacini_wsImpl.class, comuni_bacini_ws.getPrimaryKey());
+				Comuni_bacini_wsImpl.class, comuni_bacini_ws);
+		}
+	}
+
+	@Override
+	public void clearCache(Set<Serializable> primaryKeys) {
+		finderCache.clearCache(Comuni_bacini_wsImpl.class);
+
+		for (Serializable primaryKey : primaryKeys) {
+			entityCache.removeResult(Comuni_bacini_wsImpl.class, primaryKey);
 		}
 	}
 
@@ -778,11 +771,11 @@ public class Comuni_bacini_wsPersistenceImpl
 
 			return remove(comuni_bacini_ws);
 		}
-		catch (NoSuchComuni_bacini_wsException nsee) {
-			throw nsee;
+		catch (NoSuchComuni_bacini_wsException noSuchEntityException) {
+			throw noSuchEntityException;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -806,8 +799,8 @@ public class Comuni_bacini_wsPersistenceImpl
 				session.delete(comuni_bacini_ws);
 			}
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -849,66 +842,27 @@ public class Comuni_bacini_wsPersistenceImpl
 		try {
 			session = openSession();
 
-			if (comuni_bacini_ws.isNew()) {
+			if (isNew) {
 				session.save(comuni_bacini_ws);
-
-				comuni_bacini_ws.setNew(false);
 			}
 			else {
 				comuni_bacini_ws = (Comuni_bacini_ws)session.merge(
 					comuni_bacini_ws);
 			}
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
 		}
 
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-
-		if (!Comuni_bacini_wsModelImpl.COLUMN_BITMASK_ENABLED) {
-			finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
-		}
-		else if (isNew) {
-			Object[] args = new Object[] {
-				comuni_bacini_wsModelImpl.getBacino()
-			};
-
-			finderCache.removeResult(_finderPathCountByBacino, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByBacino, args);
-
-			finderCache.removeResult(_finderPathCountAll, FINDER_ARGS_EMPTY);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindAll, FINDER_ARGS_EMPTY);
-		}
-		else {
-			if ((comuni_bacini_wsModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByBacino.getColumnBitmask()) !=
-					 0) {
-
-				Object[] args = new Object[] {
-					comuni_bacini_wsModelImpl.getOriginalBacino()
-				};
-
-				finderCache.removeResult(_finderPathCountByBacino, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByBacino, args);
-
-				args = new Object[] {comuni_bacini_wsModelImpl.getBacino()};
-
-				finderCache.removeResult(_finderPathCountByBacino, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByBacino, args);
-			}
-		}
-
 		entityCache.putResult(
-			Comuni_bacini_wsModelImpl.ENTITY_CACHE_ENABLED,
-			Comuni_bacini_wsImpl.class, comuni_bacini_ws.getPrimaryKey(),
-			comuni_bacini_ws, false);
+			Comuni_bacini_wsImpl.class, comuni_bacini_wsModelImpl, false, true);
+
+		if (isNew) {
+			comuni_bacini_ws.setNew(false);
+		}
 
 		comuni_bacini_ws.resetOriginalValues();
 
@@ -957,163 +911,12 @@ public class Comuni_bacini_wsPersistenceImpl
 	/**
 	 * Returns the comuni_bacini_ws with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the comuni_bacini_ws
-	 * @return the comuni_bacini_ws, or <code>null</code> if a comuni_bacini_ws with the primary key could not be found
-	 */
-	@Override
-	public Comuni_bacini_ws fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(
-			Comuni_bacini_wsModelImpl.ENTITY_CACHE_ENABLED,
-			Comuni_bacini_wsImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		Comuni_bacini_ws comuni_bacini_ws = (Comuni_bacini_ws)serializable;
-
-		if (comuni_bacini_ws == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				comuni_bacini_ws = (Comuni_bacini_ws)session.get(
-					Comuni_bacini_wsImpl.class, primaryKey);
-
-				if (comuni_bacini_ws != null) {
-					cacheResult(comuni_bacini_ws);
-				}
-				else {
-					entityCache.putResult(
-						Comuni_bacini_wsModelImpl.ENTITY_CACHE_ENABLED,
-						Comuni_bacini_wsImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(
-					Comuni_bacini_wsModelImpl.ENTITY_CACHE_ENABLED,
-					Comuni_bacini_wsImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return comuni_bacini_ws;
-	}
-
-	/**
-	 * Returns the comuni_bacini_ws with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param idBacini the primary key of the comuni_bacini_ws
 	 * @return the comuni_bacini_ws, or <code>null</code> if a comuni_bacini_ws with the primary key could not be found
 	 */
 	@Override
 	public Comuni_bacini_ws fetchByPrimaryKey(int idBacini) {
 		return fetchByPrimaryKey((Serializable)idBacini);
-	}
-
-	@Override
-	public Map<Serializable, Comuni_bacini_ws> fetchByPrimaryKeys(
-		Set<Serializable> primaryKeys) {
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, Comuni_bacini_ws> map =
-			new HashMap<Serializable, Comuni_bacini_ws>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			Comuni_bacini_ws comuni_bacini_ws = fetchByPrimaryKey(primaryKey);
-
-			if (comuni_bacini_ws != null) {
-				map.put(primaryKey, comuni_bacini_ws);
-			}
-
-			return map;
-		}
-
-		Set<Serializable> uncachedPrimaryKeys = null;
-
-		for (Serializable primaryKey : primaryKeys) {
-			Serializable serializable = entityCache.getResult(
-				Comuni_bacini_wsModelImpl.ENTITY_CACHE_ENABLED,
-				Comuni_bacini_wsImpl.class, primaryKey);
-
-			if (serializable != nullModel) {
-				if (serializable == null) {
-					if (uncachedPrimaryKeys == null) {
-						uncachedPrimaryKeys = new HashSet<Serializable>();
-					}
-
-					uncachedPrimaryKeys.add(primaryKey);
-				}
-				else {
-					map.put(primaryKey, (Comuni_bacini_ws)serializable);
-				}
-			}
-		}
-
-		if (uncachedPrimaryKeys == null) {
-			return map;
-		}
-
-		StringBundler query = new StringBundler(
-			uncachedPrimaryKeys.size() * 2 + 1);
-
-		query.append(_SQL_SELECT_COMUNI_BACINI_WS_WHERE_PKS_IN);
-
-		for (Serializable primaryKey : uncachedPrimaryKeys) {
-			query.append((int)primaryKey);
-
-			query.append(",");
-		}
-
-		query.setIndex(query.index() - 1);
-
-		query.append(")");
-
-		String sql = query.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query q = session.createQuery(sql);
-
-			for (Comuni_bacini_ws comuni_bacini_ws :
-					(List<Comuni_bacini_ws>)q.list()) {
-
-				map.put(comuni_bacini_ws.getPrimaryKeyObj(), comuni_bacini_ws);
-
-				cacheResult(comuni_bacini_ws);
-
-				uncachedPrimaryKeys.remove(comuni_bacini_ws.getPrimaryKeyObj());
-			}
-
-			for (Serializable primaryKey : uncachedPrimaryKeys) {
-				entityCache.putResult(
-					Comuni_bacini_wsModelImpl.ENTITY_CACHE_ENABLED,
-					Comuni_bacini_wsImpl.class, primaryKey, nullModel);
-			}
-		}
-		catch (Exception e) {
-			throw processException(e);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**
@@ -1130,7 +933,7 @@ public class Comuni_bacini_wsPersistenceImpl
 	 * Returns a range of all the comuni_bacini_wses.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>Comuni_bacini_wsModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>Comuni_bacini_wsModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of comuni_bacini_wses
@@ -1146,7 +949,7 @@ public class Comuni_bacini_wsPersistenceImpl
 	 * Returns an ordered range of all the comuni_bacini_wses.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>Comuni_bacini_wsModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>Comuni_bacini_wsModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of comuni_bacini_wses
@@ -1166,65 +969,63 @@ public class Comuni_bacini_wsPersistenceImpl
 	 * Returns an ordered range of all the comuni_bacini_wses.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>Comuni_bacini_wsModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>Comuni_bacini_wsModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of comuni_bacini_wses
 	 * @param end the upper bound of the range of comuni_bacini_wses (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of comuni_bacini_wses
 	 */
 	@Override
 	public List<Comuni_bacini_ws> findAll(
 		int start, int end,
 		OrderByComparator<Comuni_bacini_ws> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindAll;
-			finderArgs = FINDER_ARGS_EMPTY;
+			if (useFinderCache) {
+				finderPath = _finderPathWithoutPaginationFindAll;
+				finderArgs = FINDER_ARGS_EMPTY;
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
 			finderArgs = new Object[] {start, end, orderByComparator};
 		}
 
 		List<Comuni_bacini_ws> list = null;
 
-		if (retrieveFromCache) {
+		if (useFinderCache) {
 			list = (List<Comuni_bacini_ws>)finderCache.getResult(
 				finderPath, finderArgs, this);
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 			String sql = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					2 + (orderByComparator.getOrderByFields().length * 2));
 
-				query.append(_SQL_SELECT_COMUNI_BACINI_WS);
+				sb.append(_SQL_SELECT_COMUNI_BACINI_WS);
 
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 
-				sql = query.toString();
+				sql = sb.toString();
 			}
 			else {
 				sql = _SQL_SELECT_COMUNI_BACINI_WS;
 
-				if (pagination) {
-					sql = sql.concat(Comuni_bacini_wsModelImpl.ORDER_BY_JPQL);
-				}
+				sql = sql.concat(Comuni_bacini_wsModelImpl.ORDER_BY_JPQL);
 			}
 
 			Session session = null;
@@ -1232,29 +1033,19 @@ public class Comuni_bacini_wsPersistenceImpl
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				if (!pagination) {
-					list = (List<Comuni_bacini_ws>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<Comuni_bacini_ws>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<Comuni_bacini_ws>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					finderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -1291,18 +1082,15 @@ public class Comuni_bacini_wsPersistenceImpl
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(_SQL_COUNT_COMUNI_BACINI_WS);
+				Query query = session.createQuery(_SQL_COUNT_COMUNI_BACINI_WS);
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
 				finderCache.putResult(
 					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -1313,6 +1101,21 @@ public class Comuni_bacini_wsPersistenceImpl
 	}
 
 	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
+	}
+
+	@Override
+	protected String getPKDBName() {
+		return "idBacini";
+	}
+
+	@Override
+	protected String getSelectSQL() {
+		return _SQL_SELECT_COMUNI_BACINI_WS;
+	}
+
+	@Override
 	protected Map<String, Integer> getTableColumnsMap() {
 		return Comuni_bacini_wsModelImpl.TABLE_COLUMNS_MAP;
 	}
@@ -1320,69 +1123,85 @@ public class Comuni_bacini_wsPersistenceImpl
 	/**
 	 * Initializes the comuni_bacini_ws persistence.
 	 */
-	public void afterPropertiesSet() {
+	@Activate
+	public void activate() {
+		_valueObjectFinderCacheListThreshold = GetterUtil.getInteger(
+			PropsUtil.get(PropsKeys.VALUE_OBJECT_FINDER_CACHE_LIST_THRESHOLD));
+
 		_finderPathWithPaginationFindAll = new FinderPath(
-			Comuni_bacini_wsModelImpl.ENTITY_CACHE_ENABLED,
-			Comuni_bacini_wsModelImpl.FINDER_CACHE_ENABLED,
-			Comuni_bacini_wsImpl.class, FINDER_CLASS_NAME_LIST_WITH_PAGINATION,
-			"findAll", new String[0]);
+			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findAll", new String[0],
+			new String[0], true);
 
 		_finderPathWithoutPaginationFindAll = new FinderPath(
-			Comuni_bacini_wsModelImpl.ENTITY_CACHE_ENABLED,
-			Comuni_bacini_wsModelImpl.FINDER_CACHE_ENABLED,
-			Comuni_bacini_wsImpl.class,
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findAll",
-			new String[0]);
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findAll", new String[0],
+			new String[0], true);
 
 		_finderPathCountAll = new FinderPath(
-			Comuni_bacini_wsModelImpl.ENTITY_CACHE_ENABLED,
-			Comuni_bacini_wsModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countAll",
-			new String[0]);
+			new String[0], new String[0], false);
 
 		_finderPathWithPaginationFindByBacino = new FinderPath(
-			Comuni_bacini_wsModelImpl.ENTITY_CACHE_ENABLED,
-			Comuni_bacini_wsModelImpl.FINDER_CACHE_ENABLED,
-			Comuni_bacini_wsImpl.class, FINDER_CLASS_NAME_LIST_WITH_PAGINATION,
-			"findByBacino",
+			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByBacino",
 			new String[] {
 				String.class.getName(), Integer.class.getName(),
 				Integer.class.getName(), OrderByComparator.class.getName()
-			});
+			},
+			new String[] {"bacino"}, true);
 
 		_finderPathWithoutPaginationFindByBacino = new FinderPath(
-			Comuni_bacini_wsModelImpl.ENTITY_CACHE_ENABLED,
-			Comuni_bacini_wsModelImpl.FINDER_CACHE_ENABLED,
-			Comuni_bacini_wsImpl.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByBacino",
-			new String[] {String.class.getName()},
-			Comuni_bacini_wsModelImpl.BACINO_COLUMN_BITMASK);
+			new String[] {String.class.getName()}, new String[] {"bacino"},
+			true);
 
 		_finderPathCountByBacino = new FinderPath(
-			Comuni_bacini_wsModelImpl.ENTITY_CACHE_ENABLED,
-			Comuni_bacini_wsModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByBacino",
-			new String[] {String.class.getName()});
+			new String[] {String.class.getName()}, new String[] {"bacino"},
+			false);
+
+		Comuni_bacini_wsUtil.setPersistence(this);
 	}
 
-	public void destroy() {
+	@Deactivate
+	public void deactivate() {
+		Comuni_bacini_wsUtil.setPersistence(null);
+
 		entityCache.removeCache(Comuni_bacini_wsImpl.class.getName());
-		finderCache.removeCache(FINDER_CLASS_NAME_ENTITY);
-		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 	}
 
-	@ServiceReference(type = EntityCache.class)
+	@Override
+	@Reference(
+		target = rt_portletPersistenceConstants.SERVICE_CONFIGURATION_FILTER,
+		unbind = "-"
+	)
+	public void setConfiguration(Configuration configuration) {
+	}
+
+	@Override
+	@Reference(
+		target = rt_portletPersistenceConstants.ORIGIN_BUNDLE_SYMBOLIC_NAME_FILTER,
+		unbind = "-"
+	)
+	public void setDataSource(DataSource dataSource) {
+		super.setDataSource(dataSource);
+	}
+
+	@Override
+	@Reference(
+		target = rt_portletPersistenceConstants.ORIGIN_BUNDLE_SYMBOLIC_NAME_FILTER,
+		unbind = "-"
+	)
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		super.setSessionFactory(sessionFactory);
+	}
+
+	@Reference
 	protected EntityCache entityCache;
 
-	@ServiceReference(type = FinderCache.class)
+	@Reference
 	protected FinderCache finderCache;
 
 	private static final String _SQL_SELECT_COMUNI_BACINI_WS =
 		"SELECT comuni_bacini_ws FROM Comuni_bacini_ws comuni_bacini_ws";
-
-	private static final String _SQL_SELECT_COMUNI_BACINI_WS_WHERE_PKS_IN =
-		"SELECT comuni_bacini_ws FROM Comuni_bacini_ws comuni_bacini_ws WHERE idBacini IN (";
 
 	private static final String _SQL_SELECT_COMUNI_BACINI_WS_WHERE =
 		"SELECT comuni_bacini_ws FROM Comuni_bacini_ws comuni_bacini_ws WHERE ";
@@ -1403,5 +1222,10 @@ public class Comuni_bacini_wsPersistenceImpl
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		Comuni_bacini_wsPersistenceImpl.class);
+
+	@Override
+	protected FinderCache getFinderCache() {
+		return finderCache;
+	}
 
 }

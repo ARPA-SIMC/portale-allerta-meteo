@@ -1,27 +1,21 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package allerta.verifica.service.persistence.impl;
 
-import aQute.bnd.annotation.ProviderType;
-
 import allerta.verifica.exception.NoSuchUtenteLavoroException;
 import allerta.verifica.model.UtenteLavoro;
+import allerta.verifica.model.UtenteLavoroTable;
 import allerta.verifica.model.impl.UtenteLavoroImpl;
 import allerta.verifica.model.impl.UtenteLavoroModelImpl;
 import allerta.verifica.service.persistence.UtenteLavoroPersistence;
+import allerta.verifica.service.persistence.UtenteLavoroUtil;
+import allerta.verifica.service.persistence.impl.constants.VERIFICAPersistenceConstants;
 
+import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
@@ -29,27 +23,32 @@ import com.liferay.portal.kernel.dao.orm.Query;
 import com.liferay.portal.kernel.dao.orm.QueryPos;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
+import com.liferay.portal.kernel.dao.orm.SessionFactory;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.kernel.util.PropsKeys;
+import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.SetUtil;
-import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.spring.extender.service.ServiceReference;
 
 import java.io.Serializable;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.sql.DataSource;
+
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The persistence implementation for the utente lavoro service.
@@ -61,7 +60,7 @@ import java.util.Set;
  * @author Brian Wing Shun Chan
  * @generated
  */
-@ProviderType
+@Component(service = UtenteLavoroPersistence.class)
 public class UtenteLavoroPersistenceImpl
 	extends BasePersistenceImpl<UtenteLavoro>
 	implements UtenteLavoroPersistence {
@@ -103,7 +102,7 @@ public class UtenteLavoroPersistenceImpl
 	 * Returns a range of all the utente lavoros where documento = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>UtenteLavoroModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>UtenteLavoroModelImpl</code>.
 	 * </p>
 	 *
 	 * @param documento the documento
@@ -122,7 +121,7 @@ public class UtenteLavoroPersistenceImpl
 	 * Returns an ordered range of all the utente lavoros where documento = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>UtenteLavoroModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>UtenteLavoroModelImpl</code>.
 	 * </p>
 	 *
 	 * @param documento the documento
@@ -143,34 +142,34 @@ public class UtenteLavoroPersistenceImpl
 	 * Returns an ordered range of all the utente lavoros where documento = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>UtenteLavoroModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>UtenteLavoroModelImpl</code>.
 	 * </p>
 	 *
 	 * @param documento the documento
 	 * @param start the lower bound of the range of utente lavoros
 	 * @param end the upper bound of the range of utente lavoros (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching utente lavoros
 	 */
 	@Override
 	public List<UtenteLavoro> findByDocumento(
 		long documento, int start, int end,
 		OrderByComparator<UtenteLavoro> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindByDocumento;
-			finderArgs = new Object[] {documento};
+			if (useFinderCache) {
+				finderPath = _finderPathWithoutPaginationFindByDocumento;
+				finderArgs = new Object[] {documento};
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByDocumento;
 			finderArgs = new Object[] {
 				documento, start, end, orderByComparator
@@ -179,13 +178,13 @@ public class UtenteLavoroPersistenceImpl
 
 		List<UtenteLavoro> list = null;
 
-		if (retrieveFromCache) {
+		if (useFinderCache) {
 			list = (List<UtenteLavoro>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (UtenteLavoro utenteLavoro : list) {
-					if ((documento != utenteLavoro.getDocumento())) {
+					if (documento != utenteLavoro.getDocumento()) {
 						list = null;
 
 						break;
@@ -195,62 +194,52 @@ public class UtenteLavoroPersistenceImpl
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					3 + (orderByComparator.getOrderByFields().length * 2));
 			}
 			else {
-				query = new StringBundler(3);
+				sb = new StringBundler(3);
 			}
 
-			query.append(_SQL_SELECT_UTENTELAVORO_WHERE);
+			sb.append(_SQL_SELECT_UTENTELAVORO_WHERE);
 
-			query.append(_FINDER_COLUMN_DOCUMENTO_DOCUMENTO_2);
+			sb.append(_FINDER_COLUMN_DOCUMENTO_DOCUMENTO_2);
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 			}
-			else if (pagination) {
-				query.append(UtenteLavoroModelImpl.ORDER_BY_JPQL);
+			else {
+				sb.append(UtenteLavoroModelImpl.ORDER_BY_JPQL);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
-				qPos.add(documento);
+				queryPos.add(documento);
 
-				if (!pagination) {
-					list = (List<UtenteLavoro>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<UtenteLavoro>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<UtenteLavoro>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					finderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -280,16 +269,16 @@ public class UtenteLavoroPersistenceImpl
 			return utenteLavoro;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("documento=");
-		msg.append(documento);
+		sb.append("documento=");
+		sb.append(documento);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchUtenteLavoroException(msg.toString());
+		throw new NoSuchUtenteLavoroException(sb.toString());
 	}
 
 	/**
@@ -333,16 +322,16 @@ public class UtenteLavoroPersistenceImpl
 			return utenteLavoro;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("documento=");
-		msg.append(documento);
+		sb.append("documento=");
+		sb.append(documento);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchUtenteLavoroException(msg.toString());
+		throw new NoSuchUtenteLavoroException(sb.toString());
 	}
 
 	/**
@@ -406,8 +395,8 @@ public class UtenteLavoroPersistenceImpl
 
 			return array;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -418,101 +407,101 @@ public class UtenteLavoroPersistenceImpl
 		Session session, UtenteLavoro utenteLavoro, long documento,
 		OrderByComparator<UtenteLavoro> orderByComparator, boolean previous) {
 
-		StringBundler query = null;
+		StringBundler sb = null;
 
 		if (orderByComparator != null) {
-			query = new StringBundler(
+			sb = new StringBundler(
 				4 + (orderByComparator.getOrderByConditionFields().length * 3) +
 					(orderByComparator.getOrderByFields().length * 3));
 		}
 		else {
-			query = new StringBundler(3);
+			sb = new StringBundler(3);
 		}
 
-		query.append(_SQL_SELECT_UTENTELAVORO_WHERE);
+		sb.append(_SQL_SELECT_UTENTELAVORO_WHERE);
 
-		query.append(_FINDER_COLUMN_DOCUMENTO_DOCUMENTO_2);
+		sb.append(_FINDER_COLUMN_DOCUMENTO_DOCUMENTO_2);
 
 		if (orderByComparator != null) {
 			String[] orderByConditionFields =
 				orderByComparator.getOrderByConditionFields();
 
 			if (orderByConditionFields.length > 0) {
-				query.append(WHERE_AND);
+				sb.append(WHERE_AND);
 			}
 
 			for (int i = 0; i < orderByConditionFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByConditionFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByConditionFields[i]);
 
 				if ((i + 1) < orderByConditionFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+						sb.append(WHERE_GREATER_THAN_HAS_NEXT);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+						sb.append(WHERE_LESSER_THAN_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN);
+						sb.append(WHERE_GREATER_THAN);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN);
+						sb.append(WHERE_LESSER_THAN);
 					}
 				}
 			}
 
-			query.append(ORDER_BY_CLAUSE);
+			sb.append(ORDER_BY_CLAUSE);
 
 			String[] orderByFields = orderByComparator.getOrderByFields();
 
 			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByFields[i]);
 
 				if ((i + 1) < orderByFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC_HAS_NEXT);
+						sb.append(ORDER_BY_ASC_HAS_NEXT);
 					}
 					else {
-						query.append(ORDER_BY_DESC_HAS_NEXT);
+						sb.append(ORDER_BY_DESC_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC);
+						sb.append(ORDER_BY_ASC);
 					}
 					else {
-						query.append(ORDER_BY_DESC);
+						sb.append(ORDER_BY_DESC);
 					}
 				}
 			}
 		}
 		else {
-			query.append(UtenteLavoroModelImpl.ORDER_BY_JPQL);
+			sb.append(UtenteLavoroModelImpl.ORDER_BY_JPQL);
 		}
 
-		String sql = query.toString();
+		String sql = sb.toString();
 
-		Query q = session.createQuery(sql);
+		Query query = session.createQuery(sql);
 
-		q.setFirstResult(0);
-		q.setMaxResults(2);
+		query.setFirstResult(0);
+		query.setMaxResults(2);
 
-		QueryPos qPos = QueryPos.getInstance(q);
+		QueryPos queryPos = QueryPos.getInstance(query);
 
-		qPos.add(documento);
+		queryPos.add(documento);
 
 		if (orderByComparator != null) {
 			for (Object orderByConditionValue :
 					orderByComparator.getOrderByConditionValues(utenteLavoro)) {
 
-				qPos.add(orderByConditionValue);
+				queryPos.add(orderByConditionValue);
 			}
 		}
 
-		List<UtenteLavoro> list = q.list();
+		List<UtenteLavoro> list = query.list();
 
 		if (list.size() == 2) {
 			return list.get(1);
@@ -552,33 +541,31 @@ public class UtenteLavoroPersistenceImpl
 		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
-			StringBundler query = new StringBundler(2);
+			StringBundler sb = new StringBundler(2);
 
-			query.append(_SQL_COUNT_UTENTELAVORO_WHERE);
+			sb.append(_SQL_COUNT_UTENTELAVORO_WHERE);
 
-			query.append(_FINDER_COLUMN_DOCUMENTO_DOCUMENTO_2);
+			sb.append(_FINDER_COLUMN_DOCUMENTO_DOCUMENTO_2);
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
-				qPos.add(documento);
+				queryPos.add(documento);
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
 				finderCache.putResult(finderPath, finderArgs, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -592,25 +579,18 @@ public class UtenteLavoroPersistenceImpl
 		"utenteLavoro.documento = ?";
 
 	public UtenteLavoroPersistenceImpl() {
-		setModelClass(UtenteLavoro.class);
-
 		Map<String, String> dbColumnNames = new HashMap<String, String>();
 
 		dbColumnNames.put("id", "id_");
 
-		try {
-			Field field = BasePersistenceImpl.class.getDeclaredField(
-				"_dbColumnNames");
+		setDBColumnNames(dbColumnNames);
 
-			field.setAccessible(true);
+		setModelClass(UtenteLavoro.class);
 
-			field.set(this, dbColumnNames);
-		}
-		catch (Exception e) {
-			if (_log.isDebugEnabled()) {
-				_log.debug(e, e);
-			}
-		}
+		setModelImplClass(UtenteLavoroImpl.class);
+		setModelPKClass(long.class);
+
+		setTable(UtenteLavoroTable.INSTANCE);
 	}
 
 	/**
@@ -621,11 +601,10 @@ public class UtenteLavoroPersistenceImpl
 	@Override
 	public void cacheResult(UtenteLavoro utenteLavoro) {
 		entityCache.putResult(
-			UtenteLavoroModelImpl.ENTITY_CACHE_ENABLED, UtenteLavoroImpl.class,
-			utenteLavoro.getPrimaryKey(), utenteLavoro);
-
-		utenteLavoro.resetOriginalValues();
+			UtenteLavoroImpl.class, utenteLavoro.getPrimaryKey(), utenteLavoro);
 	}
+
+	private int _valueObjectFinderCacheListThreshold;
 
 	/**
 	 * Caches the utente lavoros in the entity cache if it is enabled.
@@ -634,16 +613,19 @@ public class UtenteLavoroPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(List<UtenteLavoro> utenteLavoros) {
+		if ((_valueObjectFinderCacheListThreshold == 0) ||
+			((_valueObjectFinderCacheListThreshold > 0) &&
+			 (utenteLavoros.size() > _valueObjectFinderCacheListThreshold))) {
+
+			return;
+		}
+
 		for (UtenteLavoro utenteLavoro : utenteLavoros) {
 			if (entityCache.getResult(
-					UtenteLavoroModelImpl.ENTITY_CACHE_ENABLED,
 					UtenteLavoroImpl.class, utenteLavoro.getPrimaryKey()) ==
 						null) {
 
 				cacheResult(utenteLavoro);
-			}
-			else {
-				utenteLavoro.resetOriginalValues();
 			}
 		}
 	}
@@ -659,9 +641,7 @@ public class UtenteLavoroPersistenceImpl
 	public void clearCache() {
 		entityCache.clearCache(UtenteLavoroImpl.class);
 
-		finderCache.clearCache(FINDER_CLASS_NAME_ENTITY);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		finderCache.clearCache(UtenteLavoroImpl.class);
 	}
 
 	/**
@@ -673,23 +653,22 @@ public class UtenteLavoroPersistenceImpl
 	 */
 	@Override
 	public void clearCache(UtenteLavoro utenteLavoro) {
-		entityCache.removeResult(
-			UtenteLavoroModelImpl.ENTITY_CACHE_ENABLED, UtenteLavoroImpl.class,
-			utenteLavoro.getPrimaryKey());
-
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		entityCache.removeResult(UtenteLavoroImpl.class, utenteLavoro);
 	}
 
 	@Override
 	public void clearCache(List<UtenteLavoro> utenteLavoros) {
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
-
 		for (UtenteLavoro utenteLavoro : utenteLavoros) {
-			entityCache.removeResult(
-				UtenteLavoroModelImpl.ENTITY_CACHE_ENABLED,
-				UtenteLavoroImpl.class, utenteLavoro.getPrimaryKey());
+			entityCache.removeResult(UtenteLavoroImpl.class, utenteLavoro);
+		}
+	}
+
+	@Override
+	public void clearCache(Set<Serializable> primaryKeys) {
+		finderCache.clearCache(UtenteLavoroImpl.class);
+
+		for (Serializable primaryKey : primaryKeys) {
+			entityCache.removeResult(UtenteLavoroImpl.class, primaryKey);
 		}
 	}
 
@@ -751,11 +730,11 @@ public class UtenteLavoroPersistenceImpl
 
 			return remove(utenteLavoro);
 		}
-		catch (NoSuchUtenteLavoroException nsee) {
-			throw nsee;
+		catch (NoSuchUtenteLavoroException noSuchEntityException) {
+			throw noSuchEntityException;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -778,8 +757,8 @@ public class UtenteLavoroPersistenceImpl
 				session.delete(utenteLavoro);
 			}
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -821,62 +800,26 @@ public class UtenteLavoroPersistenceImpl
 		try {
 			session = openSession();
 
-			if (utenteLavoro.isNew()) {
+			if (isNew) {
 				session.save(utenteLavoro);
-
-				utenteLavoro.setNew(false);
 			}
 			else {
 				utenteLavoro = (UtenteLavoro)session.merge(utenteLavoro);
 			}
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
 		}
 
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-
-		if (!UtenteLavoroModelImpl.COLUMN_BITMASK_ENABLED) {
-			finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
-		}
-		else if (isNew) {
-			Object[] args = new Object[] {utenteLavoroModelImpl.getDocumento()};
-
-			finderCache.removeResult(_finderPathCountByDocumento, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByDocumento, args);
-
-			finderCache.removeResult(_finderPathCountAll, FINDER_ARGS_EMPTY);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindAll, FINDER_ARGS_EMPTY);
-		}
-		else {
-			if ((utenteLavoroModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByDocumento.
-					 getColumnBitmask()) != 0) {
-
-				Object[] args = new Object[] {
-					utenteLavoroModelImpl.getOriginalDocumento()
-				};
-
-				finderCache.removeResult(_finderPathCountByDocumento, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByDocumento, args);
-
-				args = new Object[] {utenteLavoroModelImpl.getDocumento()};
-
-				finderCache.removeResult(_finderPathCountByDocumento, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByDocumento, args);
-			}
-		}
-
 		entityCache.putResult(
-			UtenteLavoroModelImpl.ENTITY_CACHE_ENABLED, UtenteLavoroImpl.class,
-			utenteLavoro.getPrimaryKey(), utenteLavoro, false);
+			UtenteLavoroImpl.class, utenteLavoroModelImpl, false, true);
+
+		if (isNew) {
+			utenteLavoro.setNew(false);
+		}
 
 		utenteLavoro.resetOriginalValues();
 
@@ -925,161 +868,12 @@ public class UtenteLavoroPersistenceImpl
 	/**
 	 * Returns the utente lavoro with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the utente lavoro
-	 * @return the utente lavoro, or <code>null</code> if a utente lavoro with the primary key could not be found
-	 */
-	@Override
-	public UtenteLavoro fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(
-			UtenteLavoroModelImpl.ENTITY_CACHE_ENABLED, UtenteLavoroImpl.class,
-			primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		UtenteLavoro utenteLavoro = (UtenteLavoro)serializable;
-
-		if (utenteLavoro == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				utenteLavoro = (UtenteLavoro)session.get(
-					UtenteLavoroImpl.class, primaryKey);
-
-				if (utenteLavoro != null) {
-					cacheResult(utenteLavoro);
-				}
-				else {
-					entityCache.putResult(
-						UtenteLavoroModelImpl.ENTITY_CACHE_ENABLED,
-						UtenteLavoroImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(
-					UtenteLavoroModelImpl.ENTITY_CACHE_ENABLED,
-					UtenteLavoroImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return utenteLavoro;
-	}
-
-	/**
-	 * Returns the utente lavoro with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param id the primary key of the utente lavoro
 	 * @return the utente lavoro, or <code>null</code> if a utente lavoro with the primary key could not be found
 	 */
 	@Override
 	public UtenteLavoro fetchByPrimaryKey(long id) {
 		return fetchByPrimaryKey((Serializable)id);
-	}
-
-	@Override
-	public Map<Serializable, UtenteLavoro> fetchByPrimaryKeys(
-		Set<Serializable> primaryKeys) {
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, UtenteLavoro> map =
-			new HashMap<Serializable, UtenteLavoro>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			UtenteLavoro utenteLavoro = fetchByPrimaryKey(primaryKey);
-
-			if (utenteLavoro != null) {
-				map.put(primaryKey, utenteLavoro);
-			}
-
-			return map;
-		}
-
-		Set<Serializable> uncachedPrimaryKeys = null;
-
-		for (Serializable primaryKey : primaryKeys) {
-			Serializable serializable = entityCache.getResult(
-				UtenteLavoroModelImpl.ENTITY_CACHE_ENABLED,
-				UtenteLavoroImpl.class, primaryKey);
-
-			if (serializable != nullModel) {
-				if (serializable == null) {
-					if (uncachedPrimaryKeys == null) {
-						uncachedPrimaryKeys = new HashSet<Serializable>();
-					}
-
-					uncachedPrimaryKeys.add(primaryKey);
-				}
-				else {
-					map.put(primaryKey, (UtenteLavoro)serializable);
-				}
-			}
-		}
-
-		if (uncachedPrimaryKeys == null) {
-			return map;
-		}
-
-		StringBundler query = new StringBundler(
-			uncachedPrimaryKeys.size() * 2 + 1);
-
-		query.append(_SQL_SELECT_UTENTELAVORO_WHERE_PKS_IN);
-
-		for (Serializable primaryKey : uncachedPrimaryKeys) {
-			query.append((long)primaryKey);
-
-			query.append(",");
-		}
-
-		query.setIndex(query.index() - 1);
-
-		query.append(")");
-
-		String sql = query.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query q = session.createQuery(sql);
-
-			for (UtenteLavoro utenteLavoro : (List<UtenteLavoro>)q.list()) {
-				map.put(utenteLavoro.getPrimaryKeyObj(), utenteLavoro);
-
-				cacheResult(utenteLavoro);
-
-				uncachedPrimaryKeys.remove(utenteLavoro.getPrimaryKeyObj());
-			}
-
-			for (Serializable primaryKey : uncachedPrimaryKeys) {
-				entityCache.putResult(
-					UtenteLavoroModelImpl.ENTITY_CACHE_ENABLED,
-					UtenteLavoroImpl.class, primaryKey, nullModel);
-			}
-		}
-		catch (Exception e) {
-			throw processException(e);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**
@@ -1096,7 +890,7 @@ public class UtenteLavoroPersistenceImpl
 	 * Returns a range of all the utente lavoros.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>UtenteLavoroModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>UtenteLavoroModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of utente lavoros
@@ -1112,7 +906,7 @@ public class UtenteLavoroPersistenceImpl
 	 * Returns an ordered range of all the utente lavoros.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>UtenteLavoroModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>UtenteLavoroModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of utente lavoros
@@ -1131,64 +925,62 @@ public class UtenteLavoroPersistenceImpl
 	 * Returns an ordered range of all the utente lavoros.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>UtenteLavoroModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>UtenteLavoroModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of utente lavoros
 	 * @param end the upper bound of the range of utente lavoros (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of utente lavoros
 	 */
 	@Override
 	public List<UtenteLavoro> findAll(
 		int start, int end, OrderByComparator<UtenteLavoro> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindAll;
-			finderArgs = FINDER_ARGS_EMPTY;
+			if (useFinderCache) {
+				finderPath = _finderPathWithoutPaginationFindAll;
+				finderArgs = FINDER_ARGS_EMPTY;
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
 			finderArgs = new Object[] {start, end, orderByComparator};
 		}
 
 		List<UtenteLavoro> list = null;
 
-		if (retrieveFromCache) {
+		if (useFinderCache) {
 			list = (List<UtenteLavoro>)finderCache.getResult(
 				finderPath, finderArgs, this);
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 			String sql = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					2 + (orderByComparator.getOrderByFields().length * 2));
 
-				query.append(_SQL_SELECT_UTENTELAVORO);
+				sb.append(_SQL_SELECT_UTENTELAVORO);
 
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 
-				sql = query.toString();
+				sql = sb.toString();
 			}
 			else {
 				sql = _SQL_SELECT_UTENTELAVORO;
 
-				if (pagination) {
-					sql = sql.concat(UtenteLavoroModelImpl.ORDER_BY_JPQL);
-				}
+				sql = sql.concat(UtenteLavoroModelImpl.ORDER_BY_JPQL);
 			}
 
 			Session session = null;
@@ -1196,29 +988,19 @@ public class UtenteLavoroPersistenceImpl
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				if (!pagination) {
-					list = (List<UtenteLavoro>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<UtenteLavoro>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<UtenteLavoro>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					finderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -1255,18 +1037,15 @@ public class UtenteLavoroPersistenceImpl
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(_SQL_COUNT_UTENTELAVORO);
+				Query query = session.createQuery(_SQL_COUNT_UTENTELAVORO);
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
 				finderCache.putResult(
 					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -1282,6 +1061,21 @@ public class UtenteLavoroPersistenceImpl
 	}
 
 	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
+	}
+
+	@Override
+	protected String getPKDBName() {
+		return "id_";
+	}
+
+	@Override
+	protected String getSelectSQL() {
+		return _SQL_SELECT_UTENTELAVORO;
+	}
+
+	@Override
 	protected Map<String, Integer> getTableColumnsMap() {
 		return UtenteLavoroModelImpl.TABLE_COLUMNS_MAP;
 	}
@@ -1289,66 +1083,85 @@ public class UtenteLavoroPersistenceImpl
 	/**
 	 * Initializes the utente lavoro persistence.
 	 */
-	public void afterPropertiesSet() {
+	@Activate
+	public void activate() {
+		_valueObjectFinderCacheListThreshold = GetterUtil.getInteger(
+			PropsUtil.get(PropsKeys.VALUE_OBJECT_FINDER_CACHE_LIST_THRESHOLD));
+
 		_finderPathWithPaginationFindAll = new FinderPath(
-			UtenteLavoroModelImpl.ENTITY_CACHE_ENABLED,
-			UtenteLavoroModelImpl.FINDER_CACHE_ENABLED, UtenteLavoroImpl.class,
-			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findAll", new String[0]);
+			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findAll", new String[0],
+			new String[0], true);
 
 		_finderPathWithoutPaginationFindAll = new FinderPath(
-			UtenteLavoroModelImpl.ENTITY_CACHE_ENABLED,
-			UtenteLavoroModelImpl.FINDER_CACHE_ENABLED, UtenteLavoroImpl.class,
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findAll",
-			new String[0]);
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findAll", new String[0],
+			new String[0], true);
 
 		_finderPathCountAll = new FinderPath(
-			UtenteLavoroModelImpl.ENTITY_CACHE_ENABLED,
-			UtenteLavoroModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countAll",
-			new String[0]);
+			new String[0], new String[0], false);
 
 		_finderPathWithPaginationFindByDocumento = new FinderPath(
-			UtenteLavoroModelImpl.ENTITY_CACHE_ENABLED,
-			UtenteLavoroModelImpl.FINDER_CACHE_ENABLED, UtenteLavoroImpl.class,
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByDocumento",
 			new String[] {
 				Long.class.getName(), Integer.class.getName(),
 				Integer.class.getName(), OrderByComparator.class.getName()
-			});
+			},
+			new String[] {"documento"}, true);
 
 		_finderPathWithoutPaginationFindByDocumento = new FinderPath(
-			UtenteLavoroModelImpl.ENTITY_CACHE_ENABLED,
-			UtenteLavoroModelImpl.FINDER_CACHE_ENABLED, UtenteLavoroImpl.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByDocumento",
-			new String[] {Long.class.getName()},
-			UtenteLavoroModelImpl.DOCUMENTO_COLUMN_BITMASK |
-			UtenteLavoroModelImpl.TS_COLUMN_BITMASK);
+			new String[] {Long.class.getName()}, new String[] {"documento"},
+			true);
 
 		_finderPathCountByDocumento = new FinderPath(
-			UtenteLavoroModelImpl.ENTITY_CACHE_ENABLED,
-			UtenteLavoroModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByDocumento",
-			new String[] {Long.class.getName()});
+			new String[] {Long.class.getName()}, new String[] {"documento"},
+			false);
+
+		UtenteLavoroUtil.setPersistence(this);
 	}
 
-	public void destroy() {
+	@Deactivate
+	public void deactivate() {
+		UtenteLavoroUtil.setPersistence(null);
+
 		entityCache.removeCache(UtenteLavoroImpl.class.getName());
-		finderCache.removeCache(FINDER_CLASS_NAME_ENTITY);
-		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 	}
 
-	@ServiceReference(type = EntityCache.class)
+	@Override
+	@Reference(
+		target = VERIFICAPersistenceConstants.SERVICE_CONFIGURATION_FILTER,
+		unbind = "-"
+	)
+	public void setConfiguration(Configuration configuration) {
+	}
+
+	@Override
+	@Reference(
+		target = VERIFICAPersistenceConstants.ORIGIN_BUNDLE_SYMBOLIC_NAME_FILTER,
+		unbind = "-"
+	)
+	public void setDataSource(DataSource dataSource) {
+		super.setDataSource(dataSource);
+	}
+
+	@Override
+	@Reference(
+		target = VERIFICAPersistenceConstants.ORIGIN_BUNDLE_SYMBOLIC_NAME_FILTER,
+		unbind = "-"
+	)
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		super.setSessionFactory(sessionFactory);
+	}
+
+	@Reference
 	protected EntityCache entityCache;
 
-	@ServiceReference(type = FinderCache.class)
+	@Reference
 	protected FinderCache finderCache;
 
 	private static final String _SQL_SELECT_UTENTELAVORO =
 		"SELECT utenteLavoro FROM UtenteLavoro utenteLavoro";
-
-	private static final String _SQL_SELECT_UTENTELAVORO_WHERE_PKS_IN =
-		"SELECT utenteLavoro FROM UtenteLavoro utenteLavoro WHERE id_ IN (";
 
 	private static final String _SQL_SELECT_UTENTELAVORO_WHERE =
 		"SELECT utenteLavoro FROM UtenteLavoro utenteLavoro WHERE ";
@@ -1372,5 +1185,10 @@ public class UtenteLavoroPersistenceImpl
 
 	private static final Set<String> _badColumnNames = SetUtil.fromArray(
 		new String[] {"id"});
+
+	@Override
+	protected FinderCache getFinderCache() {
+		return finderCache;
+	}
 
 }

@@ -46,14 +46,14 @@ import it.eng.allerta.backoffice.scheduler.utils.QuartzSchedulerUtil;
 public class ScheduledJobManagerPortlet extends MVCPortlet {
 	
 	public void render(RenderRequest request, RenderResponse response) throws IOException, PortletException {
-		
+		/*
         try {
             QuartzSchedulerUtil.getSchedulerJobs(request);
         } catch (SchedulerException e) {
             request.setAttribute(QuartzSchedulerUtil.ATTRIBUTE_JOBS_LIST, new ArrayList<SchedulerJobBean>());
             request.setAttribute(QuartzSchedulerUtil.ATTRIBUTE_COUNT, NOT_RESULTS);
             _log.error(e);
-        }
+        }*/
         super.render(request, response);
     }
     

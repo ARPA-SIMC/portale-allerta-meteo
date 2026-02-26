@@ -1,30 +1,15 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.parer.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -35,21 +20,12 @@ import java.util.Objects;
  * @see Parametri
  * @generated
  */
-@ProviderType
-public class ParametriWrapper implements Parametri, ModelWrapper<Parametri> {
+public class ParametriWrapper
+	extends BaseModelWrapper<Parametri>
+	implements ModelWrapper<Parametri>, Parametri {
 
 	public ParametriWrapper(Parametri parametri) {
-		_parametri = parametri;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return Parametri.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return Parametri.class.getName();
+		super(parametri);
 	}
 
 	@Override
@@ -78,13 +54,8 @@ public class ParametriWrapper implements Parametri, ModelWrapper<Parametri> {
 	}
 
 	@Override
-	public Object clone() {
-		return new ParametriWrapper((Parametri)_parametri.clone());
-	}
-
-	@Override
-	public int compareTo(it.eng.parer.model.Parametri parametri) {
-		return _parametri.compareTo(parametri);
+	public Parametri cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -94,12 +65,7 @@ public class ParametriWrapper implements Parametri, ModelWrapper<Parametri> {
 	 */
 	@Override
 	public String getChiave() {
-		return _parametri.getChiave();
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _parametri.getExpandoBridge();
+		return model.getChiave();
 	}
 
 	/**
@@ -109,12 +75,7 @@ public class ParametriWrapper implements Parametri, ModelWrapper<Parametri> {
 	 */
 	@Override
 	public String getPrimaryKey() {
-		return _parametri.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _parametri.getPrimaryKeyObj();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -124,37 +85,12 @@ public class ParametriWrapper implements Parametri, ModelWrapper<Parametri> {
 	 */
 	@Override
 	public String getValore() {
-		return _parametri.getValore();
-	}
-
-	@Override
-	public int hashCode() {
-		return _parametri.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _parametri.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _parametri.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _parametri.isNew();
+		return model.getValore();
 	}
 
 	@Override
 	public void persist() {
-		_parametri.persist();
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_parametri.setCachedModel(cachedModel);
+		model.persist();
 	}
 
 	/**
@@ -164,29 +100,7 @@ public class ParametriWrapper implements Parametri, ModelWrapper<Parametri> {
 	 */
 	@Override
 	public void setChiave(String chiave) {
-		_parametri.setChiave(chiave);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_parametri.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_parametri.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_parametri.setExpandoBridgeAttributes(serviceContext);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_parametri.setNew(n);
+		model.setChiave(chiave);
 	}
 
 	/**
@@ -196,12 +110,7 @@ public class ParametriWrapper implements Parametri, ModelWrapper<Parametri> {
 	 */
 	@Override
 	public void setPrimaryKey(String primaryKey) {
-		_parametri.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_parametri.setPrimaryKeyObj(primaryKeyObj);
+		model.setPrimaryKey(primaryKey);
 	}
 
 	/**
@@ -211,75 +120,17 @@ public class ParametriWrapper implements Parametri, ModelWrapper<Parametri> {
 	 */
 	@Override
 	public void setValore(String valore) {
-		_parametri.setValore(valore);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<it.eng.parer.model.Parametri> toCacheModel() {
-
-		return _parametri.toCacheModel();
-	}
-
-	@Override
-	public it.eng.parer.model.Parametri toEscapedModel() {
-		return new ParametriWrapper(_parametri.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _parametri.toString();
-	}
-
-	@Override
-	public it.eng.parer.model.Parametri toUnescapedModel() {
-		return new ParametriWrapper(_parametri.toUnescapedModel());
+		model.setValore(valore);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _parametri.toXmlString();
+		return model.toXmlString();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-
-		if (!(obj instanceof ParametriWrapper)) {
-			return false;
-		}
-
-		ParametriWrapper parametriWrapper = (ParametriWrapper)obj;
-
-		if (Objects.equals(_parametri, parametriWrapper._parametri)) {
-			return true;
-		}
-
-		return false;
+	protected ParametriWrapper wrap(Parametri parametri) {
+		return new ParametriWrapper(parametri);
 	}
-
-	@Override
-	public Parametri getWrappedModel() {
-		return _parametri;
-	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _parametri.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _parametri.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_parametri.resetOriginalValues();
-	}
-
-	private final Parametri _parametri;
 
 }

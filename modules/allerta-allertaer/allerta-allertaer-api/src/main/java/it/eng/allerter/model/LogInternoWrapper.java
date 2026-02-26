@@ -1,31 +1,16 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerter.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -36,21 +21,12 @@ import java.util.Objects;
  * @see LogInterno
  * @generated
  */
-@ProviderType
-public class LogInternoWrapper implements LogInterno, ModelWrapper<LogInterno> {
+public class LogInternoWrapper
+	extends BaseModelWrapper<LogInterno>
+	implements LogInterno, ModelWrapper<LogInterno> {
 
 	public LogInternoWrapper(LogInterno logInterno) {
-		_logInterno = logInterno;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return LogInterno.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return LogInterno.class.getName();
+		super(logInterno);
 	}
 
 	@Override
@@ -121,13 +97,8 @@ public class LogInternoWrapper implements LogInterno, ModelWrapper<LogInterno> {
 	}
 
 	@Override
-	public Object clone() {
-		return new LogInternoWrapper((LogInterno)_logInterno.clone());
-	}
-
-	@Override
-	public int compareTo(it.eng.allerter.model.LogInterno logInterno) {
-		return _logInterno.compareTo(logInterno);
+	public LogInterno cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -137,7 +108,7 @@ public class LogInternoWrapper implements LogInterno, ModelWrapper<LogInterno> {
 	 */
 	@Override
 	public String getCosa() {
-		return _logInterno.getCosa();
+		return model.getCosa();
 	}
 
 	/**
@@ -147,7 +118,7 @@ public class LogInternoWrapper implements LogInterno, ModelWrapper<LogInterno> {
 	 */
 	@Override
 	public String getDettaglio() {
-		return _logInterno.getDettaglio();
+		return model.getDettaglio();
 	}
 
 	/**
@@ -157,12 +128,7 @@ public class LogInternoWrapper implements LogInterno, ModelWrapper<LogInterno> {
 	 */
 	@Override
 	public String getEccezione() {
-		return _logInterno.getEccezione();
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _logInterno.getExpandoBridge();
+		return model.getEccezione();
 	}
 
 	/**
@@ -172,7 +138,7 @@ public class LogInternoWrapper implements LogInterno, ModelWrapper<LogInterno> {
 	 */
 	@Override
 	public long getLogId() {
-		return _logInterno.getLogId();
+		return model.getLogId();
 	}
 
 	/**
@@ -182,12 +148,7 @@ public class LogInternoWrapper implements LogInterno, ModelWrapper<LogInterno> {
 	 */
 	@Override
 	public long getPrimaryKey() {
-		return _logInterno.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _logInterno.getPrimaryKeyObj();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -197,7 +158,7 @@ public class LogInternoWrapper implements LogInterno, ModelWrapper<LogInterno> {
 	 */
 	@Override
 	public String getRisultato() {
-		return _logInterno.getRisultato();
+		return model.getRisultato();
 	}
 
 	/**
@@ -207,7 +168,7 @@ public class LogInternoWrapper implements LogInterno, ModelWrapper<LogInterno> {
 	 */
 	@Override
 	public String getThread() {
-		return _logInterno.getThread();
+		return model.getThread();
 	}
 
 	/**
@@ -217,7 +178,7 @@ public class LogInternoWrapper implements LogInterno, ModelWrapper<LogInterno> {
 	 */
 	@Override
 	public Date getTimestamp() {
-		return _logInterno.getTimestamp();
+		return model.getTimestamp();
 	}
 
 	/**
@@ -227,37 +188,12 @@ public class LogInternoWrapper implements LogInterno, ModelWrapper<LogInterno> {
 	 */
 	@Override
 	public String getUtente() {
-		return _logInterno.getUtente();
-	}
-
-	@Override
-	public int hashCode() {
-		return _logInterno.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _logInterno.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _logInterno.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _logInterno.isNew();
+		return model.getUtente();
 	}
 
 	@Override
 	public void persist() {
-		_logInterno.persist();
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_logInterno.setCachedModel(cachedModel);
+		model.persist();
 	}
 
 	/**
@@ -267,7 +203,7 @@ public class LogInternoWrapper implements LogInterno, ModelWrapper<LogInterno> {
 	 */
 	@Override
 	public void setCosa(String cosa) {
-		_logInterno.setCosa(cosa);
+		model.setCosa(cosa);
 	}
 
 	/**
@@ -277,7 +213,7 @@ public class LogInternoWrapper implements LogInterno, ModelWrapper<LogInterno> {
 	 */
 	@Override
 	public void setDettaglio(String dettaglio) {
-		_logInterno.setDettaglio(dettaglio);
+		model.setDettaglio(dettaglio);
 	}
 
 	/**
@@ -287,24 +223,7 @@ public class LogInternoWrapper implements LogInterno, ModelWrapper<LogInterno> {
 	 */
 	@Override
 	public void setEccezione(String eccezione) {
-		_logInterno.setEccezione(eccezione);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_logInterno.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_logInterno.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_logInterno.setExpandoBridgeAttributes(serviceContext);
+		model.setEccezione(eccezione);
 	}
 
 	/**
@@ -314,12 +233,7 @@ public class LogInternoWrapper implements LogInterno, ModelWrapper<LogInterno> {
 	 */
 	@Override
 	public void setLogId(long logId) {
-		_logInterno.setLogId(logId);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_logInterno.setNew(n);
+		model.setLogId(logId);
 	}
 
 	/**
@@ -329,12 +243,7 @@ public class LogInternoWrapper implements LogInterno, ModelWrapper<LogInterno> {
 	 */
 	@Override
 	public void setPrimaryKey(long primaryKey) {
-		_logInterno.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_logInterno.setPrimaryKeyObj(primaryKeyObj);
+		model.setPrimaryKey(primaryKey);
 	}
 
 	/**
@@ -344,7 +253,7 @@ public class LogInternoWrapper implements LogInterno, ModelWrapper<LogInterno> {
 	 */
 	@Override
 	public void setRisultato(String risultato) {
-		_logInterno.setRisultato(risultato);
+		model.setRisultato(risultato);
 	}
 
 	/**
@@ -354,7 +263,7 @@ public class LogInternoWrapper implements LogInterno, ModelWrapper<LogInterno> {
 	 */
 	@Override
 	public void setThread(String thread) {
-		_logInterno.setThread(thread);
+		model.setThread(thread);
 	}
 
 	/**
@@ -364,7 +273,7 @@ public class LogInternoWrapper implements LogInterno, ModelWrapper<LogInterno> {
 	 */
 	@Override
 	public void setTimestamp(Date timestamp) {
-		_logInterno.setTimestamp(timestamp);
+		model.setTimestamp(timestamp);
 	}
 
 	/**
@@ -374,75 +283,17 @@ public class LogInternoWrapper implements LogInterno, ModelWrapper<LogInterno> {
 	 */
 	@Override
 	public void setUtente(String utente) {
-		_logInterno.setUtente(utente);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<it.eng.allerter.model.LogInterno> toCacheModel() {
-
-		return _logInterno.toCacheModel();
-	}
-
-	@Override
-	public it.eng.allerter.model.LogInterno toEscapedModel() {
-		return new LogInternoWrapper(_logInterno.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _logInterno.toString();
-	}
-
-	@Override
-	public it.eng.allerter.model.LogInterno toUnescapedModel() {
-		return new LogInternoWrapper(_logInterno.toUnescapedModel());
+		model.setUtente(utente);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _logInterno.toXmlString();
+		return model.toXmlString();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-
-		if (!(obj instanceof LogInternoWrapper)) {
-			return false;
-		}
-
-		LogInternoWrapper logInternoWrapper = (LogInternoWrapper)obj;
-
-		if (Objects.equals(_logInterno, logInternoWrapper._logInterno)) {
-			return true;
-		}
-
-		return false;
+	protected LogInternoWrapper wrap(LogInterno logInterno) {
+		return new LogInternoWrapper(logInterno);
 	}
-
-	@Override
-	public LogInterno getWrappedModel() {
-		return _logInterno;
-	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _logInterno.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _logInterno.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_logInterno.resetOriginalValues();
-	}
-
-	private final LogInterno _logInterno;
 
 }

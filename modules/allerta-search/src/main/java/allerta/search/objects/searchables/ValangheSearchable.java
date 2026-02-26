@@ -103,7 +103,7 @@ public class ValangheSearchable extends Searchable {
 		
 		
 		
-		String tuple = "and (select max(statoid) from allerter_allertavalanghestato y where y.allertavalangheid=x.allertavalangheid and y.statoid in (1,2,3) %ZONA% %COMUNE%)%COLORE%";
+		String tuple = " and (select max(statoid) from allerter_allertavalanghestato y where y.allertavalangheid=x.allertavalangheid and y.statoid in (1,2,3) %ZONA% %COMUNE%)%COLORE%";
 		if (tupleQuery) {
 			if (criteria.containsKey("colore")) tuple = tuple.replace("%COLORE%", "="+criteria.get("colore"));
 			else tuple = tuple.replace("%COLORE%", ">0"); //qualunque

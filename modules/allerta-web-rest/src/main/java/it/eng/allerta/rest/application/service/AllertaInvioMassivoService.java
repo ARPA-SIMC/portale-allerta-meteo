@@ -33,11 +33,7 @@ import it.eng.allerter.service.SMSLocalServiceUtil;
 import it.eng.bollettino.service.BollettinoLocalServiceUtil;
 
 @Component(
-	    immediate = true,
-	    property = {
-	        "osgi.http.whiteboard.context.path=/",
-	        "osgi.http.whiteboard.servlet.pattern=/special/invio-massivo"
-	    },
+	    property = "osgi.http.whiteboard.servlet.pattern=/special/invio-massivo",
 	    service = Servlet.class
 	)
 public class AllertaInvioMassivoService extends HttpServlet {

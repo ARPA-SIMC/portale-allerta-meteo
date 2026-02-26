@@ -41,7 +41,7 @@
 		style="display: block;">
 		<ul class="link-list  ">
 			<c:forEach items="${reports}" var="report">
-				<li class="link-list-item"><a class="link-list-link"
+				<li class="link-list-item"><a data-senna-off="true" class="link-list-link"
 					href="${report.url}"> <span class="link-list__item-label">${report.name}</span>
 				</a>
 					<div class="u-item-meta">
@@ -66,7 +66,7 @@
 	<c:forEach items="${reports}" var="report">
 		<li>
 			<div class="place-link ">
-				<a href="${report.url}"> <i
+				<a data-senna-off="true" href="${report.url}"> <i
 					class="content-entry__icon fa fa-book"></i> ${report.name}
 				</a>
 			</div>
@@ -81,7 +81,7 @@
 	<h3>Report post-evento</h3>
 	<ul class="link-list  ">
 		<c:forEach items="${reports}" var="report">
-			<li class="link-list-item"><a class="link-list-link"
+			<li class="link-list-item"><a data-senna-off="true" class="link-list-link"
 				href="${report.url}"> <span class="link-list__item-label">${report.name}</span>
 			</a>
 				<div class="u-item-meta">
@@ -90,7 +90,7 @@
 				</div></li>
 		</c:forEach>
 	</ul>
-	<a class="u-more-link" href="/report-post-evento" title="Vedi tutti">
+	<a class="u-more-link" href="/archivio-report-post-evento" title="Vedi tutti">
 		Vedi tutti <span class="icon i-arrow-circle-o-right"
 		aria-hidden="true"></span>
 	</a>

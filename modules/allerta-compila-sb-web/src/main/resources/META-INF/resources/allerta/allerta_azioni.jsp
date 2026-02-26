@@ -1,4 +1,3 @@
-<%@page import="com.liferay.portal.kernel.util.StringPool"%>
 <%@page import="it.eng.allerter.allerta.AllertaBean"%>
 <%@page import="com.liferay.portal.kernel.util.ParamUtil"%>
 <%@ include file="../init.jsp" %>
@@ -26,9 +25,9 @@ long statoId = ParamUtil.getLong(request, "allertaStato");
 	
 <liferay-ui:icon-menu
 	direction="left-side"
-	icon="<%= StringPool.BLANK %>"
+	icon=""
 	markupView="lexicon"
-	message="<%= StringPool.BLANK %>"
+	message=""
 	showWhenSingleIcon="<%= true %>">
 	
 	

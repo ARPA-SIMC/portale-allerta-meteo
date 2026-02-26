@@ -93,7 +93,8 @@ public class AllertaBreadcrumbsPortlet extends MVCPortlet {
 			
 
 			if (layout.isRootLayout()) {
-				navItems.add(new NavItem(request, themeDisplay, layout, null));
+			
+				navItems.add(new NavItem(request, themeDisplay, layout));
 				return navItems;
 			}
 
@@ -108,12 +109,12 @@ public class AllertaBreadcrumbsPortlet extends MVCPortlet {
 				Layout ancestorLayout = listIterator.previous();
 
 				navItems.add(
-					new NavItem(request, themeDisplay, ancestorLayout, null));
+					new NavItem(request, themeDisplay, ancestorLayout));
 			}	
 			
 			//navItems.add(new NavItem(request, themeDisplay, layout, null));
 			layout.setName(layout.getName(Locale.ITALIAN));
-			navItems.add(new NavItem(request, themeDisplay, layout, null));
+			navItems.add(new NavItem(request, themeDisplay, layout));
 
 			return navItems;
 		}

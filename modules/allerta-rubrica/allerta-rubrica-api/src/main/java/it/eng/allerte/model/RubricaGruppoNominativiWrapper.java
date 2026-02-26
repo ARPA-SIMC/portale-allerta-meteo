@@ -1,30 +1,15 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerte.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -35,24 +20,14 @@ import java.util.Objects;
  * @see RubricaGruppoNominativi
  * @generated
  */
-@ProviderType
 public class RubricaGruppoNominativiWrapper
-	implements RubricaGruppoNominativi, ModelWrapper<RubricaGruppoNominativi> {
+	extends BaseModelWrapper<RubricaGruppoNominativi>
+	implements ModelWrapper<RubricaGruppoNominativi>, RubricaGruppoNominativi {
 
 	public RubricaGruppoNominativiWrapper(
 		RubricaGruppoNominativi rubricaGruppoNominativi) {
 
-		_rubricaGruppoNominativi = rubricaGruppoNominativi;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return RubricaGruppoNominativi.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return RubricaGruppoNominativi.class.getName();
+		super(rubricaGruppoNominativi);
 	}
 
 	@Override
@@ -95,21 +70,8 @@ public class RubricaGruppoNominativiWrapper
 	}
 
 	@Override
-	public Object clone() {
-		return new RubricaGruppoNominativiWrapper(
-			(RubricaGruppoNominativi)_rubricaGruppoNominativi.clone());
-	}
-
-	@Override
-	public int compareTo(
-		it.eng.allerte.model.RubricaGruppoNominativi rubricaGruppoNominativi) {
-
-		return _rubricaGruppoNominativi.compareTo(rubricaGruppoNominativi);
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _rubricaGruppoNominativi.getExpandoBridge();
+	public RubricaGruppoNominativi cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -119,7 +81,7 @@ public class RubricaGruppoNominativiWrapper
 	 */
 	@Override
 	public long getFK_GRUPPO() {
-		return _rubricaGruppoNominativi.getFK_GRUPPO();
+		return model.getFK_GRUPPO();
 	}
 
 	/**
@@ -129,7 +91,7 @@ public class RubricaGruppoNominativiWrapper
 	 */
 	@Override
 	public long getFK_NOMINATIVO() {
-		return _rubricaGruppoNominativi.getFK_NOMINATIVO();
+		return model.getFK_NOMINATIVO();
 	}
 
 	/**
@@ -139,7 +101,7 @@ public class RubricaGruppoNominativiWrapper
 	 */
 	@Override
 	public long getFK_RUOLO() {
-		return _rubricaGruppoNominativi.getFK_RUOLO();
+		return model.getFK_RUOLO();
 	}
 
 	/**
@@ -151,12 +113,7 @@ public class RubricaGruppoNominativiWrapper
 	public it.eng.allerte.service.persistence.RubricaGruppoNominativiPK
 		getPrimaryKey() {
 
-		return _rubricaGruppoNominativi.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _rubricaGruppoNominativi.getPrimaryKeyObj();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -166,54 +123,12 @@ public class RubricaGruppoNominativiWrapper
 	 */
 	@Override
 	public String getSPECIFICA_RUOLO() {
-		return _rubricaGruppoNominativi.getSPECIFICA_RUOLO();
-	}
-
-	@Override
-	public int hashCode() {
-		return _rubricaGruppoNominativi.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _rubricaGruppoNominativi.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _rubricaGruppoNominativi.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _rubricaGruppoNominativi.isNew();
+		return model.getSPECIFICA_RUOLO();
 	}
 
 	@Override
 	public void persist() {
-		_rubricaGruppoNominativi.persist();
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_rubricaGruppoNominativi.setCachedModel(cachedModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_rubricaGruppoNominativi.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_rubricaGruppoNominativi.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_rubricaGruppoNominativi.setExpandoBridgeAttributes(serviceContext);
+		model.persist();
 	}
 
 	/**
@@ -223,7 +138,7 @@ public class RubricaGruppoNominativiWrapper
 	 */
 	@Override
 	public void setFK_GRUPPO(long FK_GRUPPO) {
-		_rubricaGruppoNominativi.setFK_GRUPPO(FK_GRUPPO);
+		model.setFK_GRUPPO(FK_GRUPPO);
 	}
 
 	/**
@@ -233,7 +148,7 @@ public class RubricaGruppoNominativiWrapper
 	 */
 	@Override
 	public void setFK_NOMINATIVO(long FK_NOMINATIVO) {
-		_rubricaGruppoNominativi.setFK_NOMINATIVO(FK_NOMINATIVO);
+		model.setFK_NOMINATIVO(FK_NOMINATIVO);
 	}
 
 	/**
@@ -243,12 +158,7 @@ public class RubricaGruppoNominativiWrapper
 	 */
 	@Override
 	public void setFK_RUOLO(long FK_RUOLO) {
-		_rubricaGruppoNominativi.setFK_RUOLO(FK_RUOLO);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_rubricaGruppoNominativi.setNew(n);
+		model.setFK_RUOLO(FK_RUOLO);
 	}
 
 	/**
@@ -261,12 +171,7 @@ public class RubricaGruppoNominativiWrapper
 		it.eng.allerte.service.persistence.RubricaGruppoNominativiPK
 			primaryKey) {
 
-		_rubricaGruppoNominativi.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_rubricaGruppoNominativi.setPrimaryKeyObj(primaryKeyObj);
+		model.setPrimaryKey(primaryKey);
 	}
 
 	/**
@@ -276,81 +181,19 @@ public class RubricaGruppoNominativiWrapper
 	 */
 	@Override
 	public void setSPECIFICA_RUOLO(String SPECIFICA_RUOLO) {
-		_rubricaGruppoNominativi.setSPECIFICA_RUOLO(SPECIFICA_RUOLO);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<it.eng.allerte.model.RubricaGruppoNominativi> toCacheModel() {
-
-		return _rubricaGruppoNominativi.toCacheModel();
-	}
-
-	@Override
-	public it.eng.allerte.model.RubricaGruppoNominativi toEscapedModel() {
-		return new RubricaGruppoNominativiWrapper(
-			_rubricaGruppoNominativi.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _rubricaGruppoNominativi.toString();
-	}
-
-	@Override
-	public it.eng.allerte.model.RubricaGruppoNominativi toUnescapedModel() {
-		return new RubricaGruppoNominativiWrapper(
-			_rubricaGruppoNominativi.toUnescapedModel());
+		model.setSPECIFICA_RUOLO(SPECIFICA_RUOLO);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _rubricaGruppoNominativi.toXmlString();
+		return model.toXmlString();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
+	protected RubricaGruppoNominativiWrapper wrap(
+		RubricaGruppoNominativi rubricaGruppoNominativi) {
 
-		if (!(obj instanceof RubricaGruppoNominativiWrapper)) {
-			return false;
-		}
-
-		RubricaGruppoNominativiWrapper rubricaGruppoNominativiWrapper =
-			(RubricaGruppoNominativiWrapper)obj;
-
-		if (Objects.equals(
-				_rubricaGruppoNominativi,
-				rubricaGruppoNominativiWrapper._rubricaGruppoNominativi)) {
-
-			return true;
-		}
-
-		return false;
+		return new RubricaGruppoNominativiWrapper(rubricaGruppoNominativi);
 	}
-
-	@Override
-	public RubricaGruppoNominativi getWrappedModel() {
-		return _rubricaGruppoNominativi;
-	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _rubricaGruppoNominativi.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _rubricaGruppoNominativi.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_rubricaGruppoNominativi.resetOriginalValues();
-	}
-
-	private final RubricaGruppoNominativi _rubricaGruppoNominativi;
 
 }

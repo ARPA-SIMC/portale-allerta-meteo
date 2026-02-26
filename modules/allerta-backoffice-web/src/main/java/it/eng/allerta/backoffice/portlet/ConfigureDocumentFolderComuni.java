@@ -32,7 +32,7 @@ import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.workflow.WorkflowDefinition;
-import com.liferay.portal.kernel.workflow.WorkflowDefinitionManagerUtil;
+import com.liferay.portal.workflow.util.WorkflowDefinitionManagerUtil;
 
 import it.eng.allerta.backoffice.constants.AllertaBackofficeKeys;
 
@@ -90,7 +90,7 @@ public class ConfigureDocumentFolderComuni extends MVCPortlet {
 		WorkflowDefinition wfl = null;
 		
 		try {
-			wfl = WorkflowDefinitionManagerUtil.getLatestWorkflowDefinition(companyId, "Piani di protezione civile Comunali");
+			wfl = WorkflowDefinitionManagerUtil.liberalGetLatestWorkflowDefinition(companyId, "Piani di protezione civile Comunali");
 			
 					 /* gia assegnati alal Folder
 					(List<WorkflowDefinitionLink>) WorkflowDefinitionLinkLocalServiceUtil.
@@ -146,7 +146,7 @@ public class ConfigureDocumentFolderComuni extends MVCPortlet {
 									PortalUtil.getCurrentAndAncestorSiteGroupIds( currentFolder.getGroupId()), 
 									rootfolder.getFolderId(), 
 									true);*/
-				} catch (PortalException e) {
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 				

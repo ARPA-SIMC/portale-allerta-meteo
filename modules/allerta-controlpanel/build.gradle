@@ -1,0 +1,25 @@
+dependencies {
+	compileOnly group: "com.liferay.portal", name: "release.dxp.api"
+
+	cssBuilder group: "com.liferay", name: "com.liferay.css.builder", version: "3.1.4"
+
+	compileOnly group: "com.liferay.portal", name: "com.liferay.portal.kernel"
+	compileOnly group: "com.liferay.portal", name: "com.liferay.util.taglib"
+	compileOnly group: "javax.portlet", name: "portlet-api"
+	compileOnly group: "jstl", name: "jstl"
+	compileOnly group: "org.osgi", name: "org.osgi.service.component.annotations"
+	
+	compileInclude group: 'org.apache.httpcomponents', name: 'httpclient-osgi', version:"4.5.14"
+    compileInclude group: 'org.apache.httpcomponents', name: 'httpcore-osgi', version:"4.4.16"
+    
+	compileOnly group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.0.1'
+	compileInclude group: 'com.google.code.gson', name: 'gson', version: '2.7'
+	compileOnly group: 'org.apache.commons', name: 'commons-text', version: "1.11.0"
+	compileOnly group: 'org.apache.commons', name: 'commons-lang3', version: "3.14.0"
+	
+	compileOnly project(":modules:allerta-base")
+	compileOnly project(":modules:allerta-allertaer:allerta-allertaer-api")
+	compileOnly project(":modules:allerta-bollettino:allerta-bollettino-api")
+
+
+}

@@ -1,30 +1,15 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.bollettino.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -35,22 +20,12 @@ import java.util.Objects;
  * @see Pluviometro
  * @generated
  */
-@ProviderType
 public class PluviometroWrapper
-	implements Pluviometro, ModelWrapper<Pluviometro> {
+	extends BaseModelWrapper<Pluviometro>
+	implements ModelWrapper<Pluviometro>, Pluviometro {
 
 	public PluviometroWrapper(Pluviometro pluviometro) {
-		_pluviometro = pluviometro;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return Pluviometro.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return Pluviometro.class.getName();
+		super(pluviometro);
 	}
 
 	@Override
@@ -86,18 +61,8 @@ public class PluviometroWrapper
 	}
 
 	@Override
-	public Object clone() {
-		return new PluviometroWrapper((Pluviometro)_pluviometro.clone());
-	}
-
-	@Override
-	public int compareTo(it.eng.bollettino.model.Pluviometro pluviometro) {
-		return _pluviometro.compareTo(pluviometro);
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _pluviometro.getExpandoBridge();
+	public Pluviometro cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -107,7 +72,7 @@ public class PluviometroWrapper
 	 */
 	@Override
 	public String getNomeGruppo() {
-		return _pluviometro.getNomeGruppo();
+		return model.getNomeGruppo();
 	}
 
 	/**
@@ -117,7 +82,7 @@ public class PluviometroWrapper
 	 */
 	@Override
 	public String getNomeRubrica() {
-		return _pluviometro.getNomeRubrica();
+		return model.getNomeRubrica();
 	}
 
 	/**
@@ -127,12 +92,7 @@ public class PluviometroWrapper
 	 */
 	@Override
 	public String getPrimaryKey() {
-		return _pluviometro.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _pluviometro.getPrimaryKeyObj();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -142,59 +102,12 @@ public class PluviometroWrapper
 	 */
 	@Override
 	public String getStazioneId() {
-		return _pluviometro.getStazioneId();
-	}
-
-	@Override
-	public int hashCode() {
-		return _pluviometro.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _pluviometro.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _pluviometro.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _pluviometro.isNew();
+		return model.getStazioneId();
 	}
 
 	@Override
 	public void persist() {
-		_pluviometro.persist();
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_pluviometro.setCachedModel(cachedModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_pluviometro.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_pluviometro.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_pluviometro.setExpandoBridgeAttributes(serviceContext);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_pluviometro.setNew(n);
+		model.persist();
 	}
 
 	/**
@@ -204,7 +117,7 @@ public class PluviometroWrapper
 	 */
 	@Override
 	public void setNomeGruppo(String nomeGruppo) {
-		_pluviometro.setNomeGruppo(nomeGruppo);
+		model.setNomeGruppo(nomeGruppo);
 	}
 
 	/**
@@ -214,7 +127,7 @@ public class PluviometroWrapper
 	 */
 	@Override
 	public void setNomeRubrica(String nomeRubrica) {
-		_pluviometro.setNomeRubrica(nomeRubrica);
+		model.setNomeRubrica(nomeRubrica);
 	}
 
 	/**
@@ -224,12 +137,7 @@ public class PluviometroWrapper
 	 */
 	@Override
 	public void setPrimaryKey(String primaryKey) {
-		_pluviometro.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_pluviometro.setPrimaryKeyObj(primaryKeyObj);
+		model.setPrimaryKey(primaryKey);
 	}
 
 	/**
@@ -239,75 +147,17 @@ public class PluviometroWrapper
 	 */
 	@Override
 	public void setStazioneId(String stazioneId) {
-		_pluviometro.setStazioneId(stazioneId);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<it.eng.bollettino.model.Pluviometro> toCacheModel() {
-
-		return _pluviometro.toCacheModel();
-	}
-
-	@Override
-	public it.eng.bollettino.model.Pluviometro toEscapedModel() {
-		return new PluviometroWrapper(_pluviometro.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _pluviometro.toString();
-	}
-
-	@Override
-	public it.eng.bollettino.model.Pluviometro toUnescapedModel() {
-		return new PluviometroWrapper(_pluviometro.toUnescapedModel());
+		model.setStazioneId(stazioneId);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _pluviometro.toXmlString();
+		return model.toXmlString();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-
-		if (!(obj instanceof PluviometroWrapper)) {
-			return false;
-		}
-
-		PluviometroWrapper pluviometroWrapper = (PluviometroWrapper)obj;
-
-		if (Objects.equals(_pluviometro, pluviometroWrapper._pluviometro)) {
-			return true;
-		}
-
-		return false;
+	protected PluviometroWrapper wrap(Pluviometro pluviometro) {
+		return new PluviometroWrapper(pluviometro);
 	}
-
-	@Override
-	public Pluviometro getWrappedModel() {
-		return _pluviometro;
-	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _pluviometro.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _pluviometro.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_pluviometro.resetOriginalValues();
-	}
-
-	private final Pluviometro _pluviometro;
 
 }

@@ -1,32 +1,17 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.bollettino.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.exportimport.kernel.lar.StagedModelType;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -37,21 +22,12 @@ import java.util.Objects;
  * @see Allarme
  * @generated
  */
-@ProviderType
-public class AllarmeWrapper implements Allarme, ModelWrapper<Allarme> {
+public class AllarmeWrapper
+	extends BaseModelWrapper<Allarme>
+	implements Allarme, ModelWrapper<Allarme> {
 
 	public AllarmeWrapper(Allarme allarme) {
-		_allarme = allarme;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return Allarme.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return Allarme.class.getName();
+		super(allarme);
 	}
 
 	@Override
@@ -171,13 +147,8 @@ public class AllarmeWrapper implements Allarme, ModelWrapper<Allarme> {
 	}
 
 	@Override
-	public Object clone() {
-		return new AllarmeWrapper((Allarme)_allarme.clone());
-	}
-
-	@Override
-	public int compareTo(it.eng.bollettino.model.Allarme allarme) {
-		return _allarme.compareTo(allarme);
+	public Allarme cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -187,7 +158,7 @@ public class AllarmeWrapper implements Allarme, ModelWrapper<Allarme> {
 	 */
 	@Override
 	public long getAllarmeId() {
-		return _allarme.getAllarmeId();
+		return model.getAllarmeId();
 	}
 
 	/**
@@ -197,7 +168,7 @@ public class AllarmeWrapper implements Allarme, ModelWrapper<Allarme> {
 	 */
 	@Override
 	public int getColore() {
-		return _allarme.getColore();
+		return model.getColore();
 	}
 
 	/**
@@ -207,7 +178,7 @@ public class AllarmeWrapper implements Allarme, ModelWrapper<Allarme> {
 	 */
 	@Override
 	public long getCompanyId() {
-		return _allarme.getCompanyId();
+		return model.getCompanyId();
 	}
 
 	/**
@@ -217,7 +188,7 @@ public class AllarmeWrapper implements Allarme, ModelWrapper<Allarme> {
 	 */
 	@Override
 	public Date getCreateDate() {
-		return _allarme.getCreateDate();
+		return model.getCreateDate();
 	}
 
 	/**
@@ -227,7 +198,7 @@ public class AllarmeWrapper implements Allarme, ModelWrapper<Allarme> {
 	 */
 	@Override
 	public Date getDataApprovazione() {
-		return _allarme.getDataApprovazione();
+		return model.getDataApprovazione();
 	}
 
 	/**
@@ -237,7 +208,7 @@ public class AllarmeWrapper implements Allarme, ModelWrapper<Allarme> {
 	 */
 	@Override
 	public Date getDataFine() {
-		return _allarme.getDataFine();
+		return model.getDataFine();
 	}
 
 	/**
@@ -247,12 +218,7 @@ public class AllarmeWrapper implements Allarme, ModelWrapper<Allarme> {
 	 */
 	@Override
 	public Date getDataInizio() {
-		return _allarme.getDataInizio();
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _allarme.getExpandoBridge();
+		return model.getDataInizio();
 	}
 
 	/**
@@ -262,7 +228,7 @@ public class AllarmeWrapper implements Allarme, ModelWrapper<Allarme> {
 	 */
 	@Override
 	public long getGroupId() {
-		return _allarme.getGroupId();
+		return model.getGroupId();
 	}
 
 	/**
@@ -272,7 +238,7 @@ public class AllarmeWrapper implements Allarme, ModelWrapper<Allarme> {
 	 */
 	@Override
 	public long getIdApprovatore() {
-		return _allarme.getIdApprovatore();
+		return model.getIdApprovatore();
 	}
 
 	/**
@@ -282,7 +248,7 @@ public class AllarmeWrapper implements Allarme, ModelWrapper<Allarme> {
 	 */
 	@Override
 	public long getIdRegola() {
-		return _allarme.getIdRegola();
+		return model.getIdRegola();
 	}
 
 	/**
@@ -292,7 +258,7 @@ public class AllarmeWrapper implements Allarme, ModelWrapper<Allarme> {
 	 */
 	@Override
 	public Date getModifiedDate() {
-		return _allarme.getModifiedDate();
+		return model.getModifiedDate();
 	}
 
 	/**
@@ -302,12 +268,7 @@ public class AllarmeWrapper implements Allarme, ModelWrapper<Allarme> {
 	 */
 	@Override
 	public long getPrimaryKey() {
-		return _allarme.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _allarme.getPrimaryKeyObj();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -317,7 +278,7 @@ public class AllarmeWrapper implements Allarme, ModelWrapper<Allarme> {
 	 */
 	@Override
 	public int getStato() {
-		return _allarme.getStato();
+		return model.getStato();
 	}
 
 	/**
@@ -327,7 +288,7 @@ public class AllarmeWrapper implements Allarme, ModelWrapper<Allarme> {
 	 */
 	@Override
 	public long getUserId() {
-		return _allarme.getUserId();
+		return model.getUserId();
 	}
 
 	/**
@@ -337,7 +298,7 @@ public class AllarmeWrapper implements Allarme, ModelWrapper<Allarme> {
 	 */
 	@Override
 	public String getUserName() {
-		return _allarme.getUserName();
+		return model.getUserName();
 	}
 
 	/**
@@ -347,7 +308,7 @@ public class AllarmeWrapper implements Allarme, ModelWrapper<Allarme> {
 	 */
 	@Override
 	public String getUserUuid() {
-		return _allarme.getUserUuid();
+		return model.getUserUuid();
 	}
 
 	/**
@@ -357,32 +318,12 @@ public class AllarmeWrapper implements Allarme, ModelWrapper<Allarme> {
 	 */
 	@Override
 	public String getUuid() {
-		return _allarme.getUuid();
-	}
-
-	@Override
-	public int hashCode() {
-		return _allarme.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _allarme.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _allarme.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _allarme.isNew();
+		return model.getUuid();
 	}
 
 	@Override
 	public void persist() {
-		_allarme.persist();
+		model.persist();
 	}
 
 	/**
@@ -392,12 +333,7 @@ public class AllarmeWrapper implements Allarme, ModelWrapper<Allarme> {
 	 */
 	@Override
 	public void setAllarmeId(long allarmeId) {
-		_allarme.setAllarmeId(allarmeId);
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_allarme.setCachedModel(cachedModel);
+		model.setAllarmeId(allarmeId);
 	}
 
 	/**
@@ -407,7 +343,7 @@ public class AllarmeWrapper implements Allarme, ModelWrapper<Allarme> {
 	 */
 	@Override
 	public void setColore(int colore) {
-		_allarme.setColore(colore);
+		model.setColore(colore);
 	}
 
 	/**
@@ -417,7 +353,7 @@ public class AllarmeWrapper implements Allarme, ModelWrapper<Allarme> {
 	 */
 	@Override
 	public void setCompanyId(long companyId) {
-		_allarme.setCompanyId(companyId);
+		model.setCompanyId(companyId);
 	}
 
 	/**
@@ -427,7 +363,7 @@ public class AllarmeWrapper implements Allarme, ModelWrapper<Allarme> {
 	 */
 	@Override
 	public void setCreateDate(Date createDate) {
-		_allarme.setCreateDate(createDate);
+		model.setCreateDate(createDate);
 	}
 
 	/**
@@ -437,7 +373,7 @@ public class AllarmeWrapper implements Allarme, ModelWrapper<Allarme> {
 	 */
 	@Override
 	public void setDataApprovazione(Date dataApprovazione) {
-		_allarme.setDataApprovazione(dataApprovazione);
+		model.setDataApprovazione(dataApprovazione);
 	}
 
 	/**
@@ -447,7 +383,7 @@ public class AllarmeWrapper implements Allarme, ModelWrapper<Allarme> {
 	 */
 	@Override
 	public void setDataFine(Date dataFine) {
-		_allarme.setDataFine(dataFine);
+		model.setDataFine(dataFine);
 	}
 
 	/**
@@ -457,24 +393,7 @@ public class AllarmeWrapper implements Allarme, ModelWrapper<Allarme> {
 	 */
 	@Override
 	public void setDataInizio(Date dataInizio) {
-		_allarme.setDataInizio(dataInizio);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_allarme.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_allarme.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_allarme.setExpandoBridgeAttributes(serviceContext);
+		model.setDataInizio(dataInizio);
 	}
 
 	/**
@@ -484,7 +403,7 @@ public class AllarmeWrapper implements Allarme, ModelWrapper<Allarme> {
 	 */
 	@Override
 	public void setGroupId(long groupId) {
-		_allarme.setGroupId(groupId);
+		model.setGroupId(groupId);
 	}
 
 	/**
@@ -494,7 +413,7 @@ public class AllarmeWrapper implements Allarme, ModelWrapper<Allarme> {
 	 */
 	@Override
 	public void setIdApprovatore(long idApprovatore) {
-		_allarme.setIdApprovatore(idApprovatore);
+		model.setIdApprovatore(idApprovatore);
 	}
 
 	/**
@@ -504,7 +423,7 @@ public class AllarmeWrapper implements Allarme, ModelWrapper<Allarme> {
 	 */
 	@Override
 	public void setIdRegola(long idRegola) {
-		_allarme.setIdRegola(idRegola);
+		model.setIdRegola(idRegola);
 	}
 
 	/**
@@ -514,12 +433,7 @@ public class AllarmeWrapper implements Allarme, ModelWrapper<Allarme> {
 	 */
 	@Override
 	public void setModifiedDate(Date modifiedDate) {
-		_allarme.setModifiedDate(modifiedDate);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_allarme.setNew(n);
+		model.setModifiedDate(modifiedDate);
 	}
 
 	/**
@@ -529,12 +443,7 @@ public class AllarmeWrapper implements Allarme, ModelWrapper<Allarme> {
 	 */
 	@Override
 	public void setPrimaryKey(long primaryKey) {
-		_allarme.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_allarme.setPrimaryKeyObj(primaryKeyObj);
+		model.setPrimaryKey(primaryKey);
 	}
 
 	/**
@@ -544,7 +453,7 @@ public class AllarmeWrapper implements Allarme, ModelWrapper<Allarme> {
 	 */
 	@Override
 	public void setStato(int stato) {
-		_allarme.setStato(stato);
+		model.setStato(stato);
 	}
 
 	/**
@@ -554,7 +463,7 @@ public class AllarmeWrapper implements Allarme, ModelWrapper<Allarme> {
 	 */
 	@Override
 	public void setUserId(long userId) {
-		_allarme.setUserId(userId);
+		model.setUserId(userId);
 	}
 
 	/**
@@ -564,7 +473,7 @@ public class AllarmeWrapper implements Allarme, ModelWrapper<Allarme> {
 	 */
 	@Override
 	public void setUserName(String userName) {
-		_allarme.setUserName(userName);
+		model.setUserName(userName);
 	}
 
 	/**
@@ -574,7 +483,7 @@ public class AllarmeWrapper implements Allarme, ModelWrapper<Allarme> {
 	 */
 	@Override
 	public void setUserUuid(String userUuid) {
-		_allarme.setUserUuid(userUuid);
+		model.setUserUuid(userUuid);
 	}
 
 	/**
@@ -584,80 +493,22 @@ public class AllarmeWrapper implements Allarme, ModelWrapper<Allarme> {
 	 */
 	@Override
 	public void setUuid(String uuid) {
-		_allarme.setUuid(uuid);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<it.eng.bollettino.model.Allarme> toCacheModel() {
-
-		return _allarme.toCacheModel();
-	}
-
-	@Override
-	public it.eng.bollettino.model.Allarme toEscapedModel() {
-		return new AllarmeWrapper(_allarme.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _allarme.toString();
-	}
-
-	@Override
-	public it.eng.bollettino.model.Allarme toUnescapedModel() {
-		return new AllarmeWrapper(_allarme.toUnescapedModel());
+		model.setUuid(uuid);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _allarme.toXmlString();
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-
-		if (!(obj instanceof AllarmeWrapper)) {
-			return false;
-		}
-
-		AllarmeWrapper allarmeWrapper = (AllarmeWrapper)obj;
-
-		if (Objects.equals(_allarme, allarmeWrapper._allarme)) {
-			return true;
-		}
-
-		return false;
+		return model.toXmlString();
 	}
 
 	@Override
 	public StagedModelType getStagedModelType() {
-		return _allarme.getStagedModelType();
+		return model.getStagedModelType();
 	}
 
 	@Override
-	public Allarme getWrappedModel() {
-		return _allarme;
+	protected AllarmeWrapper wrap(Allarme allarme) {
+		return new AllarmeWrapper(allarme);
 	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _allarme.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _allarme.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_allarme.resetOriginalValues();
-	}
-
-	private final Allarme _allarme;
 
 }

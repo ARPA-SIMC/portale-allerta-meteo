@@ -1,9 +1,10 @@
 dependencies {
+	compileOnly group: "com.liferay.portal", name: "release.dxp.api"
+	compileOnly group: "com.liferay.portal", name: "com.liferay.portal.impl"
 
-	compileOnly group: "com.liferay.portal", name: "com.liferay.portal.kernel"
-	compileOnly group: "com.liferay.portal", name: "com.liferay.util.taglib"
+	cssBuilder group: "com.liferay", name: "com.liferay.css.builder", version: "3.1.4"
+
 	compileOnly group: "javax.portlet", name: "portlet-api"
-	compileOnly group: "javax.servlet", name: "javax.servlet-api"
 	compileOnly group: "jstl", name: "jstl"
 	compileOnly group: "org.osgi", name: "org.osgi.service.component.annotations"
 	
@@ -15,5 +16,4 @@ dependencies {
 	compileOnly 'com.liferay:com.liferay.captcha.api:3.0.0'
 
 	compileOnly group: 'javax.mail', name: 'mail', version: '1.4.7'
-
 }

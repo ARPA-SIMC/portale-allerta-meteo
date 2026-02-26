@@ -1,9 +1,10 @@
 Bundle-Name: allerta-previsioni-api
 Bundle-SymbolicName: it.eng.allerta.previsioni.api
 Bundle-Version: 1.0.0
-Export-Package: \
+Export-Package:\
 	it.eng.previsioni.meteo.exception,\
 	it.eng.previsioni.meteo.model,\
 	it.eng.previsioni.meteo.service,\
 	it.eng.previsioni.meteo.service.persistence
+-check: EXPORTS
 -includeresource: META-INF/service.xml=../allerta-previsioni-service/service.xml

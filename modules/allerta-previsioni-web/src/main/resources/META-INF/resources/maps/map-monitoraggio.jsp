@@ -33,7 +33,7 @@ while (roles.hasNext()) {
 				aria-labelledby="tab--monitoraggio" id="tab--monitoraggio">
 
 				<div class="map-section__emitted map-section__emitted-top" style="text-align:center">
-					<small>Dati aggiornati in tempo reale per il monitoraggio della piogge e delle piene dei fiumi in corso</small>
+					<small><liferay-ui:message key="allertaprevisioniweb_datitemporeale" /></small>
 				</div>
 
 				<div
@@ -48,19 +48,19 @@ while (roles.hasNext()) {
 							id="map-component__panel__filters--monitoraggio">
 							<li class="nav-item"><a class="nav-link"
 								href="#map--monitoraggio" data-trigger="rtdata-filter"
-								data-filter="radar"> Radar </a></li>
+								data-filter="radar"> <liferay-ui:message key="allertaprevisioniweb_monitor1" /> </a></li>
 							<li class="nav-item"><a class="nav-link"
 								href="#map--monitoraggio" data-trigger="rtdata-filter"
-								data-filter="idrometrico"> Liv. idrometrico </a></li>
+								data-filter="idrometrico"> <liferay-ui:message key="allertaprevisioniweb_monitor2" /> </a></li>
 							<li class="nav-item"><a class="nav-link"
 								href="#map--monitoraggio" data-trigger="rtdata-filter"
-								data-filter="precipitazioni"> Precipitazioni </a></li>
+								data-filter="precipitazioni"> <liferay-ui:message key="allertaprevisioniweb_monitor3" /> </a></li>
 							<li class="nav-item"><a class="nav-link"
 								href="#map--monitoraggio" data-trigger="rtdata-filter"
-								data-filter="cumulata-6h"> Pioggia cumulata 6h</a></li>
+								data-filter="cumulata-6h"> <liferay-ui:message key="allertaprevisioniweb_monitor4" /></a></li>
 							<li class="nav-item"><a class="nav-link"
 								href="#map--monitoraggio" data-trigger="rtdata-filter"
-								data-filter="cumulata-48h"> Pioggia cumulata 48h</a></li>
+								data-filter="cumulata-48h"> <liferay-ui:message key="allertaprevisioniweb_monitor5" /></a></li>
 						</ul>
 
 						<c:if test="<%=isAdministrator || isCompilatore_monitoraggio%>">
@@ -100,7 +100,7 @@ while (roles.hasNext()) {
 				</div>
 				
 				<div class="map-section__emitted map-section__emitted-bottom" style="text-align:center">
-					<small>Dati aggiornati in tempo reale per il monitoraggio della piogge e delle piene dei fiumi in corso</small>
+					<small><liferay-ui:message key="allertaprevisioniweb_datitemporeale" /></small>
 				</div>
 			</div>
 			

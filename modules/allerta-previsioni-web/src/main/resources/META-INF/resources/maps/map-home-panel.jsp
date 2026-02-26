@@ -1,4 +1,4 @@
-<!-- Solo se si è sul contesto regionale (home page) -->
+<%@ taglib uri="http://liferay.com/tld/ui" prefix="liferay-ui" %>
 <ul
 	class="nav nav-pills flex-lg-column map-component__panel__filters"
 	id="map-component__panel__filters--oggi">
@@ -17,7 +17,7 @@
 				<div class="phenomenon-sign__body">
 					<span class="phenomenon-sign__icon icon__generale icon i-rer"
 						aria-hidden="true"></span> <span
-						class="phenomenon-sign__text">Situazione generale</span>
+						class="phenomenon-sign__text"><liferay-ui:message key="allertaprevisioniweb_evento0" /></span>
 				</div>
 			</div>
 	</a></li>
@@ -36,7 +36,7 @@
 					<span
 						class="phenomenon-sign__icon icon__idraulica icon i-piene-fiumi"
 						aria-hidden="true"></span> <span
-						class="phenomenon-sign__text">Piene dei fiumi</span>
+						class="phenomenon-sign__text"><liferay-ui:message key="allertaprevisioniweb_evento1" /></span>
 				</div>
 			</div>
 	</a></li>
@@ -55,8 +55,7 @@
 					<span
 						class="phenomenon-sign__icon icon__idrogeologica icon i-frane"
 						aria-hidden="true"></span> <span
-						class="phenomenon-sign__text">Frane e piene dei corsi
-						minori</span>
+						class="phenomenon-sign__text"><liferay-ui:message key="allertaprevisioniweb_evento2" /></span>
 				</div>
 			</div>
 	</a></li>
@@ -76,7 +75,7 @@
 					<span
 						class="phenomenon-sign__icon icon__temporali icon i-temporali"
 						aria-hidden="true"></span> <span
-						class="phenomenon-sign__text">Temporali</span>
+						class="phenomenon-sign__text"><liferay-ui:message key="allertaprevisioniweb_evento3" /></span>
 				</div>
 			</div>
 	</a></li>
@@ -94,7 +93,7 @@
 				<div class="phenomenon-sign__body">
 					<span class="phenomenon-sign__icon icon__vento icon i-vento"
 						aria-hidden="true"></span> <span
-						class="phenomenon-sign__text">Vento</span>
+						class="phenomenon-sign__text"><liferay-ui:message key="allertaprevisioniweb_evento4" /></span>
 				</div>
 			</div>
 	</a></li>
@@ -112,7 +111,7 @@
 				<div class="phenomenon-sign__body">
 					<span class="phenomenon-sign__icon icon__neve icon i-neve"
 						aria-hidden="true"></span> <span
-						class="phenomenon-sign__text">Neve</span>
+						class="phenomenon-sign__text"><liferay-ui:message key="allertaprevisioniweb_evento5" /></span>
 				</div>
 			</div>
 	</a></li>
@@ -132,7 +131,7 @@
 					<span
 						class="phenomenon-sign__icon icon__ghiaccio-pioggia-gela icon i-pioggia-gelata"
 						aria-hidden="true"></span> <span
-						class="phenomenon-sign__text">Pioggia che gela</span>
+						class="phenomenon-sign__text"><liferay-ui:message key="allertaprevisioniweb_evento6" /></span>
 				</div>
 			</div>
 	</a></li>
@@ -153,7 +152,7 @@
 					<span
 						class="phenomenon-sign__icon icon__temperature-estreme-alte icon i-temperature-es"
 						aria-hidden="true"></span> <span
-						class="phenomenon-sign__text">Temperature estreme</span>
+						class="phenomenon-sign__text"><liferay-ui:message key="allertaprevisioniweb_evento7" /></span>
 				</div>
 			</div>
 	</a></li>
@@ -173,7 +172,7 @@
 					<span
 						class="phenomenon-sign__icon icon__stato-mare icon i-stato-mare"
 						aria-hidden="true"></span> <span
-						class="phenomenon-sign__text">Stato del mare</span>
+						class="phenomenon-sign__text"><liferay-ui:message key="allertaprevisioniweb_evento8" /></span>
 				</div>
 			</div>
 	</a></li>
@@ -193,7 +192,7 @@
 					<span
 						class="phenomenon-sign__icon icon__mareggiate icon i-mareggiate"
 						aria-hidden="true"></span> <span
-						class="phenomenon-sign__text">Mareggiate</span>
+						class="phenomenon-sign__text"><liferay-ui:message key="allertaprevisioniweb_evento9" /></span>
 				</div>
 			</div>
 	</a></li>
@@ -212,7 +211,7 @@
 					<span
 						class="phenomenon-sign__icon icon__valanghe icon i-valanghe"
 						aria-hidden="true"></span> <span
-						class="phenomenon-sign__text">Valanghe</span>
+						class="phenomenon-sign__text"><liferay-ui:message key="allertaprevisioniweb_evento10" /></span>
 				</div>
 			</div>
 	</a></li>

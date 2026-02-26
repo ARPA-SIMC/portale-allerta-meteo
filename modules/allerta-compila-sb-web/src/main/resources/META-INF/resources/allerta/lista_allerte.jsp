@@ -1,3 +1,4 @@
+<%@page import="java.util.ArrayList"%>
 <%@page import="java.util.HashMap"%>
 <%@page import="it.eng.allerter.service.AllertaLocalServiceUtil"%>
 <%@page import="it.eng.allerter.model.Allerta"%>
@@ -16,7 +17,10 @@
 	List<Allerta> allerteEntry = (List<Allerta>)renderRequest.getAttribute("allerteEntry");
 			//AllertaLocalServiceUtil.getListaAllerte();
 	
+	if (allerteEntry==null) allerteEntry = new ArrayList();		
+			
 	HashMap<String, String> tasks = (HashMap<String, String>) renderRequest.getAttribute("allerteTasks");
+	if (tasks==null) tasks = new HashMap();	
 %>
 <portlet:renderURL var="compilaUrl">
 	<portlet:param name="mvcRenderCommandName" value="/allertaer/allerta/compila"/>	

@@ -1,24 +1,22 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package allerta.verifica.service;
 
-import aQute.bnd.annotation.ProviderType;
+import allerta.verifica.model.UtenteLavoro;
 
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.util.tracker.ServiceTracker;
+import com.liferay.petra.sql.dsl.query.DSLQuery;
+import com.liferay.portal.kernel.dao.orm.DynamicQuery;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.model.PersistedModel;
+import com.liferay.portal.kernel.module.service.Snapshot;
+import com.liferay.portal.kernel.util.OrderByComparator;
+
+import java.io.Serializable;
+
+import java.util.List;
 
 /**
  * Provides the local service utility for UtenteLavoro. This utility wraps
@@ -32,7 +30,6 @@ import org.osgi.util.tracker.ServiceTracker;
  * @see UtenteLavoroLocalService
  * @generated
  */
-@ProviderType
 public class UtenteLavoroLocalServiceUtil {
 
 	/*
@@ -44,13 +41,25 @@ public class UtenteLavoroLocalServiceUtil {
 	/**
 	 * Adds the utente lavoro to the database. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect UtenteLavoroLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param utenteLavoro the utente lavoro
 	 * @return the utente lavoro that was added
 	 */
-	public static allerta.verifica.model.UtenteLavoro addUtenteLavoro(
-		allerta.verifica.model.UtenteLavoro utenteLavoro) {
-
+	public static UtenteLavoro addUtenteLavoro(UtenteLavoro utenteLavoro) {
 		return getService().addUtenteLavoro(utenteLavoro);
+	}
+
+	/**
+	 * @throws PortalException
+	 */
+	public static PersistedModel createPersistedModel(
+			Serializable primaryKeyObj)
+		throws PortalException {
+
+		return getService().createPersistedModel(primaryKeyObj);
 	}
 
 	/**
@@ -59,19 +68,16 @@ public class UtenteLavoroLocalServiceUtil {
 	 * @param id the primary key for the new utente lavoro
 	 * @return the new utente lavoro
 	 */
-	public static allerta.verifica.model.UtenteLavoro createUtenteLavoro(
-		long id) {
-
+	public static UtenteLavoro createUtenteLavoro(long id) {
 		return getService().createUtenteLavoro(id);
 	}
 
 	/**
 	 * @throws PortalException
 	 */
-	public static com.liferay.portal.kernel.model.PersistedModel
-			deletePersistedModel(
-				com.liferay.portal.kernel.model.PersistedModel persistedModel)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	public static PersistedModel deletePersistedModel(
+			PersistedModel persistedModel)
+		throws PortalException {
 
 		return getService().deletePersistedModel(persistedModel);
 	}
@@ -79,13 +85,16 @@ public class UtenteLavoroLocalServiceUtil {
 	/**
 	 * Deletes the utente lavoro with the primary key from the database. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect UtenteLavoroLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param id the primary key of the utente lavoro
 	 * @return the utente lavoro that was removed
 	 * @throws PortalException if a utente lavoro with the primary key could not be found
 	 */
-	public static allerta.verifica.model.UtenteLavoro deleteUtenteLavoro(
-			long id)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	public static UtenteLavoro deleteUtenteLavoro(long id)
+		throws PortalException {
 
 		return getService().deleteUtenteLavoro(id);
 	}
@@ -93,18 +102,26 @@ public class UtenteLavoroLocalServiceUtil {
 	/**
 	 * Deletes the utente lavoro from the database. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect UtenteLavoroLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param utenteLavoro the utente lavoro
 	 * @return the utente lavoro that was removed
 	 */
-	public static allerta.verifica.model.UtenteLavoro deleteUtenteLavoro(
-		allerta.verifica.model.UtenteLavoro utenteLavoro) {
-
+	public static UtenteLavoro deleteUtenteLavoro(UtenteLavoro utenteLavoro) {
 		return getService().deleteUtenteLavoro(utenteLavoro);
 	}
 
-	public static com.liferay.portal.kernel.dao.orm.DynamicQuery
-		dynamicQuery() {
+	public static <T> T dslQuery(DSLQuery dslQuery) {
+		return getService().dslQuery(dslQuery);
+	}
 
+	public static int dslQueryCount(DSLQuery dslQuery) {
+		return getService().dslQueryCount(dslQuery);
+	}
+
+	public static DynamicQuery dynamicQuery() {
 		return getService().dynamicQuery();
 	}
 
@@ -114,9 +131,7 @@ public class UtenteLavoroLocalServiceUtil {
 	 * @param dynamicQuery the dynamic query
 	 * @return the matching rows
 	 */
-	public static <T> java.util.List<T> dynamicQuery(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery) {
-
+	public static <T> List<T> dynamicQuery(DynamicQuery dynamicQuery) {
 		return getService().dynamicQuery(dynamicQuery);
 	}
 
@@ -124,7 +139,7 @@ public class UtenteLavoroLocalServiceUtil {
 	 * Performs a dynamic query on the database and returns a range of the matching rows.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>allerta.verifica.model.impl.UtenteLavoroModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>allerta.verifica.model.impl.UtenteLavoroModelImpl</code>.
 	 * </p>
 	 *
 	 * @param dynamicQuery the dynamic query
@@ -132,9 +147,8 @@ public class UtenteLavoroLocalServiceUtil {
 	 * @param end the upper bound of the range of model instances (not inclusive)
 	 * @return the range of matching rows
 	 */
-	public static <T> java.util.List<T> dynamicQuery(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery, int start,
-		int end) {
+	public static <T> List<T> dynamicQuery(
+		DynamicQuery dynamicQuery, int start, int end) {
 
 		return getService().dynamicQuery(dynamicQuery, start, end);
 	}
@@ -143,7 +157,7 @@ public class UtenteLavoroLocalServiceUtil {
 	 * Performs a dynamic query on the database and returns an ordered range of the matching rows.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>allerta.verifica.model.impl.UtenteLavoroModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>allerta.verifica.model.impl.UtenteLavoroModelImpl</code>.
 	 * </p>
 	 *
 	 * @param dynamicQuery the dynamic query
@@ -152,10 +166,9 @@ public class UtenteLavoroLocalServiceUtil {
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching rows
 	 */
-	public static <T> java.util.List<T> dynamicQuery(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery, int start,
-		int end,
-		com.liferay.portal.kernel.util.OrderByComparator<T> orderByComparator) {
+	public static <T> List<T> dynamicQuery(
+		DynamicQuery dynamicQuery, int start, int end,
+		OrderByComparator<T> orderByComparator) {
 
 		return getService().dynamicQuery(
 			dynamicQuery, start, end, orderByComparator);
@@ -167,9 +180,7 @@ public class UtenteLavoroLocalServiceUtil {
 	 * @param dynamicQuery the dynamic query
 	 * @return the number of rows matching the dynamic query
 	 */
-	public static long dynamicQueryCount(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery) {
-
+	public static long dynamicQueryCount(DynamicQuery dynamicQuery) {
 		return getService().dynamicQueryCount(dynamicQuery);
 	}
 
@@ -181,15 +192,13 @@ public class UtenteLavoroLocalServiceUtil {
 	 * @return the number of rows matching the dynamic query
 	 */
 	public static long dynamicQueryCount(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery,
+		DynamicQuery dynamicQuery,
 		com.liferay.portal.kernel.dao.orm.Projection projection) {
 
 		return getService().dynamicQueryCount(dynamicQuery, projection);
 	}
 
-	public static allerta.verifica.model.UtenteLavoro fetchUtenteLavoro(
-		long id) {
-
+	public static UtenteLavoro fetchUtenteLavoro(long id) {
 		return getService().fetchUtenteLavoro(id);
 	}
 
@@ -215,9 +224,11 @@ public class UtenteLavoroLocalServiceUtil {
 		return getService().getOSGiServiceIdentifier();
 	}
 
-	public static com.liferay.portal.kernel.model.PersistedModel
-			getPersistedModel(java.io.Serializable primaryKeyObj)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	/**
+	 * @throws PortalException
+	 */
+	public static PersistedModel getPersistedModel(Serializable primaryKeyObj)
+		throws PortalException {
 
 		return getService().getPersistedModel(primaryKeyObj);
 	}
@@ -229,9 +240,7 @@ public class UtenteLavoroLocalServiceUtil {
 	 * @return the utente lavoro
 	 * @throws PortalException if a utente lavoro with the primary key could not be found
 	 */
-	public static allerta.verifica.model.UtenteLavoro getUtenteLavoro(long id)
-		throws com.liferay.portal.kernel.exception.PortalException {
-
+	public static UtenteLavoro getUtenteLavoro(long id) throws PortalException {
 		return getService().getUtenteLavoro(id);
 	}
 
@@ -239,16 +248,14 @@ public class UtenteLavoroLocalServiceUtil {
 	 * Returns a range of all the utente lavoros.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>allerta.verifica.model.impl.UtenteLavoroModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>allerta.verifica.model.impl.UtenteLavoroModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of utente lavoros
 	 * @param end the upper bound of the range of utente lavoros (not inclusive)
 	 * @return the range of utente lavoros
 	 */
-	public static java.util.List<allerta.verifica.model.UtenteLavoro>
-		getUtenteLavoros(int start, int end) {
-
+	public static List<UtenteLavoro> getUtenteLavoros(int start, int end) {
 		return getService().getUtenteLavoros(start, end);
 	}
 
@@ -264,35 +271,23 @@ public class UtenteLavoroLocalServiceUtil {
 	/**
 	 * Updates the utente lavoro in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect UtenteLavoroLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param utenteLavoro the utente lavoro
 	 * @return the utente lavoro that was updated
 	 */
-	public static allerta.verifica.model.UtenteLavoro updateUtenteLavoro(
-		allerta.verifica.model.UtenteLavoro utenteLavoro) {
-
+	public static UtenteLavoro updateUtenteLavoro(UtenteLavoro utenteLavoro) {
 		return getService().updateUtenteLavoro(utenteLavoro);
 	}
 
 	public static UtenteLavoroLocalService getService() {
-		return _serviceTracker.getService();
+		return _serviceSnapshot.get();
 	}
 
-	private static ServiceTracker
-		<UtenteLavoroLocalService, UtenteLavoroLocalService> _serviceTracker;
-
-	static {
-		Bundle bundle = FrameworkUtil.getBundle(UtenteLavoroLocalService.class);
-
-		ServiceTracker<UtenteLavoroLocalService, UtenteLavoroLocalService>
-			serviceTracker =
-				new ServiceTracker
-					<UtenteLavoroLocalService, UtenteLavoroLocalService>(
-						bundle.getBundleContext(),
-						UtenteLavoroLocalService.class, null);
-
-		serviceTracker.open();
-
-		_serviceTracker = serviceTracker;
-	}
+	private static final Snapshot<UtenteLavoroLocalService> _serviceSnapshot =
+		new Snapshot<>(
+			UtenteLavoroLocalServiceUtil.class, UtenteLavoroLocalService.class);
 
 }

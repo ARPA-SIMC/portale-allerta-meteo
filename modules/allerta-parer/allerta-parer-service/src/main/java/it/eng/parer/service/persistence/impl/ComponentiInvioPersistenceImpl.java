@@ -1,21 +1,12 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.parer.service.persistence.impl;
 
-import aQute.bnd.annotation.ProviderType;
-
+import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
@@ -23,31 +14,41 @@ import com.liferay.portal.kernel.dao.orm.Query;
 import com.liferay.portal.kernel.dao.orm.QueryPos;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
+import com.liferay.portal.kernel.dao.orm.SessionFactory;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.kernel.util.PropsKeys;
+import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.SetUtil;
-import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.spring.extender.service.ServiceReference;
 
 import it.eng.parer.exception.NoSuchComponentiInvioException;
 import it.eng.parer.model.ComponentiInvio;
+import it.eng.parer.model.ComponentiInvioTable;
 import it.eng.parer.model.impl.ComponentiInvioImpl;
 import it.eng.parer.model.impl.ComponentiInvioModelImpl;
 import it.eng.parer.service.persistence.ComponentiInvioPK;
 import it.eng.parer.service.persistence.ComponentiInvioPersistence;
+import it.eng.parer.service.persistence.ComponentiInvioUtil;
+import it.eng.parer.service.persistence.impl.constants.parerPersistenceConstants;
 
 import java.io.Serializable;
 
 import java.lang.reflect.InvocationHandler;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.sql.DataSource;
+
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The persistence implementation for the componenti invio service.
@@ -59,7 +60,7 @@ import java.util.Set;
  * @author Pratola_L
  * @generated
  */
-@ProviderType
+@Component(service = ComponentiInvioPersistence.class)
 public class ComponentiInvioPersistenceImpl
 	extends BasePersistenceImpl<ComponentiInvio>
 	implements ComponentiInvioPersistence {
@@ -101,7 +102,7 @@ public class ComponentiInvioPersistenceImpl
 	 * Returns a range of all the componenti invios where ID_INVIO = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>ComponentiInvioModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>ComponentiInvioModelImpl</code>.
 	 * </p>
 	 *
 	 * @param ID_INVIO the id_invio
@@ -120,7 +121,7 @@ public class ComponentiInvioPersistenceImpl
 	 * Returns an ordered range of all the componenti invios where ID_INVIO = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>ComponentiInvioModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>ComponentiInvioModelImpl</code>.
 	 * </p>
 	 *
 	 * @param ID_INVIO the id_invio
@@ -142,47 +143,48 @@ public class ComponentiInvioPersistenceImpl
 	 * Returns an ordered range of all the componenti invios where ID_INVIO = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>ComponentiInvioModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>ComponentiInvioModelImpl</code>.
 	 * </p>
 	 *
 	 * @param ID_INVIO the id_invio
 	 * @param start the lower bound of the range of componenti invios
 	 * @param end the upper bound of the range of componenti invios (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching componenti invios
 	 */
 	@Override
 	public List<ComponentiInvio> findByComponentiByIdInvio(
 		long ID_INVIO, int start, int end,
 		OrderByComparator<ComponentiInvio> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindByComponentiByIdInvio;
-			finderArgs = new Object[] {ID_INVIO};
+			if (useFinderCache) {
+				finderPath =
+					_finderPathWithoutPaginationFindByComponentiByIdInvio;
+				finderArgs = new Object[] {ID_INVIO};
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByComponentiByIdInvio;
 			finderArgs = new Object[] {ID_INVIO, start, end, orderByComparator};
 		}
 
 		List<ComponentiInvio> list = null;
 
-		if (retrieveFromCache) {
-			list = (List<ComponentiInvio>)finderCache.getResult(
+		if (useFinderCache) {
+			list = (List<ComponentiInvio>)dummyFinderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (ComponentiInvio componentiInvio : list) {
-					if ((ID_INVIO != componentiInvio.getID_INVIO())) {
+					if (ID_INVIO != componentiInvio.getID_INVIO()) {
 						list = null;
 
 						break;
@@ -192,62 +194,52 @@ public class ComponentiInvioPersistenceImpl
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					3 + (orderByComparator.getOrderByFields().length * 2));
 			}
 			else {
-				query = new StringBundler(3);
+				sb = new StringBundler(3);
 			}
 
-			query.append(_SQL_SELECT_COMPONENTIINVIO_WHERE);
+			sb.append(_SQL_SELECT_COMPONENTIINVIO_WHERE);
 
-			query.append(_FINDER_COLUMN_COMPONENTIBYIDINVIO_ID_INVIO_2);
+			sb.append(_FINDER_COLUMN_COMPONENTIBYIDINVIO_ID_INVIO_2);
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 			}
-			else if (pagination) {
-				query.append(ComponentiInvioModelImpl.ORDER_BY_JPQL);
+			else {
+				sb.append(ComponentiInvioModelImpl.ORDER_BY_JPQL);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
-				qPos.add(ID_INVIO);
+				queryPos.add(ID_INVIO);
 
-				if (!pagination) {
-					list = (List<ComponentiInvio>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<ComponentiInvio>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<ComponentiInvio>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					dummyFinderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -277,16 +269,16 @@ public class ComponentiInvioPersistenceImpl
 			return componentiInvio;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("ID_INVIO=");
-		msg.append(ID_INVIO);
+		sb.append("ID_INVIO=");
+		sb.append(ID_INVIO);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchComponentiInvioException(msg.toString());
+		throw new NoSuchComponentiInvioException(sb.toString());
 	}
 
 	/**
@@ -330,16 +322,16 @@ public class ComponentiInvioPersistenceImpl
 			return componentiInvio;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("ID_INVIO=");
-		msg.append(ID_INVIO);
+		sb.append("ID_INVIO=");
+		sb.append(ID_INVIO);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchComponentiInvioException(msg.toString());
+		throw new NoSuchComponentiInvioException(sb.toString());
 	}
 
 	/**
@@ -403,8 +395,8 @@ public class ComponentiInvioPersistenceImpl
 
 			return array;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -416,102 +408,102 @@ public class ComponentiInvioPersistenceImpl
 		OrderByComparator<ComponentiInvio> orderByComparator,
 		boolean previous) {
 
-		StringBundler query = null;
+		StringBundler sb = null;
 
 		if (orderByComparator != null) {
-			query = new StringBundler(
+			sb = new StringBundler(
 				4 + (orderByComparator.getOrderByConditionFields().length * 3) +
 					(orderByComparator.getOrderByFields().length * 3));
 		}
 		else {
-			query = new StringBundler(3);
+			sb = new StringBundler(3);
 		}
 
-		query.append(_SQL_SELECT_COMPONENTIINVIO_WHERE);
+		sb.append(_SQL_SELECT_COMPONENTIINVIO_WHERE);
 
-		query.append(_FINDER_COLUMN_COMPONENTIBYIDINVIO_ID_INVIO_2);
+		sb.append(_FINDER_COLUMN_COMPONENTIBYIDINVIO_ID_INVIO_2);
 
 		if (orderByComparator != null) {
 			String[] orderByConditionFields =
 				orderByComparator.getOrderByConditionFields();
 
 			if (orderByConditionFields.length > 0) {
-				query.append(WHERE_AND);
+				sb.append(WHERE_AND);
 			}
 
 			for (int i = 0; i < orderByConditionFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByConditionFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByConditionFields[i]);
 
 				if ((i + 1) < orderByConditionFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+						sb.append(WHERE_GREATER_THAN_HAS_NEXT);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+						sb.append(WHERE_LESSER_THAN_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN);
+						sb.append(WHERE_GREATER_THAN);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN);
+						sb.append(WHERE_LESSER_THAN);
 					}
 				}
 			}
 
-			query.append(ORDER_BY_CLAUSE);
+			sb.append(ORDER_BY_CLAUSE);
 
 			String[] orderByFields = orderByComparator.getOrderByFields();
 
 			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByFields[i]);
 
 				if ((i + 1) < orderByFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC_HAS_NEXT);
+						sb.append(ORDER_BY_ASC_HAS_NEXT);
 					}
 					else {
-						query.append(ORDER_BY_DESC_HAS_NEXT);
+						sb.append(ORDER_BY_DESC_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC);
+						sb.append(ORDER_BY_ASC);
 					}
 					else {
-						query.append(ORDER_BY_DESC);
+						sb.append(ORDER_BY_DESC);
 					}
 				}
 			}
 		}
 		else {
-			query.append(ComponentiInvioModelImpl.ORDER_BY_JPQL);
+			sb.append(ComponentiInvioModelImpl.ORDER_BY_JPQL);
 		}
 
-		String sql = query.toString();
+		String sql = sb.toString();
 
-		Query q = session.createQuery(sql);
+		Query query = session.createQuery(sql);
 
-		q.setFirstResult(0);
-		q.setMaxResults(2);
+		query.setFirstResult(0);
+		query.setMaxResults(2);
 
-		QueryPos qPos = QueryPos.getInstance(q);
+		QueryPos queryPos = QueryPos.getInstance(query);
 
-		qPos.add(ID_INVIO);
+		queryPos.add(ID_INVIO);
 
 		if (orderByComparator != null) {
 			for (Object orderByConditionValue :
 					orderByComparator.getOrderByConditionValues(
 						componentiInvio)) {
 
-				qPos.add(orderByConditionValue);
+				queryPos.add(orderByConditionValue);
 			}
 		}
 
-		List<ComponentiInvio> list = q.list();
+		List<ComponentiInvio> list = query.list();
 
 		if (list.size() == 2) {
 			return list.get(1);
@@ -548,36 +540,35 @@ public class ComponentiInvioPersistenceImpl
 
 		Object[] finderArgs = new Object[] {ID_INVIO};
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = (Long)dummyFinderCache.getResult(
+			finderPath, finderArgs, this);
 
 		if (count == null) {
-			StringBundler query = new StringBundler(2);
+			StringBundler sb = new StringBundler(2);
 
-			query.append(_SQL_COUNT_COMPONENTIINVIO_WHERE);
+			sb.append(_SQL_COUNT_COMPONENTIINVIO_WHERE);
 
-			query.append(_FINDER_COLUMN_COMPONENTIBYIDINVIO_ID_INVIO_2);
+			sb.append(_FINDER_COLUMN_COMPONENTIBYIDINVIO_ID_INVIO_2);
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
-				qPos.add(ID_INVIO);
+				queryPos.add(ID_INVIO);
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
-				finderCache.putResult(finderPath, finderArgs, count);
+				dummyFinderCache.putResult(finderPath, finderArgs, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -592,6 +583,11 @@ public class ComponentiInvioPersistenceImpl
 
 	public ComponentiInvioPersistenceImpl() {
 		setModelClass(ComponentiInvio.class);
+
+		setModelImplClass(ComponentiInvioImpl.class);
+		setModelPKClass(ComponentiInvioPK.class);
+
+		setTable(ComponentiInvioTable.INSTANCE);
 	}
 
 	/**
@@ -601,13 +597,12 @@ public class ComponentiInvioPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(ComponentiInvio componentiInvio) {
-		entityCache.putResult(
-			ComponentiInvioModelImpl.ENTITY_CACHE_ENABLED,
+		dummyEntityCache.putResult(
 			ComponentiInvioImpl.class, componentiInvio.getPrimaryKey(),
 			componentiInvio);
-
-		componentiInvio.resetOriginalValues();
 	}
+
+	private int _valueObjectFinderCacheListThreshold;
 
 	/**
 	 * Caches the componenti invios in the entity cache if it is enabled.
@@ -616,16 +611,20 @@ public class ComponentiInvioPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(List<ComponentiInvio> componentiInvios) {
+		if ((_valueObjectFinderCacheListThreshold == 0) ||
+			((_valueObjectFinderCacheListThreshold > 0) &&
+			 (componentiInvios.size() >
+				 _valueObjectFinderCacheListThreshold))) {
+
+			return;
+		}
+
 		for (ComponentiInvio componentiInvio : componentiInvios) {
-			if (entityCache.getResult(
-					ComponentiInvioModelImpl.ENTITY_CACHE_ENABLED,
+			if (dummyEntityCache.getResult(
 					ComponentiInvioImpl.class,
 					componentiInvio.getPrimaryKey()) == null) {
 
 				cacheResult(componentiInvio);
-			}
-			else {
-				componentiInvio.resetOriginalValues();
 			}
 		}
 	}
@@ -639,11 +638,9 @@ public class ComponentiInvioPersistenceImpl
 	 */
 	@Override
 	public void clearCache() {
-		entityCache.clearCache(ComponentiInvioImpl.class);
+		dummyEntityCache.clearCache(ComponentiInvioImpl.class);
 
-		finderCache.clearCache(FINDER_CLASS_NAME_ENTITY);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		dummyFinderCache.clearCache(ComponentiInvioImpl.class);
 	}
 
 	/**
@@ -655,23 +652,25 @@ public class ComponentiInvioPersistenceImpl
 	 */
 	@Override
 	public void clearCache(ComponentiInvio componentiInvio) {
-		entityCache.removeResult(
-			ComponentiInvioModelImpl.ENTITY_CACHE_ENABLED,
-			ComponentiInvioImpl.class, componentiInvio.getPrimaryKey());
-
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		dummyEntityCache.removeResult(
+			ComponentiInvioImpl.class, componentiInvio);
 	}
 
 	@Override
 	public void clearCache(List<ComponentiInvio> componentiInvios) {
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
-
 		for (ComponentiInvio componentiInvio : componentiInvios) {
-			entityCache.removeResult(
-				ComponentiInvioModelImpl.ENTITY_CACHE_ENABLED,
-				ComponentiInvioImpl.class, componentiInvio.getPrimaryKey());
+			dummyEntityCache.removeResult(
+				ComponentiInvioImpl.class, componentiInvio);
+		}
+	}
+
+	@Override
+	public void clearCache(Set<Serializable> primaryKeys) {
+		dummyFinderCache.clearCache(ComponentiInvioImpl.class);
+
+		for (Serializable primaryKey : primaryKeys) {
+			dummyEntityCache.removeResult(
+				ComponentiInvioImpl.class, primaryKey);
 		}
 	}
 
@@ -735,11 +734,11 @@ public class ComponentiInvioPersistenceImpl
 
 			return remove(componentiInvio);
 		}
-		catch (NoSuchComponentiInvioException nsee) {
-			throw nsee;
+		catch (NoSuchComponentiInvioException noSuchEntityException) {
+			throw noSuchEntityException;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -763,8 +762,8 @@ public class ComponentiInvioPersistenceImpl
 				session.delete(componentiInvio);
 			}
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -806,71 +805,27 @@ public class ComponentiInvioPersistenceImpl
 		try {
 			session = openSession();
 
-			if (componentiInvio.isNew()) {
+			if (isNew) {
 				session.save(componentiInvio);
-
-				componentiInvio.setNew(false);
 			}
 			else {
 				componentiInvio = (ComponentiInvio)session.merge(
 					componentiInvio);
 			}
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
 		}
 
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		dummyEntityCache.putResult(
+			ComponentiInvioImpl.class, componentiInvioModelImpl, false, true);
 
-		if (!ComponentiInvioModelImpl.COLUMN_BITMASK_ENABLED) {
-			finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		if (isNew) {
+			componentiInvio.setNew(false);
 		}
-		else if (isNew) {
-			Object[] args = new Object[] {
-				componentiInvioModelImpl.getID_INVIO()
-			};
-
-			finderCache.removeResult(
-				_finderPathCountByComponentiByIdInvio, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByComponentiByIdInvio, args);
-
-			finderCache.removeResult(_finderPathCountAll, FINDER_ARGS_EMPTY);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindAll, FINDER_ARGS_EMPTY);
-		}
-		else {
-			if ((componentiInvioModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByComponentiByIdInvio.
-					 getColumnBitmask()) != 0) {
-
-				Object[] args = new Object[] {
-					componentiInvioModelImpl.getOriginalID_INVIO()
-				};
-
-				finderCache.removeResult(
-					_finderPathCountByComponentiByIdInvio, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByComponentiByIdInvio,
-					args);
-
-				args = new Object[] {componentiInvioModelImpl.getID_INVIO()};
-
-				finderCache.removeResult(
-					_finderPathCountByComponentiByIdInvio, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByComponentiByIdInvio,
-					args);
-			}
-		}
-
-		entityCache.putResult(
-			ComponentiInvioModelImpl.ENTITY_CACHE_ENABLED,
-			ComponentiInvioImpl.class, componentiInvio.getPrimaryKey(),
-			componentiInvio, false);
 
 		componentiInvio.resetOriginalValues();
 
@@ -919,57 +874,6 @@ public class ComponentiInvioPersistenceImpl
 	/**
 	 * Returns the componenti invio with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the componenti invio
-	 * @return the componenti invio, or <code>null</code> if a componenti invio with the primary key could not be found
-	 */
-	@Override
-	public ComponentiInvio fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(
-			ComponentiInvioModelImpl.ENTITY_CACHE_ENABLED,
-			ComponentiInvioImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		ComponentiInvio componentiInvio = (ComponentiInvio)serializable;
-
-		if (componentiInvio == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				componentiInvio = (ComponentiInvio)session.get(
-					ComponentiInvioImpl.class, primaryKey);
-
-				if (componentiInvio != null) {
-					cacheResult(componentiInvio);
-				}
-				else {
-					entityCache.putResult(
-						ComponentiInvioModelImpl.ENTITY_CACHE_ENABLED,
-						ComponentiInvioImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(
-					ComponentiInvioModelImpl.ENTITY_CACHE_ENABLED,
-					ComponentiInvioImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return componentiInvio;
-	}
-
-	/**
-	 * Returns the componenti invio with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param componentiInvioPK the primary key of the componenti invio
 	 * @return the componenti invio, or <code>null</code> if a componenti invio with the primary key could not be found
 	 */
@@ -978,28 +882,6 @@ public class ComponentiInvioPersistenceImpl
 		ComponentiInvioPK componentiInvioPK) {
 
 		return fetchByPrimaryKey((Serializable)componentiInvioPK);
-	}
-
-	@Override
-	public Map<Serializable, ComponentiInvio> fetchByPrimaryKeys(
-		Set<Serializable> primaryKeys) {
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, ComponentiInvio> map =
-			new HashMap<Serializable, ComponentiInvio>();
-
-		for (Serializable primaryKey : primaryKeys) {
-			ComponentiInvio componentiInvio = fetchByPrimaryKey(primaryKey);
-
-			if (componentiInvio != null) {
-				map.put(primaryKey, componentiInvio);
-			}
-		}
-
-		return map;
 	}
 
 	/**
@@ -1016,7 +898,7 @@ public class ComponentiInvioPersistenceImpl
 	 * Returns a range of all the componenti invios.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>ComponentiInvioModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>ComponentiInvioModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of componenti invios
@@ -1032,7 +914,7 @@ public class ComponentiInvioPersistenceImpl
 	 * Returns an ordered range of all the componenti invios.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>ComponentiInvioModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>ComponentiInvioModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of componenti invios
@@ -1052,65 +934,63 @@ public class ComponentiInvioPersistenceImpl
 	 * Returns an ordered range of all the componenti invios.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>ComponentiInvioModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>ComponentiInvioModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of componenti invios
 	 * @param end the upper bound of the range of componenti invios (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of componenti invios
 	 */
 	@Override
 	public List<ComponentiInvio> findAll(
 		int start, int end,
 		OrderByComparator<ComponentiInvio> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindAll;
-			finderArgs = FINDER_ARGS_EMPTY;
+			if (useFinderCache) {
+				finderPath = _finderPathWithoutPaginationFindAll;
+				finderArgs = FINDER_ARGS_EMPTY;
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
 			finderArgs = new Object[] {start, end, orderByComparator};
 		}
 
 		List<ComponentiInvio> list = null;
 
-		if (retrieveFromCache) {
-			list = (List<ComponentiInvio>)finderCache.getResult(
+		if (useFinderCache) {
+			list = (List<ComponentiInvio>)dummyFinderCache.getResult(
 				finderPath, finderArgs, this);
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 			String sql = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					2 + (orderByComparator.getOrderByFields().length * 2));
 
-				query.append(_SQL_SELECT_COMPONENTIINVIO);
+				sb.append(_SQL_SELECT_COMPONENTIINVIO);
 
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 
-				sql = query.toString();
+				sql = sb.toString();
 			}
 			else {
 				sql = _SQL_SELECT_COMPONENTIINVIO;
 
-				if (pagination) {
-					sql = sql.concat(ComponentiInvioModelImpl.ORDER_BY_JPQL);
-				}
+				sql = sql.concat(ComponentiInvioModelImpl.ORDER_BY_JPQL);
 			}
 
 			Session session = null;
@@ -1118,29 +998,19 @@ public class ComponentiInvioPersistenceImpl
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				if (!pagination) {
-					list = (List<ComponentiInvio>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<ComponentiInvio>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<ComponentiInvio>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					dummyFinderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -1168,7 +1038,7 @@ public class ComponentiInvioPersistenceImpl
 	 */
 	@Override
 	public int countAll() {
-		Long count = (Long)finderCache.getResult(
+		Long count = (Long)dummyFinderCache.getResult(
 			_finderPathCountAll, FINDER_ARGS_EMPTY, this);
 
 		if (count == null) {
@@ -1177,18 +1047,15 @@ public class ComponentiInvioPersistenceImpl
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(_SQL_COUNT_COMPONENTIINVIO);
+				Query query = session.createQuery(_SQL_COUNT_COMPONENTIINVIO);
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
-				finderCache.putResult(
+				dummyFinderCache.putResult(
 					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -1204,6 +1071,21 @@ public class ComponentiInvioPersistenceImpl
 	}
 
 	@Override
+	protected EntityCache getEntityCache() {
+		return dummyEntityCache;
+	}
+
+	@Override
+	protected String getPKDBName() {
+		return "componentiInvioPK";
+	}
+
+	@Override
+	protected String getSelectSQL() {
+		return _SQL_SELECT_COMPONENTIINVIO;
+	}
+
+	@Override
 	protected Map<String, Integer> getTableColumnsMap() {
 		return ComponentiInvioModelImpl.TABLE_COLUMNS_MAP;
 	}
@@ -1211,63 +1093,76 @@ public class ComponentiInvioPersistenceImpl
 	/**
 	 * Initializes the componenti invio persistence.
 	 */
-	public void afterPropertiesSet() {
+	@Activate
+	public void activate() {
+		_valueObjectFinderCacheListThreshold = GetterUtil.getInteger(
+			PropsUtil.get(PropsKeys.VALUE_OBJECT_FINDER_CACHE_LIST_THRESHOLD));
+
 		_finderPathWithPaginationFindAll = new FinderPath(
-			ComponentiInvioModelImpl.ENTITY_CACHE_ENABLED,
-			ComponentiInvioModelImpl.FINDER_CACHE_ENABLED,
-			ComponentiInvioImpl.class, FINDER_CLASS_NAME_LIST_WITH_PAGINATION,
-			"findAll", new String[0]);
+			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findAll", new String[0],
+			new String[0], true);
 
 		_finderPathWithoutPaginationFindAll = new FinderPath(
-			ComponentiInvioModelImpl.ENTITY_CACHE_ENABLED,
-			ComponentiInvioModelImpl.FINDER_CACHE_ENABLED,
-			ComponentiInvioImpl.class,
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findAll",
-			new String[0]);
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findAll", new String[0],
+			new String[0], true);
 
 		_finderPathCountAll = new FinderPath(
-			ComponentiInvioModelImpl.ENTITY_CACHE_ENABLED,
-			ComponentiInvioModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countAll",
-			new String[0]);
+			new String[0], new String[0], false);
 
 		_finderPathWithPaginationFindByComponentiByIdInvio = new FinderPath(
-			ComponentiInvioModelImpl.ENTITY_CACHE_ENABLED,
-			ComponentiInvioModelImpl.FINDER_CACHE_ENABLED,
-			ComponentiInvioImpl.class, FINDER_CLASS_NAME_LIST_WITH_PAGINATION,
-			"findByComponentiByIdInvio",
+			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByComponentiByIdInvio",
 			new String[] {
 				Long.class.getName(), Integer.class.getName(),
 				Integer.class.getName(), OrderByComparator.class.getName()
-			});
+			},
+			new String[] {"ID_INVIO"}, true);
 
 		_finderPathWithoutPaginationFindByComponentiByIdInvio = new FinderPath(
-			ComponentiInvioModelImpl.ENTITY_CACHE_ENABLED,
-			ComponentiInvioModelImpl.FINDER_CACHE_ENABLED,
-			ComponentiInvioImpl.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
 			"findByComponentiByIdInvio", new String[] {Long.class.getName()},
-			ComponentiInvioModelImpl.ID_INVIO_COLUMN_BITMASK);
+			new String[] {"ID_INVIO"}, true);
 
 		_finderPathCountByComponentiByIdInvio = new FinderPath(
-			ComponentiInvioModelImpl.ENTITY_CACHE_ENABLED,
-			ComponentiInvioModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
-			"countByComponentiByIdInvio", new String[] {Long.class.getName()});
+			"countByComponentiByIdInvio", new String[] {Long.class.getName()},
+			new String[] {"ID_INVIO"}, false);
+
+		ComponentiInvioUtil.setPersistence(this);
 	}
 
-	public void destroy() {
-		entityCache.removeCache(ComponentiInvioImpl.class.getName());
-		finderCache.removeCache(FINDER_CLASS_NAME_ENTITY);
-		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+	@Deactivate
+	public void deactivate() {
+		ComponentiInvioUtil.setPersistence(null);
+
+		dummyEntityCache.removeCache(ComponentiInvioImpl.class.getName());
 	}
 
-	@ServiceReference(type = EntityCache.class)
-	protected EntityCache entityCache;
+	@Override
+	@Reference(
+		target = parerPersistenceConstants.SERVICE_CONFIGURATION_FILTER,
+		unbind = "-"
+	)
+	public void setConfiguration(Configuration configuration) {
+	}
 
-	@ServiceReference(type = FinderCache.class)
-	protected FinderCache finderCache;
+	@Override
+	@Reference(
+		target = parerPersistenceConstants.ORIGIN_BUNDLE_SYMBOLIC_NAME_FILTER,
+		unbind = "-"
+	)
+	public void setDataSource(DataSource dataSource) {
+		super.setDataSource(dataSource);
+	}
+
+	@Override
+	@Reference(
+		target = parerPersistenceConstants.ORIGIN_BUNDLE_SYMBOLIC_NAME_FILTER,
+		unbind = "-"
+	)
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		super.setSessionFactory(sessionFactory);
+	}
 
 	private static final String _SQL_SELECT_COMPONENTIINVIO =
 		"SELECT componentiInvio FROM ComponentiInvio componentiInvio";
@@ -1294,5 +1189,10 @@ public class ComponentiInvioPersistenceImpl
 
 	private static final Set<String> _compoundPKColumnNames = SetUtil.fromArray(
 		new String[] {"ID_INVIO", "ID_COMPONENTE"});
+
+	@Override
+	protected FinderCache getFinderCache() {
+		return dummyFinderCache;
+	}
 
 }

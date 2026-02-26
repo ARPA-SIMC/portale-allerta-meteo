@@ -392,6 +392,74 @@
     // Internal Index is sticky on top-left when abobe the "lg" breakpoint
     const responsiveStickyTopLeftBreakpoint = window.matchMedia( '(min-width: 992px)' );
   
+ 	$('.am').on('click','[data-toggle=liferay-tab]', function(e){
+ 		e.preventDefault()
+ 		var prn = $(this)
+ 		while (prn && (!prn.attr('role') || prn.attr('role')!='tablist'))
+ 			prn = prn.parent()
+ 		if (!prn) return
+ 		prn.find('.active').removeClass('active')
+ 		$(this).addClass('active')
+		var mdl = $(this).attr('href')
+		if (mdl=='#' && $(this).attr('data-target'))
+		   mdl = $(this).attr('data-target')
+		if (!mdl || mdl.length<2) return
+		mdl = $(mdl)
+		mdl.parent().children('.active').removeClass('active')
+		mdl.addClass('active')
+	})
+	
+	 $('.am').on('click','[data-toggle=tab]', function(e){
+	    e.preventDefault()
+ 		var prn = $(this)
+ 		while (prn && (!prn.attr('role') || prn.attr('role')!='tablist'))
+ 			prn = prn.parent()
+ 		if (!prn) return
+ 		prn.find('.active').removeClass('active')
+ 		$(this).addClass('active')
+		var mdl = $(this).attr('href')
+		if (mdl=='#' && $(this).attr('data-target'))
+		   mdl = $(this).attr('data-target')
+		if (!mdl || mdl.length<2) return
+		mdl = $(mdl)
+		mdl.parent().children('.active').removeClass('active')
+		mdl.addClass('active')
+	})
+	
+	$('.am').on('click','[data-toggle=modal]', function(){
+		var mdl = $(this).attr('href')
+		if (mdl=='#' && $(this).attr('data-target'))
+		   mdl = $(this).attr('data-target')
+		if (mdl.length>1) {
+			var tgt = $(mdl)
+			tgt.css("display","block")
+			tgt.addClass('show')
+			console.log(mdl)
+		}
+	})
+	
+	$('.am').on('click','[data-toggle=liferay-modal]', function(){
+		var mdl = $(this).attr('href')
+		if (mdl=='#' && $(this).attr('data-target'))
+		   mdl = $(this).attr('data-target')
+		if (mdl.length>1) {
+			var tgt = $(mdl)
+			tgt.css("display","block")
+			tgt.addClass('show')
+			console.log(mdl)
+		}
+	})
+
+	
+	
+	$('[data-dismiss=modal]').each(function(){
+			$(this).click(function () {
+				var elem = $(this)
+				while (elem && !elem.hasClass('modal')) elem = elem.parent()
+				elem.removeClass('show')
+				elem.css("display","none")
+			})
+	})
 
     // For each internal index (it should be just one, but this is generic)
     $('[data-toggle=internal-index]').each(function(){
@@ -934,7 +1002,7 @@
   $(document).ready(function(){
     // Tooltips
 	  if ($('[data-toggle=tooltip]').length > 0) {
-		  $('[data-toggle=tooltip]').tooltip();
+		  //$('[data-toggle=tooltip]').tooltip();
 	  }
 
     // Move all inner dialog to body on show, to avoid z-indexing stuff

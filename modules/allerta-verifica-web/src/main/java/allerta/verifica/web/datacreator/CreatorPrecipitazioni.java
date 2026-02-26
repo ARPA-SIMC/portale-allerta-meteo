@@ -60,10 +60,10 @@ public class CreatorPrecipitazioni implements VerificaDatoCreator {
 					);
 			
 			for (String z : CostantiVerificaAllerte.ZONE) {
-				String val = CostantiVerificaAllerte.PRECIPITAZIONI[0];
+				String val = CostantiVerificaAllerte.PRECIPITAZIONI[1];
 				try {
-					if (preci!=null && preci.size()>0) {
-						double pioggia = -1;
+					if (preci!=null) {
+						double pioggia = 0.0;
 						for (Object[] o : preci) {
 							if (o!=null && o.length>1 && z.equals(o[0].toString()) && o[1]!=null)
 								pioggia = Double.parseDouble(o[1].toString());

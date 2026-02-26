@@ -35,11 +35,7 @@ import it.eng.allerte.model.RubricaGruppo;
 import it.eng.allerte.service.RubricaGruppoLocalServiceUtil;
 
 @Component(
-	    immediate = true,
-	    property = {
-	        "osgi.http.whiteboard.context.path=/",
-	        "osgi.http.whiteboard.servlet.pattern=/rubrica/gruppo/*"
-	    },
+	    property = "osgi.http.whiteboard.servlet.pattern=/rubrica/gruppo/*",
 	    service = Servlet.class
 	)
 public class DownloadGruppoServlet extends HttpServlet {
@@ -53,6 +49,8 @@ public class DownloadGruppoServlet extends HttpServlet {
 		if (ss==null) {
 			return;
 		}
+		
+		System.out.println("Gruppo scaricamento "+ss);
 		
 		boolean separati = false;
 		if (req.getParameter("separati")!=null && !"".equals(req.getParameter("separati")))
@@ -74,7 +72,7 @@ public class DownloadGruppoServlet extends HttpServlet {
 		nomeGruppo = nomeGruppo.toLowerCase();
 		
 		List<Object[]> rubrica = RubricaGruppoLocalServiceUtil.getGroup(l);
-		
+		System.out.println("Dimensione "+rubrica.size());
 		if (!separati) {
 			workbook = getWorkbook(rubrica, nomeGruppo, true);
 			resp.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");

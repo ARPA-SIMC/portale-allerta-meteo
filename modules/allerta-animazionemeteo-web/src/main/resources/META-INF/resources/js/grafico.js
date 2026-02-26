@@ -7,13 +7,15 @@ var request=getParameterByName('r'),
 req={},
 theRequestArray=request.split('/');
 req['ident']=theRequestArray[0]; //identificativo reti mobili
-req['lonlat']=theRequestArray[1].split(","); //0 è lon, 1 è lat
-req['net']=theRequestArray[2];
-req['time']=theRequestArray[3];
-req['level']=theRequestArray[4];
-req['var']=theRequestArray[5];
-req['data1']=theRequestArray[6];//begin
-req['data2']=theRequestArray[7];//end
+//req['lonlat']=theRequestArray[1].split(","); //0 è lon, 1 è lat
+//req['net']=theRequestArray[2];
+req['lonlat']=''
+req['net']=''
+req['time']=theRequestArray[1];
+req['level']=theRequestArray[2];
+req['var']=theRequestArray[3];
+req['data1']=theRequestArray[4];//begin
+req['data2']=theRequestArray[5];//end
 var domainLowDeflusso, domainHighDeflusso,
 quantGiorni = moment(req['data2']).diff(moment(req['data1']), 'days'); //compreso il giorno 0
 /*@ma	
@@ -27,10 +29,10 @@ var myRequest=theRequestArray[0]+'/'+
 		req['data2'];
  */
 //@ma
-var myRequest = "stazione=" + theRequestArray[0] + "/" + theRequestArray[1] + "/" + theRequestArray[2] + "&variabile=" + 
-theRequestArray[3] + "/" + theRequestArray[4] + "/" + theRequestArray[5] 
+var myRequest = "stazione=" + theRequestArray[0] + "&variabile=" + 
+theRequestArray[1] + "/" + theRequestArray[2] + "/" + theRequestArray[3] 
 var variabile='/'+req['time']+'/'+req['level']+'/'+req['var'],
-hash=req['ident']+'/'+req['lonlat'][0]+','+req['lonlat'][1]+'/'+req['net'],
+hash=req['ident'],
 vediSoglie,
 oggi24h,
 valoriAssi,
@@ -467,7 +469,7 @@ formatValue = ((req['var']=='B13215')||(req['var']=='B13013')||(req['var']=='B22
 						//x.domain([data[0].t, data[data.length - 1].t]);
 						y.domain([min,max]);
 						//disegnamo le raffiche, se esistono
-						var theReqRaffiche='stazione='+req['ident']+'/'+req['lonlat'][0]+','+req['lonlat'][1]+'/'+req['net']+'&variabile=2,0,3600/103,10000,-,-/B11041'
+						var theReqRaffiche='stazione='+req['ident']+'&variabile=2,0,3600/103,10000,-,-/B11041'
 						//+moment(req['data1']).subtract(1,'day').format('YYYY-MM-DD')+'/'+req['data2']
 						//console.log(theReqRaffiche);
 						$.ajax({
@@ -537,7 +539,7 @@ formatValue = ((req['var']=='B13215')||(req['var']=='B13013')||(req['var']=='B22
 									});*/
 								} else {
 									//noraffiche, provo l'altra
-									var theReqRaffiche=req['ident']+'/'+req['lonlat'][0]+','+req['lonlat'][1]+'/'+req['net']+'/2,0,3600/103,10000,-,-/B11002/'+moment(req['data1']).subtract(1,'day').format('YYYY-MM-DD')+'/'+req['data2']
+									var theReqRaffiche=req['ident']+'/2,0,3600/103,10000,-,-/B11002/'+moment(req['data1']).subtract(1,'day').format('YYYY-MM-DD')+'/'+req['data2']
 									$.ajax({
 										//http://www.smr.arpa.emr.it/meteozen/rt_data/spatialseries/2,0,3600/103,10000,-,-/B11002/2016-04-07T11:00:00
 										url: theService+"get-time-series/"+theReqRaffiche,

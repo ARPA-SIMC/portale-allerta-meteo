@@ -2,3 +2,6 @@ Bundle-Name: allerta-animazionemeteo-web
 Bundle-SymbolicName: it.eng.animazione.portlet
 Bundle-Version: 1.0.0
 Export-Package: it.eng.animazione.portlet.constants
+Provide-Capability:\
+	liferay.language.resources;\
+		resource.bundle.base.name="content.Language"

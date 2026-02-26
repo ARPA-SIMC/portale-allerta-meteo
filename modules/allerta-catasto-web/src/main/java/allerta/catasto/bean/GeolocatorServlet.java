@@ -13,12 +13,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.osgi.service.component.annotations.Component;
 
+
 @Component(
-	    immediate = true,
-	    property = {
-	        "osgi.http.whiteboard.context.path=/",
-	        "osgi.http.whiteboard.servlet.pattern=/geolocator"
-	    },
+	    property = "osgi.http.whiteboard.servlet.pattern=/geolocator",
 	    service = Servlet.class
 	)
 public class GeolocatorServlet extends HttpServlet {

@@ -12,11 +12,11 @@ import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.workflow.WorkflowLog;
-import com.liferay.portal.kernel.workflow.WorkflowLogManagerUtil;
 import com.liferay.portal.kernel.workflow.WorkflowTask;
 import com.liferay.portal.kernel.workflow.WorkflowTaskManagerUtil;
-import com.liferay.portal.kernel.workflow.comparator.WorkflowComparatorFactoryUtil;
+import com.liferay.portal.kernel.workflow.comparator.WorkflowLogCreateDateComparator;
 import com.liferay.portal.kernel.workflow.permission.WorkflowPermissionUtil;
+import com.liferay.portal.workflow.manager.WorkflowLogManager;
 
 import it.eng.allerta.utils.AllertaKeys;
 import it.eng.allerter.allerta.AllertaBean;
@@ -38,6 +38,7 @@ import javax.portlet.ResourceResponse;
 import javax.servlet.http.HttpServletRequest;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author VLPMRC80B
@@ -108,13 +109,14 @@ public class AllertaCompilaSbWebPortlet extends MVCPortlet {
 			            logTypes_assign.add(WorkflowLog.TASK_ASSIGN);
 			            
 			            List<WorkflowLog> workflowLogs_assign = 
-			            		WorkflowLogManagerUtil.getWorkflowLogsByWorkflowInstance(
+			            		_workflowLogManager.getWorkflowLogsByWorkflowInstance(
 			            					themeDisplay.getCompanyId(), 
 			            					wil.getWorkflowInstanceId(), 
 			            					logTypes_assign, 
 			            					QueryUtil.ALL_POS, 
 			            					QueryUtil.ALL_POS, 
-			            					WorkflowComparatorFactoryUtil.getLogCreateDateComparator(true));
+			            					new WorkflowLogCreateDateComparator(true,null,null,null));
+			            					//WorkflowComparatorFactoryUtil.getLogCreateDateComparator(true));
 			            
 			            if(workflowLogs_assign.size() > 0){
 			            	
@@ -182,6 +184,9 @@ public class AllertaCompilaSbWebPortlet extends MVCPortlet {
 			writer.println(allertaBean.getNumeroDefault(eventi));
 		
 	}
+	
+	@Reference
+	private WorkflowLogManager _workflowLogManager;
 	
 	private Log _log = LogFactoryUtil.getLog(AllertaCompilaSbWebPortlet.class);
 	

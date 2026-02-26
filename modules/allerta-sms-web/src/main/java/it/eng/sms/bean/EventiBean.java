@@ -15,6 +15,10 @@ public class EventiBean {
 	private String percSuccesso;
 	private String ultimoAggiornamento;
 	private String link;
+
+	private String gruppiRaggiunti;
+	private String gruppiTotali;
+	private String tuttiRaggiunti;
 	
 	public String getId() {
 		return id;
@@ -90,5 +94,22 @@ public class EventiBean {
 		this.link = link;
 	}
 	
-	
+	public String getGruppiRaggiunti() {
+		return gruppiRaggiunti;
+	}
+	public void setGruppiRaggiunti(String gruppiRaggiunti) {
+		this.gruppiRaggiunti = gruppiRaggiunti;
+	}
+	public String getGruppiTotali() {
+		return gruppiTotali;
+	}
+	public void setGruppiTotali(String gruppiTotali) {
+		this.gruppiTotali = gruppiTotali;
+	}
+	public String getTuttiRaggiunti() {
+		return tuttiRaggiunti;
+	}
+	public void setTuttiRaggiunti(String tuttiRaggiunti) {
+		this.tuttiRaggiunti = tuttiRaggiunti;
+	}
 }

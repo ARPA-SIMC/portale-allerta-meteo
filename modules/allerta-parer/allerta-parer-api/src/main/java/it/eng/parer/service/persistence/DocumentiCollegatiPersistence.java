@@ -1,30 +1,18 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.parer.service.persistence;
-
-import aQute.bnd.annotation.ProviderType;
 
 import com.liferay.portal.kernel.service.persistence.BasePersistence;
 
 import it.eng.parer.exception.NoSuchDocumentiCollegatiException;
 import it.eng.parer.model.DocumentiCollegati;
 
-import java.io.Serializable;
-
-import java.util.Map;
 import java.util.Set;
+
+import org.osgi.annotation.versioning.ProviderType;
 
 /**
  * The persistence interface for the documenti collegati service.
@@ -46,9 +34,6 @@ public interface DocumentiCollegatiPersistence
 	 *
 	 * Never modify or reference this interface directly. Always use {@link DocumentiCollegatiUtil} to access the documenti collegati persistence. Modify <code>service.xml</code> and rerun ServiceBuilder to regenerate this interface.
 	 */
-	@Override
-	public Map<Serializable, DocumentiCollegati> fetchByPrimaryKeys(
-		Set<Serializable> primaryKeys);
 
 	/**
 	 * Returns all the documenti collegatis where ID_INVIO = &#63;.
@@ -63,7 +48,7 @@ public interface DocumentiCollegatiPersistence
 	 * Returns a range of all the documenti collegatis where ID_INVIO = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>DocumentiCollegatiModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>DocumentiCollegatiModelImpl</code>.
 	 * </p>
 	 *
 	 * @param ID_INVIO the id_invio
@@ -78,7 +63,7 @@ public interface DocumentiCollegatiPersistence
 	 * Returns an ordered range of all the documenti collegatis where ID_INVIO = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>DocumentiCollegatiModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>DocumentiCollegatiModelImpl</code>.
 	 * </p>
 	 *
 	 * @param ID_INVIO the id_invio
@@ -96,21 +81,21 @@ public interface DocumentiCollegatiPersistence
 	 * Returns an ordered range of all the documenti collegatis where ID_INVIO = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>DocumentiCollegatiModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>DocumentiCollegatiModelImpl</code>.
 	 * </p>
 	 *
 	 * @param ID_INVIO the id_invio
 	 * @param start the lower bound of the range of documenti collegatis
 	 * @param end the upper bound of the range of documenti collegatis (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching documenti collegatis
 	 */
 	public java.util.List<DocumentiCollegati> findByDocumentiCollegatiByIdInvio(
 		long ID_INVIO, int start, int end,
 		com.liferay.portal.kernel.util.OrderByComparator<DocumentiCollegati>
 			orderByComparator,
-		boolean retrieveFromCache);
+		boolean useFinderCache);
 
 	/**
 	 * Returns the first documenti collegati in the ordered set where ID_INVIO = &#63;.
@@ -174,9 +159,7 @@ public interface DocumentiCollegatiPersistence
 	 * @throws NoSuchDocumentiCollegatiException if a documenti collegati with the primary key could not be found
 	 */
 	public DocumentiCollegati[] findByDocumentiCollegatiByIdInvio_PrevAndNext(
-			it.eng.parer.service.persistence.DocumentiCollegatiPK
-				documentiCollegatiPK,
-			long ID_INVIO,
+			DocumentiCollegatiPK documentiCollegatiPK, long ID_INVIO,
 			com.liferay.portal.kernel.util.OrderByComparator<DocumentiCollegati>
 				orderByComparator)
 		throws NoSuchDocumentiCollegatiException;
@@ -217,9 +200,7 @@ public interface DocumentiCollegatiPersistence
 	 * @param documentiCollegatiPK the primary key for the new documenti collegati
 	 * @return the new documenti collegati
 	 */
-	public DocumentiCollegati create(
-		it.eng.parer.service.persistence.DocumentiCollegatiPK
-			documentiCollegatiPK);
+	public DocumentiCollegati create(DocumentiCollegatiPK documentiCollegatiPK);
 
 	/**
 	 * Removes the documenti collegati with the primary key from the database. Also notifies the appropriate model listeners.
@@ -228,9 +209,7 @@ public interface DocumentiCollegatiPersistence
 	 * @return the documenti collegati that was removed
 	 * @throws NoSuchDocumentiCollegatiException if a documenti collegati with the primary key could not be found
 	 */
-	public DocumentiCollegati remove(
-			it.eng.parer.service.persistence.DocumentiCollegatiPK
-				documentiCollegatiPK)
+	public DocumentiCollegati remove(DocumentiCollegatiPK documentiCollegatiPK)
 		throws NoSuchDocumentiCollegatiException;
 
 	public DocumentiCollegati updateImpl(DocumentiCollegati documentiCollegati);
@@ -243,8 +222,7 @@ public interface DocumentiCollegatiPersistence
 	 * @throws NoSuchDocumentiCollegatiException if a documenti collegati with the primary key could not be found
 	 */
 	public DocumentiCollegati findByPrimaryKey(
-			it.eng.parer.service.persistence.DocumentiCollegatiPK
-				documentiCollegatiPK)
+			DocumentiCollegatiPK documentiCollegatiPK)
 		throws NoSuchDocumentiCollegatiException;
 
 	/**
@@ -254,8 +232,7 @@ public interface DocumentiCollegatiPersistence
 	 * @return the documenti collegati, or <code>null</code> if a documenti collegati with the primary key could not be found
 	 */
 	public DocumentiCollegati fetchByPrimaryKey(
-		it.eng.parer.service.persistence.DocumentiCollegatiPK
-			documentiCollegatiPK);
+		DocumentiCollegatiPK documentiCollegatiPK);
 
 	/**
 	 * Returns all the documenti collegatis.
@@ -268,7 +245,7 @@ public interface DocumentiCollegatiPersistence
 	 * Returns a range of all the documenti collegatis.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>DocumentiCollegatiModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>DocumentiCollegatiModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of documenti collegatis
@@ -281,7 +258,7 @@ public interface DocumentiCollegatiPersistence
 	 * Returns an ordered range of all the documenti collegatis.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>DocumentiCollegatiModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>DocumentiCollegatiModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of documenti collegatis
@@ -298,20 +275,20 @@ public interface DocumentiCollegatiPersistence
 	 * Returns an ordered range of all the documenti collegatis.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>DocumentiCollegatiModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>DocumentiCollegatiModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of documenti collegatis
 	 * @param end the upper bound of the range of documenti collegatis (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of documenti collegatis
 	 */
 	public java.util.List<DocumentiCollegati> findAll(
 		int start, int end,
 		com.liferay.portal.kernel.util.OrderByComparator<DocumentiCollegati>
 			orderByComparator,
-		boolean retrieveFromCache);
+		boolean useFinderCache);
 
 	/**
 	 * Removes all the documenti collegatis from the database.

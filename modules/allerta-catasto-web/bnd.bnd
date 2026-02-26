@@ -2,3 +2,6 @@ Bundle-Name: allerta-catasto-web
 Bundle-SymbolicName: allerta.catasto.web
 Bundle-Version: 1.0.0
 Export-Package: allerta.catasto.web.constants
+Provide-Capability:\
+	liferay.language.resources;\
+		resource.bundle.base.name="content.Language"

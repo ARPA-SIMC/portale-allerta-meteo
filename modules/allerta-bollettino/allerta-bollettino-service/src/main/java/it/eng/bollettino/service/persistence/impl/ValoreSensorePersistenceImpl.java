@@ -1,21 +1,12 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.bollettino.service.persistence.impl;
 
-import aQute.bnd.annotation.ProviderType;
-
+import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
@@ -23,36 +14,44 @@ import com.liferay.portal.kernel.dao.orm.Query;
 import com.liferay.portal.kernel.dao.orm.QueryPos;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
+import com.liferay.portal.kernel.dao.orm.SessionFactory;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.kernel.util.PropsKeys;
+import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.SetUtil;
-import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
-import com.liferay.portal.spring.extender.service.ServiceReference;
 
 import it.eng.bollettino.exception.NoSuchValoreSensoreException;
 import it.eng.bollettino.model.ValoreSensore;
+import it.eng.bollettino.model.ValoreSensoreTable;
 import it.eng.bollettino.model.impl.ValoreSensoreImpl;
 import it.eng.bollettino.model.impl.ValoreSensoreModelImpl;
 import it.eng.bollettino.service.persistence.ValoreSensorePersistence;
+import it.eng.bollettino.service.persistence.ValoreSensoreUtil;
+import it.eng.bollettino.service.persistence.impl.constants.BOLLETTINOPersistenceConstants;
 
 import java.io.Serializable;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+
+import javax.sql.DataSource;
+
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The persistence implementation for the valore sensore service.
@@ -64,7 +63,7 @@ import java.util.Set;
  * @author GFAVINI
  * @generated
  */
-@ProviderType
+@Component(service = ValoreSensorePersistence.class)
 public class ValoreSensorePersistenceImpl
 	extends BasePersistenceImpl<ValoreSensore>
 	implements ValoreSensorePersistence {
@@ -105,7 +104,7 @@ public class ValoreSensorePersistenceImpl
 	 * Returns a range of all the valore sensores where uuid = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>ValoreSensoreModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>ValoreSensoreModelImpl</code>.
 	 * </p>
 	 *
 	 * @param uuid the uuid
@@ -122,7 +121,7 @@ public class ValoreSensorePersistenceImpl
 	 * Returns an ordered range of all the valore sensores where uuid = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>ValoreSensoreModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>ValoreSensoreModelImpl</code>.
 	 * </p>
 	 *
 	 * @param uuid the uuid
@@ -143,44 +142,44 @@ public class ValoreSensorePersistenceImpl
 	 * Returns an ordered range of all the valore sensores where uuid = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>ValoreSensoreModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>ValoreSensoreModelImpl</code>.
 	 * </p>
 	 *
 	 * @param uuid the uuid
 	 * @param start the lower bound of the range of valore sensores
 	 * @param end the upper bound of the range of valore sensores (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching valore sensores
 	 */
 	@Override
 	public List<ValoreSensore> findByUuid(
 		String uuid, int start, int end,
 		OrderByComparator<ValoreSensore> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
 		uuid = Objects.toString(uuid, "");
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindByUuid;
-			finderArgs = new Object[] {uuid};
+			if (useFinderCache) {
+				finderPath = _finderPathWithoutPaginationFindByUuid;
+				finderArgs = new Object[] {uuid};
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByUuid;
 			finderArgs = new Object[] {uuid, start, end, orderByComparator};
 		}
 
 		List<ValoreSensore> list = null;
 
-		if (retrieveFromCache) {
-			list = (List<ValoreSensore>)finderCache.getResult(
+		if (useFinderCache) {
+			list = (List<ValoreSensore>)dummyFinderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
@@ -195,73 +194,63 @@ public class ValoreSensorePersistenceImpl
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					3 + (orderByComparator.getOrderByFields().length * 2));
 			}
 			else {
-				query = new StringBundler(3);
+				sb = new StringBundler(3);
 			}
 
-			query.append(_SQL_SELECT_VALORESENSORE_WHERE);
+			sb.append(_SQL_SELECT_VALORESENSORE_WHERE);
 
 			boolean bindUuid = false;
 
 			if (uuid.isEmpty()) {
-				query.append(_FINDER_COLUMN_UUID_UUID_3);
+				sb.append(_FINDER_COLUMN_UUID_UUID_3);
 			}
 			else {
 				bindUuid = true;
 
-				query.append(_FINDER_COLUMN_UUID_UUID_2);
+				sb.append(_FINDER_COLUMN_UUID_UUID_2);
 			}
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 			}
-			else if (pagination) {
-				query.append(ValoreSensoreModelImpl.ORDER_BY_JPQL);
+			else {
+				sb.append(ValoreSensoreModelImpl.ORDER_BY_JPQL);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindUuid) {
-					qPos.add(uuid);
+					queryPos.add(uuid);
 				}
 
-				if (!pagination) {
-					list = (List<ValoreSensore>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<ValoreSensore>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<ValoreSensore>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					dummyFinderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -291,16 +280,16 @@ public class ValoreSensorePersistenceImpl
 			return valoreSensore;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("uuid=");
-		msg.append(uuid);
+		sb.append("uuid=");
+		sb.append(uuid);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchValoreSensoreException(msg.toString());
+		throw new NoSuchValoreSensoreException(sb.toString());
 	}
 
 	/**
@@ -342,16 +331,16 @@ public class ValoreSensorePersistenceImpl
 			return valoreSensore;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("uuid=");
-		msg.append(uuid);
+		sb.append("uuid=");
+		sb.append(uuid);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchValoreSensoreException(msg.toString());
+		throw new NoSuchValoreSensoreException(sb.toString());
 	}
 
 	/**
@@ -417,8 +406,8 @@ public class ValoreSensorePersistenceImpl
 
 			return array;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -429,28 +418,28 @@ public class ValoreSensorePersistenceImpl
 		Session session, ValoreSensore valoreSensore, String uuid,
 		OrderByComparator<ValoreSensore> orderByComparator, boolean previous) {
 
-		StringBundler query = null;
+		StringBundler sb = null;
 
 		if (orderByComparator != null) {
-			query = new StringBundler(
+			sb = new StringBundler(
 				4 + (orderByComparator.getOrderByConditionFields().length * 3) +
 					(orderByComparator.getOrderByFields().length * 3));
 		}
 		else {
-			query = new StringBundler(3);
+			sb = new StringBundler(3);
 		}
 
-		query.append(_SQL_SELECT_VALORESENSORE_WHERE);
+		sb.append(_SQL_SELECT_VALORESENSORE_WHERE);
 
 		boolean bindUuid = false;
 
 		if (uuid.isEmpty()) {
-			query.append(_FINDER_COLUMN_UUID_UUID_3);
+			sb.append(_FINDER_COLUMN_UUID_UUID_3);
 		}
 		else {
 			bindUuid = true;
 
-			query.append(_FINDER_COLUMN_UUID_UUID_2);
+			sb.append(_FINDER_COLUMN_UUID_UUID_2);
 		}
 
 		if (orderByComparator != null) {
@@ -458,72 +447,72 @@ public class ValoreSensorePersistenceImpl
 				orderByComparator.getOrderByConditionFields();
 
 			if (orderByConditionFields.length > 0) {
-				query.append(WHERE_AND);
+				sb.append(WHERE_AND);
 			}
 
 			for (int i = 0; i < orderByConditionFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByConditionFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByConditionFields[i]);
 
 				if ((i + 1) < orderByConditionFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+						sb.append(WHERE_GREATER_THAN_HAS_NEXT);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+						sb.append(WHERE_LESSER_THAN_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN);
+						sb.append(WHERE_GREATER_THAN);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN);
+						sb.append(WHERE_LESSER_THAN);
 					}
 				}
 			}
 
-			query.append(ORDER_BY_CLAUSE);
+			sb.append(ORDER_BY_CLAUSE);
 
 			String[] orderByFields = orderByComparator.getOrderByFields();
 
 			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByFields[i]);
 
 				if ((i + 1) < orderByFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC_HAS_NEXT);
+						sb.append(ORDER_BY_ASC_HAS_NEXT);
 					}
 					else {
-						query.append(ORDER_BY_DESC_HAS_NEXT);
+						sb.append(ORDER_BY_DESC_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC);
+						sb.append(ORDER_BY_ASC);
 					}
 					else {
-						query.append(ORDER_BY_DESC);
+						sb.append(ORDER_BY_DESC);
 					}
 				}
 			}
 		}
 		else {
-			query.append(ValoreSensoreModelImpl.ORDER_BY_JPQL);
+			sb.append(ValoreSensoreModelImpl.ORDER_BY_JPQL);
 		}
 
-		String sql = query.toString();
+		String sql = sb.toString();
 
-		Query q = session.createQuery(sql);
+		Query query = session.createQuery(sql);
 
-		q.setFirstResult(0);
-		q.setMaxResults(2);
+		query.setFirstResult(0);
+		query.setMaxResults(2);
 
-		QueryPos qPos = QueryPos.getInstance(q);
+		QueryPos queryPos = QueryPos.getInstance(query);
 
 		if (bindUuid) {
-			qPos.add(uuid);
+			queryPos.add(uuid);
 		}
 
 		if (orderByComparator != null) {
@@ -531,11 +520,11 @@ public class ValoreSensorePersistenceImpl
 					orderByComparator.getOrderByConditionValues(
 						valoreSensore)) {
 
-				qPos.add(orderByConditionValue);
+				queryPos.add(orderByConditionValue);
 			}
 		}
 
-		List<ValoreSensore> list = q.list();
+		List<ValoreSensore> list = query.list();
 
 		if (list.size() == 2) {
 			return list.get(1);
@@ -573,47 +562,46 @@ public class ValoreSensorePersistenceImpl
 
 		Object[] finderArgs = new Object[] {uuid};
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = (Long)dummyFinderCache.getResult(
+			finderPath, finderArgs, this);
 
 		if (count == null) {
-			StringBundler query = new StringBundler(2);
+			StringBundler sb = new StringBundler(2);
 
-			query.append(_SQL_COUNT_VALORESENSORE_WHERE);
+			sb.append(_SQL_COUNT_VALORESENSORE_WHERE);
 
 			boolean bindUuid = false;
 
 			if (uuid.isEmpty()) {
-				query.append(_FINDER_COLUMN_UUID_UUID_3);
+				sb.append(_FINDER_COLUMN_UUID_UUID_3);
 			}
 			else {
 				bindUuid = true;
 
-				query.append(_FINDER_COLUMN_UUID_UUID_2);
+				sb.append(_FINDER_COLUMN_UUID_UUID_2);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindUuid) {
-					qPos.add(uuid);
+					queryPos.add(uuid);
 				}
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
-				finderCache.putResult(finderPath, finderArgs, count);
+				dummyFinderCache.putResult(finderPath, finderArgs, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -653,7 +641,7 @@ public class ValoreSensorePersistenceImpl
 	 * Returns a range of all the valore sensores where idVariabile = &#63; and idStazione = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>ValoreSensoreModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>ValoreSensoreModelImpl</code>.
 	 * </p>
 	 *
 	 * @param idVariabile the id variabile
@@ -674,7 +662,7 @@ public class ValoreSensorePersistenceImpl
 	 * Returns an ordered range of all the valore sensores where idVariabile = &#63; and idStazione = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>ValoreSensoreModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>ValoreSensoreModelImpl</code>.
 	 * </p>
 	 *
 	 * @param idVariabile the id variabile
@@ -697,7 +685,7 @@ public class ValoreSensorePersistenceImpl
 	 * Returns an ordered range of all the valore sensores where idVariabile = &#63; and idStazione = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>ValoreSensoreModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>ValoreSensoreModelImpl</code>.
 	 * </p>
 	 *
 	 * @param idVariabile the id variabile
@@ -705,30 +693,31 @@ public class ValoreSensorePersistenceImpl
 	 * @param start the lower bound of the range of valore sensores
 	 * @param end the upper bound of the range of valore sensores (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching valore sensores
 	 */
 	@Override
 	public List<ValoreSensore> findByvariabileStazione(
 		String idVariabile, String idStazione, int start, int end,
 		OrderByComparator<ValoreSensore> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
 		idVariabile = Objects.toString(idVariabile, "");
 		idStazione = Objects.toString(idStazione, "");
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindByvariabileStazione;
-			finderArgs = new Object[] {idVariabile, idStazione};
+			if (useFinderCache) {
+				finderPath =
+					_finderPathWithoutPaginationFindByvariabileStazione;
+				finderArgs = new Object[] {idVariabile, idStazione};
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByvariabileStazione;
 			finderArgs = new Object[] {
 				idVariabile, idStazione, start, end, orderByComparator
@@ -737,8 +726,8 @@ public class ValoreSensorePersistenceImpl
 
 		List<ValoreSensore> list = null;
 
-		if (retrieveFromCache) {
-			list = (List<ValoreSensore>)finderCache.getResult(
+		if (useFinderCache) {
+			list = (List<ValoreSensore>)dummyFinderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
@@ -755,88 +744,78 @@ public class ValoreSensorePersistenceImpl
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					4 + (orderByComparator.getOrderByFields().length * 2));
 			}
 			else {
-				query = new StringBundler(4);
+				sb = new StringBundler(4);
 			}
 
-			query.append(_SQL_SELECT_VALORESENSORE_WHERE);
+			sb.append(_SQL_SELECT_VALORESENSORE_WHERE);
 
 			boolean bindIdVariabile = false;
 
 			if (idVariabile.isEmpty()) {
-				query.append(_FINDER_COLUMN_VARIABILESTAZIONE_IDVARIABILE_3);
+				sb.append(_FINDER_COLUMN_VARIABILESTAZIONE_IDVARIABILE_3);
 			}
 			else {
 				bindIdVariabile = true;
 
-				query.append(_FINDER_COLUMN_VARIABILESTAZIONE_IDVARIABILE_2);
+				sb.append(_FINDER_COLUMN_VARIABILESTAZIONE_IDVARIABILE_2);
 			}
 
 			boolean bindIdStazione = false;
 
 			if (idStazione.isEmpty()) {
-				query.append(_FINDER_COLUMN_VARIABILESTAZIONE_IDSTAZIONE_3);
+				sb.append(_FINDER_COLUMN_VARIABILESTAZIONE_IDSTAZIONE_3);
 			}
 			else {
 				bindIdStazione = true;
 
-				query.append(_FINDER_COLUMN_VARIABILESTAZIONE_IDSTAZIONE_2);
+				sb.append(_FINDER_COLUMN_VARIABILESTAZIONE_IDSTAZIONE_2);
 			}
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 			}
-			else if (pagination) {
-				query.append(ValoreSensoreModelImpl.ORDER_BY_JPQL);
+			else {
+				sb.append(ValoreSensoreModelImpl.ORDER_BY_JPQL);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindIdVariabile) {
-					qPos.add(idVariabile);
+					queryPos.add(idVariabile);
 				}
 
 				if (bindIdStazione) {
-					qPos.add(idStazione);
+					queryPos.add(idStazione);
 				}
 
-				if (!pagination) {
-					list = (List<ValoreSensore>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<ValoreSensore>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<ValoreSensore>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					dummyFinderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -868,19 +847,19 @@ public class ValoreSensorePersistenceImpl
 			return valoreSensore;
 		}
 
-		StringBundler msg = new StringBundler(6);
+		StringBundler sb = new StringBundler(6);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("idVariabile=");
-		msg.append(idVariabile);
+		sb.append("idVariabile=");
+		sb.append(idVariabile);
 
-		msg.append(", idStazione=");
-		msg.append(idStazione);
+		sb.append(", idStazione=");
+		sb.append(idStazione);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchValoreSensoreException(msg.toString());
+		throw new NoSuchValoreSensoreException(sb.toString());
 	}
 
 	/**
@@ -928,19 +907,19 @@ public class ValoreSensorePersistenceImpl
 			return valoreSensore;
 		}
 
-		StringBundler msg = new StringBundler(6);
+		StringBundler sb = new StringBundler(6);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("idVariabile=");
-		msg.append(idVariabile);
+		sb.append("idVariabile=");
+		sb.append(idVariabile);
 
-		msg.append(", idStazione=");
-		msg.append(idStazione);
+		sb.append(", idStazione=");
+		sb.append(idStazione);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchValoreSensoreException(msg.toString());
+		throw new NoSuchValoreSensoreException(sb.toString());
 	}
 
 	/**
@@ -1012,8 +991,8 @@ public class ValoreSensorePersistenceImpl
 
 			return array;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -1025,39 +1004,39 @@ public class ValoreSensorePersistenceImpl
 		String idStazione, OrderByComparator<ValoreSensore> orderByComparator,
 		boolean previous) {
 
-		StringBundler query = null;
+		StringBundler sb = null;
 
 		if (orderByComparator != null) {
-			query = new StringBundler(
+			sb = new StringBundler(
 				5 + (orderByComparator.getOrderByConditionFields().length * 3) +
 					(orderByComparator.getOrderByFields().length * 3));
 		}
 		else {
-			query = new StringBundler(4);
+			sb = new StringBundler(4);
 		}
 
-		query.append(_SQL_SELECT_VALORESENSORE_WHERE);
+		sb.append(_SQL_SELECT_VALORESENSORE_WHERE);
 
 		boolean bindIdVariabile = false;
 
 		if (idVariabile.isEmpty()) {
-			query.append(_FINDER_COLUMN_VARIABILESTAZIONE_IDVARIABILE_3);
+			sb.append(_FINDER_COLUMN_VARIABILESTAZIONE_IDVARIABILE_3);
 		}
 		else {
 			bindIdVariabile = true;
 
-			query.append(_FINDER_COLUMN_VARIABILESTAZIONE_IDVARIABILE_2);
+			sb.append(_FINDER_COLUMN_VARIABILESTAZIONE_IDVARIABILE_2);
 		}
 
 		boolean bindIdStazione = false;
 
 		if (idStazione.isEmpty()) {
-			query.append(_FINDER_COLUMN_VARIABILESTAZIONE_IDSTAZIONE_3);
+			sb.append(_FINDER_COLUMN_VARIABILESTAZIONE_IDSTAZIONE_3);
 		}
 		else {
 			bindIdStazione = true;
 
-			query.append(_FINDER_COLUMN_VARIABILESTAZIONE_IDSTAZIONE_2);
+			sb.append(_FINDER_COLUMN_VARIABILESTAZIONE_IDSTAZIONE_2);
 		}
 
 		if (orderByComparator != null) {
@@ -1065,76 +1044,76 @@ public class ValoreSensorePersistenceImpl
 				orderByComparator.getOrderByConditionFields();
 
 			if (orderByConditionFields.length > 0) {
-				query.append(WHERE_AND);
+				sb.append(WHERE_AND);
 			}
 
 			for (int i = 0; i < orderByConditionFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByConditionFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByConditionFields[i]);
 
 				if ((i + 1) < orderByConditionFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+						sb.append(WHERE_GREATER_THAN_HAS_NEXT);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+						sb.append(WHERE_LESSER_THAN_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN);
+						sb.append(WHERE_GREATER_THAN);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN);
+						sb.append(WHERE_LESSER_THAN);
 					}
 				}
 			}
 
-			query.append(ORDER_BY_CLAUSE);
+			sb.append(ORDER_BY_CLAUSE);
 
 			String[] orderByFields = orderByComparator.getOrderByFields();
 
 			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByFields[i]);
 
 				if ((i + 1) < orderByFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC_HAS_NEXT);
+						sb.append(ORDER_BY_ASC_HAS_NEXT);
 					}
 					else {
-						query.append(ORDER_BY_DESC_HAS_NEXT);
+						sb.append(ORDER_BY_DESC_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC);
+						sb.append(ORDER_BY_ASC);
 					}
 					else {
-						query.append(ORDER_BY_DESC);
+						sb.append(ORDER_BY_DESC);
 					}
 				}
 			}
 		}
 		else {
-			query.append(ValoreSensoreModelImpl.ORDER_BY_JPQL);
+			sb.append(ValoreSensoreModelImpl.ORDER_BY_JPQL);
 		}
 
-		String sql = query.toString();
+		String sql = sb.toString();
 
-		Query q = session.createQuery(sql);
+		Query query = session.createQuery(sql);
 
-		q.setFirstResult(0);
-		q.setMaxResults(2);
+		query.setFirstResult(0);
+		query.setMaxResults(2);
 
-		QueryPos qPos = QueryPos.getInstance(q);
+		QueryPos queryPos = QueryPos.getInstance(query);
 
 		if (bindIdVariabile) {
-			qPos.add(idVariabile);
+			queryPos.add(idVariabile);
 		}
 
 		if (bindIdStazione) {
-			qPos.add(idStazione);
+			queryPos.add(idStazione);
 		}
 
 		if (orderByComparator != null) {
@@ -1142,11 +1121,11 @@ public class ValoreSensorePersistenceImpl
 					orderByComparator.getOrderByConditionValues(
 						valoreSensore)) {
 
-				qPos.add(orderByConditionValue);
+				queryPos.add(orderByConditionValue);
 			}
 		}
 
-		List<ValoreSensore> list = q.list();
+		List<ValoreSensore> list = query.list();
 
 		if (list.size() == 2) {
 			return list.get(1);
@@ -1191,62 +1170,61 @@ public class ValoreSensorePersistenceImpl
 
 		Object[] finderArgs = new Object[] {idVariabile, idStazione};
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = (Long)dummyFinderCache.getResult(
+			finderPath, finderArgs, this);
 
 		if (count == null) {
-			StringBundler query = new StringBundler(3);
+			StringBundler sb = new StringBundler(3);
 
-			query.append(_SQL_COUNT_VALORESENSORE_WHERE);
+			sb.append(_SQL_COUNT_VALORESENSORE_WHERE);
 
 			boolean bindIdVariabile = false;
 
 			if (idVariabile.isEmpty()) {
-				query.append(_FINDER_COLUMN_VARIABILESTAZIONE_IDVARIABILE_3);
+				sb.append(_FINDER_COLUMN_VARIABILESTAZIONE_IDVARIABILE_3);
 			}
 			else {
 				bindIdVariabile = true;
 
-				query.append(_FINDER_COLUMN_VARIABILESTAZIONE_IDVARIABILE_2);
+				sb.append(_FINDER_COLUMN_VARIABILESTAZIONE_IDVARIABILE_2);
 			}
 
 			boolean bindIdStazione = false;
 
 			if (idStazione.isEmpty()) {
-				query.append(_FINDER_COLUMN_VARIABILESTAZIONE_IDSTAZIONE_3);
+				sb.append(_FINDER_COLUMN_VARIABILESTAZIONE_IDSTAZIONE_3);
 			}
 			else {
 				bindIdStazione = true;
 
-				query.append(_FINDER_COLUMN_VARIABILESTAZIONE_IDSTAZIONE_2);
+				sb.append(_FINDER_COLUMN_VARIABILESTAZIONE_IDSTAZIONE_2);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindIdVariabile) {
-					qPos.add(idVariabile);
+					queryPos.add(idVariabile);
 				}
 
 				if (bindIdStazione) {
-					qPos.add(idStazione);
+					queryPos.add(idStazione);
 				}
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
-				finderCache.putResult(finderPath, finderArgs, count);
+				dummyFinderCache.putResult(finderPath, finderArgs, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -1269,26 +1247,19 @@ public class ValoreSensorePersistenceImpl
 		"(valoreSensore.idStazione IS NULL OR valoreSensore.idStazione = '')";
 
 	public ValoreSensorePersistenceImpl() {
-		setModelClass(ValoreSensore.class);
-
 		Map<String, String> dbColumnNames = new HashMap<String, String>();
 
 		dbColumnNames.put("uuid", "uuid_");
 		dbColumnNames.put("id", "id_");
 
-		try {
-			Field field = BasePersistenceImpl.class.getDeclaredField(
-				"_dbColumnNames");
+		setDBColumnNames(dbColumnNames);
 
-			field.setAccessible(true);
+		setModelClass(ValoreSensore.class);
 
-			field.set(this, dbColumnNames);
-		}
-		catch (Exception e) {
-			if (_log.isDebugEnabled()) {
-				_log.debug(e, e);
-			}
-		}
+		setModelImplClass(ValoreSensoreImpl.class);
+		setModelPKClass(long.class);
+
+		setTable(ValoreSensoreTable.INSTANCE);
 	}
 
 	/**
@@ -1298,13 +1269,12 @@ public class ValoreSensorePersistenceImpl
 	 */
 	@Override
 	public void cacheResult(ValoreSensore valoreSensore) {
-		entityCache.putResult(
-			ValoreSensoreModelImpl.ENTITY_CACHE_ENABLED,
+		dummyEntityCache.putResult(
 			ValoreSensoreImpl.class, valoreSensore.getPrimaryKey(),
 			valoreSensore);
-
-		valoreSensore.resetOriginalValues();
 	}
+
+	private int _valueObjectFinderCacheListThreshold;
 
 	/**
 	 * Caches the valore sensores in the entity cache if it is enabled.
@@ -1313,16 +1283,19 @@ public class ValoreSensorePersistenceImpl
 	 */
 	@Override
 	public void cacheResult(List<ValoreSensore> valoreSensores) {
+		if ((_valueObjectFinderCacheListThreshold == 0) ||
+			((_valueObjectFinderCacheListThreshold > 0) &&
+			 (valoreSensores.size() > _valueObjectFinderCacheListThreshold))) {
+
+			return;
+		}
+
 		for (ValoreSensore valoreSensore : valoreSensores) {
-			if (entityCache.getResult(
-					ValoreSensoreModelImpl.ENTITY_CACHE_ENABLED,
+			if (dummyEntityCache.getResult(
 					ValoreSensoreImpl.class, valoreSensore.getPrimaryKey()) ==
 						null) {
 
 				cacheResult(valoreSensore);
-			}
-			else {
-				valoreSensore.resetOriginalValues();
 			}
 		}
 	}
@@ -1336,11 +1309,9 @@ public class ValoreSensorePersistenceImpl
 	 */
 	@Override
 	public void clearCache() {
-		entityCache.clearCache(ValoreSensoreImpl.class);
+		dummyEntityCache.clearCache(ValoreSensoreImpl.class);
 
-		finderCache.clearCache(FINDER_CLASS_NAME_ENTITY);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		dummyFinderCache.clearCache(ValoreSensoreImpl.class);
 	}
 
 	/**
@@ -1352,23 +1323,23 @@ public class ValoreSensorePersistenceImpl
 	 */
 	@Override
 	public void clearCache(ValoreSensore valoreSensore) {
-		entityCache.removeResult(
-			ValoreSensoreModelImpl.ENTITY_CACHE_ENABLED,
-			ValoreSensoreImpl.class, valoreSensore.getPrimaryKey());
-
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		dummyEntityCache.removeResult(ValoreSensoreImpl.class, valoreSensore);
 	}
 
 	@Override
 	public void clearCache(List<ValoreSensore> valoreSensores) {
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
-
 		for (ValoreSensore valoreSensore : valoreSensores) {
-			entityCache.removeResult(
-				ValoreSensoreModelImpl.ENTITY_CACHE_ENABLED,
-				ValoreSensoreImpl.class, valoreSensore.getPrimaryKey());
+			dummyEntityCache.removeResult(
+				ValoreSensoreImpl.class, valoreSensore);
+		}
+	}
+
+	@Override
+	public void clearCache(Set<Serializable> primaryKeys) {
+		dummyFinderCache.clearCache(ValoreSensoreImpl.class);
+
+		for (Serializable primaryKey : primaryKeys) {
+			dummyEntityCache.removeResult(ValoreSensoreImpl.class, primaryKey);
 		}
 	}
 
@@ -1434,11 +1405,11 @@ public class ValoreSensorePersistenceImpl
 
 			return remove(valoreSensore);
 		}
-		catch (NoSuchValoreSensoreException nsee) {
-			throw nsee;
+		catch (NoSuchValoreSensoreException noSuchEntityException) {
+			throw noSuchEntityException;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -1461,8 +1432,8 @@ public class ValoreSensorePersistenceImpl
 				session.delete(valoreSensore);
 			}
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -1510,97 +1481,26 @@ public class ValoreSensorePersistenceImpl
 		try {
 			session = openSession();
 
-			if (valoreSensore.isNew()) {
+			if (isNew) {
 				session.save(valoreSensore);
-
-				valoreSensore.setNew(false);
 			}
 			else {
 				valoreSensore = (ValoreSensore)session.merge(valoreSensore);
 			}
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
 		}
 
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		dummyEntityCache.putResult(
+			ValoreSensoreImpl.class, valoreSensoreModelImpl, false, true);
 
-		if (!ValoreSensoreModelImpl.COLUMN_BITMASK_ENABLED) {
-			finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		if (isNew) {
+			valoreSensore.setNew(false);
 		}
-		else if (isNew) {
-			Object[] args = new Object[] {valoreSensoreModelImpl.getUuid()};
-
-			finderCache.removeResult(_finderPathCountByUuid, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByUuid, args);
-
-			args = new Object[] {
-				valoreSensoreModelImpl.getIdVariabile(),
-				valoreSensoreModelImpl.getIdStazione()
-			};
-
-			finderCache.removeResult(_finderPathCountByvariabileStazione, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByvariabileStazione, args);
-
-			finderCache.removeResult(_finderPathCountAll, FINDER_ARGS_EMPTY);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindAll, FINDER_ARGS_EMPTY);
-		}
-		else {
-			if ((valoreSensoreModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByUuid.getColumnBitmask()) !=
-					 0) {
-
-				Object[] args = new Object[] {
-					valoreSensoreModelImpl.getOriginalUuid()
-				};
-
-				finderCache.removeResult(_finderPathCountByUuid, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByUuid, args);
-
-				args = new Object[] {valoreSensoreModelImpl.getUuid()};
-
-				finderCache.removeResult(_finderPathCountByUuid, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByUuid, args);
-			}
-
-			if ((valoreSensoreModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByvariabileStazione.
-					 getColumnBitmask()) != 0) {
-
-				Object[] args = new Object[] {
-					valoreSensoreModelImpl.getOriginalIdVariabile(),
-					valoreSensoreModelImpl.getOriginalIdStazione()
-				};
-
-				finderCache.removeResult(
-					_finderPathCountByvariabileStazione, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByvariabileStazione, args);
-
-				args = new Object[] {
-					valoreSensoreModelImpl.getIdVariabile(),
-					valoreSensoreModelImpl.getIdStazione()
-				};
-
-				finderCache.removeResult(
-					_finderPathCountByvariabileStazione, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByvariabileStazione, args);
-			}
-		}
-
-		entityCache.putResult(
-			ValoreSensoreModelImpl.ENTITY_CACHE_ENABLED,
-			ValoreSensoreImpl.class, valoreSensore.getPrimaryKey(),
-			valoreSensore, false);
 
 		valoreSensore.resetOriginalValues();
 
@@ -1649,161 +1549,12 @@ public class ValoreSensorePersistenceImpl
 	/**
 	 * Returns the valore sensore with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the valore sensore
-	 * @return the valore sensore, or <code>null</code> if a valore sensore with the primary key could not be found
-	 */
-	@Override
-	public ValoreSensore fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(
-			ValoreSensoreModelImpl.ENTITY_CACHE_ENABLED,
-			ValoreSensoreImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		ValoreSensore valoreSensore = (ValoreSensore)serializable;
-
-		if (valoreSensore == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				valoreSensore = (ValoreSensore)session.get(
-					ValoreSensoreImpl.class, primaryKey);
-
-				if (valoreSensore != null) {
-					cacheResult(valoreSensore);
-				}
-				else {
-					entityCache.putResult(
-						ValoreSensoreModelImpl.ENTITY_CACHE_ENABLED,
-						ValoreSensoreImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(
-					ValoreSensoreModelImpl.ENTITY_CACHE_ENABLED,
-					ValoreSensoreImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return valoreSensore;
-	}
-
-	/**
-	 * Returns the valore sensore with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param id the primary key of the valore sensore
 	 * @return the valore sensore, or <code>null</code> if a valore sensore with the primary key could not be found
 	 */
 	@Override
 	public ValoreSensore fetchByPrimaryKey(long id) {
 		return fetchByPrimaryKey((Serializable)id);
-	}
-
-	@Override
-	public Map<Serializable, ValoreSensore> fetchByPrimaryKeys(
-		Set<Serializable> primaryKeys) {
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, ValoreSensore> map =
-			new HashMap<Serializable, ValoreSensore>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			ValoreSensore valoreSensore = fetchByPrimaryKey(primaryKey);
-
-			if (valoreSensore != null) {
-				map.put(primaryKey, valoreSensore);
-			}
-
-			return map;
-		}
-
-		Set<Serializable> uncachedPrimaryKeys = null;
-
-		for (Serializable primaryKey : primaryKeys) {
-			Serializable serializable = entityCache.getResult(
-				ValoreSensoreModelImpl.ENTITY_CACHE_ENABLED,
-				ValoreSensoreImpl.class, primaryKey);
-
-			if (serializable != nullModel) {
-				if (serializable == null) {
-					if (uncachedPrimaryKeys == null) {
-						uncachedPrimaryKeys = new HashSet<Serializable>();
-					}
-
-					uncachedPrimaryKeys.add(primaryKey);
-				}
-				else {
-					map.put(primaryKey, (ValoreSensore)serializable);
-				}
-			}
-		}
-
-		if (uncachedPrimaryKeys == null) {
-			return map;
-		}
-
-		StringBundler query = new StringBundler(
-			uncachedPrimaryKeys.size() * 2 + 1);
-
-		query.append(_SQL_SELECT_VALORESENSORE_WHERE_PKS_IN);
-
-		for (Serializable primaryKey : uncachedPrimaryKeys) {
-			query.append((long)primaryKey);
-
-			query.append(",");
-		}
-
-		query.setIndex(query.index() - 1);
-
-		query.append(")");
-
-		String sql = query.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query q = session.createQuery(sql);
-
-			for (ValoreSensore valoreSensore : (List<ValoreSensore>)q.list()) {
-				map.put(valoreSensore.getPrimaryKeyObj(), valoreSensore);
-
-				cacheResult(valoreSensore);
-
-				uncachedPrimaryKeys.remove(valoreSensore.getPrimaryKeyObj());
-			}
-
-			for (Serializable primaryKey : uncachedPrimaryKeys) {
-				entityCache.putResult(
-					ValoreSensoreModelImpl.ENTITY_CACHE_ENABLED,
-					ValoreSensoreImpl.class, primaryKey, nullModel);
-			}
-		}
-		catch (Exception e) {
-			throw processException(e);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**
@@ -1820,7 +1571,7 @@ public class ValoreSensorePersistenceImpl
 	 * Returns a range of all the valore sensores.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>ValoreSensoreModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>ValoreSensoreModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of valore sensores
@@ -1836,7 +1587,7 @@ public class ValoreSensorePersistenceImpl
 	 * Returns an ordered range of all the valore sensores.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>ValoreSensoreModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>ValoreSensoreModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of valore sensores
@@ -1856,64 +1607,62 @@ public class ValoreSensorePersistenceImpl
 	 * Returns an ordered range of all the valore sensores.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>ValoreSensoreModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>ValoreSensoreModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of valore sensores
 	 * @param end the upper bound of the range of valore sensores (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of valore sensores
 	 */
 	@Override
 	public List<ValoreSensore> findAll(
 		int start, int end, OrderByComparator<ValoreSensore> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindAll;
-			finderArgs = FINDER_ARGS_EMPTY;
+			if (useFinderCache) {
+				finderPath = _finderPathWithoutPaginationFindAll;
+				finderArgs = FINDER_ARGS_EMPTY;
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
 			finderArgs = new Object[] {start, end, orderByComparator};
 		}
 
 		List<ValoreSensore> list = null;
 
-		if (retrieveFromCache) {
-			list = (List<ValoreSensore>)finderCache.getResult(
+		if (useFinderCache) {
+			list = (List<ValoreSensore>)dummyFinderCache.getResult(
 				finderPath, finderArgs, this);
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 			String sql = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					2 + (orderByComparator.getOrderByFields().length * 2));
 
-				query.append(_SQL_SELECT_VALORESENSORE);
+				sb.append(_SQL_SELECT_VALORESENSORE);
 
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 
-				sql = query.toString();
+				sql = sb.toString();
 			}
 			else {
 				sql = _SQL_SELECT_VALORESENSORE;
 
-				if (pagination) {
-					sql = sql.concat(ValoreSensoreModelImpl.ORDER_BY_JPQL);
-				}
+				sql = sql.concat(ValoreSensoreModelImpl.ORDER_BY_JPQL);
 			}
 
 			Session session = null;
@@ -1921,29 +1670,19 @@ public class ValoreSensorePersistenceImpl
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				if (!pagination) {
-					list = (List<ValoreSensore>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<ValoreSensore>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<ValoreSensore>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					dummyFinderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -1971,7 +1710,7 @@ public class ValoreSensorePersistenceImpl
 	 */
 	@Override
 	public int countAll() {
-		Long count = (Long)finderCache.getResult(
+		Long count = (Long)dummyFinderCache.getResult(
 			_finderPathCountAll, FINDER_ARGS_EMPTY, this);
 
 		if (count == null) {
@@ -1980,18 +1719,15 @@ public class ValoreSensorePersistenceImpl
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(_SQL_COUNT_VALORESENSORE);
+				Query query = session.createQuery(_SQL_COUNT_VALORESENSORE);
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
-				finderCache.putResult(
+				dummyFinderCache.putResult(
 					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -2007,6 +1743,21 @@ public class ValoreSensorePersistenceImpl
 	}
 
 	@Override
+	protected EntityCache getEntityCache() {
+		return dummyEntityCache;
+	}
+
+	@Override
+	protected String getPKDBName() {
+		return "id_";
+	}
+
+	@Override
+	protected String getSelectSQL() {
+		return _SQL_SELECT_VALORESENSORE;
+	}
+
+	@Override
 	protected Map<String, Integer> getTableColumnsMap() {
 		return ValoreSensoreModelImpl.TABLE_COLUMNS_MAP;
 	}
@@ -2014,96 +1765,100 @@ public class ValoreSensorePersistenceImpl
 	/**
 	 * Initializes the valore sensore persistence.
 	 */
-	public void afterPropertiesSet() {
+	@Activate
+	public void activate() {
+		_valueObjectFinderCacheListThreshold = GetterUtil.getInteger(
+			PropsUtil.get(PropsKeys.VALUE_OBJECT_FINDER_CACHE_LIST_THRESHOLD));
+
 		_finderPathWithPaginationFindAll = new FinderPath(
-			ValoreSensoreModelImpl.ENTITY_CACHE_ENABLED,
-			ValoreSensoreModelImpl.FINDER_CACHE_ENABLED,
-			ValoreSensoreImpl.class, FINDER_CLASS_NAME_LIST_WITH_PAGINATION,
-			"findAll", new String[0]);
+			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findAll", new String[0],
+			new String[0], true);
 
 		_finderPathWithoutPaginationFindAll = new FinderPath(
-			ValoreSensoreModelImpl.ENTITY_CACHE_ENABLED,
-			ValoreSensoreModelImpl.FINDER_CACHE_ENABLED,
-			ValoreSensoreImpl.class, FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
-			"findAll", new String[0]);
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findAll", new String[0],
+			new String[0], true);
 
 		_finderPathCountAll = new FinderPath(
-			ValoreSensoreModelImpl.ENTITY_CACHE_ENABLED,
-			ValoreSensoreModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countAll",
-			new String[0]);
+			new String[0], new String[0], false);
 
 		_finderPathWithPaginationFindByUuid = new FinderPath(
-			ValoreSensoreModelImpl.ENTITY_CACHE_ENABLED,
-			ValoreSensoreModelImpl.FINDER_CACHE_ENABLED,
-			ValoreSensoreImpl.class, FINDER_CLASS_NAME_LIST_WITH_PAGINATION,
-			"findByUuid",
+			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByUuid",
 			new String[] {
 				String.class.getName(), Integer.class.getName(),
 				Integer.class.getName(), OrderByComparator.class.getName()
-			});
+			},
+			new String[] {"uuid_"}, true);
 
 		_finderPathWithoutPaginationFindByUuid = new FinderPath(
-			ValoreSensoreModelImpl.ENTITY_CACHE_ENABLED,
-			ValoreSensoreModelImpl.FINDER_CACHE_ENABLED,
-			ValoreSensoreImpl.class, FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
-			"findByUuid", new String[] {String.class.getName()},
-			ValoreSensoreModelImpl.UUID_COLUMN_BITMASK |
-			ValoreSensoreModelImpl.DATETIME_COLUMN_BITMASK);
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByUuid",
+			new String[] {String.class.getName()}, new String[] {"uuid_"},
+			true);
 
 		_finderPathCountByUuid = new FinderPath(
-			ValoreSensoreModelImpl.ENTITY_CACHE_ENABLED,
-			ValoreSensoreModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByUuid",
-			new String[] {String.class.getName()});
+			new String[] {String.class.getName()}, new String[] {"uuid_"},
+			false);
 
 		_finderPathWithPaginationFindByvariabileStazione = new FinderPath(
-			ValoreSensoreModelImpl.ENTITY_CACHE_ENABLED,
-			ValoreSensoreModelImpl.FINDER_CACHE_ENABLED,
-			ValoreSensoreImpl.class, FINDER_CLASS_NAME_LIST_WITH_PAGINATION,
-			"findByvariabileStazione",
+			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByvariabileStazione",
 			new String[] {
 				String.class.getName(), String.class.getName(),
 				Integer.class.getName(), Integer.class.getName(),
 				OrderByComparator.class.getName()
-			});
+			},
+			new String[] {"idVariabile", "idStazione"}, true);
 
 		_finderPathWithoutPaginationFindByvariabileStazione = new FinderPath(
-			ValoreSensoreModelImpl.ENTITY_CACHE_ENABLED,
-			ValoreSensoreModelImpl.FINDER_CACHE_ENABLED,
-			ValoreSensoreImpl.class, FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
 			"findByvariabileStazione",
 			new String[] {String.class.getName(), String.class.getName()},
-			ValoreSensoreModelImpl.IDVARIABILE_COLUMN_BITMASK |
-			ValoreSensoreModelImpl.IDSTAZIONE_COLUMN_BITMASK |
-			ValoreSensoreModelImpl.DATETIME_COLUMN_BITMASK);
+			new String[] {"idVariabile", "idStazione"}, true);
 
 		_finderPathCountByvariabileStazione = new FinderPath(
-			ValoreSensoreModelImpl.ENTITY_CACHE_ENABLED,
-			ValoreSensoreModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
 			"countByvariabileStazione",
-			new String[] {String.class.getName(), String.class.getName()});
+			new String[] {String.class.getName(), String.class.getName()},
+			new String[] {"idVariabile", "idStazione"}, false);
+
+		ValoreSensoreUtil.setPersistence(this);
 	}
 
-	public void destroy() {
-		entityCache.removeCache(ValoreSensoreImpl.class.getName());
-		finderCache.removeCache(FINDER_CLASS_NAME_ENTITY);
-		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+	@Deactivate
+	public void deactivate() {
+		ValoreSensoreUtil.setPersistence(null);
+
+		dummyEntityCache.removeCache(ValoreSensoreImpl.class.getName());
 	}
 
-	@ServiceReference(type = EntityCache.class)
-	protected EntityCache entityCache;
+	@Override
+	@Reference(
+		target = BOLLETTINOPersistenceConstants.SERVICE_CONFIGURATION_FILTER,
+		unbind = "-"
+	)
+	public void setConfiguration(Configuration configuration) {
+	}
 
-	@ServiceReference(type = FinderCache.class)
-	protected FinderCache finderCache;
+	@Override
+	@Reference(
+		target = BOLLETTINOPersistenceConstants.ORIGIN_BUNDLE_SYMBOLIC_NAME_FILTER,
+		unbind = "-"
+	)
+	public void setDataSource(DataSource dataSource) {
+		super.setDataSource(dataSource);
+	}
+
+	@Override
+	@Reference(
+		target = BOLLETTINOPersistenceConstants.ORIGIN_BUNDLE_SYMBOLIC_NAME_FILTER,
+		unbind = "-"
+	)
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		super.setSessionFactory(sessionFactory);
+	}
 
 	private static final String _SQL_SELECT_VALORESENSORE =
 		"SELECT valoreSensore FROM ValoreSensore valoreSensore";
-
-	private static final String _SQL_SELECT_VALORESENSORE_WHERE_PKS_IN =
-		"SELECT valoreSensore FROM ValoreSensore valoreSensore WHERE id_ IN (";
 
 	private static final String _SQL_SELECT_VALORESENSORE_WHERE =
 		"SELECT valoreSensore FROM ValoreSensore valoreSensore WHERE ";
@@ -2127,5 +1882,10 @@ public class ValoreSensorePersistenceImpl
 
 	private static final Set<String> _badColumnNames = SetUtil.fromArray(
 		new String[] {"uuid", "id"});
+
+	@Override
+	protected FinderCache getFinderCache() {
+		return dummyFinderCache;
+	}
 
 }

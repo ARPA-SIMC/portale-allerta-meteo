@@ -1,30 +1,15 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.bollettino.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -35,22 +20,12 @@ import java.util.Objects;
  * @see BollettinoSensore
  * @generated
  */
-@ProviderType
 public class BollettinoSensoreWrapper
+	extends BaseModelWrapper<BollettinoSensore>
 	implements BollettinoSensore, ModelWrapper<BollettinoSensore> {
 
 	public BollettinoSensoreWrapper(BollettinoSensore bollettinoSensore) {
-		_bollettinoSensore = bollettinoSensore;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return BollettinoSensore.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return BollettinoSensore.class.getName();
+		super(bollettinoSensore);
 	}
 
 	@Override
@@ -184,16 +159,8 @@ public class BollettinoSensoreWrapper
 	}
 
 	@Override
-	public Object clone() {
-		return new BollettinoSensoreWrapper(
-			(BollettinoSensore)_bollettinoSensore.clone());
-	}
-
-	@Override
-	public int compareTo(
-		it.eng.bollettino.model.BollettinoSensore bollettinoSensore) {
-
-		return _bollettinoSensore.compareTo(bollettinoSensore);
+	public BollettinoSensore cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -203,12 +170,7 @@ public class BollettinoSensoreWrapper
 	 */
 	@Override
 	public String getColmoPrevisto() {
-		return _bollettinoSensore.getColmoPrevisto();
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _bollettinoSensore.getExpandoBridge();
+		return model.getColmoPrevisto();
 	}
 
 	/**
@@ -218,7 +180,7 @@ public class BollettinoSensoreWrapper
 	 */
 	@Override
 	public String getGiornoPrevisto() {
-		return _bollettinoSensore.getGiornoPrevisto();
+		return model.getGiornoPrevisto();
 	}
 
 	/**
@@ -228,7 +190,7 @@ public class BollettinoSensoreWrapper
 	 */
 	@Override
 	public long getId() {
-		return _bollettinoSensore.getId();
+		return model.getId();
 	}
 
 	/**
@@ -238,7 +200,7 @@ public class BollettinoSensoreWrapper
 	 */
 	@Override
 	public long getIdBollettino() {
-		return _bollettinoSensore.getIdBollettino();
+		return model.getIdBollettino();
 	}
 
 	/**
@@ -248,7 +210,7 @@ public class BollettinoSensoreWrapper
 	 */
 	@Override
 	public long getIdBollettinoBacino() {
-		return _bollettinoSensore.getIdBollettinoBacino();
+		return model.getIdBollettinoBacino();
 	}
 
 	/**
@@ -258,7 +220,7 @@ public class BollettinoSensoreWrapper
 	 */
 	@Override
 	public long getIdStazione() {
-		return _bollettinoSensore.getIdStazione();
+		return model.getIdStazione();
 	}
 
 	/**
@@ -268,7 +230,7 @@ public class BollettinoSensoreWrapper
 	 */
 	@Override
 	public String getNomeStazione() {
-		return _bollettinoSensore.getNomeStazione();
+		return model.getNomeStazione();
 	}
 
 	/**
@@ -278,7 +240,7 @@ public class BollettinoSensoreWrapper
 	 */
 	@Override
 	public String getOraPrevista() {
-		return _bollettinoSensore.getOraPrevista();
+		return model.getOraPrevista();
 	}
 
 	/**
@@ -288,7 +250,7 @@ public class BollettinoSensoreWrapper
 	 */
 	@Override
 	public String getOreOsservazione() {
-		return _bollettinoSensore.getOreOsservazione();
+		return model.getOreOsservazione();
 	}
 
 	/**
@@ -298,7 +260,7 @@ public class BollettinoSensoreWrapper
 	 */
 	@Override
 	public boolean getOsservato() {
-		return _bollettinoSensore.getOsservato();
+		return model.getOsservato();
 	}
 
 	/**
@@ -308,7 +270,7 @@ public class BollettinoSensoreWrapper
 	 */
 	@Override
 	public double getOsservazione() {
-		return _bollettinoSensore.getOsservazione();
+		return model.getOsservazione();
 	}
 
 	/**
@@ -318,12 +280,7 @@ public class BollettinoSensoreWrapper
 	 */
 	@Override
 	public long getPrimaryKey() {
-		return _bollettinoSensore.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _bollettinoSensore.getPrimaryKeyObj();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -333,7 +290,7 @@ public class BollettinoSensoreWrapper
 	 */
 	@Override
 	public int getProgressivo() {
-		return _bollettinoSensore.getProgressivo();
+		return model.getProgressivo();
 	}
 
 	/**
@@ -343,7 +300,7 @@ public class BollettinoSensoreWrapper
 	 */
 	@Override
 	public double getSoglia1() {
-		return _bollettinoSensore.getSoglia1();
+		return model.getSoglia1();
 	}
 
 	/**
@@ -353,7 +310,7 @@ public class BollettinoSensoreWrapper
 	 */
 	@Override
 	public double getSoglia2() {
-		return _bollettinoSensore.getSoglia2();
+		return model.getSoglia2();
 	}
 
 	/**
@@ -363,7 +320,7 @@ public class BollettinoSensoreWrapper
 	 */
 	@Override
 	public double getSoglia3() {
-		return _bollettinoSensore.getSoglia3();
+		return model.getSoglia3();
 	}
 
 	/**
@@ -373,7 +330,7 @@ public class BollettinoSensoreWrapper
 	 */
 	@Override
 	public int getTendenza() {
-		return _bollettinoSensore.getTendenza();
+		return model.getTendenza();
 	}
 
 	/**
@@ -383,27 +340,7 @@ public class BollettinoSensoreWrapper
 	 */
 	@Override
 	public String getUuid() {
-		return _bollettinoSensore.getUuid();
-	}
-
-	@Override
-	public int hashCode() {
-		return _bollettinoSensore.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _bollettinoSensore.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _bollettinoSensore.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _bollettinoSensore.isNew();
+		return model.getUuid();
 	}
 
 	/**
@@ -413,17 +350,12 @@ public class BollettinoSensoreWrapper
 	 */
 	@Override
 	public boolean isOsservato() {
-		return _bollettinoSensore.isOsservato();
+		return model.isOsservato();
 	}
 
 	@Override
 	public void persist() {
-		_bollettinoSensore.persist();
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_bollettinoSensore.setCachedModel(cachedModel);
+		model.persist();
 	}
 
 	/**
@@ -433,24 +365,7 @@ public class BollettinoSensoreWrapper
 	 */
 	@Override
 	public void setColmoPrevisto(String colmoPrevisto) {
-		_bollettinoSensore.setColmoPrevisto(colmoPrevisto);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_bollettinoSensore.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_bollettinoSensore.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_bollettinoSensore.setExpandoBridgeAttributes(serviceContext);
+		model.setColmoPrevisto(colmoPrevisto);
 	}
 
 	/**
@@ -460,7 +375,7 @@ public class BollettinoSensoreWrapper
 	 */
 	@Override
 	public void setGiornoPrevisto(String giornoPrevisto) {
-		_bollettinoSensore.setGiornoPrevisto(giornoPrevisto);
+		model.setGiornoPrevisto(giornoPrevisto);
 	}
 
 	/**
@@ -470,7 +385,7 @@ public class BollettinoSensoreWrapper
 	 */
 	@Override
 	public void setId(long id) {
-		_bollettinoSensore.setId(id);
+		model.setId(id);
 	}
 
 	/**
@@ -480,7 +395,7 @@ public class BollettinoSensoreWrapper
 	 */
 	@Override
 	public void setIdBollettino(long idBollettino) {
-		_bollettinoSensore.setIdBollettino(idBollettino);
+		model.setIdBollettino(idBollettino);
 	}
 
 	/**
@@ -490,7 +405,7 @@ public class BollettinoSensoreWrapper
 	 */
 	@Override
 	public void setIdBollettinoBacino(long idBollettinoBacino) {
-		_bollettinoSensore.setIdBollettinoBacino(idBollettinoBacino);
+		model.setIdBollettinoBacino(idBollettinoBacino);
 	}
 
 	/**
@@ -500,12 +415,7 @@ public class BollettinoSensoreWrapper
 	 */
 	@Override
 	public void setIdStazione(long idStazione) {
-		_bollettinoSensore.setIdStazione(idStazione);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_bollettinoSensore.setNew(n);
+		model.setIdStazione(idStazione);
 	}
 
 	/**
@@ -515,7 +425,7 @@ public class BollettinoSensoreWrapper
 	 */
 	@Override
 	public void setNomeStazione(String nomeStazione) {
-		_bollettinoSensore.setNomeStazione(nomeStazione);
+		model.setNomeStazione(nomeStazione);
 	}
 
 	/**
@@ -525,7 +435,7 @@ public class BollettinoSensoreWrapper
 	 */
 	@Override
 	public void setOraPrevista(String oraPrevista) {
-		_bollettinoSensore.setOraPrevista(oraPrevista);
+		model.setOraPrevista(oraPrevista);
 	}
 
 	/**
@@ -535,7 +445,7 @@ public class BollettinoSensoreWrapper
 	 */
 	@Override
 	public void setOreOsservazione(String oreOsservazione) {
-		_bollettinoSensore.setOreOsservazione(oreOsservazione);
+		model.setOreOsservazione(oreOsservazione);
 	}
 
 	/**
@@ -545,7 +455,7 @@ public class BollettinoSensoreWrapper
 	 */
 	@Override
 	public void setOsservato(boolean osservato) {
-		_bollettinoSensore.setOsservato(osservato);
+		model.setOsservato(osservato);
 	}
 
 	/**
@@ -555,7 +465,7 @@ public class BollettinoSensoreWrapper
 	 */
 	@Override
 	public void setOsservazione(double osservazione) {
-		_bollettinoSensore.setOsservazione(osservazione);
+		model.setOsservazione(osservazione);
 	}
 
 	/**
@@ -565,12 +475,7 @@ public class BollettinoSensoreWrapper
 	 */
 	@Override
 	public void setPrimaryKey(long primaryKey) {
-		_bollettinoSensore.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_bollettinoSensore.setPrimaryKeyObj(primaryKeyObj);
+		model.setPrimaryKey(primaryKey);
 	}
 
 	/**
@@ -580,7 +485,7 @@ public class BollettinoSensoreWrapper
 	 */
 	@Override
 	public void setProgressivo(int progressivo) {
-		_bollettinoSensore.setProgressivo(progressivo);
+		model.setProgressivo(progressivo);
 	}
 
 	/**
@@ -590,7 +495,7 @@ public class BollettinoSensoreWrapper
 	 */
 	@Override
 	public void setSoglia1(double soglia1) {
-		_bollettinoSensore.setSoglia1(soglia1);
+		model.setSoglia1(soglia1);
 	}
 
 	/**
@@ -600,7 +505,7 @@ public class BollettinoSensoreWrapper
 	 */
 	@Override
 	public void setSoglia2(double soglia2) {
-		_bollettinoSensore.setSoglia2(soglia2);
+		model.setSoglia2(soglia2);
 	}
 
 	/**
@@ -610,7 +515,7 @@ public class BollettinoSensoreWrapper
 	 */
 	@Override
 	public void setSoglia3(double soglia3) {
-		_bollettinoSensore.setSoglia3(soglia3);
+		model.setSoglia3(soglia3);
 	}
 
 	/**
@@ -620,7 +525,7 @@ public class BollettinoSensoreWrapper
 	 */
 	@Override
 	public void setTendenza(int tendenza) {
-		_bollettinoSensore.setTendenza(tendenza);
+		model.setTendenza(tendenza);
 	}
 
 	/**
@@ -630,81 +535,19 @@ public class BollettinoSensoreWrapper
 	 */
 	@Override
 	public void setUuid(String uuid) {
-		_bollettinoSensore.setUuid(uuid);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<it.eng.bollettino.model.BollettinoSensore> toCacheModel() {
-
-		return _bollettinoSensore.toCacheModel();
-	}
-
-	@Override
-	public it.eng.bollettino.model.BollettinoSensore toEscapedModel() {
-		return new BollettinoSensoreWrapper(
-			_bollettinoSensore.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _bollettinoSensore.toString();
-	}
-
-	@Override
-	public it.eng.bollettino.model.BollettinoSensore toUnescapedModel() {
-		return new BollettinoSensoreWrapper(
-			_bollettinoSensore.toUnescapedModel());
+		model.setUuid(uuid);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _bollettinoSensore.toXmlString();
+		return model.toXmlString();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
+	protected BollettinoSensoreWrapper wrap(
+		BollettinoSensore bollettinoSensore) {
 
-		if (!(obj instanceof BollettinoSensoreWrapper)) {
-			return false;
-		}
-
-		BollettinoSensoreWrapper bollettinoSensoreWrapper =
-			(BollettinoSensoreWrapper)obj;
-
-		if (Objects.equals(
-				_bollettinoSensore,
-				bollettinoSensoreWrapper._bollettinoSensore)) {
-
-			return true;
-		}
-
-		return false;
+		return new BollettinoSensoreWrapper(bollettinoSensore);
 	}
-
-	@Override
-	public BollettinoSensore getWrappedModel() {
-		return _bollettinoSensore;
-	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _bollettinoSensore.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _bollettinoSensore.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_bollettinoSensore.resetOriginalValues();
-	}
-
-	private final BollettinoSensore _bollettinoSensore;
 
 }

@@ -2,7 +2,7 @@
 <%@page import="it.eng.allerta.backoffice.scheduler.bean.SchedulerJobBean"%>
 
 <%@ include file="../init.jsp"%>
-
+ 
 <%
 	//PortletURL portletURL =  renderResponse.createRenderURL();
     List<SchedulerJobBean> schedulerJobBeans = (List<SchedulerJobBean>) request.getAttribute("schedulerJobsList");
@@ -13,11 +13,11 @@
 	String orderByCol = ParamUtil.getString(request, "orderByCol");
 	String orderByType = ParamUtil.getString(request, "orderByType");
 	
-	if (orderByCol == null || orderByCol.equals(StringPool.BLANK)) {
+	if (orderByCol == null || orderByCol.equals("")) {
 	    orderByCol = QuartzSchedulerUtil.DEFAULT_ORDER_BY_COL;
 	}
 	
-	if (orderByType == null || orderByType.equals(StringPool.BLANK)) {
+	if (orderByType == null || orderByType.equals("")) {
 	    orderByType = QuartzSchedulerUtil.DEFAULT_ORDER_BY_TYPE;
 	}
 	

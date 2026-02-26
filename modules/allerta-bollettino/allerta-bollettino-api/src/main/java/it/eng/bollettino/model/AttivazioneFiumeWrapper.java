@@ -1,30 +1,15 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.bollettino.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -35,22 +20,12 @@ import java.util.Objects;
  * @see AttivazioneFiume
  * @generated
  */
-@ProviderType
 public class AttivazioneFiumeWrapper
+	extends BaseModelWrapper<AttivazioneFiume>
 	implements AttivazioneFiume, ModelWrapper<AttivazioneFiume> {
 
 	public AttivazioneFiumeWrapper(AttivazioneFiume attivazioneFiume) {
-		_attivazioneFiume = attivazioneFiume;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return AttivazioneFiume.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return AttivazioneFiume.class.getName();
+		super(attivazioneFiume);
 	}
 
 	@Override
@@ -79,16 +54,8 @@ public class AttivazioneFiumeWrapper
 	}
 
 	@Override
-	public Object clone() {
-		return new AttivazioneFiumeWrapper(
-			(AttivazioneFiume)_attivazioneFiume.clone());
-	}
-
-	@Override
-	public int compareTo(
-		it.eng.bollettino.model.AttivazioneFiume attivazioneFiume) {
-
-		return _attivazioneFiume.compareTo(attivazioneFiume);
+	public AttivazioneFiume cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -98,12 +65,7 @@ public class AttivazioneFiumeWrapper
 	 */
 	@Override
 	public boolean getAttivo() {
-		return _attivazioneFiume.getAttivo();
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _attivazioneFiume.getExpandoBridge();
+		return model.getAttivo();
 	}
 
 	/**
@@ -113,7 +75,7 @@ public class AttivazioneFiumeWrapper
 	 */
 	@Override
 	public String getFiumeId() {
-		return _attivazioneFiume.getFiumeId();
+		return model.getFiumeId();
 	}
 
 	/**
@@ -123,17 +85,7 @@ public class AttivazioneFiumeWrapper
 	 */
 	@Override
 	public String getPrimaryKey() {
-		return _attivazioneFiume.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _attivazioneFiume.getPrimaryKeyObj();
-	}
-
-	@Override
-	public int hashCode() {
-		return _attivazioneFiume.hashCode();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -143,27 +95,12 @@ public class AttivazioneFiumeWrapper
 	 */
 	@Override
 	public boolean isAttivo() {
-		return _attivazioneFiume.isAttivo();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _attivazioneFiume.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _attivazioneFiume.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _attivazioneFiume.isNew();
+		return model.isAttivo();
 	}
 
 	@Override
 	public void persist() {
-		_attivazioneFiume.persist();
+		model.persist();
 	}
 
 	/**
@@ -173,29 +110,7 @@ public class AttivazioneFiumeWrapper
 	 */
 	@Override
 	public void setAttivo(boolean attivo) {
-		_attivazioneFiume.setAttivo(attivo);
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_attivazioneFiume.setCachedModel(cachedModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_attivazioneFiume.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_attivazioneFiume.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_attivazioneFiume.setExpandoBridgeAttributes(serviceContext);
+		model.setAttivo(attivo);
 	}
 
 	/**
@@ -205,12 +120,7 @@ public class AttivazioneFiumeWrapper
 	 */
 	@Override
 	public void setFiumeId(String fiumeId) {
-		_attivazioneFiume.setFiumeId(fiumeId);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_attivazioneFiume.setNew(n);
+		model.setFiumeId(fiumeId);
 	}
 
 	/**
@@ -220,84 +130,17 @@ public class AttivazioneFiumeWrapper
 	 */
 	@Override
 	public void setPrimaryKey(String primaryKey) {
-		_attivazioneFiume.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_attivazioneFiume.setPrimaryKeyObj(primaryKeyObj);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<it.eng.bollettino.model.AttivazioneFiume> toCacheModel() {
-
-		return _attivazioneFiume.toCacheModel();
-	}
-
-	@Override
-	public it.eng.bollettino.model.AttivazioneFiume toEscapedModel() {
-		return new AttivazioneFiumeWrapper(_attivazioneFiume.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _attivazioneFiume.toString();
-	}
-
-	@Override
-	public it.eng.bollettino.model.AttivazioneFiume toUnescapedModel() {
-		return new AttivazioneFiumeWrapper(
-			_attivazioneFiume.toUnescapedModel());
+		model.setPrimaryKey(primaryKey);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _attivazioneFiume.toXmlString();
+		return model.toXmlString();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-
-		if (!(obj instanceof AttivazioneFiumeWrapper)) {
-			return false;
-		}
-
-		AttivazioneFiumeWrapper attivazioneFiumeWrapper =
-			(AttivazioneFiumeWrapper)obj;
-
-		if (Objects.equals(
-				_attivazioneFiume, attivazioneFiumeWrapper._attivazioneFiume)) {
-
-			return true;
-		}
-
-		return false;
+	protected AttivazioneFiumeWrapper wrap(AttivazioneFiume attivazioneFiume) {
+		return new AttivazioneFiumeWrapper(attivazioneFiume);
 	}
-
-	@Override
-	public AttivazioneFiume getWrappedModel() {
-		return _attivazioneFiume;
-	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _attivazioneFiume.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _attivazioneFiume.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_attivazioneFiume.resetOriginalValues();
-	}
-
-	private final AttivazioneFiume _attivazioneFiume;
 
 }

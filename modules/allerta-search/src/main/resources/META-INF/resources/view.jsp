@@ -2,7 +2,7 @@
 
 <script lang="text/javascript">
 	function getObjectType() {
-		return "<%= cf.oggetto() %>"
+		return "<%= s %>"
 	}
 	function getParams() {
 		var nm
@@ -24,7 +24,7 @@
 	}
 	function updateFeed() {
 		$(".rss-filtrato")[0].href=
-			"/o/feed/<%=cf.oggetto() %>?"+getParams();
+			"/o/feed/<%=s %>?"+getParams();
 	}
 	function dueLivelli() {
 		return <%=searchable.getMonthEquivalent()!=null %>
@@ -87,7 +87,7 @@
 	<p>
 		<h3>Archivio <%=searchable.getName() %></h3>
 		<div id="search-container"></div>
-		<a href="/o/feed/<%=cf.oggetto() %>" target="_blank" class="btn btn-transparent rss-filtrato" title="RSS filtrato secondo le opzioni scelte">
+		<a href="/o/feed/<%=s %>" target="_blank" class="btn btn-transparent rss-filtrato" title="RSS filtrato secondo le opzioni scelte">
 				     	<span class="icon i-rss" title="Icona RSS"></span> <span>RSS</span> 
 				     	<span class="icon i-external-link-square u-open-external" title="RSS filtrato secondo le opzioni scelte"></span>
 		</a>

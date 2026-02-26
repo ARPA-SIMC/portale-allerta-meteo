@@ -1,32 +1,17 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerter.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.exportimport.kernel.lar.StagedModelType;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -37,21 +22,11 @@ import java.util.Objects;
  * @see Area
  * @generated
  */
-@ProviderType
-public class AreaWrapper implements Area, ModelWrapper<Area> {
+public class AreaWrapper
+	extends BaseModelWrapper<Area> implements Area, ModelWrapper<Area> {
 
 	public AreaWrapper(Area area) {
-		_area = area;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return Area.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return Area.class.getName();
+		super(area);
 	}
 
 	@Override
@@ -164,13 +139,8 @@ public class AreaWrapper implements Area, ModelWrapper<Area> {
 	}
 
 	@Override
-	public Object clone() {
-		return new AreaWrapper((Area)_area.clone());
-	}
-
-	@Override
-	public int compareTo(it.eng.allerter.model.Area area) {
-		return _area.compareTo(area);
+	public Area cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -180,7 +150,7 @@ public class AreaWrapper implements Area, ModelWrapper<Area> {
 	 */
 	@Override
 	public long getAreaId() {
-		return _area.getAreaId();
+		return model.getAreaId();
 	}
 
 	/**
@@ -190,7 +160,7 @@ public class AreaWrapper implements Area, ModelWrapper<Area> {
 	 */
 	@Override
 	public long getCompanyId() {
-		return _area.getCompanyId();
+		return model.getCompanyId();
 	}
 
 	/**
@@ -200,7 +170,7 @@ public class AreaWrapper implements Area, ModelWrapper<Area> {
 	 */
 	@Override
 	public boolean getCostiero() {
-		return _area.getCostiero();
+		return model.getCostiero();
 	}
 
 	/**
@@ -210,7 +180,7 @@ public class AreaWrapper implements Area, ModelWrapper<Area> {
 	 */
 	@Override
 	public Date getCreateDate() {
-		return _area.getCreateDate();
+		return model.getCreateDate();
 	}
 
 	/**
@@ -220,7 +190,7 @@ public class AreaWrapper implements Area, ModelWrapper<Area> {
 	 */
 	@Override
 	public Date getDataFine() {
-		return _area.getDataFine();
+		return model.getDataFine();
 	}
 
 	/**
@@ -230,12 +200,7 @@ public class AreaWrapper implements Area, ModelWrapper<Area> {
 	 */
 	@Override
 	public Date getDataInizio() {
-		return _area.getDataInizio();
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _area.getExpandoBridge();
+		return model.getDataInizio();
 	}
 
 	/**
@@ -245,7 +210,7 @@ public class AreaWrapper implements Area, ModelWrapper<Area> {
 	 */
 	@Override
 	public long getGroupId() {
-		return _area.getGroupId();
+		return model.getGroupId();
 	}
 
 	/**
@@ -255,7 +220,7 @@ public class AreaWrapper implements Area, ModelWrapper<Area> {
 	 */
 	@Override
 	public Date getModifiedDate() {
-		return _area.getModifiedDate();
+		return model.getModifiedDate();
 	}
 
 	/**
@@ -265,7 +230,7 @@ public class AreaWrapper implements Area, ModelWrapper<Area> {
 	 */
 	@Override
 	public String getNome() {
-		return _area.getNome();
+		return model.getNome();
 	}
 
 	/**
@@ -275,7 +240,7 @@ public class AreaWrapper implements Area, ModelWrapper<Area> {
 	 */
 	@Override
 	public long getParentId() {
-		return _area.getParentId();
+		return model.getParentId();
 	}
 
 	/**
@@ -285,12 +250,7 @@ public class AreaWrapper implements Area, ModelWrapper<Area> {
 	 */
 	@Override
 	public long getPrimaryKey() {
-		return _area.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _area.getPrimaryKeyObj();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -300,7 +260,7 @@ public class AreaWrapper implements Area, ModelWrapper<Area> {
 	 */
 	@Override
 	public String getTipoArea() {
-		return _area.getTipoArea();
+		return model.getTipoArea();
 	}
 
 	/**
@@ -310,7 +270,7 @@ public class AreaWrapper implements Area, ModelWrapper<Area> {
 	 */
 	@Override
 	public long getUserId() {
-		return _area.getUserId();
+		return model.getUserId();
 	}
 
 	/**
@@ -320,7 +280,7 @@ public class AreaWrapper implements Area, ModelWrapper<Area> {
 	 */
 	@Override
 	public String getUserName() {
-		return _area.getUserName();
+		return model.getUserName();
 	}
 
 	/**
@@ -330,7 +290,7 @@ public class AreaWrapper implements Area, ModelWrapper<Area> {
 	 */
 	@Override
 	public String getUserUuid() {
-		return _area.getUserUuid();
+		return model.getUserUuid();
 	}
 
 	/**
@@ -340,17 +300,7 @@ public class AreaWrapper implements Area, ModelWrapper<Area> {
 	 */
 	@Override
 	public String getUuid() {
-		return _area.getUuid();
-	}
-
-	@Override
-	public int hashCode() {
-		return _area.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _area.isCachedModel();
+		return model.getUuid();
 	}
 
 	/**
@@ -360,22 +310,12 @@ public class AreaWrapper implements Area, ModelWrapper<Area> {
 	 */
 	@Override
 	public boolean isCostiero() {
-		return _area.isCostiero();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _area.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _area.isNew();
+		return model.isCostiero();
 	}
 
 	@Override
 	public void persist() {
-		_area.persist();
+		model.persist();
 	}
 
 	/**
@@ -385,12 +325,7 @@ public class AreaWrapper implements Area, ModelWrapper<Area> {
 	 */
 	@Override
 	public void setAreaId(long areaId) {
-		_area.setAreaId(areaId);
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_area.setCachedModel(cachedModel);
+		model.setAreaId(areaId);
 	}
 
 	/**
@@ -400,7 +335,7 @@ public class AreaWrapper implements Area, ModelWrapper<Area> {
 	 */
 	@Override
 	public void setCompanyId(long companyId) {
-		_area.setCompanyId(companyId);
+		model.setCompanyId(companyId);
 	}
 
 	/**
@@ -410,7 +345,7 @@ public class AreaWrapper implements Area, ModelWrapper<Area> {
 	 */
 	@Override
 	public void setCostiero(boolean costiero) {
-		_area.setCostiero(costiero);
+		model.setCostiero(costiero);
 	}
 
 	/**
@@ -420,7 +355,7 @@ public class AreaWrapper implements Area, ModelWrapper<Area> {
 	 */
 	@Override
 	public void setCreateDate(Date createDate) {
-		_area.setCreateDate(createDate);
+		model.setCreateDate(createDate);
 	}
 
 	/**
@@ -430,7 +365,7 @@ public class AreaWrapper implements Area, ModelWrapper<Area> {
 	 */
 	@Override
 	public void setDataFine(Date dataFine) {
-		_area.setDataFine(dataFine);
+		model.setDataFine(dataFine);
 	}
 
 	/**
@@ -440,24 +375,7 @@ public class AreaWrapper implements Area, ModelWrapper<Area> {
 	 */
 	@Override
 	public void setDataInizio(Date dataInizio) {
-		_area.setDataInizio(dataInizio);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_area.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_area.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_area.setExpandoBridgeAttributes(serviceContext);
+		model.setDataInizio(dataInizio);
 	}
 
 	/**
@@ -467,7 +385,7 @@ public class AreaWrapper implements Area, ModelWrapper<Area> {
 	 */
 	@Override
 	public void setGroupId(long groupId) {
-		_area.setGroupId(groupId);
+		model.setGroupId(groupId);
 	}
 
 	/**
@@ -477,12 +395,7 @@ public class AreaWrapper implements Area, ModelWrapper<Area> {
 	 */
 	@Override
 	public void setModifiedDate(Date modifiedDate) {
-		_area.setModifiedDate(modifiedDate);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_area.setNew(n);
+		model.setModifiedDate(modifiedDate);
 	}
 
 	/**
@@ -492,7 +405,7 @@ public class AreaWrapper implements Area, ModelWrapper<Area> {
 	 */
 	@Override
 	public void setNome(String nome) {
-		_area.setNome(nome);
+		model.setNome(nome);
 	}
 
 	/**
@@ -502,7 +415,7 @@ public class AreaWrapper implements Area, ModelWrapper<Area> {
 	 */
 	@Override
 	public void setParentId(long parentId) {
-		_area.setParentId(parentId);
+		model.setParentId(parentId);
 	}
 
 	/**
@@ -512,12 +425,7 @@ public class AreaWrapper implements Area, ModelWrapper<Area> {
 	 */
 	@Override
 	public void setPrimaryKey(long primaryKey) {
-		_area.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_area.setPrimaryKeyObj(primaryKeyObj);
+		model.setPrimaryKey(primaryKey);
 	}
 
 	/**
@@ -527,7 +435,7 @@ public class AreaWrapper implements Area, ModelWrapper<Area> {
 	 */
 	@Override
 	public void setTipoArea(String tipoArea) {
-		_area.setTipoArea(tipoArea);
+		model.setTipoArea(tipoArea);
 	}
 
 	/**
@@ -537,7 +445,7 @@ public class AreaWrapper implements Area, ModelWrapper<Area> {
 	 */
 	@Override
 	public void setUserId(long userId) {
-		_area.setUserId(userId);
+		model.setUserId(userId);
 	}
 
 	/**
@@ -547,7 +455,7 @@ public class AreaWrapper implements Area, ModelWrapper<Area> {
 	 */
 	@Override
 	public void setUserName(String userName) {
-		_area.setUserName(userName);
+		model.setUserName(userName);
 	}
 
 	/**
@@ -557,7 +465,7 @@ public class AreaWrapper implements Area, ModelWrapper<Area> {
 	 */
 	@Override
 	public void setUserUuid(String userUuid) {
-		_area.setUserUuid(userUuid);
+		model.setUserUuid(userUuid);
 	}
 
 	/**
@@ -567,80 +475,22 @@ public class AreaWrapper implements Area, ModelWrapper<Area> {
 	 */
 	@Override
 	public void setUuid(String uuid) {
-		_area.setUuid(uuid);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<it.eng.allerter.model.Area> toCacheModel() {
-
-		return _area.toCacheModel();
-	}
-
-	@Override
-	public it.eng.allerter.model.Area toEscapedModel() {
-		return new AreaWrapper(_area.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _area.toString();
-	}
-
-	@Override
-	public it.eng.allerter.model.Area toUnescapedModel() {
-		return new AreaWrapper(_area.toUnescapedModel());
+		model.setUuid(uuid);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _area.toXmlString();
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-
-		if (!(obj instanceof AreaWrapper)) {
-			return false;
-		}
-
-		AreaWrapper areaWrapper = (AreaWrapper)obj;
-
-		if (Objects.equals(_area, areaWrapper._area)) {
-			return true;
-		}
-
-		return false;
+		return model.toXmlString();
 	}
 
 	@Override
 	public StagedModelType getStagedModelType() {
-		return _area.getStagedModelType();
+		return model.getStagedModelType();
 	}
 
 	@Override
-	public Area getWrappedModel() {
-		return _area;
+	protected AreaWrapper wrap(Area area) {
+		return new AreaWrapper(area);
 	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _area.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _area.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_area.resetOriginalValues();
-	}
-
-	private final Area _area;
 
 }

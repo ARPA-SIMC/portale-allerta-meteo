@@ -2,3 +2,6 @@ Bundle-Name: allerta-search
 Bundle-SymbolicName: allerta.search
 Bundle-Version: 1.0.0
 Export-Package: allerta.search.constants
+Provide-Capability:\
+	liferay.language.resources;\
+		resource.bundle.base.name="content.Language"

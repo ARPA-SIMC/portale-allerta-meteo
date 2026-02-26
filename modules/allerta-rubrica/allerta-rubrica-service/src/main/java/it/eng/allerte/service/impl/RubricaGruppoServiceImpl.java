@@ -1,18 +1,11 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerte.service.impl;
+
+import com.liferay.portal.aop.AopService;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -30,7 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import aQute.libg.log.Logger;
 import it.eng.allerte.custom.interfaces.IRubricaRestConstants;
 import it.eng.allerte.custom.jsonRubrica.GroupDetail;
 import it.eng.allerte.custom.jsonRubrica.GroupElement;
@@ -43,29 +35,21 @@ import it.eng.allerte.service.RubricaUtenteSitoLocalServiceUtil;
 import it.eng.allerte.service.base.RubricaGruppoServiceBaseImpl;
 import it.eng.rubrica.service.util.GestioneRubricaCustomService;
 
+import org.osgi.service.component.annotations.Component;
+
 /**
- * The implementation of the rubrica gruppo remote service.
- *
- * <p>
- * All custom service methods should be put in this class. Whenever methods are added, rerun ServiceBuilder to copy their definitions into the <code>it.eng.allerte.service.RubricaGruppoService</code> interface.
- *
- * <p>
- * This is a remote service. Methods of this service are expected to have security checks based on the propagated JAAS credentials because this service can be accessed remotely.
- * </p>
- *
  * @author Pratola_L
- * @see RubricaGruppoServiceBaseImpl
  */
+@Component(
+	property = {
+		"json.web.service.context.name=rubrica",
+		"json.web.service.context.path=RubricaGruppo"
+	},
+	service = AopService.class
+)
 public class RubricaGruppoServiceImpl extends RubricaGruppoServiceBaseImpl implements IRubricaRestConstants {
-
-	/*
-	 * NOTE FOR DEVELOPERS:
-	 *
-	 * Never reference this class directly. Always use <code>it.eng.allerte.service.RubricaGruppoServiceUtil</code> to access the rubrica gruppo remote service.
-	 */
-
-	//private static Logger logger = LoggerFactory.getLogger(RubricaGruppoServiceImpl.class);
 	
+
 	
 	//GET groups (ID)
 	@JSONWebService
@@ -131,7 +115,7 @@ public class RubricaGruppoServiceImpl extends RubricaGruppoServiceBaseImpl imple
 
 	}
 
-	//POST - crea gruppo - GET restituisci i gruppi a cui è associato l'user
+	//POST - crea gruppo - GET restituisci i gruppi a cui Ã¨ associato l'user
 	@JSONWebService
 	@AccessControlled(guestAccessEnabled = true)
 	public Map<String,Object> getGroups(){
@@ -159,7 +143,7 @@ public class RubricaGruppoServiceImpl extends RubricaGruppoServiceBaseImpl imple
 	}
 
 	
-	//POST - crea gruppo - GET restituisci i gruppi a cui è associato l'user
+	//POST - crea gruppo - GET restituisci i gruppi a cui Ã¨ associato l'user
 	@JSONWebService
 	@AccessControlled(guestAccessEnabled = true)
 	public Map<String,Object> deleteGroupsMulti(String data){
@@ -444,6 +428,5 @@ public class RubricaGruppoServiceImpl extends RubricaGruppoServiceBaseImpl imple
 		return gruppoResult;
 			
 	}
-	
 	
 }

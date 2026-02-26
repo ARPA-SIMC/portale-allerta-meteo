@@ -3,7 +3,9 @@ package it.eng.allerte.service.persistence.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.liferay.portal.dao.orm.custom.sql.CustomSQL;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
 import com.liferay.portal.kernel.dao.orm.QueryPos;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.SQLQuery;
@@ -13,22 +15,31 @@ import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
-import com.liferay.portal.spring.extender.service.ServiceReference;
+//import com.liferay.util.dao.orm.CustomSQLUtil;
 
 import it.eng.allerte.model.RubricaContatto;
 import it.eng.allerte.service.persistence.RubricaContattoFinder;
 
-
+@Component(service = RubricaContattoFinder.class)
 public class RubricaContattoFinderImpl extends RubricaContattoFinderBaseImpl 
 	implements RubricaContattoFinder{
 		
 	public static final Log _log = LogFactoryUtil.getLog(RubricaContattoFinderImpl.class);
 		
-		private String DEL_CONTATTO_BY_NOMINATIVO = RubricaContattoFinderImpl.class.getName()
+		/*private String DEL_CONTATTO_BY_NOMINATIVO = RubricaContattoFinderImpl.class.getName()
 				+ ".deleteByNominativo";
 		
 		private String LOAD_CONTATTO_BY_NOMINATIVO = RubricaContattoFinderImpl.class.getName()
-				+ ".loadByNominativo";
+				+ ".loadByNominativo";*/
+	
+	private String DEL_CONTATTO_BY_NOMINATIVO = "delete from  rubrica_rubricaContatto where FK_NOMINATIVO = ?";
+	
+	private String LOAD_CONTATTO_BY_NOMINATIVO = "	select ID_CONTATTO, FK_NOMINATIVO, FK_CANALE, CONTATTO, ALLERTAMENTO, FK_UTENTE_CREAZIONE, "
+			+ "	DATA_CREAZIONE, FK_UTENTE_MODIFICA, DATA_MODIFICA, DATA_FINE_VALIDITA "
+			+ "	from  rubrica_rubricaContatto "
+			+ "	where FK_NOMINATIVO = ? "
+			+ "	and DATA_FINE_VALIDITA is null "
+			+ "	and ALLERTAMENTO";
 		
 
 		public void deleteByNominativo(Long fkNominativo) {
@@ -36,7 +47,7 @@ public class RubricaContattoFinderImpl extends RubricaContattoFinderBaseImpl
 			try{
 				session = openSession();
 
-				String sql = customSQL.get(this.getClass(), DEL_CONTATTO_BY_NOMINATIVO);
+				String sql = DEL_CONTATTO_BY_NOMINATIVO;
 
 				SQLQuery query = session.createSQLQuery(sql);
 				query.setCacheable(false);
@@ -68,7 +79,7 @@ public class RubricaContattoFinderImpl extends RubricaContattoFinderBaseImpl
 			try{
 				session = openSession();
 
-				String sql = customSQL.get(this.getClass(), LOAD_CONTATTO_BY_NOMINATIVO);
+				String sql = LOAD_CONTATTO_BY_NOMINATIVO;
 
 				SQLQuery query = session.createSQLQuery(sql);
 				query.setCacheable(false);
@@ -106,8 +117,6 @@ public class RubricaContattoFinderImpl extends RubricaContattoFinderBaseImpl
 		}
 
 
-		@ServiceReference(type = CustomSQL.class)
-		private CustomSQL customSQL;
 
 }
 

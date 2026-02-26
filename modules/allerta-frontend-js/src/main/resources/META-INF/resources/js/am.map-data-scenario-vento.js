@@ -61,15 +61,15 @@ am.MapDataScenarioVento = (function($){
 
 			// Mapping wind values and wind directions
 			for(var a = 0; a < dataDirections.length; a++)	
-				dataDirections[dataDirections[a].idstazione] = dataDirections[a]
+				dataDirections["_"+dataDirections[a].idstazione] = dataDirections[a]
 	
 			// Loop on value and create sensor markers
 			for(var a = 0; a < dataValues.length; a++) {
 					
-				if( dataDirections[ dataValues[a].idstazione ] ){ // just if we have the direction value
+				if( dataDirections["_"+ dataValues[a].idstazione ] ){ // just if we have the direction value
 
 					htm = "<div class='divSVG'><svg style='overflow:visible;position:relative;top:-16px;left:-16px' xmlns='http://www.w3.org/2000/svg' version='1.1'>" 
-						+ this.sventolaBarba(dataValues[a].value || 0, dataDirections[dataValues[a].idstazione].value || 0) 
+						+ this.sventolaBarba(dataValues[a].value || 0, dataDirections["_"+dataValues[a].idstazione].value || 0) 
 						+ "</svg></div>"
 					vl = dataValues[a].value;
 					cls = ( (htm && htm !="0.0") || vl!==null 

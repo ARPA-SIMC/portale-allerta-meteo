@@ -24,13 +24,19 @@ public class AllertaBOSchedulerPanelApp extends BasePanelApp  {
 		return AllertaBackofficeKeys.ScheduledJobManagerPortlet;
 	}
 
-	@Override
+
+	
 	@Reference(
-		target = "(javax.portlet.name=" + AllertaBackofficeKeys.ScheduledJobManagerPortlet + ")",
-		unbind = "-"
-	)
-	public void setPortlet(Portlet portlet) {
-		super.setPortlet(portlet);
+			target = "(javax.portlet.name=" + AllertaBackofficeKeys.ScheduledJobManagerPortlet + ")",
+			unbind = "-"
+		)
+		private Portlet _portlet;
+
+
+
+	@Override
+	public Portlet getPortlet() {
+		return _portlet;
 	}
 
 }

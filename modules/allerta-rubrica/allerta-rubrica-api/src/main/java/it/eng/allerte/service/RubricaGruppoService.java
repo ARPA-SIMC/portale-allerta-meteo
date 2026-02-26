@@ -1,27 +1,15 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerte.service;
-
-import aQute.bnd.annotation.ProviderType;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.jsonwebservice.JSONWebService;
 import com.liferay.portal.kernel.security.access.control.AccessControlled;
 import com.liferay.portal.kernel.service.BaseService;
-import com.liferay.portal.kernel.spring.osgi.OSGiBeanProperties;
 import com.liferay.portal.kernel.transaction.Isolation;
 import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.transaction.Transactional;
@@ -29,6 +17,8 @@ import com.liferay.portal.kernel.transaction.Transactional;
 import it.eng.allerte.model.RubricaGruppo;
 
 import java.util.Map;
+
+import org.osgi.annotation.versioning.ProviderType;
 
 /**
  * Provides the remote service interface for RubricaGruppo. Methods of this
@@ -41,13 +31,6 @@ import java.util.Map;
  */
 @AccessControlled
 @JSONWebService
-@OSGiBeanProperties(
-	property = {
-		"json.web.service.context.name=rubrica",
-		"json.web.service.context.path=RubricaGruppo"
-	},
-	service = RubricaGruppoService.class
-)
 @ProviderType
 @Transactional(
 	isolation = Isolation.PORTAL,
@@ -58,40 +41,40 @@ public interface RubricaGruppoService extends BaseService {
 	/*
 	 * NOTE FOR DEVELOPERS:
 	 *
-	 * Never modify or reference this interface directly. Always use {@link RubricaGruppoServiceUtil} to access the rubrica gruppo remote service. Add custom service methods to <code>it.eng.allerte.service.impl.RubricaGruppoServiceImpl</code> and rerun ServiceBuilder to automatically copy the method declarations to this interface.
+	 * Never modify this interface directly. Add custom service methods to <code>it.eng.allerte.service.impl.RubricaGruppoServiceImpl</code> and rerun ServiceBuilder to automatically copy the method declarations to this interface. Consume the rubrica gruppo remote service via injection or a <code>org.osgi.util.tracker.ServiceTracker</code>. Use {@link RubricaGruppoServiceUtil} if injection and service tracking are not available.
 	 */
-	@JSONWebService
 	@AccessControlled(guestAccessEnabled = true)
+	@JSONWebService
 	public Map<String, Object> addGroup(String data);
 
-	@JSONWebService
 	@AccessControlled(guestAccessEnabled = true)
+	@JSONWebService
 	public Map<String, Object> deleteGroups(Long id);
 
-	@JSONWebService
 	@AccessControlled(guestAccessEnabled = true)
+	@JSONWebService
 	public Map<String, Object> deleteGroupsMulti(String data);
 
 	/**
 	 * Il metodo restituisce le info sul gruppo a partire dal nome e per il sito proprietario
 	 */
-	@JSONWebService
 	@AccessControlled(guestAccessEnabled = true)
+	@JSONWebService
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public RubricaGruppo getGroupForOwnerByName(Long ownerId, String groupName);
 
-	@JSONWebService
 	@AccessControlled(guestAccessEnabled = true)
+	@JSONWebService
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public Map<String, Object> getGroups();
 
-	@JSONWebService
 	@AccessControlled(guestAccessEnabled = true)
+	@JSONWebService
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public Map<String, Object> getGroups(Long id);
 
-	@JSONWebService
 	@AccessControlled(guestAccessEnabled = false)
+	@JSONWebService
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public Map<String, Object> getGroups(
 		String name, Long categoria, int limit, int offset);
@@ -103,8 +86,8 @@ public interface RubricaGruppoService extends BaseService {
 	 */
 	public String getOSGiServiceIdentifier();
 
-	@JSONWebService
 	@AccessControlled(guestAccessEnabled = true)
+	@JSONWebService
 	public Map<String, Object> updateGroups(Long id, String data);
 
 }

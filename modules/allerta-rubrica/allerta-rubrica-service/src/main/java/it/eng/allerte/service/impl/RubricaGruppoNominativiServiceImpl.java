@@ -1,26 +1,17 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerte.service.impl;
 
+import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.jsonwebservice.JSONWebService;
 import com.liferay.portal.kernel.model.Role;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.security.access.control.AccessControlled;
-import com.liferay.portal.kernel.security.auth.PrincipalThreadLocal;
 import com.liferay.portal.kernel.service.RoleLocalServiceUtil;
 import com.liferay.portal.kernel.service.UserLocalServiceUtil;
 
@@ -32,38 +23,32 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import it.eng.allerte.service.RubricaGruppoNominativiLocalServiceUtil;
+import it.eng.allerte.service.base.RubricaGruppoNominativiServiceBaseImpl;
+import it.eng.allerte.service.persistence.RubricaNominativoUtil;
+import it.eng.rubrica.service.util.GestioneRubricaCustomService;
+
+import org.osgi.service.component.annotations.Component;
+
 import it.eng.allerte.custom.interfaces.IRubricaRestConstants;
 import it.eng.allerte.custom.util.RubricaUtil;
 import it.eng.allerte.exception.NoSuchRubricaNominativoException;
 import it.eng.allerte.model.RubricaNominativo;
 import it.eng.allerte.model.impl.RubricaNominativoImpl;
-import it.eng.allerte.service.RubricaGruppoNominativiLocalServiceUtil;
-import it.eng.allerte.service.RubricaUtenteSitoLocalServiceUtil;
-import it.eng.allerte.service.base.RubricaGruppoNominativiServiceBaseImpl;
-import it.eng.allerte.service.persistence.RubricaNominativoUtil;
-import it.eng.rubrica.service.util.GestioneRubricaCustomService;
 
 /**
- * The implementation of the rubrica gruppo nominativi remote service.
- *
- * <p>
- * All custom service methods should be put in this class. Whenever methods are added, rerun ServiceBuilder to copy their definitions into the <code>it.eng.allerte.service.RubricaGruppoNominativiService</code> interface.
- *
- * <p>
- * This is a remote service. Methods of this service are expected to have security checks based on the propagated JAAS credentials because this service can be accessed remotely.
- * </p>
- *
  * @author Pratola_L
- * @see RubricaGruppoNominativiServiceBaseImpl
  */
+@Component(
+	property = {
+		"json.web.service.context.name=rubrica",
+		"json.web.service.context.path=RubricaGruppoNominativi"
+	},
+	service = AopService.class
+)
 public class RubricaGruppoNominativiServiceImpl
 	extends RubricaGruppoNominativiServiceBaseImpl implements IRubricaRestConstants {
-
-	/*
-	 * NOTE FOR DEVELOPERS:
-	 *
-	 * Never reference this class directly. Always use <code>it.eng.allerte.service.RubricaGruppoNominativiServiceUtil</code> to access the rubrica gruppo nominativi remote service.
-	 */
+	
 	@JSONWebService
 	@AccessControlled(guestAccessEnabled = true)
 	public Map<String,Object> addGroupNominatives(int id, String data){

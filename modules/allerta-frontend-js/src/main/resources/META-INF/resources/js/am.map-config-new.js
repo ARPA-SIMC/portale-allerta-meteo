@@ -200,6 +200,9 @@ var TERRITORY2 = {
   
   var ALERT_LEVEL = ["nullo","verde","gialla","arancione","rossa"];
   var ALERT_LEVEL_TEXT = ["Non pertinente", "Assenza di fenomeni significativi prevedibili", "Fenomeni localizzati", "Fenomeni diffusi", "Fenomeni ingenti ed estesi"];
+  if (Liferay && Liferay.ThemeDisplay && Liferay.ThemeDisplay.getLanguageId()=='en_GB')
+	  ALERT_LEVEL_TEXT = ["Not applicable", "Absence of significant predictable phenomena", "Localized phenomena", "Widespread phenomena", "Intense and extensive phenomena"]
+  
   var ALERT_LEVEL_CSS_CLASS = ["alert-sign--null","alert-sign--green","alert-sign--yellow","alert-sign--orange","alert-sign--red"];
   
   var BACKOFFICE_PHENOMENON_SCENARIO = {

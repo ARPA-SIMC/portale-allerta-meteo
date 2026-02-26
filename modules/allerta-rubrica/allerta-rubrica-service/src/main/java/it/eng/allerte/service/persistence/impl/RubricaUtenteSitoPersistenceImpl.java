@@ -1,49 +1,48 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerte.service.persistence.impl;
 
-import aQute.bnd.annotation.ProviderType;
-
+import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
 import com.liferay.portal.kernel.dao.orm.Query;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
+import com.liferay.portal.kernel.dao.orm.SessionFactory;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
-import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.spring.extender.service.ServiceReference;
+import com.liferay.portal.kernel.util.PropsKeys;
+import com.liferay.portal.kernel.util.PropsUtil;
 
 import it.eng.allerte.exception.NoSuchRubricaUtenteSitoException;
 import it.eng.allerte.model.RubricaUtenteSito;
+import it.eng.allerte.model.RubricaUtenteSitoTable;
 import it.eng.allerte.model.impl.RubricaUtenteSitoImpl;
 import it.eng.allerte.model.impl.RubricaUtenteSitoModelImpl;
 import it.eng.allerte.service.persistence.RubricaUtenteSitoPersistence;
+import it.eng.allerte.service.persistence.RubricaUtenteSitoUtil;
+import it.eng.allerte.service.persistence.impl.constants.rubricaPersistenceConstants;
 
 import java.io.Serializable;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.sql.DataSource;
+
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The persistence implementation for the rubrica utente sito service.
@@ -55,7 +54,7 @@ import java.util.Set;
  * @author Pratola_L
  * @generated
  */
-@ProviderType
+@Component(service = RubricaUtenteSitoPersistence.class)
 public class RubricaUtenteSitoPersistenceImpl
 	extends BasePersistenceImpl<RubricaUtenteSito>
 	implements RubricaUtenteSitoPersistence {
@@ -80,6 +79,11 @@ public class RubricaUtenteSitoPersistenceImpl
 
 	public RubricaUtenteSitoPersistenceImpl() {
 		setModelClass(RubricaUtenteSito.class);
+
+		setModelImplClass(RubricaUtenteSitoImpl.class);
+		setModelPKClass(long.class);
+
+		setTable(RubricaUtenteSitoTable.INSTANCE);
 	}
 
 	/**
@@ -89,13 +93,12 @@ public class RubricaUtenteSitoPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(RubricaUtenteSito rubricaUtenteSito) {
-		entityCache.putResult(
-			RubricaUtenteSitoModelImpl.ENTITY_CACHE_ENABLED,
+		dummyEntityCache.putResult(
 			RubricaUtenteSitoImpl.class, rubricaUtenteSito.getPrimaryKey(),
 			rubricaUtenteSito);
-
-		rubricaUtenteSito.resetOriginalValues();
 	}
+
+	private int _valueObjectFinderCacheListThreshold;
 
 	/**
 	 * Caches the rubrica utente sitos in the entity cache if it is enabled.
@@ -104,16 +107,20 @@ public class RubricaUtenteSitoPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(List<RubricaUtenteSito> rubricaUtenteSitos) {
+		if ((_valueObjectFinderCacheListThreshold == 0) ||
+			((_valueObjectFinderCacheListThreshold > 0) &&
+			 (rubricaUtenteSitos.size() >
+				 _valueObjectFinderCacheListThreshold))) {
+
+			return;
+		}
+
 		for (RubricaUtenteSito rubricaUtenteSito : rubricaUtenteSitos) {
-			if (entityCache.getResult(
-					RubricaUtenteSitoModelImpl.ENTITY_CACHE_ENABLED,
+			if (dummyEntityCache.getResult(
 					RubricaUtenteSitoImpl.class,
 					rubricaUtenteSito.getPrimaryKey()) == null) {
 
 				cacheResult(rubricaUtenteSito);
-			}
-			else {
-				rubricaUtenteSito.resetOriginalValues();
 			}
 		}
 	}
@@ -127,11 +134,9 @@ public class RubricaUtenteSitoPersistenceImpl
 	 */
 	@Override
 	public void clearCache() {
-		entityCache.clearCache(RubricaUtenteSitoImpl.class);
+		dummyEntityCache.clearCache(RubricaUtenteSitoImpl.class);
 
-		finderCache.clearCache(FINDER_CLASS_NAME_ENTITY);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		dummyFinderCache.clearCache(RubricaUtenteSitoImpl.class);
 	}
 
 	/**
@@ -143,23 +148,25 @@ public class RubricaUtenteSitoPersistenceImpl
 	 */
 	@Override
 	public void clearCache(RubricaUtenteSito rubricaUtenteSito) {
-		entityCache.removeResult(
-			RubricaUtenteSitoModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaUtenteSitoImpl.class, rubricaUtenteSito.getPrimaryKey());
-
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		dummyEntityCache.removeResult(
+			RubricaUtenteSitoImpl.class, rubricaUtenteSito);
 	}
 
 	@Override
 	public void clearCache(List<RubricaUtenteSito> rubricaUtenteSitos) {
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
-
 		for (RubricaUtenteSito rubricaUtenteSito : rubricaUtenteSitos) {
-			entityCache.removeResult(
-				RubricaUtenteSitoModelImpl.ENTITY_CACHE_ENABLED,
-				RubricaUtenteSitoImpl.class, rubricaUtenteSito.getPrimaryKey());
+			dummyEntityCache.removeResult(
+				RubricaUtenteSitoImpl.class, rubricaUtenteSito);
+		}
+	}
+
+	@Override
+	public void clearCache(Set<Serializable> primaryKeys) {
+		dummyFinderCache.clearCache(RubricaUtenteSitoImpl.class);
+
+		for (Serializable primaryKey : primaryKeys) {
+			dummyEntityCache.removeResult(
+				RubricaUtenteSitoImpl.class, primaryKey);
 		}
 	}
 
@@ -224,11 +231,11 @@ public class RubricaUtenteSitoPersistenceImpl
 
 			return remove(rubricaUtenteSito);
 		}
-		catch (NoSuchRubricaUtenteSitoException nsee) {
-			throw nsee;
+		catch (NoSuchRubricaUtenteSitoException noSuchEntityException) {
+			throw noSuchEntityException;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -254,8 +261,8 @@ public class RubricaUtenteSitoPersistenceImpl
 				session.delete(rubricaUtenteSito);
 			}
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -277,35 +284,27 @@ public class RubricaUtenteSitoPersistenceImpl
 		try {
 			session = openSession();
 
-			if (rubricaUtenteSito.isNew()) {
+			if (isNew) {
 				session.save(rubricaUtenteSito);
-
-				rubricaUtenteSito.setNew(false);
 			}
 			else {
 				rubricaUtenteSito = (RubricaUtenteSito)session.merge(
 					rubricaUtenteSito);
 			}
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
 		}
 
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		dummyEntityCache.putResult(
+			RubricaUtenteSitoImpl.class, rubricaUtenteSito, false, true);
 
 		if (isNew) {
-			finderCache.removeResult(_finderPathCountAll, FINDER_ARGS_EMPTY);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindAll, FINDER_ARGS_EMPTY);
+			rubricaUtenteSito.setNew(false);
 		}
-
-		entityCache.putResult(
-			RubricaUtenteSitoModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaUtenteSitoImpl.class, rubricaUtenteSito.getPrimaryKey(),
-			rubricaUtenteSito, false);
 
 		rubricaUtenteSito.resetOriginalValues();
 
@@ -354,165 +353,12 @@ public class RubricaUtenteSitoPersistenceImpl
 	/**
 	 * Returns the rubrica utente sito with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the rubrica utente sito
-	 * @return the rubrica utente sito, or <code>null</code> if a rubrica utente sito with the primary key could not be found
-	 */
-	@Override
-	public RubricaUtenteSito fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(
-			RubricaUtenteSitoModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaUtenteSitoImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		RubricaUtenteSito rubricaUtenteSito = (RubricaUtenteSito)serializable;
-
-		if (rubricaUtenteSito == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				rubricaUtenteSito = (RubricaUtenteSito)session.get(
-					RubricaUtenteSitoImpl.class, primaryKey);
-
-				if (rubricaUtenteSito != null) {
-					cacheResult(rubricaUtenteSito);
-				}
-				else {
-					entityCache.putResult(
-						RubricaUtenteSitoModelImpl.ENTITY_CACHE_ENABLED,
-						RubricaUtenteSitoImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(
-					RubricaUtenteSitoModelImpl.ENTITY_CACHE_ENABLED,
-					RubricaUtenteSitoImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return rubricaUtenteSito;
-	}
-
-	/**
-	 * Returns the rubrica utente sito with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param ID_UTENTE the primary key of the rubrica utente sito
 	 * @return the rubrica utente sito, or <code>null</code> if a rubrica utente sito with the primary key could not be found
 	 */
 	@Override
 	public RubricaUtenteSito fetchByPrimaryKey(long ID_UTENTE) {
 		return fetchByPrimaryKey((Serializable)ID_UTENTE);
-	}
-
-	@Override
-	public Map<Serializable, RubricaUtenteSito> fetchByPrimaryKeys(
-		Set<Serializable> primaryKeys) {
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, RubricaUtenteSito> map =
-			new HashMap<Serializable, RubricaUtenteSito>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			RubricaUtenteSito rubricaUtenteSito = fetchByPrimaryKey(primaryKey);
-
-			if (rubricaUtenteSito != null) {
-				map.put(primaryKey, rubricaUtenteSito);
-			}
-
-			return map;
-		}
-
-		Set<Serializable> uncachedPrimaryKeys = null;
-
-		for (Serializable primaryKey : primaryKeys) {
-			Serializable serializable = entityCache.getResult(
-				RubricaUtenteSitoModelImpl.ENTITY_CACHE_ENABLED,
-				RubricaUtenteSitoImpl.class, primaryKey);
-
-			if (serializable != nullModel) {
-				if (serializable == null) {
-					if (uncachedPrimaryKeys == null) {
-						uncachedPrimaryKeys = new HashSet<Serializable>();
-					}
-
-					uncachedPrimaryKeys.add(primaryKey);
-				}
-				else {
-					map.put(primaryKey, (RubricaUtenteSito)serializable);
-				}
-			}
-		}
-
-		if (uncachedPrimaryKeys == null) {
-			return map;
-		}
-
-		StringBundler query = new StringBundler(
-			uncachedPrimaryKeys.size() * 2 + 1);
-
-		query.append(_SQL_SELECT_RUBRICAUTENTESITO_WHERE_PKS_IN);
-
-		for (Serializable primaryKey : uncachedPrimaryKeys) {
-			query.append((long)primaryKey);
-
-			query.append(",");
-		}
-
-		query.setIndex(query.index() - 1);
-
-		query.append(")");
-
-		String sql = query.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query q = session.createQuery(sql);
-
-			for (RubricaUtenteSito rubricaUtenteSito :
-					(List<RubricaUtenteSito>)q.list()) {
-
-				map.put(
-					rubricaUtenteSito.getPrimaryKeyObj(), rubricaUtenteSito);
-
-				cacheResult(rubricaUtenteSito);
-
-				uncachedPrimaryKeys.remove(
-					rubricaUtenteSito.getPrimaryKeyObj());
-			}
-
-			for (Serializable primaryKey : uncachedPrimaryKeys) {
-				entityCache.putResult(
-					RubricaUtenteSitoModelImpl.ENTITY_CACHE_ENABLED,
-					RubricaUtenteSitoImpl.class, primaryKey, nullModel);
-			}
-		}
-		catch (Exception e) {
-			throw processException(e);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**
@@ -529,7 +375,7 @@ public class RubricaUtenteSitoPersistenceImpl
 	 * Returns a range of all the rubrica utente sitos.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaUtenteSitoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaUtenteSitoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of rubrica utente sitos
@@ -545,7 +391,7 @@ public class RubricaUtenteSitoPersistenceImpl
 	 * Returns an ordered range of all the rubrica utente sitos.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaUtenteSitoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaUtenteSitoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of rubrica utente sitos
@@ -565,65 +411,63 @@ public class RubricaUtenteSitoPersistenceImpl
 	 * Returns an ordered range of all the rubrica utente sitos.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaUtenteSitoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaUtenteSitoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of rubrica utente sitos
 	 * @param end the upper bound of the range of rubrica utente sitos (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of rubrica utente sitos
 	 */
 	@Override
 	public List<RubricaUtenteSito> findAll(
 		int start, int end,
 		OrderByComparator<RubricaUtenteSito> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindAll;
-			finderArgs = FINDER_ARGS_EMPTY;
+			if (useFinderCache) {
+				finderPath = _finderPathWithoutPaginationFindAll;
+				finderArgs = FINDER_ARGS_EMPTY;
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
 			finderArgs = new Object[] {start, end, orderByComparator};
 		}
 
 		List<RubricaUtenteSito> list = null;
 
-		if (retrieveFromCache) {
-			list = (List<RubricaUtenteSito>)finderCache.getResult(
+		if (useFinderCache) {
+			list = (List<RubricaUtenteSito>)dummyFinderCache.getResult(
 				finderPath, finderArgs, this);
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 			String sql = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					2 + (orderByComparator.getOrderByFields().length * 2));
 
-				query.append(_SQL_SELECT_RUBRICAUTENTESITO);
+				sb.append(_SQL_SELECT_RUBRICAUTENTESITO);
 
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 
-				sql = query.toString();
+				sql = sb.toString();
 			}
 			else {
 				sql = _SQL_SELECT_RUBRICAUTENTESITO;
 
-				if (pagination) {
-					sql = sql.concat(RubricaUtenteSitoModelImpl.ORDER_BY_JPQL);
-				}
+				sql = sql.concat(RubricaUtenteSitoModelImpl.ORDER_BY_JPQL);
 			}
 
 			Session session = null;
@@ -631,29 +475,19 @@ public class RubricaUtenteSitoPersistenceImpl
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				if (!pagination) {
-					list = (List<RubricaUtenteSito>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<RubricaUtenteSito>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<RubricaUtenteSito>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					dummyFinderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -681,7 +515,7 @@ public class RubricaUtenteSitoPersistenceImpl
 	 */
 	@Override
 	public int countAll() {
-		Long count = (Long)finderCache.getResult(
+		Long count = (Long)dummyFinderCache.getResult(
 			_finderPathCountAll, FINDER_ARGS_EMPTY, this);
 
 		if (count == null) {
@@ -690,18 +524,15 @@ public class RubricaUtenteSitoPersistenceImpl
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(_SQL_COUNT_RUBRICAUTENTESITO);
+				Query query = session.createQuery(_SQL_COUNT_RUBRICAUTENTESITO);
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
-				finderCache.putResult(
+				dummyFinderCache.putResult(
 					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -712,6 +543,21 @@ public class RubricaUtenteSitoPersistenceImpl
 	}
 
 	@Override
+	protected EntityCache getEntityCache() {
+		return dummyEntityCache;
+	}
+
+	@Override
+	protected String getPKDBName() {
+		return "ID_UTENTE";
+	}
+
+	@Override
+	protected String getSelectSQL() {
+		return _SQL_SELECT_RUBRICAUTENTESITO;
+	}
+
+	@Override
 	protected Map<String, Integer> getTableColumnsMap() {
 		return RubricaUtenteSitoModelImpl.TABLE_COLUMNS_MAP;
 	}
@@ -719,45 +565,61 @@ public class RubricaUtenteSitoPersistenceImpl
 	/**
 	 * Initializes the rubrica utente sito persistence.
 	 */
-	public void afterPropertiesSet() {
+	@Activate
+	public void activate() {
+		_valueObjectFinderCacheListThreshold = GetterUtil.getInteger(
+			PropsUtil.get(PropsKeys.VALUE_OBJECT_FINDER_CACHE_LIST_THRESHOLD));
+
 		_finderPathWithPaginationFindAll = new FinderPath(
-			RubricaUtenteSitoModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaUtenteSitoModelImpl.FINDER_CACHE_ENABLED,
-			RubricaUtenteSitoImpl.class, FINDER_CLASS_NAME_LIST_WITH_PAGINATION,
-			"findAll", new String[0]);
+			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findAll", new String[0],
+			new String[0], true);
 
 		_finderPathWithoutPaginationFindAll = new FinderPath(
-			RubricaUtenteSitoModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaUtenteSitoModelImpl.FINDER_CACHE_ENABLED,
-			RubricaUtenteSitoImpl.class,
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findAll",
-			new String[0]);
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findAll", new String[0],
+			new String[0], true);
 
 		_finderPathCountAll = new FinderPath(
-			RubricaUtenteSitoModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaUtenteSitoModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countAll",
-			new String[0]);
+			new String[0], new String[0], false);
+
+		RubricaUtenteSitoUtil.setPersistence(this);
 	}
 
-	public void destroy() {
-		entityCache.removeCache(RubricaUtenteSitoImpl.class.getName());
-		finderCache.removeCache(FINDER_CLASS_NAME_ENTITY);
-		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+	@Deactivate
+	public void deactivate() {
+		RubricaUtenteSitoUtil.setPersistence(null);
+
+		dummyEntityCache.removeCache(RubricaUtenteSitoImpl.class.getName());
 	}
 
-	@ServiceReference(type = EntityCache.class)
-	protected EntityCache entityCache;
+	@Override
+	@Reference(
+		target = rubricaPersistenceConstants.SERVICE_CONFIGURATION_FILTER,
+		unbind = "-"
+	)
+	public void setConfiguration(Configuration configuration) {
+	}
 
-	@ServiceReference(type = FinderCache.class)
-	protected FinderCache finderCache;
+	@Override
+	@Reference(
+		target = rubricaPersistenceConstants.ORIGIN_BUNDLE_SYMBOLIC_NAME_FILTER,
+		unbind = "-"
+	)
+	public void setDataSource(DataSource dataSource) {
+		super.setDataSource(dataSource);
+	}
+
+	@Override
+	@Reference(
+		target = rubricaPersistenceConstants.ORIGIN_BUNDLE_SYMBOLIC_NAME_FILTER,
+		unbind = "-"
+	)
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		super.setSessionFactory(sessionFactory);
+	}
 
 	private static final String _SQL_SELECT_RUBRICAUTENTESITO =
 		"SELECT rubricaUtenteSito FROM RubricaUtenteSito rubricaUtenteSito";
-
-	private static final String _SQL_SELECT_RUBRICAUTENTESITO_WHERE_PKS_IN =
-		"SELECT rubricaUtenteSito FROM RubricaUtenteSito rubricaUtenteSito WHERE ID_UTENTE IN (";
 
 	private static final String _SQL_COUNT_RUBRICAUTENTESITO =
 		"SELECT COUNT(rubricaUtenteSito) FROM RubricaUtenteSito rubricaUtenteSito";
@@ -769,5 +631,10 @@ public class RubricaUtenteSitoPersistenceImpl
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		RubricaUtenteSitoPersistenceImpl.class);
+
+	@Override
+	protected FinderCache getFinderCache() {
+		return dummyFinderCache;
+	}
 
 }

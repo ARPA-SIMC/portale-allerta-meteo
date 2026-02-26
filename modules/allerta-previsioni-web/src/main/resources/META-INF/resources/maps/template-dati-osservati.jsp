@@ -1,7 +1,12 @@
+<%@page import="com.liferay.portal.kernel.language.LanguageUtil"%>
+<%@
+taglib uri="http://liferay.com/tld/ui" prefix="liferay-ui" %>
 <%@page import="it.eng.allerta.utils.AllertaTracker"%>
 <%@page import="it.eng.allerta.configuration.DocumentazioneConfiguration"%>
 <%
 DocumentazioneConfiguration doc = AllertaTracker.getDocumentazioneConfiguration();
+String currentLanguage = LanguageUtil.getLanguageId(request);
+boolean isEnglish = currentLanguage.startsWith("en");
 
 %>
 
@@ -892,19 +897,19 @@ DocumentazioneConfiguration doc = AllertaTracker.getDocumentazioneConfiguration(
 				<div class="map-legend">
 
 					<a href="#modal--guida-mappa-previsioni"
-						class="d-block d-lg-none d-print-none" data-toggle="modal"
+						class="d-block d-lg-none d-print-none" data-toggle="liferay-modal"
 						data-target="#modal--guida-mappa-previsioni"> <span>
-							Guida alla mappa </span> <span class="icon i-info-circle" title="Info"></span>
+							<liferay-ui:message key="allertaprevisioniweb_guidaallamappa" /> </span> <span class="icon i-info-circle" title="Info"></span>
 					</a>
 
 					<div class="d-none d-lg-flex d-print-flex flex-lg-column">
 						<h3>
-							<a href="#" title="Expandi/richiudi la legenda"
+							<a href="#" title="<liferay-ui:message key="allertaprevisioniweb_legenda1" />"
 								class="d-flex justify-content-between map-legend__toggle is-expanded">
-								<span>Legenda </span> <span
+								<span><liferay-ui:message key="allertaprevisioniweb_legenda" /> </span> <span
 								class="icon i-close map-legend__toggle--collapse"
-								title="Richiudi"></span> <span
-								class="icon i-expand map-legend__toggle--expand" title="Espandi"></span>
+								title="<liferay-ui:message key="allertaprevisioniweb_chiudi" />"></span> <span
+								class="icon i-expand map-legend__toggle--expand" title="<liferay-ui:message key="allertaprevisioniweb_espandi" />"></span>
 							</a>
 						</h3>
 						<div class="map-legend__toggable">
@@ -912,55 +917,55 @@ DocumentazioneConfiguration doc = AllertaTracker.getDocumentazioneConfiguration(
 								<div class="d-flex flex-row align-items-center my-md-2">
 									<div data-toggle="tooltip" title=""
 										class="alert-sign alert-sign--red"
-										data-original-title="Fenomeni ingenti ed estesi">
+										data-original-title="<liferay-ui:message key="allertaprevisioniweb_int4" />">
 										<div></div>
 										<div></div>
 										<div></div>
 										<div></div>
 									</div>
-									<div>Fenomeni ingenti ed estesi</div>
+									<div><liferay-ui:message key="allertaprevisioniweb_int4" /></div>
 								</div>
 								<div class="d-flex flex-row align-items-center my-md-2">
 									<div data-toggle="tooltip" title=""
 										class="alert-sign alert-sign--orange"
-										data-original-title="Fenomeni diffusi">
+										data-original-title="<liferay-ui:message key="allertaprevisioniweb_int3" />">
 										<div></div>
 										<div></div>
 										<div></div>
 										<div></div>
 									</div>
-									<div>Fenomeni diffusi</div>
+									<div><liferay-ui:message key="allertaprevisioniweb_int3" /></div>
 								</div>
 								<div class="d-flex flex-row align-items-center my-md-2">
 									<div data-toggle="tooltip" title=""
 										class="alert-sign alert-sign--yellow"
-										data-original-title="Fenomeni localizzati">
+										data-original-title="<liferay-ui:message key="allertaprevisioniweb_int2" />">
 										<div></div>
 										<div></div>
 										<div></div>
 										<div></div>
 									</div>
-									<div>Fenomeni localizzati</div>
+									<div><liferay-ui:message key="allertaprevisioniweb_int2" /></div>
 								</div>
 								<div class="d-flex flex-row align-items-center my-md-2">
 									<div data-toggle="tooltip" title=""
 										class="alert-sign alert-sign--green"
-										data-original-title="Assenza di fenomeni significativi prevedibili">
+										data-original-title="<liferay-ui:message key="allertaprevisioniweb_int1" />">
 										<div></div>
 										<div></div>
 										<div></div>
 										<div></div>
 									</div>
-									<div>Assenza di fenomeni significativi prevedibili</div>
+									<div><liferay-ui:message key="allertaprevisioniweb_int1" /></div>
 								</div>
 								
 							</div>
 
 							<div data-if="filter" data-when="generale">
-								<a href="#modal--guida-mappa-previsioni" data-toggle="modal"
+								<a href="#modal--guida-mappa-previsioni" data-toggle="liferay-modal"
 									data-target="#modal--guida-mappa-previsioni"> <span
 									class="icon i-info-circle" title="Info"></span> <span>
-										Guida alla mappa </span>
+										<liferay-ui:message key="allertaprevisioniweb_guidaallamappa" /> </span>
 								</a>
 							</div>
 
@@ -968,43 +973,39 @@ DocumentazioneConfiguration doc = AllertaTracker.getDocumentazioneConfiguration(
 								<h3 class="sr-only">Guide al rischio degli fenomeni</h3>
 								<ul class="nav map-legend__phenomenon-guides flex-column">
 									<li class="nav-item" data-if="filter" data-when="idraulica">
-										<a class="nav-link" href="<%=doc.linkPieneFiumi() %>" target="_blank"><span
-											class="icon i-file-pdf-o"></span>Piene dei fiumi</a>
+										<a class="nav-link" href="<%=isEnglish? "/documents/d/guest/tabella_scenari_criticita_idraulica_eng" : doc.linkPieneFiumi() %>" target="_blank"><span
+											class="icon i-file-pdf-o"></span><liferay-ui:message key="allertaprevisioniweb_evento1" /></a>
 									</li>
 									<li class="nav-item" data-if="filter" data-when="idrogeologica">
-										<a class="nav-link" href="<%=doc.linkFrane() %>" target="_blank"><span
-											class="icon i-file-pdf-o"></span>Frane e piene dei corsi
-											minori</a>
+										<a class="nav-link" href="<%=isEnglish? "/documents/d/guest/tabella_scenari_criticita_idrogeologica_eng" : doc.linkFrane() %>" target="_blank"><span
+											class="icon i-file-pdf-o"></span><liferay-ui:message key="allertaprevisioniweb_evento2" /></a>
 									</li>
 									<li class="nav-item" data-if="filter" data-when="temporali">
-										<a class="nav-link" href="<%=doc.linkTemporali() %>" target="_blank"><span
-											class="icon i-file-pdf-o"></span>Temporali</a>
+										<a class="nav-link" href="<%=isEnglish? "/documents/d/guest/tabella_scenari_criticita_temporali_eng" : doc.linkTemporali() %>" target="_blank"><span
+											class="icon i-file-pdf-o"></span><liferay-ui:message key="allertaprevisioniweb_evento3" /></a>
 									</li>
 									<li class="nav-item" data-if="filter" data-when="vento"><a
-										class="nav-link" href="<%=doc.linkVento() %>" target="_blank"><span
-											class="icon i-file-pdf-o"></span>Vento</a></li>
+										class="nav-link" href="<%=isEnglish? "/documents/d/guest/tabella_scenari_vento_eng" : doc.linkVento() %>" target="_blank"><span
+											class="icon i-file-pdf-o"></span><liferay-ui:message key="allertaprevisioniweb_evento4" /></a></li>
 									<li class="nav-item" data-if="filter" data-when="neve"><a
-										class="nav-link" href="<%=doc.linkNeve() %>" target="_blank"><span
-											class="icon i-file-pdf-o"></span>Neve</a></li>
+										class="nav-link" href="<%=isEnglish? "/documents/d/guest/tabella_scenari_neve_eng" : doc.linkNeve() %>" target="_blank"><span
+											class="icon i-file-pdf-o"></span><liferay-ui:message key="allertaprevisioniweb_evento5" /></a></li>
 									<li class="nav-item" data-if="filter"
 										data-when="ghiaccio-pioggia-gela"><a class="nav-link"
-										href="<%=doc.linkPioggiaGela() %>" target="_blank"><span class="icon i-file-pdf-o"></span>Pioggia
-											che gela</a></li>
+										href="<%=isEnglish? "/documents/d/guest/tabella_scenari_pioggia_che_gela_eng" : doc.linkPioggiaGela() %>" target="_blank"><span class="icon i-file-pdf-o"></span><liferay-ui:message key="allertaprevisioniweb_evento6" /></a></li>
 									<li class="nav-item" data-if="filter"
 										data-when="temperature-estreme-alte"><a class="nav-link"
-										href="<%=doc.linkTemperature() %>" target="_blank"><span class="icon i-file-pdf-o"></span>Temperature
-											estreme</a></li>
+										href="<%=isEnglish? "/documents/d/guest/tabella_scenari_temperature_estreme_eng" : doc.linkTemperature() %>" target="_blank"><span class="icon i-file-pdf-o"></span><liferay-ui:message key="allertaprevisioniweb_evento7" /></a></li>
 									<li class="nav-item" data-if="filter"
 										data-when="temperature-estreme-basse"><a class="nav-link"
-										href="<%=doc.linkTemperature() %>" target="_blank"><span class="icon i-file-pdf-o"></span>Temperature
-											estreme</a></li>
+										href="<%=isEnglish? "/documents/d/guest/tabella_scenari_temperature_estreme_eng" : doc.linkTemperature() %>" target="_blank"><span class="icon i-file-pdf-o"></span><liferay-ui:message key="allertaprevisioniweb_evento7" /></a></li>
 									<li class="nav-item" data-if="filter" data-when="stato-mare">
-										<a class="nav-link" href="<%=doc.linkStatoMare() %>" target="_blank"><span
-											class="icon i-file-pdf-o"></span>Stato del mare</a>
+										<a class="nav-link" href="<%=isEnglish? "/documents/d/guest/tabella_scenari_stato_del_mare_eng" : doc.linkStatoMare() %>" target="_blank"><span
+											class="icon i-file-pdf-o"></span><liferay-ui:message key="allertaprevisioniweb_evento8" /></a>
 									</li>
 									<li class="nav-item" data-if="filter" data-when="mareggiate">
-										<a class="nav-link" href="<%=doc.linkMareggiate() %>" target="_blank"><span
-											class="icon i-file-pdf-o"></span>Mareggiate</a>
+										<a class="nav-link" href="<%=isEnglish? "/documents/d/guest/tabella_scenari_stato_del_mare_eng" : doc.linkMareggiate() %>" target="_blank"><span
+											class="icon i-file-pdf-o"></span><liferay-ui:message key="allertaprevisioniweb_evento9" /></a>
 									</li>
 									<li class="nav-item" data-if="filter" data-when="valanghe">
 									   <div class="d-flex flex-row align-items-center my-md-2">
@@ -1018,8 +1019,8 @@ DocumentazioneConfiguration doc = AllertaTracker.getDocumentazioneConfiguration(
 									</div>
 									<div style="font-size: .9rem;">Fenomeno non valutabile</div>
 								</div>
-										<a class="nav-link" href="<%=doc.linkValanghe() %>" target="_blank"><span
-											class="icon i-file-pdf-o"></span>Valanghe</a>
+										<a class="nav-link" href="<%=isEnglish? "/documents/d/guest/tabella_scenari_valanghe_eng" : doc.linkValanghe() %>" target="_blank"><span
+											class="icon i-file-pdf-o"></span><liferay-ui:message key="allertaprevisioniweb_evento10" /></a>
 									</li>
 								</ul>
 							</div>
@@ -1036,10 +1037,10 @@ DocumentazioneConfiguration doc = AllertaTracker.getDocumentazioneConfiguration(
 			<div class="map-legend--monitoraggio-tpl">
 				<div class="map-legend">
 
-					<a href="#" class="d-block" data-toggle="modal"
+					<a href="#" class="d-block" data-toggle="liferay-modal"
 						data-target="#modal--guida-mappa-monitoraggio"> <span
 						class="icon i-info-circle" title="Info"></span> <span>
-							Guida alla mappa </span>
+							<liferay-ui:message key="allertaprevisioniweb_guidaallamappa" /> </span>
 					</a>
 
 				</div>
@@ -1114,17 +1115,17 @@ DocumentazioneConfiguration doc = AllertaTracker.getDocumentazioneConfiguration(
 						style="cursor: help;" data-placement="right" data-toggle="tooltip"
 						data-original-title="Mostra dati in tempo reale"> <span
 						class="icon i-bar-chart" aria-hidden="true"></span> <span
-						class="sr-only">Scegli il dato da mostrare</span>
+						class="sr-only"><liferay-ui:message key="allertaprevisioniweb_comune0" /></span>
 					</label> <select id="form-control-select-sensore" class="form-control"
 						data-trigger="rtdata-filter">
-						<option value="">- mostra dati -</option>
-						<option value="">Nessuno</option>
-						<option value="precipitazioni">Precipitazioni</option>
-						<option value="idrometrico">Liv. Idrometrico</option>
-						<option value="temperature">Temperature</option>
-						<option value="umidita">Umidità</option>
-						<option value="pressione">Pressione</option>
-						<option value="vento">Vento</option>
+						<option value=""><liferay-ui:message key="allertaprevisioniweb_comune1" /></option>
+						<option value=""><liferay-ui:message key="allertaprevisioniweb_comune2" /></option>
+						<option value="precipitazioni"><liferay-ui:message key="allertaprevisioniweb_comune3" /></option>
+						<option value="idrometrico"><liferay-ui:message key="allertaprevisioniweb_comune4" /></option>
+						<option value="temperature"><liferay-ui:message key="allertaprevisioniweb_comune5" /></option>
+						<option value="umidita"><liferay-ui:message key="allertaprevisioniweb_comune6" /></option>
+						<option value="pressione"><liferay-ui:message key="allertaprevisioniweb_comune7" /></option>
+						<option value="vento"><liferay-ui:message key="allertaprevisioniweb_comune8" /></option>
 					</select>
 				</div>
 			</div>
@@ -1134,12 +1135,12 @@ DocumentazioneConfiguration doc = AllertaTracker.getDocumentazioneConfiguration(
 			<div class="map-rtdata-update-tpl">
 				<div class="form-group map-rtdata-update">
 					<div>
-						Dati del <span id="rt-update-date"
+						<liferay-ui:message key="allertaprevisioniweb_datidel" /> <span id="rt-update-date"
 							class="map-rtdata-update__datetime"></span>
 					</div>
 					<a href="#" data-trigger="refresh" class="btn btn-default btn-sm">
 						<span class="icon i-refresh" aria-hidden="true"></span> <span
-						class="sr-only">Aggiorna i dati sulla mappa</span>
+						class="sr-only"><liferay-ui:message key="allertaprevisioniweb_aggiorna" /></span>
 					</a>
 				</div>
 			</div>
@@ -1150,10 +1151,10 @@ DocumentazioneConfiguration doc = AllertaTracker.getDocumentazioneConfiguration(
 			<div class="map-legend--observed-data--radar-tpl">
 				<div class="d-flex">
 					<div class="map-legend">
-						<a href="#" class="d-block" data-toggle="modal"
+						<a href="#" class="d-block" data-toggle="liferay-modal"
 							data-target="#modal--guida-mappa-dato-osservato"> <span
 							class="icon i-info-circle" title="Info"></span> <span>
-								Guida alla mappa </span>
+								<liferay-ui:message key="allertaprevisioniweb_guidaallamappa" /> </span>
 						</a>
 					</div>
 
@@ -1190,10 +1191,10 @@ DocumentazioneConfiguration doc = AllertaTracker.getDocumentazioneConfiguration(
 			<div class="map-legend--observed-data--vento-tpl">
 				<div class="d-flex">
 					<div class="map-legend">
-						<a href="#" class="d-block" data-toggle="modal"
+						<a href="#" class="d-block" data-toggle="liferay-modal"
 							data-target="#modal--guida-mappa-dato-osservato"> <span
 							class="icon i-info-circle" title="Info"></span> <span>
-								Guida alla mappa </span>
+								<liferay-ui:message key="allertaprevisioniweb_guidaallamappa" /> </span>
 						</a>
 					</div>
 
@@ -1210,10 +1211,10 @@ DocumentazioneConfiguration doc = AllertaTracker.getDocumentazioneConfiguration(
 			<div class="map-legend--observed-data--idrometrico-tpl">
 				<div class="d-flex">
 					<div class="map-legend">
-						<a href="#" class="d-block" data-toggle="modal"
+						<a href="#" class="d-block" data-toggle="liferay-modal"
 							data-target="#modal--guida-mappa-dato-osservato"> <span
 							class="icon i-info-circle" title="Info"></span> <span>
-								Guida alla mappa </span>
+								<liferay-ui:message key="allertaprevisioniweb_guidaallamappa" /> </span>
 						</a>
 					</div>
 
@@ -1242,10 +1243,10 @@ DocumentazioneConfiguration doc = AllertaTracker.getDocumentazioneConfiguration(
 			<div class="map-legend--observed-data--precipitazioni-tpl">
 				<div class="d-flex">
 					<div class="map-legend">
-						<a href="#" class="d-block" data-toggle="modal"
+						<a href="#" class="d-block" data-toggle="liferay-modal"
 							data-target="#modal--guida-mappa-dato-osservato"> <span
 							class="icon i-info-circle" title="Info"></span> <span>
-								Guida alla mappa </span>
+								<liferay-ui:message key="allertaprevisioniweb_guidaallamappa" /> </span>
 						</a>
 					</div>
 
@@ -1262,10 +1263,10 @@ DocumentazioneConfiguration doc = AllertaTracker.getDocumentazioneConfiguration(
 			<div class="map-legend--observed-data--pressione-tpl">
 				<div class="d-flex">
 					<div class="map-legend">
-						<a href="#" class="d-block" data-toggle="modal"
+						<a href="#" class="d-block" data-toggle="liferay-modal"
 							data-target="#modal--guida-mappa-dato-osservato"> <span
 							class="icon i-info-circle" title="Info"></span> <span>
-								Guida alla mappa </span>
+								<liferay-ui:message key="allertaprevisioniweb_guidaallamappa" /> </span>
 						</a>
 					</div>
 
@@ -1282,10 +1283,10 @@ DocumentazioneConfiguration doc = AllertaTracker.getDocumentazioneConfiguration(
 			<div class="map-legend--observed-data--umidita-tpl">
 				<div class="d-flex">
 					<div class="map-legend">
-						<a href="#" class="d-block" data-toggle="modal"
+						<a href="#" class="d-block" data-toggle="liferay-modal"
 							data-target="#modal--guida-mappa-dato-osservato"> <span
 							class="icon i-info-circle" title="Info"></span> <span>
-								Guida alla mappa </span>
+								<liferay-ui:message key="allertaprevisioniweb_guidaallamappa" /> </span>
 						</a>
 					</div>
 
@@ -1302,10 +1303,10 @@ DocumentazioneConfiguration doc = AllertaTracker.getDocumentazioneConfiguration(
 			<div class="map-legend--observed-data--temperature-tpl">
 				<div class="d-flex">
 					<div class="map-legend">
-						<a href="#" class="d-block" data-toggle="modal"
+						<a href="#" class="d-block" data-toggle="liferay-modal"
 							data-target="#modal--guida-mappa-dato-osservato"> <span
 							class="icon i-info-circle" title="Info"></span> <span>
-								Guida alla mappa </span>
+								<liferay-ui:message key="allertaprevisioniweb_guidaallamappa" /> </span>
 						</a>
 					</div>
 

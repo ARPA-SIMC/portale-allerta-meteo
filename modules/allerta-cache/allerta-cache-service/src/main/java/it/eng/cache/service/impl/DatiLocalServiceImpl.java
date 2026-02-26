@@ -1,18 +1,11 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.cache.service.impl;
+
+import com.liferay.portal.aop.AopService;
 
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
 import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
@@ -27,20 +20,17 @@ import it.eng.cache.model.Dati;
 import it.eng.cache.service.DatiLocalServiceUtil;
 import it.eng.cache.service.base.DatiLocalServiceBaseImpl;
 
+import org.osgi.service.component.annotations.Component;
+
 /**
- * The implementation of the dati local service.
- *
- * <p>
- * All custom service methods should be put in this class. Whenever methods are added, rerun ServiceBuilder to copy their definitions into the <code>it.eng.cache.service.DatiLocalService</code> interface.
- *
- * <p>
- * This is a local service. Methods of this service will not have security checks based on the propagated JAAS credentials because this service can only be accessed from within the same VM.
- * </p>
- *
  * @author GFAVINI
- * @see DatiLocalServiceBaseImpl
  */
+@Component(
+	property = "model.class.name=it.eng.cache.model.Dati",
+	service = AopService.class
+)
 public class DatiLocalServiceImpl extends DatiLocalServiceBaseImpl {
+	
 
 	/*
 	 * NOTE FOR DEVELOPERS:
@@ -78,5 +68,4 @@ public class DatiLocalServiceImpl extends DatiLocalServiceBaseImpl {
 		List<Dati> ld = getDatiByPrefix(prefix);
 		for (Dati d : ld) DatiLocalServiceUtil.deleteDati(d);
 	}
-	
 }

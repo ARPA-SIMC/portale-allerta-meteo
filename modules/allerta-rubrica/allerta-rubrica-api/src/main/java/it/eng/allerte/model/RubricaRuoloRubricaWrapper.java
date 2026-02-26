@@ -1,30 +1,15 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerte.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -35,22 +20,12 @@ import java.util.Objects;
  * @see RubricaRuoloRubrica
  * @generated
  */
-@ProviderType
 public class RubricaRuoloRubricaWrapper
-	implements RubricaRuoloRubrica, ModelWrapper<RubricaRuoloRubrica> {
+	extends BaseModelWrapper<RubricaRuoloRubrica>
+	implements ModelWrapper<RubricaRuoloRubrica>, RubricaRuoloRubrica {
 
 	public RubricaRuoloRubricaWrapper(RubricaRuoloRubrica rubricaRuoloRubrica) {
-		_rubricaRuoloRubrica = rubricaRuoloRubrica;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return RubricaRuoloRubrica.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return RubricaRuoloRubrica.class.getName();
+		super(rubricaRuoloRubrica);
 	}
 
 	@Override
@@ -79,16 +54,8 @@ public class RubricaRuoloRubricaWrapper
 	}
 
 	@Override
-	public Object clone() {
-		return new RubricaRuoloRubricaWrapper(
-			(RubricaRuoloRubrica)_rubricaRuoloRubrica.clone());
-	}
-
-	@Override
-	public int compareTo(
-		it.eng.allerte.model.RubricaRuoloRubrica rubricaRuoloRubrica) {
-
-		return _rubricaRuoloRubrica.compareTo(rubricaRuoloRubrica);
+	public RubricaRuoloRubrica cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -98,12 +65,7 @@ public class RubricaRuoloRubricaWrapper
 	 */
 	@Override
 	public String getDESCRIZIONE() {
-		return _rubricaRuoloRubrica.getDESCRIZIONE();
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _rubricaRuoloRubrica.getExpandoBridge();
+		return model.getDESCRIZIONE();
 	}
 
 	/**
@@ -113,7 +75,7 @@ public class RubricaRuoloRubricaWrapper
 	 */
 	@Override
 	public long getID_RUOLO() {
-		return _rubricaRuoloRubrica.getID_RUOLO();
+		return model.getID_RUOLO();
 	}
 
 	/**
@@ -123,42 +85,12 @@ public class RubricaRuoloRubricaWrapper
 	 */
 	@Override
 	public long getPrimaryKey() {
-		return _rubricaRuoloRubrica.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _rubricaRuoloRubrica.getPrimaryKeyObj();
-	}
-
-	@Override
-	public int hashCode() {
-		return _rubricaRuoloRubrica.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _rubricaRuoloRubrica.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _rubricaRuoloRubrica.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _rubricaRuoloRubrica.isNew();
+		return model.getPrimaryKey();
 	}
 
 	@Override
 	public void persist() {
-		_rubricaRuoloRubrica.persist();
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_rubricaRuoloRubrica.setCachedModel(cachedModel);
+		model.persist();
 	}
 
 	/**
@@ -168,24 +100,7 @@ public class RubricaRuoloRubricaWrapper
 	 */
 	@Override
 	public void setDESCRIZIONE(String DESCRIZIONE) {
-		_rubricaRuoloRubrica.setDESCRIZIONE(DESCRIZIONE);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_rubricaRuoloRubrica.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_rubricaRuoloRubrica.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_rubricaRuoloRubrica.setExpandoBridgeAttributes(serviceContext);
+		model.setDESCRIZIONE(DESCRIZIONE);
 	}
 
 	/**
@@ -195,12 +110,7 @@ public class RubricaRuoloRubricaWrapper
 	 */
 	@Override
 	public void setID_RUOLO(long ID_RUOLO) {
-		_rubricaRuoloRubrica.setID_RUOLO(ID_RUOLO);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_rubricaRuoloRubrica.setNew(n);
+		model.setID_RUOLO(ID_RUOLO);
 	}
 
 	/**
@@ -210,86 +120,19 @@ public class RubricaRuoloRubricaWrapper
 	 */
 	@Override
 	public void setPrimaryKey(long primaryKey) {
-		_rubricaRuoloRubrica.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_rubricaRuoloRubrica.setPrimaryKeyObj(primaryKeyObj);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<it.eng.allerte.model.RubricaRuoloRubrica> toCacheModel() {
-
-		return _rubricaRuoloRubrica.toCacheModel();
-	}
-
-	@Override
-	public it.eng.allerte.model.RubricaRuoloRubrica toEscapedModel() {
-		return new RubricaRuoloRubricaWrapper(
-			_rubricaRuoloRubrica.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _rubricaRuoloRubrica.toString();
-	}
-
-	@Override
-	public it.eng.allerte.model.RubricaRuoloRubrica toUnescapedModel() {
-		return new RubricaRuoloRubricaWrapper(
-			_rubricaRuoloRubrica.toUnescapedModel());
+		model.setPrimaryKey(primaryKey);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _rubricaRuoloRubrica.toXmlString();
+		return model.toXmlString();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
+	protected RubricaRuoloRubricaWrapper wrap(
+		RubricaRuoloRubrica rubricaRuoloRubrica) {
 
-		if (!(obj instanceof RubricaRuoloRubricaWrapper)) {
-			return false;
-		}
-
-		RubricaRuoloRubricaWrapper rubricaRuoloRubricaWrapper =
-			(RubricaRuoloRubricaWrapper)obj;
-
-		if (Objects.equals(
-				_rubricaRuoloRubrica,
-				rubricaRuoloRubricaWrapper._rubricaRuoloRubrica)) {
-
-			return true;
-		}
-
-		return false;
+		return new RubricaRuoloRubricaWrapper(rubricaRuoloRubrica);
 	}
-
-	@Override
-	public RubricaRuoloRubrica getWrappedModel() {
-		return _rubricaRuoloRubrica;
-	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _rubricaRuoloRubrica.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _rubricaRuoloRubrica.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_rubricaRuoloRubrica.resetOriginalValues();
-	}
-
-	private final RubricaRuoloRubrica _rubricaRuoloRubrica;
 
 }

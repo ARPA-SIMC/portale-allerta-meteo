@@ -18,6 +18,11 @@ import com.liferay.portal.kernel.model.WorkflowInstanceLink;
 import com.liferay.portal.kernel.portlet.PortletURLFactoryUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
+import com.liferay.portal.kernel.security.auth.PrincipalThreadLocal;
+import com.liferay.portal.kernel.security.permission.PermissionChecker;
+import com.liferay.portal.kernel.security.permission.PermissionCheckerFactoryUtil;
+import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
+import com.liferay.portal.kernel.service.UserLocalServiceUtil;
 import com.liferay.portal.kernel.service.WorkflowInstanceLinkLocalServiceUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ParamUtil;
@@ -52,6 +57,14 @@ public class WorkflowAllertaValangheMVCActionCommand extends BaseMVCActionComman
 
 			AllertaValanghe b = AllertaValangheLocalServiceUtil.getAllertaValanghe(allertaValangheId);
 
+			try {
+				LogInternoLocalServiceUtil.log("WorkflowAllertaValangheMVCActionCommand",
+						"doProcessAction", ""+allertaValangheId+" "+taskId+" "+cmd, "");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			
 			boolean hasWfl = WorkflowInstanceLinkLocalServiceUtil.hasWorkflowInstanceLink(b.getCompanyId(),
 					b.getGroupId(), AllertaValanghe.class.getName(), allertaValangheId);
 
@@ -83,13 +96,17 @@ public class WorkflowAllertaValangheMVCActionCommand extends BaseMVCActionComman
 
 						try {
 							if (task.isCompleted()) {
+								LogInternoLocalServiceUtil.log("workflow", "test",
+										"task "+task.getWorkflowTaskId()+" completato, assegnato a "+task.getAssigneeUserId(), null);
+								
 								// stiamo tentando di riassegnare un task vecchio, forse problema di cache
 								List<WorkflowTask> ls = WorkflowTaskManagerUtil.getWorkflowTasksByWorkflowInstance(
 										themeDisplay.getCompanyId(), 0L, workflowInstance.getWorkflowInstanceId(),
 										false, -1, -1, null);
 								if (ls != null) {
 									for (WorkflowTask wt : ls) {
-										if (!wt.isCompleted() && wt.getName().equals(task.getName())) {
+
+										if (!wt.isCompleted() && (wt.getName().equals(task.getName()) || wt.getName().equals("reviewstep2") )) {
 
 											LogInternoLocalServiceUtil.log("workflow", "test",
 													"taskId->" + taskId + "->" + wt.getWorkflowTaskId(), null);

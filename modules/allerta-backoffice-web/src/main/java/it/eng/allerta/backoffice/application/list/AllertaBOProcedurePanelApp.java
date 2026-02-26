@@ -27,13 +27,16 @@ public class AllertaBOProcedurePanelApp extends BasePanelApp {
 		return AllertaBackofficeKeys.AllertaBOProcedurePortlet;
 	}
 
+
 	@Override
+	public Portlet getPortlet() {
+		return _portlet;
+	}
+	
 	@Reference(
 		target = "(javax.portlet.name=" + AllertaBackofficeKeys.AllertaBOProcedurePortlet + ")",
 		unbind = "-"
 	)
-	public void setPortlet(Portlet portlet) {
-		super.setPortlet(portlet);
-	}
+	private Portlet _portlet;
 
 }

@@ -1,8 +1,7 @@
 Bundle-Name: allerta-allertaer-service
 Bundle-SymbolicName: it.eng.allertaer.service
 Bundle-Version: 1.0.0
-Bundle-Activator: it.eng.allerter.activator.AllertaBundleActivatorService
-Liferay-Require-SchemaVersion: 1.0.5
+Liferay-Require-SchemaVersion: 1.0.0
 Liferay-Service: true
 -dsannotations-options: inherit
 Export-Package:\

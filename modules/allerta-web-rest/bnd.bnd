@@ -1,4 +1,7 @@
 Bundle-Name: allerta-web-rest
-Bundle-SymbolicName: it.eng.allerta.web.rest
+Bundle-SymbolicName: allerta.web.rest
 Bundle-Version: 1.0.0
-Liferay-Configuration-Path: /configuration
+Export-Package: allerta.web.rest.constants
+Provide-Capability:\
+	liferay.language.resources;\
+		resource.bundle.base.name="content.Language"

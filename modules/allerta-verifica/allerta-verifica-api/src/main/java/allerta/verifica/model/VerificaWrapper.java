@@ -1,32 +1,17 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package allerta.verifica.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.exportimport.kernel.lar.StagedModelType;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -37,21 +22,12 @@ import java.util.Objects;
  * @see Verifica
  * @generated
  */
-@ProviderType
-public class VerificaWrapper implements Verifica, ModelWrapper<Verifica> {
+public class VerificaWrapper
+	extends BaseModelWrapper<Verifica>
+	implements ModelWrapper<Verifica>, Verifica {
 
 	public VerificaWrapper(Verifica verifica) {
-		_verifica = verifica;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return Verifica.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return Verifica.class.getName();
+		super(verifica);
 	}
 
 	@Override
@@ -192,13 +168,8 @@ public class VerificaWrapper implements Verifica, ModelWrapper<Verifica> {
 	}
 
 	@Override
-	public Object clone() {
-		return new VerificaWrapper((Verifica)_verifica.clone());
-	}
-
-	@Override
-	public int compareTo(allerta.verifica.model.Verifica verifica) {
-		return _verifica.compareTo(verifica);
+	public Verifica cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -208,7 +179,7 @@ public class VerificaWrapper implements Verifica, ModelWrapper<Verifica> {
 	 */
 	@Override
 	public long getCompanyId() {
-		return _verifica.getCompanyId();
+		return model.getCompanyId();
 	}
 
 	/**
@@ -218,7 +189,7 @@ public class VerificaWrapper implements Verifica, ModelWrapper<Verifica> {
 	 */
 	@Override
 	public Date getCreateDate() {
-		return _verifica.getCreateDate();
+		return model.getCreateDate();
 	}
 
 	/**
@@ -228,7 +199,7 @@ public class VerificaWrapper implements Verifica, ModelWrapper<Verifica> {
 	 */
 	@Override
 	public Date getDataFine() {
-		return _verifica.getDataFine();
+		return model.getDataFine();
 	}
 
 	/**
@@ -238,7 +209,7 @@ public class VerificaWrapper implements Verifica, ModelWrapper<Verifica> {
 	 */
 	@Override
 	public Date getDataInizio() {
-		return _verifica.getDataInizio();
+		return model.getDataInizio();
 	}
 
 	/**
@@ -248,12 +219,7 @@ public class VerificaWrapper implements Verifica, ModelWrapper<Verifica> {
 	 */
 	@Override
 	public long getDocumento() {
-		return _verifica.getDocumento();
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _verifica.getExpandoBridge();
+		return model.getDocumento();
 	}
 
 	/**
@@ -263,7 +229,7 @@ public class VerificaWrapper implements Verifica, ModelWrapper<Verifica> {
 	 */
 	@Override
 	public String getFenomeni() {
-		return _verifica.getFenomeni();
+		return model.getFenomeni();
 	}
 
 	/**
@@ -273,7 +239,7 @@ public class VerificaWrapper implements Verifica, ModelWrapper<Verifica> {
 	 */
 	@Override
 	public String getFenomeniDescritti() {
-		return _verifica.getFenomeniDescritti();
+		return model.getFenomeniDescritti();
 	}
 
 	/**
@@ -283,7 +249,7 @@ public class VerificaWrapper implements Verifica, ModelWrapper<Verifica> {
 	 */
 	@Override
 	public long getGroupId() {
-		return _verifica.getGroupId();
+		return model.getGroupId();
 	}
 
 	/**
@@ -293,7 +259,7 @@ public class VerificaWrapper implements Verifica, ModelWrapper<Verifica> {
 	 */
 	@Override
 	public String getHash() {
-		return _verifica.getHash();
+		return model.getHash();
 	}
 
 	/**
@@ -303,7 +269,7 @@ public class VerificaWrapper implements Verifica, ModelWrapper<Verifica> {
 	 */
 	@Override
 	public long getId() {
-		return _verifica.getId();
+		return model.getId();
 	}
 
 	/**
@@ -313,7 +279,7 @@ public class VerificaWrapper implements Verifica, ModelWrapper<Verifica> {
 	 */
 	@Override
 	public String getLink() {
-		return _verifica.getLink();
+		return model.getLink();
 	}
 
 	/**
@@ -323,7 +289,7 @@ public class VerificaWrapper implements Verifica, ModelWrapper<Verifica> {
 	 */
 	@Override
 	public Date getModifiedDate() {
-		return _verifica.getModifiedDate();
+		return model.getModifiedDate();
 	}
 
 	/**
@@ -333,7 +299,7 @@ public class VerificaWrapper implements Verifica, ModelWrapper<Verifica> {
 	 */
 	@Override
 	public String getNote() {
-		return _verifica.getNote();
+		return model.getNote();
 	}
 
 	/**
@@ -343,12 +309,7 @@ public class VerificaWrapper implements Verifica, ModelWrapper<Verifica> {
 	 */
 	@Override
 	public long getPrimaryKey() {
-		return _verifica.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _verifica.getPrimaryKeyObj();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -358,7 +319,7 @@ public class VerificaWrapper implements Verifica, ModelWrapper<Verifica> {
 	 */
 	@Override
 	public int getStato() {
-		return _verifica.getStato();
+		return model.getStato();
 	}
 
 	/**
@@ -368,7 +329,7 @@ public class VerificaWrapper implements Verifica, ModelWrapper<Verifica> {
 	 */
 	@Override
 	public String getTitolo() {
-		return _verifica.getTitolo();
+		return model.getTitolo();
 	}
 
 	/**
@@ -378,7 +339,7 @@ public class VerificaWrapper implements Verifica, ModelWrapper<Verifica> {
 	 */
 	@Override
 	public long getUserId() {
-		return _verifica.getUserId();
+		return model.getUserId();
 	}
 
 	/**
@@ -388,7 +349,7 @@ public class VerificaWrapper implements Verifica, ModelWrapper<Verifica> {
 	 */
 	@Override
 	public String getUserName() {
-		return _verifica.getUserName();
+		return model.getUserName();
 	}
 
 	/**
@@ -398,7 +359,7 @@ public class VerificaWrapper implements Verifica, ModelWrapper<Verifica> {
 	 */
 	@Override
 	public String getUserUuid() {
-		return _verifica.getUserUuid();
+		return model.getUserUuid();
 	}
 
 	/**
@@ -408,37 +369,12 @@ public class VerificaWrapper implements Verifica, ModelWrapper<Verifica> {
 	 */
 	@Override
 	public String getUuid() {
-		return _verifica.getUuid();
-	}
-
-	@Override
-	public int hashCode() {
-		return _verifica.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _verifica.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _verifica.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _verifica.isNew();
+		return model.getUuid();
 	}
 
 	@Override
 	public void persist() {
-		_verifica.persist();
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_verifica.setCachedModel(cachedModel);
+		model.persist();
 	}
 
 	/**
@@ -448,7 +384,7 @@ public class VerificaWrapper implements Verifica, ModelWrapper<Verifica> {
 	 */
 	@Override
 	public void setCompanyId(long companyId) {
-		_verifica.setCompanyId(companyId);
+		model.setCompanyId(companyId);
 	}
 
 	/**
@@ -458,7 +394,7 @@ public class VerificaWrapper implements Verifica, ModelWrapper<Verifica> {
 	 */
 	@Override
 	public void setCreateDate(Date createDate) {
-		_verifica.setCreateDate(createDate);
+		model.setCreateDate(createDate);
 	}
 
 	/**
@@ -468,7 +404,7 @@ public class VerificaWrapper implements Verifica, ModelWrapper<Verifica> {
 	 */
 	@Override
 	public void setDataFine(Date dataFine) {
-		_verifica.setDataFine(dataFine);
+		model.setDataFine(dataFine);
 	}
 
 	/**
@@ -478,7 +414,7 @@ public class VerificaWrapper implements Verifica, ModelWrapper<Verifica> {
 	 */
 	@Override
 	public void setDataInizio(Date dataInizio) {
-		_verifica.setDataInizio(dataInizio);
+		model.setDataInizio(dataInizio);
 	}
 
 	/**
@@ -488,24 +424,7 @@ public class VerificaWrapper implements Verifica, ModelWrapper<Verifica> {
 	 */
 	@Override
 	public void setDocumento(long documento) {
-		_verifica.setDocumento(documento);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_verifica.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_verifica.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_verifica.setExpandoBridgeAttributes(serviceContext);
+		model.setDocumento(documento);
 	}
 
 	/**
@@ -515,7 +434,7 @@ public class VerificaWrapper implements Verifica, ModelWrapper<Verifica> {
 	 */
 	@Override
 	public void setFenomeni(String fenomeni) {
-		_verifica.setFenomeni(fenomeni);
+		model.setFenomeni(fenomeni);
 	}
 
 	/**
@@ -525,7 +444,7 @@ public class VerificaWrapper implements Verifica, ModelWrapper<Verifica> {
 	 */
 	@Override
 	public void setFenomeniDescritti(String fenomeniDescritti) {
-		_verifica.setFenomeniDescritti(fenomeniDescritti);
+		model.setFenomeniDescritti(fenomeniDescritti);
 	}
 
 	/**
@@ -535,7 +454,7 @@ public class VerificaWrapper implements Verifica, ModelWrapper<Verifica> {
 	 */
 	@Override
 	public void setGroupId(long groupId) {
-		_verifica.setGroupId(groupId);
+		model.setGroupId(groupId);
 	}
 
 	/**
@@ -545,7 +464,7 @@ public class VerificaWrapper implements Verifica, ModelWrapper<Verifica> {
 	 */
 	@Override
 	public void setHash(String hash) {
-		_verifica.setHash(hash);
+		model.setHash(hash);
 	}
 
 	/**
@@ -555,7 +474,7 @@ public class VerificaWrapper implements Verifica, ModelWrapper<Verifica> {
 	 */
 	@Override
 	public void setId(long id) {
-		_verifica.setId(id);
+		model.setId(id);
 	}
 
 	/**
@@ -565,7 +484,7 @@ public class VerificaWrapper implements Verifica, ModelWrapper<Verifica> {
 	 */
 	@Override
 	public void setLink(String link) {
-		_verifica.setLink(link);
+		model.setLink(link);
 	}
 
 	/**
@@ -575,12 +494,7 @@ public class VerificaWrapper implements Verifica, ModelWrapper<Verifica> {
 	 */
 	@Override
 	public void setModifiedDate(Date modifiedDate) {
-		_verifica.setModifiedDate(modifiedDate);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_verifica.setNew(n);
+		model.setModifiedDate(modifiedDate);
 	}
 
 	/**
@@ -590,7 +504,7 @@ public class VerificaWrapper implements Verifica, ModelWrapper<Verifica> {
 	 */
 	@Override
 	public void setNote(String note) {
-		_verifica.setNote(note);
+		model.setNote(note);
 	}
 
 	/**
@@ -600,12 +514,7 @@ public class VerificaWrapper implements Verifica, ModelWrapper<Verifica> {
 	 */
 	@Override
 	public void setPrimaryKey(long primaryKey) {
-		_verifica.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_verifica.setPrimaryKeyObj(primaryKeyObj);
+		model.setPrimaryKey(primaryKey);
 	}
 
 	/**
@@ -615,7 +524,7 @@ public class VerificaWrapper implements Verifica, ModelWrapper<Verifica> {
 	 */
 	@Override
 	public void setStato(int stato) {
-		_verifica.setStato(stato);
+		model.setStato(stato);
 	}
 
 	/**
@@ -625,7 +534,7 @@ public class VerificaWrapper implements Verifica, ModelWrapper<Verifica> {
 	 */
 	@Override
 	public void setTitolo(String titolo) {
-		_verifica.setTitolo(titolo);
+		model.setTitolo(titolo);
 	}
 
 	/**
@@ -635,7 +544,7 @@ public class VerificaWrapper implements Verifica, ModelWrapper<Verifica> {
 	 */
 	@Override
 	public void setUserId(long userId) {
-		_verifica.setUserId(userId);
+		model.setUserId(userId);
 	}
 
 	/**
@@ -645,7 +554,7 @@ public class VerificaWrapper implements Verifica, ModelWrapper<Verifica> {
 	 */
 	@Override
 	public void setUserName(String userName) {
-		_verifica.setUserName(userName);
+		model.setUserName(userName);
 	}
 
 	/**
@@ -655,7 +564,7 @@ public class VerificaWrapper implements Verifica, ModelWrapper<Verifica> {
 	 */
 	@Override
 	public void setUserUuid(String userUuid) {
-		_verifica.setUserUuid(userUuid);
+		model.setUserUuid(userUuid);
 	}
 
 	/**
@@ -665,80 +574,22 @@ public class VerificaWrapper implements Verifica, ModelWrapper<Verifica> {
 	 */
 	@Override
 	public void setUuid(String uuid) {
-		_verifica.setUuid(uuid);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<allerta.verifica.model.Verifica> toCacheModel() {
-
-		return _verifica.toCacheModel();
-	}
-
-	@Override
-	public allerta.verifica.model.Verifica toEscapedModel() {
-		return new VerificaWrapper(_verifica.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _verifica.toString();
-	}
-
-	@Override
-	public allerta.verifica.model.Verifica toUnescapedModel() {
-		return new VerificaWrapper(_verifica.toUnescapedModel());
+		model.setUuid(uuid);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _verifica.toXmlString();
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-
-		if (!(obj instanceof VerificaWrapper)) {
-			return false;
-		}
-
-		VerificaWrapper verificaWrapper = (VerificaWrapper)obj;
-
-		if (Objects.equals(_verifica, verificaWrapper._verifica)) {
-			return true;
-		}
-
-		return false;
+		return model.toXmlString();
 	}
 
 	@Override
 	public StagedModelType getStagedModelType() {
-		return _verifica.getStagedModelType();
+		return model.getStagedModelType();
 	}
 
 	@Override
-	public Verifica getWrappedModel() {
-		return _verifica;
+	protected VerificaWrapper wrap(Verifica verifica) {
+		return new VerificaWrapper(verifica);
 	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _verifica.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _verifica.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_verifica.resetOriginalValues();
-	}
-
-	private final Verifica _verifica;
 
 }

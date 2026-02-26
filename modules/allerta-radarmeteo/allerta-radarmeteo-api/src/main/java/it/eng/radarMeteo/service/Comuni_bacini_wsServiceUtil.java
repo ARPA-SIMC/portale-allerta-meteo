@@ -1,24 +1,13 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.radarMeteo.service;
 
-import aQute.bnd.annotation.ProviderType;
+import com.liferay.portal.kernel.module.service.Snapshot;
 
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.util.tracker.ServiceTracker;
+import java.util.Map;
 
 /**
  * Provides the remote service utility for Comuni_bacini_ws. This utility wraps
@@ -32,7 +21,6 @@ import org.osgi.util.tracker.ServiceTracker;
  * @see Comuni_bacini_wsService
  * @generated
  */
-@ProviderType
 public class Comuni_bacini_wsServiceUtil {
 
 	/*
@@ -40,7 +28,7 @@ public class Comuni_bacini_wsServiceUtil {
 	 *
 	 * Never modify this class directly. Add custom service methods to <code>it.eng.radarMeteo.service.impl.Comuni_bacini_wsServiceImpl</code> and rerun ServiceBuilder to regenerate this class.
 	 */
-	public static java.util.Map<String, Object> getBollettinoMonitoraggio() {
+	public static Map<String, Object> getBollettinoMonitoraggio() {
 		return getService().getBollettinoMonitoraggio();
 	}
 
@@ -54,25 +42,11 @@ public class Comuni_bacini_wsServiceUtil {
 	}
 
 	public static Comuni_bacini_wsService getService() {
-		return _serviceTracker.getService();
+		return _serviceSnapshot.get();
 	}
 
-	private static ServiceTracker
-		<Comuni_bacini_wsService, Comuni_bacini_wsService> _serviceTracker;
-
-	static {
-		Bundle bundle = FrameworkUtil.getBundle(Comuni_bacini_wsService.class);
-
-		ServiceTracker<Comuni_bacini_wsService, Comuni_bacini_wsService>
-			serviceTracker =
-				new ServiceTracker
-					<Comuni_bacini_wsService, Comuni_bacini_wsService>(
-						bundle.getBundleContext(),
-						Comuni_bacini_wsService.class, null);
-
-		serviceTracker.open();
-
-		_serviceTracker = serviceTracker;
-	}
+	private static final Snapshot<Comuni_bacini_wsService> _serviceSnapshot =
+		new Snapshot<>(
+			Comuni_bacini_wsServiceUtil.class, Comuni_bacini_wsService.class);
 
 }

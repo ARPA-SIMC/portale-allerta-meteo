@@ -1,32 +1,17 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerter.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.exportimport.kernel.lar.StagedModelType;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -37,24 +22,14 @@ import java.util.Objects;
  * @see AllertaValangheStato
  * @generated
  */
-@ProviderType
 public class AllertaValangheStatoWrapper
+	extends BaseModelWrapper<AllertaValangheStato>
 	implements AllertaValangheStato, ModelWrapper<AllertaValangheStato> {
 
 	public AllertaValangheStatoWrapper(
 		AllertaValangheStato allertaValangheStato) {
 
-		_allertaValangheStato = allertaValangheStato;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return AllertaValangheStato.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return AllertaValangheStato.class.getName();
+		super(allertaValangheStato);
 	}
 
 	@Override
@@ -182,16 +157,8 @@ public class AllertaValangheStatoWrapper
 	}
 
 	@Override
-	public Object clone() {
-		return new AllertaValangheStatoWrapper(
-			(AllertaValangheStato)_allertaValangheStato.clone());
-	}
-
-	@Override
-	public int compareTo(
-		it.eng.allerter.model.AllertaValangheStato allertaValangheStato) {
-
-		return _allertaValangheStato.compareTo(allertaValangheStato);
+	public AllertaValangheStato cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -201,7 +168,7 @@ public class AllertaValangheStatoWrapper
 	 */
 	@Override
 	public long getAllertaValangheId() {
-		return _allertaValangheStato.getAllertaValangheId();
+		return model.getAllertaValangheId();
 	}
 
 	/**
@@ -211,7 +178,7 @@ public class AllertaValangheStatoWrapper
 	 */
 	@Override
 	public long getAllertaValangheStatoId() {
-		return _allertaValangheStato.getAllertaValangheStatoId();
+		return model.getAllertaValangheStatoId();
 	}
 
 	/**
@@ -221,7 +188,7 @@ public class AllertaValangheStatoWrapper
 	 */
 	@Override
 	public long getAreaId() {
-		return _allertaValangheStato.getAreaId();
+		return model.getAreaId();
 	}
 
 	/**
@@ -231,7 +198,7 @@ public class AllertaValangheStatoWrapper
 	 */
 	@Override
 	public long getCompanyId() {
-		return _allertaValangheStato.getCompanyId();
+		return model.getCompanyId();
 	}
 
 	/**
@@ -241,7 +208,7 @@ public class AllertaValangheStatoWrapper
 	 */
 	@Override
 	public Date getCreateDate() {
-		return _allertaValangheStato.getCreateDate();
+		return model.getCreateDate();
 	}
 
 	/**
@@ -251,7 +218,7 @@ public class AllertaValangheStatoWrapper
 	 */
 	@Override
 	public Date getDataFine() {
-		return _allertaValangheStato.getDataFine();
+		return model.getDataFine();
 	}
 
 	/**
@@ -261,7 +228,7 @@ public class AllertaValangheStatoWrapper
 	 */
 	@Override
 	public Date getDataInizio() {
-		return _allertaValangheStato.getDataInizio();
+		return model.getDataInizio();
 	}
 
 	/**
@@ -271,12 +238,7 @@ public class AllertaValangheStatoWrapper
 	 */
 	@Override
 	public long getEventoId() {
-		return _allertaValangheStato.getEventoId();
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _allertaValangheStato.getExpandoBridge();
+		return model.getEventoId();
 	}
 
 	/**
@@ -286,7 +248,7 @@ public class AllertaValangheStatoWrapper
 	 */
 	@Override
 	public long getGroupId() {
-		return _allertaValangheStato.getGroupId();
+		return model.getGroupId();
 	}
 
 	/**
@@ -296,7 +258,7 @@ public class AllertaValangheStatoWrapper
 	 */
 	@Override
 	public Date getModifiedDate() {
-		return _allertaValangheStato.getModifiedDate();
+		return model.getModifiedDate();
 	}
 
 	/**
@@ -306,7 +268,7 @@ public class AllertaValangheStatoWrapper
 	 */
 	@Override
 	public String getNome() {
-		return _allertaValangheStato.getNome();
+		return model.getNome();
 	}
 
 	/**
@@ -316,7 +278,7 @@ public class AllertaValangheStatoWrapper
 	 */
 	@Override
 	public long getParentId() {
-		return _allertaValangheStato.getParentId();
+		return model.getParentId();
 	}
 
 	/**
@@ -326,12 +288,7 @@ public class AllertaValangheStatoWrapper
 	 */
 	@Override
 	public long getPrimaryKey() {
-		return _allertaValangheStato.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _allertaValangheStato.getPrimaryKeyObj();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -341,7 +298,7 @@ public class AllertaValangheStatoWrapper
 	 */
 	@Override
 	public long getStatoId() {
-		return _allertaValangheStato.getStatoId();
+		return model.getStatoId();
 	}
 
 	/**
@@ -351,7 +308,7 @@ public class AllertaValangheStatoWrapper
 	 */
 	@Override
 	public long getUserId() {
-		return _allertaValangheStato.getUserId();
+		return model.getUserId();
 	}
 
 	/**
@@ -361,7 +318,7 @@ public class AllertaValangheStatoWrapper
 	 */
 	@Override
 	public String getUserName() {
-		return _allertaValangheStato.getUserName();
+		return model.getUserName();
 	}
 
 	/**
@@ -371,7 +328,7 @@ public class AllertaValangheStatoWrapper
 	 */
 	@Override
 	public String getUserUuid() {
-		return _allertaValangheStato.getUserUuid();
+		return model.getUserUuid();
 	}
 
 	/**
@@ -381,32 +338,12 @@ public class AllertaValangheStatoWrapper
 	 */
 	@Override
 	public String getUuid() {
-		return _allertaValangheStato.getUuid();
-	}
-
-	@Override
-	public int hashCode() {
-		return _allertaValangheStato.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _allertaValangheStato.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _allertaValangheStato.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _allertaValangheStato.isNew();
+		return model.getUuid();
 	}
 
 	@Override
 	public void persist() {
-		_allertaValangheStato.persist();
+		model.persist();
 	}
 
 	/**
@@ -416,7 +353,7 @@ public class AllertaValangheStatoWrapper
 	 */
 	@Override
 	public void setAllertaValangheId(long allertaValangheId) {
-		_allertaValangheStato.setAllertaValangheId(allertaValangheId);
+		model.setAllertaValangheId(allertaValangheId);
 	}
 
 	/**
@@ -426,7 +363,7 @@ public class AllertaValangheStatoWrapper
 	 */
 	@Override
 	public void setAllertaValangheStatoId(long allertaValangheStatoId) {
-		_allertaValangheStato.setAllertaValangheStatoId(allertaValangheStatoId);
+		model.setAllertaValangheStatoId(allertaValangheStatoId);
 	}
 
 	/**
@@ -436,12 +373,7 @@ public class AllertaValangheStatoWrapper
 	 */
 	@Override
 	public void setAreaId(long areaId) {
-		_allertaValangheStato.setAreaId(areaId);
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_allertaValangheStato.setCachedModel(cachedModel);
+		model.setAreaId(areaId);
 	}
 
 	/**
@@ -451,7 +383,7 @@ public class AllertaValangheStatoWrapper
 	 */
 	@Override
 	public void setCompanyId(long companyId) {
-		_allertaValangheStato.setCompanyId(companyId);
+		model.setCompanyId(companyId);
 	}
 
 	/**
@@ -461,7 +393,7 @@ public class AllertaValangheStatoWrapper
 	 */
 	@Override
 	public void setCreateDate(Date createDate) {
-		_allertaValangheStato.setCreateDate(createDate);
+		model.setCreateDate(createDate);
 	}
 
 	/**
@@ -471,7 +403,7 @@ public class AllertaValangheStatoWrapper
 	 */
 	@Override
 	public void setDataFine(Date dataFine) {
-		_allertaValangheStato.setDataFine(dataFine);
+		model.setDataFine(dataFine);
 	}
 
 	/**
@@ -481,7 +413,7 @@ public class AllertaValangheStatoWrapper
 	 */
 	@Override
 	public void setDataInizio(Date dataInizio) {
-		_allertaValangheStato.setDataInizio(dataInizio);
+		model.setDataInizio(dataInizio);
 	}
 
 	/**
@@ -491,24 +423,7 @@ public class AllertaValangheStatoWrapper
 	 */
 	@Override
 	public void setEventoId(long eventoId) {
-		_allertaValangheStato.setEventoId(eventoId);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_allertaValangheStato.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_allertaValangheStato.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_allertaValangheStato.setExpandoBridgeAttributes(serviceContext);
+		model.setEventoId(eventoId);
 	}
 
 	/**
@@ -518,7 +433,7 @@ public class AllertaValangheStatoWrapper
 	 */
 	@Override
 	public void setGroupId(long groupId) {
-		_allertaValangheStato.setGroupId(groupId);
+		model.setGroupId(groupId);
 	}
 
 	/**
@@ -528,12 +443,7 @@ public class AllertaValangheStatoWrapper
 	 */
 	@Override
 	public void setModifiedDate(Date modifiedDate) {
-		_allertaValangheStato.setModifiedDate(modifiedDate);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_allertaValangheStato.setNew(n);
+		model.setModifiedDate(modifiedDate);
 	}
 
 	/**
@@ -543,7 +453,7 @@ public class AllertaValangheStatoWrapper
 	 */
 	@Override
 	public void setNome(String nome) {
-		_allertaValangheStato.setNome(nome);
+		model.setNome(nome);
 	}
 
 	/**
@@ -553,7 +463,7 @@ public class AllertaValangheStatoWrapper
 	 */
 	@Override
 	public void setParentId(long parentId) {
-		_allertaValangheStato.setParentId(parentId);
+		model.setParentId(parentId);
 	}
 
 	/**
@@ -563,12 +473,7 @@ public class AllertaValangheStatoWrapper
 	 */
 	@Override
 	public void setPrimaryKey(long primaryKey) {
-		_allertaValangheStato.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_allertaValangheStato.setPrimaryKeyObj(primaryKeyObj);
+		model.setPrimaryKey(primaryKey);
 	}
 
 	/**
@@ -578,7 +483,7 @@ public class AllertaValangheStatoWrapper
 	 */
 	@Override
 	public void setStatoId(long statoId) {
-		_allertaValangheStato.setStatoId(statoId);
+		model.setStatoId(statoId);
 	}
 
 	/**
@@ -588,7 +493,7 @@ public class AllertaValangheStatoWrapper
 	 */
 	@Override
 	public void setUserId(long userId) {
-		_allertaValangheStato.setUserId(userId);
+		model.setUserId(userId);
 	}
 
 	/**
@@ -598,7 +503,7 @@ public class AllertaValangheStatoWrapper
 	 */
 	@Override
 	public void setUserName(String userName) {
-		_allertaValangheStato.setUserName(userName);
+		model.setUserName(userName);
 	}
 
 	/**
@@ -608,7 +513,7 @@ public class AllertaValangheStatoWrapper
 	 */
 	@Override
 	public void setUserUuid(String userUuid) {
-		_allertaValangheStato.setUserUuid(userUuid);
+		model.setUserUuid(userUuid);
 	}
 
 	/**
@@ -618,86 +523,24 @@ public class AllertaValangheStatoWrapper
 	 */
 	@Override
 	public void setUuid(String uuid) {
-		_allertaValangheStato.setUuid(uuid);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<it.eng.allerter.model.AllertaValangheStato> toCacheModel() {
-
-		return _allertaValangheStato.toCacheModel();
-	}
-
-	@Override
-	public it.eng.allerter.model.AllertaValangheStato toEscapedModel() {
-		return new AllertaValangheStatoWrapper(
-			_allertaValangheStato.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _allertaValangheStato.toString();
-	}
-
-	@Override
-	public it.eng.allerter.model.AllertaValangheStato toUnescapedModel() {
-		return new AllertaValangheStatoWrapper(
-			_allertaValangheStato.toUnescapedModel());
+		model.setUuid(uuid);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _allertaValangheStato.toXmlString();
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-
-		if (!(obj instanceof AllertaValangheStatoWrapper)) {
-			return false;
-		}
-
-		AllertaValangheStatoWrapper allertaValangheStatoWrapper =
-			(AllertaValangheStatoWrapper)obj;
-
-		if (Objects.equals(
-				_allertaValangheStato,
-				allertaValangheStatoWrapper._allertaValangheStato)) {
-
-			return true;
-		}
-
-		return false;
+		return model.toXmlString();
 	}
 
 	@Override
 	public StagedModelType getStagedModelType() {
-		return _allertaValangheStato.getStagedModelType();
+		return model.getStagedModelType();
 	}
 
 	@Override
-	public AllertaValangheStato getWrappedModel() {
-		return _allertaValangheStato;
-	}
+	protected AllertaValangheStatoWrapper wrap(
+		AllertaValangheStato allertaValangheStato) {
 
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _allertaValangheStato.isEntityCacheEnabled();
+		return new AllertaValangheStatoWrapper(allertaValangheStato);
 	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _allertaValangheStato.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_allertaValangheStato.resetOriginalValues();
-	}
-
-	private final AllertaValangheStato _allertaValangheStato;
 
 }

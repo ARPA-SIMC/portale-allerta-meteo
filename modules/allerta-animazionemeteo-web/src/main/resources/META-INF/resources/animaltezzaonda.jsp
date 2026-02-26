@@ -35,8 +35,8 @@ DocumentazioneConfiguration doc = AllertaTracker.getDocumentazioneConfiguration(
 
 							<div class="form-group">
 
-								<label for="datetimepicker--dato-osservato--altezzaonda__field">Giorno
-									di riferimento </label>
+								<label for="datetimepicker--dato-osservato--altezzaonda__field"><liferay-ui:message key="allertaanimazionemeteo_giorno" />
+									</label>
 								<div class="input-group date"
 									id="datetimepicker--dato-osservato--altezzaonda"
 									data-toggle="datetimepicker">
@@ -49,7 +49,7 @@ DocumentazioneConfiguration doc = AllertaTracker.getDocumentazioneConfiguration(
 
 										<div class="input-group-text">
 											<span class="icon i-calendar" aria-hidden="true"></span> <span
-												class="sr-only">Scegli data e ora</span>
+												class="sr-only"><liferay-ui:message key="allertaanimazionemeteo_dataore" /></span>
 										</div>
 									</a>
 								</div>
@@ -73,7 +73,7 @@ DocumentazioneConfiguration doc = AllertaTracker.getDocumentazioneConfiguration(
 			<div class="u-map-section__map-side map-component__map"
 				id="map--dato-osservato--altezzaonda">
 				
-				<p class="u-loading-msg">Sto caricando la mappa...</p>
+				<p class="u-loading-msg"><liferay-ui:message key="allertaanimazionemeteo_loading" /></p>
 
 				<div class="leaflet-control-container">
 					<div class="leaflet-top leaflet-left">
@@ -81,7 +81,7 @@ DocumentazioneConfiguration doc = AllertaTracker.getDocumentazioneConfiguration(
 							<div class="d-flex">
 								<div class="d-none d-md-flex d-print-flex flex-md-row">
 									<div class="map-legend--rtdata-legend">
-										<strong>Altezza onda significativa (m)</strong>
+										<strong><liferay-ui:message key="allertaanimazionemeteo_altonda" /></strong>
 									
 									</div>
 								</div>
@@ -114,7 +114,7 @@ DocumentazioneConfiguration doc = AllertaTracker.getDocumentazioneConfiguration(
 									<a href="#" class="d-block" data-toggle="modal"
 										data-target="#modal--guida-mappa-dato-osservato"> <span
 										class="icon i-info-circle" title="Info"></span> <span>
-											Guida alla mappa </span>
+											<liferay-ui:message key="allertaanimazionemeteo_guidaallamappa" /> </span>
 									</a>
 								</div>
 							</div>
@@ -141,7 +141,7 @@ DocumentazioneConfiguration doc = AllertaTracker.getDocumentazioneConfiguration(
 	</div>
 
 
-	<h4 class="sr-only">Guide e supporto</h4>
+	<h4 class="sr-only"><liferay-ui:message key="allertaanimazionemeteo_legenda3" /></h4>
 	<!-- Guida Mappa Previsioni -->
 	<div class="modal  fade modal--map-guide modal--map-guide--rtdata"
 		id="modal--guida-mappa-dato-osservato" tabindex="-1" role="dialog"
@@ -149,24 +149,22 @@ DocumentazioneConfiguration doc = AllertaTracker.getDocumentazioneConfiguration(
 		<div class="modal-dialog modal-lg" role="document">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title" id="modal-guida-mappa-osservato-title">Guida
-						alla mappa</h5>
+					<h5 class="modal-title" id="modal-guida-mappa-osservato-title"><liferay-ui:message key="allertaanimazionemeteo_guidaallamappa" /></h5>
 					<button type="button" class="close" data-dismiss="modal"
 						aria-label="Close">
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
 				<div class="modal-lead">
-					I livelli di criticità di ogni fenomeno si basano su soglie e
-					valutazioni differenti.<br /> Questa è una breve guida alla
-					lettura della mappa.
+					<liferay-ui:message key="allertaanimazionemeteo_legenda4" />
+					
 				</div>
 				<div class="modal-body">
 					<div class="row flex-lg-column">
 
 						<div class="col-12 col-lg-7 mb-4" data-if="legend"
 							data-when="rtdata">
-							<h6>Legenda dati osservati mostrati sulla mappa</h6>
+							<h6><liferay-ui:message key="allertaanimazionemeteo_legenda1" /></h6>
 							<ul class="mb-md-2 nav map-legend__rtdata-guides flex-column">
 								<li class="nav-item" data-if="legend" data-when="radar">
 									<div class="nav-span d-flex flex-column mb-3">
@@ -198,10 +196,10 @@ DocumentazioneConfiguration doc = AllertaTracker.getDocumentazioneConfiguration(
 								</li>
 								<li class="nav-item" data-if="legend" data-when="vento">
 									<div class="nav-span d-flex flex-column mb-3">
-										<strong>Vento (m/s)</strong>
+										<strong><liferay-ui:message key="allertaanimazionemeteo_vento" /></strong>
 										<picture> <img
 											src="/o/allerta-theme/img/legend/rt_D_vento.png"
-											alt="Legenda per Vento (m/s)" /> </picture>
+											alt="<liferay-ui:message key="allertaanimazionemeteo_legendaper" /> <liferay-ui:message key="allertaanimazionemeteo_vento" />" /> </picture>
 									</div>
 								</li>
 								<li class="nav-item" data-if="legend" data-when="idrometrico">
@@ -229,12 +227,12 @@ DocumentazioneConfiguration doc = AllertaTracker.getDocumentazioneConfiguration(
 										<strong>Precipitazioni (mm/ora)</strong>
 										<picture> <img
 											src="/o/allerta-theme/img/legend/rt_P_piogge.png"
-											alt="Legenda per Precipitazioni (mm/ora)" /> </picture>
+											alt="<liferay-ui:message key="allertaanimazionemeteo_legendaper" /> Precipitazioni (mm/ora)" /> </picture>
 									</div>
 								</li>
 								<li class="nav-item" data-if="legend" data-when="altezzaonda">
 									<div class="nav-span d-flex flex-column mb-3">
-										<strong>Altezza onda significativa (m)</strong>
+										<strong><liferay-ui:message key="allertaanimazionemeteo_altonda" /></strong>
 									</div>
 								</li>
 								<li class="nav-item" data-if="legend" data-when="umidita">
@@ -242,7 +240,7 @@ DocumentazioneConfiguration doc = AllertaTracker.getDocumentazioneConfiguration(
 										<strong>Umidità (%)</strong>
 										<picture> <img
 											src="/o/allerta-theme/img/legend/rt_U_umidita.png"
-											alt="Legenda per Umidità (%)" /> </picture>
+											alt="<liferay-ui:message key="allertaanimazionemeteo_legendaper" /> Umidità (%)" /> </picture>
 									</div>
 								</li>
 								<li class="nav-item" data-if="legend" data-when="temperature">
@@ -250,18 +248,18 @@ DocumentazioneConfiguration doc = AllertaTracker.getDocumentazioneConfiguration(
 										<strong>Temperature (C°)</strong>
 										<picture> <img
 											src="/o/allerta-theme/img/legend/rt_T_temperature.png"
-											alt="Legenda per Temperature (C°)" /> </picture>
+											alt="<liferay-ui:message key="allertaanimazionemeteo_legendaper" /> Temperature (C°)" /> </picture>
 									</div>
 								</li>
 							</ul>
 						</div>
 
 						<div class="col-12 col-lg-5 mb-4">
-							<h6>Guide di utilit&agrave;</h6>
+							<h6><liferay-ui:message key="allertaanimazionemeteo_legenda5" /></h6>
 							<ul class="mb-md-2 nav map-legend__utility-guides flex-column">
 								<li class="nav-item"><a class="nav-link" href="/documents/20181/1138904/Guida_mappa_altezza_onda.pdf"
-									target="_blank"><span class="icon i-file-pdf-o"></span>Guida
-										alla lettura della mappa</a></li>
+									target="_blank"><span class="icon i-file-pdf-o"></span>
+										<liferay-ui:message key="allertaanimazionemeteo_legenda2" /></a></li>
 							</ul>
 						</div>
 

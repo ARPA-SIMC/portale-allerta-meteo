@@ -1,32 +1,17 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerter.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.exportimport.kernel.lar.StagedModelType;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -37,22 +22,12 @@ import java.util.Objects;
  * @see AllertaStato
  * @generated
  */
-@ProviderType
 public class AllertaStatoWrapper
+	extends BaseModelWrapper<AllertaStato>
 	implements AllertaStato, ModelWrapper<AllertaStato> {
 
 	public AllertaStatoWrapper(AllertaStato allertaStato) {
-		_allertaStato = allertaStato;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return AllertaStato.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return AllertaStato.class.getName();
+		super(allertaStato);
 	}
 
 	@Override
@@ -179,13 +154,8 @@ public class AllertaStatoWrapper
 	}
 
 	@Override
-	public Object clone() {
-		return new AllertaStatoWrapper((AllertaStato)_allertaStato.clone());
-	}
-
-	@Override
-	public int compareTo(it.eng.allerter.model.AllertaStato allertaStato) {
-		return _allertaStato.compareTo(allertaStato);
+	public AllertaStato cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -195,7 +165,7 @@ public class AllertaStatoWrapper
 	 */
 	@Override
 	public long getAllertaId() {
-		return _allertaStato.getAllertaId();
+		return model.getAllertaId();
 	}
 
 	/**
@@ -205,7 +175,7 @@ public class AllertaStatoWrapper
 	 */
 	@Override
 	public long getAllertaStatoId() {
-		return _allertaStato.getAllertaStatoId();
+		return model.getAllertaStatoId();
 	}
 
 	/**
@@ -215,7 +185,7 @@ public class AllertaStatoWrapper
 	 */
 	@Override
 	public long getAreaId() {
-		return _allertaStato.getAreaId();
+		return model.getAreaId();
 	}
 
 	/**
@@ -225,7 +195,7 @@ public class AllertaStatoWrapper
 	 */
 	@Override
 	public long getCompanyId() {
-		return _allertaStato.getCompanyId();
+		return model.getCompanyId();
 	}
 
 	/**
@@ -235,7 +205,7 @@ public class AllertaStatoWrapper
 	 */
 	@Override
 	public Date getCreateDate() {
-		return _allertaStato.getCreateDate();
+		return model.getCreateDate();
 	}
 
 	/**
@@ -245,7 +215,7 @@ public class AllertaStatoWrapper
 	 */
 	@Override
 	public Date getDataFine() {
-		return _allertaStato.getDataFine();
+		return model.getDataFine();
 	}
 
 	/**
@@ -255,7 +225,7 @@ public class AllertaStatoWrapper
 	 */
 	@Override
 	public Date getDataInizio() {
-		return _allertaStato.getDataInizio();
+		return model.getDataInizio();
 	}
 
 	/**
@@ -265,12 +235,7 @@ public class AllertaStatoWrapper
 	 */
 	@Override
 	public long getEventoId() {
-		return _allertaStato.getEventoId();
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _allertaStato.getExpandoBridge();
+		return model.getEventoId();
 	}
 
 	/**
@@ -280,7 +245,7 @@ public class AllertaStatoWrapper
 	 */
 	@Override
 	public long getGroupId() {
-		return _allertaStato.getGroupId();
+		return model.getGroupId();
 	}
 
 	/**
@@ -290,7 +255,7 @@ public class AllertaStatoWrapper
 	 */
 	@Override
 	public Date getModifiedDate() {
-		return _allertaStato.getModifiedDate();
+		return model.getModifiedDate();
 	}
 
 	/**
@@ -300,7 +265,7 @@ public class AllertaStatoWrapper
 	 */
 	@Override
 	public String getNome() {
-		return _allertaStato.getNome();
+		return model.getNome();
 	}
 
 	/**
@@ -310,7 +275,7 @@ public class AllertaStatoWrapper
 	 */
 	@Override
 	public long getParentId() {
-		return _allertaStato.getParentId();
+		return model.getParentId();
 	}
 
 	/**
@@ -320,12 +285,7 @@ public class AllertaStatoWrapper
 	 */
 	@Override
 	public long getPrimaryKey() {
-		return _allertaStato.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _allertaStato.getPrimaryKeyObj();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -335,7 +295,7 @@ public class AllertaStatoWrapper
 	 */
 	@Override
 	public long getStatoId() {
-		return _allertaStato.getStatoId();
+		return model.getStatoId();
 	}
 
 	/**
@@ -345,7 +305,7 @@ public class AllertaStatoWrapper
 	 */
 	@Override
 	public long getUserId() {
-		return _allertaStato.getUserId();
+		return model.getUserId();
 	}
 
 	/**
@@ -355,7 +315,7 @@ public class AllertaStatoWrapper
 	 */
 	@Override
 	public String getUserName() {
-		return _allertaStato.getUserName();
+		return model.getUserName();
 	}
 
 	/**
@@ -365,7 +325,7 @@ public class AllertaStatoWrapper
 	 */
 	@Override
 	public String getUserUuid() {
-		return _allertaStato.getUserUuid();
+		return model.getUserUuid();
 	}
 
 	/**
@@ -375,32 +335,12 @@ public class AllertaStatoWrapper
 	 */
 	@Override
 	public String getUuid() {
-		return _allertaStato.getUuid();
-	}
-
-	@Override
-	public int hashCode() {
-		return _allertaStato.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _allertaStato.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _allertaStato.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _allertaStato.isNew();
+		return model.getUuid();
 	}
 
 	@Override
 	public void persist() {
-		_allertaStato.persist();
+		model.persist();
 	}
 
 	/**
@@ -410,7 +350,7 @@ public class AllertaStatoWrapper
 	 */
 	@Override
 	public void setAllertaId(long allertaId) {
-		_allertaStato.setAllertaId(allertaId);
+		model.setAllertaId(allertaId);
 	}
 
 	/**
@@ -420,7 +360,7 @@ public class AllertaStatoWrapper
 	 */
 	@Override
 	public void setAllertaStatoId(long allertaStatoId) {
-		_allertaStato.setAllertaStatoId(allertaStatoId);
+		model.setAllertaStatoId(allertaStatoId);
 	}
 
 	/**
@@ -430,12 +370,7 @@ public class AllertaStatoWrapper
 	 */
 	@Override
 	public void setAreaId(long areaId) {
-		_allertaStato.setAreaId(areaId);
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_allertaStato.setCachedModel(cachedModel);
+		model.setAreaId(areaId);
 	}
 
 	/**
@@ -445,7 +380,7 @@ public class AllertaStatoWrapper
 	 */
 	@Override
 	public void setCompanyId(long companyId) {
-		_allertaStato.setCompanyId(companyId);
+		model.setCompanyId(companyId);
 	}
 
 	/**
@@ -455,7 +390,7 @@ public class AllertaStatoWrapper
 	 */
 	@Override
 	public void setCreateDate(Date createDate) {
-		_allertaStato.setCreateDate(createDate);
+		model.setCreateDate(createDate);
 	}
 
 	/**
@@ -465,7 +400,7 @@ public class AllertaStatoWrapper
 	 */
 	@Override
 	public void setDataFine(Date dataFine) {
-		_allertaStato.setDataFine(dataFine);
+		model.setDataFine(dataFine);
 	}
 
 	/**
@@ -475,7 +410,7 @@ public class AllertaStatoWrapper
 	 */
 	@Override
 	public void setDataInizio(Date dataInizio) {
-		_allertaStato.setDataInizio(dataInizio);
+		model.setDataInizio(dataInizio);
 	}
 
 	/**
@@ -485,24 +420,7 @@ public class AllertaStatoWrapper
 	 */
 	@Override
 	public void setEventoId(long eventoId) {
-		_allertaStato.setEventoId(eventoId);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_allertaStato.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_allertaStato.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_allertaStato.setExpandoBridgeAttributes(serviceContext);
+		model.setEventoId(eventoId);
 	}
 
 	/**
@@ -512,7 +430,7 @@ public class AllertaStatoWrapper
 	 */
 	@Override
 	public void setGroupId(long groupId) {
-		_allertaStato.setGroupId(groupId);
+		model.setGroupId(groupId);
 	}
 
 	/**
@@ -522,12 +440,7 @@ public class AllertaStatoWrapper
 	 */
 	@Override
 	public void setModifiedDate(Date modifiedDate) {
-		_allertaStato.setModifiedDate(modifiedDate);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_allertaStato.setNew(n);
+		model.setModifiedDate(modifiedDate);
 	}
 
 	/**
@@ -537,7 +450,7 @@ public class AllertaStatoWrapper
 	 */
 	@Override
 	public void setNome(String nome) {
-		_allertaStato.setNome(nome);
+		model.setNome(nome);
 	}
 
 	/**
@@ -547,7 +460,7 @@ public class AllertaStatoWrapper
 	 */
 	@Override
 	public void setParentId(long parentId) {
-		_allertaStato.setParentId(parentId);
+		model.setParentId(parentId);
 	}
 
 	/**
@@ -557,12 +470,7 @@ public class AllertaStatoWrapper
 	 */
 	@Override
 	public void setPrimaryKey(long primaryKey) {
-		_allertaStato.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_allertaStato.setPrimaryKeyObj(primaryKeyObj);
+		model.setPrimaryKey(primaryKey);
 	}
 
 	/**
@@ -572,7 +480,7 @@ public class AllertaStatoWrapper
 	 */
 	@Override
 	public void setStatoId(long statoId) {
-		_allertaStato.setStatoId(statoId);
+		model.setStatoId(statoId);
 	}
 
 	/**
@@ -582,7 +490,7 @@ public class AllertaStatoWrapper
 	 */
 	@Override
 	public void setUserId(long userId) {
-		_allertaStato.setUserId(userId);
+		model.setUserId(userId);
 	}
 
 	/**
@@ -592,7 +500,7 @@ public class AllertaStatoWrapper
 	 */
 	@Override
 	public void setUserName(String userName) {
-		_allertaStato.setUserName(userName);
+		model.setUserName(userName);
 	}
 
 	/**
@@ -602,7 +510,7 @@ public class AllertaStatoWrapper
 	 */
 	@Override
 	public void setUserUuid(String userUuid) {
-		_allertaStato.setUserUuid(userUuid);
+		model.setUserUuid(userUuid);
 	}
 
 	/**
@@ -612,80 +520,22 @@ public class AllertaStatoWrapper
 	 */
 	@Override
 	public void setUuid(String uuid) {
-		_allertaStato.setUuid(uuid);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<it.eng.allerter.model.AllertaStato> toCacheModel() {
-
-		return _allertaStato.toCacheModel();
-	}
-
-	@Override
-	public it.eng.allerter.model.AllertaStato toEscapedModel() {
-		return new AllertaStatoWrapper(_allertaStato.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _allertaStato.toString();
-	}
-
-	@Override
-	public it.eng.allerter.model.AllertaStato toUnescapedModel() {
-		return new AllertaStatoWrapper(_allertaStato.toUnescapedModel());
+		model.setUuid(uuid);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _allertaStato.toXmlString();
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-
-		if (!(obj instanceof AllertaStatoWrapper)) {
-			return false;
-		}
-
-		AllertaStatoWrapper allertaStatoWrapper = (AllertaStatoWrapper)obj;
-
-		if (Objects.equals(_allertaStato, allertaStatoWrapper._allertaStato)) {
-			return true;
-		}
-
-		return false;
+		return model.toXmlString();
 	}
 
 	@Override
 	public StagedModelType getStagedModelType() {
-		return _allertaStato.getStagedModelType();
+		return model.getStagedModelType();
 	}
 
 	@Override
-	public AllertaStato getWrappedModel() {
-		return _allertaStato;
+	protected AllertaStatoWrapper wrap(AllertaStato allertaStato) {
+		return new AllertaStatoWrapper(allertaStato);
 	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _allertaStato.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _allertaStato.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_allertaStato.resetOriginalValues();
-	}
-
-	private final AllertaStato _allertaStato;
 
 }

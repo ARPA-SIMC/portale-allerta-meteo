@@ -12,7 +12,6 @@ Export-Package: \
 Import-Package:\
 	!org.apache.avalon.*,\
 	!org.apache.log.*,\
-	\
 	!antlr,\
 	!antlr.*,\
 	!bsh,\

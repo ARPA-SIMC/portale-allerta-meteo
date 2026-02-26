@@ -1,31 +1,16 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.previsioni.meteo.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -36,21 +21,11 @@ import java.util.Objects;
  * @see Img
  * @generated
  */
-@ProviderType
-public class ImgWrapper implements Img, ModelWrapper<Img> {
+public class ImgWrapper
+	extends BaseModelWrapper<Img> implements Img, ModelWrapper<Img> {
 
 	public ImgWrapper(Img img) {
-		_img = img;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return Img.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return Img.class.getName();
+		super(img);
 	}
 
 	@Override
@@ -107,13 +82,8 @@ public class ImgWrapper implements Img, ModelWrapper<Img> {
 	}
 
 	@Override
-	public Object clone() {
-		return new ImgWrapper((Img)_img.clone());
-	}
-
-	@Override
-	public int compareTo(it.eng.previsioni.meteo.model.Img img) {
-		return _img.compareTo(img);
+	public Img cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -123,7 +93,7 @@ public class ImgWrapper implements Img, ModelWrapper<Img> {
 	 */
 	@Override
 	public String getData() {
-		return _img.getData();
+		return model.getData();
 	}
 
 	/**
@@ -133,7 +103,7 @@ public class ImgWrapper implements Img, ModelWrapper<Img> {
 	 */
 	@Override
 	public String getDay() {
-		return _img.getDay();
+		return model.getDay();
 	}
 
 	/**
@@ -143,12 +113,7 @@ public class ImgWrapper implements Img, ModelWrapper<Img> {
 	 */
 	@Override
 	public String getDaypart() {
-		return _img.getDaypart();
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _img.getExpandoBridge();
+		return model.getDaypart();
 	}
 
 	/**
@@ -158,7 +123,7 @@ public class ImgWrapper implements Img, ModelWrapper<Img> {
 	 */
 	@Override
 	public long getId() {
-		return _img.getId();
+		return model.getId();
 	}
 
 	/**
@@ -168,7 +133,7 @@ public class ImgWrapper implements Img, ModelWrapper<Img> {
 	 */
 	@Override
 	public Date getInserted() {
-		return _img.getInserted();
+		return model.getInserted();
 	}
 
 	/**
@@ -178,12 +143,7 @@ public class ImgWrapper implements Img, ModelWrapper<Img> {
 	 */
 	@Override
 	public long getPrimaryKey() {
-		return _img.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _img.getPrimaryKeyObj();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -193,37 +153,12 @@ public class ImgWrapper implements Img, ModelWrapper<Img> {
 	 */
 	@Override
 	public String getProvincia() {
-		return _img.getProvincia();
-	}
-
-	@Override
-	public int hashCode() {
-		return _img.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _img.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _img.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _img.isNew();
+		return model.getProvincia();
 	}
 
 	@Override
 	public void persist() {
-		_img.persist();
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_img.setCachedModel(cachedModel);
+		model.persist();
 	}
 
 	/**
@@ -233,7 +168,7 @@ public class ImgWrapper implements Img, ModelWrapper<Img> {
 	 */
 	@Override
 	public void setData(String data) {
-		_img.setData(data);
+		model.setData(data);
 	}
 
 	/**
@@ -243,7 +178,7 @@ public class ImgWrapper implements Img, ModelWrapper<Img> {
 	 */
 	@Override
 	public void setDay(String day) {
-		_img.setDay(day);
+		model.setDay(day);
 	}
 
 	/**
@@ -253,24 +188,7 @@ public class ImgWrapper implements Img, ModelWrapper<Img> {
 	 */
 	@Override
 	public void setDaypart(String daypart) {
-		_img.setDaypart(daypart);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_img.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_img.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_img.setExpandoBridgeAttributes(serviceContext);
+		model.setDaypart(daypart);
 	}
 
 	/**
@@ -280,7 +198,7 @@ public class ImgWrapper implements Img, ModelWrapper<Img> {
 	 */
 	@Override
 	public void setId(long id) {
-		_img.setId(id);
+		model.setId(id);
 	}
 
 	/**
@@ -290,12 +208,7 @@ public class ImgWrapper implements Img, ModelWrapper<Img> {
 	 */
 	@Override
 	public void setInserted(Date inserted) {
-		_img.setInserted(inserted);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_img.setNew(n);
+		model.setInserted(inserted);
 	}
 
 	/**
@@ -305,12 +218,7 @@ public class ImgWrapper implements Img, ModelWrapper<Img> {
 	 */
 	@Override
 	public void setPrimaryKey(long primaryKey) {
-		_img.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_img.setPrimaryKeyObj(primaryKeyObj);
+		model.setPrimaryKey(primaryKey);
 	}
 
 	/**
@@ -320,75 +228,17 @@ public class ImgWrapper implements Img, ModelWrapper<Img> {
 	 */
 	@Override
 	public void setProvincia(String provincia) {
-		_img.setProvincia(provincia);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<it.eng.previsioni.meteo.model.Img> toCacheModel() {
-
-		return _img.toCacheModel();
-	}
-
-	@Override
-	public it.eng.previsioni.meteo.model.Img toEscapedModel() {
-		return new ImgWrapper(_img.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _img.toString();
-	}
-
-	@Override
-	public it.eng.previsioni.meteo.model.Img toUnescapedModel() {
-		return new ImgWrapper(_img.toUnescapedModel());
+		model.setProvincia(provincia);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _img.toXmlString();
+		return model.toXmlString();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-
-		if (!(obj instanceof ImgWrapper)) {
-			return false;
-		}
-
-		ImgWrapper imgWrapper = (ImgWrapper)obj;
-
-		if (Objects.equals(_img, imgWrapper._img)) {
-			return true;
-		}
-
-		return false;
+	protected ImgWrapper wrap(Img img) {
+		return new ImgWrapper(img);
 	}
-
-	@Override
-	public Img getWrappedModel() {
-		return _img;
-	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _img.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _img.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_img.resetOriginalValues();
-	}
-
-	private final Img _img;
 
 }

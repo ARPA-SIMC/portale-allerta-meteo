@@ -37,7 +37,7 @@ import org.osgi.service.component.annotations.Reference;
 		property = {   
 		"com.liferay.portlet.display-category=" + AllertaKeys.AllertaCategory,
 		"com.liferay.portlet.instanceable=false", 
-		"com.liferay.portlet.footer-portlet-javascript=/js/search.js",
+		"com.liferay.portlet.footer-portlet-javascript=/js/search.js?v=1.2",
 		"javax.portlet.display-name=Header", 
 		"javax.portlet.init-param.template-path=/",
 		"javax.portlet.init-param.view-template=/view.jsp", 

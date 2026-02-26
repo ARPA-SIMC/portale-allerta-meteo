@@ -28,11 +28,7 @@ import it.eng.allerta.utils.AllertaTracker;
 //import net.sf.jasperreports.engine.util.JRProperties;
 
 @Component(
-	    immediate = true,
-	    property = {
-	        "osgi.http.whiteboard.context.path=/",
-	        "osgi.http.whiteboard.servlet.pattern=/report/briefing"
-	    },
+	    property = "osgi.http.whiteboard.servlet.pattern=/report/briefing",
 	    service = Servlet.class
 	)
 public class BriefingServlet extends HttpServlet {
@@ -75,15 +71,17 @@ public class BriefingServlet extends HttpServlet {
 			params.put("SUBREPORT_DIR",dirSubReport);
 			System.out.println("SUBREPORT_DIR -> "+dirSubReport);
 			
-			try {
+			params.put("URL_SERVIZI","https://allertameteo.regione.emilia-romagna.it");
+			
+			/*try {
 				String x = PortalUtil.getComputerName();
 				System.out.println("COMPUTER NAME -> "+x);
 				if (x!=null && x.contains("vm"))
-					params.put("URL_SERVIZI","http://vm668lnx.ente.regione.emr.it:8080");
+					params.put("URL_SERVIZI","http://vm959lnx.ente.regione.emr.it:8080");
 				
 			} catch (Exception e) {
 				e.printStackTrace();
-			}
+			}*/
 
 			
 			Long pp = null;

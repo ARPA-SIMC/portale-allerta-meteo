@@ -10,8 +10,8 @@ import com.liferay.document.library.kernel.service.DLFileEntryTypeLocalServiceUt
 import com.liferay.document.library.kernel.service.DLFolderLocalServiceUtil;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
+import com.liferay.journal.constants.JournalArticleConstants;
 import com.liferay.journal.model.JournalArticle;
-import com.liferay.journal.model.JournalArticleConstants;
 import com.liferay.journal.service.JournalArticleLocalService;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
@@ -32,7 +32,7 @@ import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.workflow.WorkflowDefinition;
-import com.liferay.portal.kernel.workflow.WorkflowDefinitionManagerUtil;
+import com.liferay.portal.workflow.util.WorkflowDefinitionManagerUtil;
 
 import it.eng.allerta.backoffice.constants.AllertaBackofficeKeys;
 
@@ -156,7 +156,7 @@ public class AllertaBOProcedurePortlet extends MVCPortlet {
 		WorkflowDefinition wfl = null;
 		
 		try {
-			wfl = WorkflowDefinitionManagerUtil.getLatestWorkflowDefinition(companyId, "Piani di protezione civile Comunali");
+			wfl = WorkflowDefinitionManagerUtil.liberalGetLatestWorkflowDefinition(companyId, "Piani di protezione civile Comunali");
 			
 					 /* gia assegnati alal Folder
 					(List<WorkflowDefinitionLink>) WorkflowDefinitionLinkLocalServiceUtil.
@@ -214,7 +214,7 @@ public class AllertaBOProcedurePortlet extends MVCPortlet {
 									PortalUtil.getCurrentAndAncestorSiteGroupIds( currentFolder.getGroupId()), 
 									rootfolder.getFolderId(), 
 									true);*/
-				} catch (PortalException e) {
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 				

@@ -52,6 +52,7 @@ public class VerificaAllertaSbloccaCommand extends BaseMVCActionCommand{
 		LogInternoLocalServiceUtil.log("sbloccaVerifica","sbloccaVerifica","0","");
 		
 		long allertaId = ParamUtil.getLong(actionRequest, "id");
+		long gotoHome = ParamUtil.getLong(actionRequest, "home");
 
 		try {
 			
@@ -91,7 +92,7 @@ public class VerificaAllertaSbloccaCommand extends BaseMVCActionCommand{
 		compilaParameters.put("mvcRenderCommandName", new String[]{"/allertaer/verifica/compila"});
 		compilaParameters.put("id", new String[]{String.valueOf(allertaId)});
 		
-		compilaURL.setParameters(compilaParameters);
+		if (gotoHome==0) compilaURL.setParameters(compilaParameters);
 		
 		actionResponse.sendRedirect( compilaURL.toString());
 		

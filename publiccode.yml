@@ -2,8 +2,8 @@ publiccodeYmlVersion: "0.2"
 
 name: "Portale Allerta Meteo"
 url: "https://github.com/ARPA-SIMC/portale-allerta-meteo.git"
-softwareVersion: "1.0" 
-releaseDate: "2020-08-28"
+softwareVersion: "1.1" 
+releaseDate: "2026-02-26"
 platforms:
   - web
 
@@ -48,13 +48,13 @@ legal:
 maintenance:
   contacts:
     - affiliation: ARPAE Emilia-Romagna
-      email: fmartelli@arpae.it
-      name: Francesca Martelli
+      email: edigiacomo@arpae.it
+      name: Emanuele Di Giacomo
   type: "contract"
   contractors:
       - name: "Gruppo Engineering"
         website: "https://www.eng.it"
-        until: "2022-12-31"
+        until: "2026-12-31"
 
 localisation:
   localisationReady: yes
@@ -66,4 +66,5 @@ it:
     codiceIPA: arpa
 usedBy:
   - Regione Umbria
+  - Regione Marche
   - Regione Calabria

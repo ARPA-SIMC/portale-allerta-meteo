@@ -1,4 +1,3 @@
-<%@page import="com.liferay.portal.kernel.util.StringPool"%>
 <%@page import="com.liferay.portal.kernel.util.ParamUtil"%>
 <%@ include file="../init.jsp" %>
 
@@ -13,9 +12,9 @@ xxx
 	
 <liferay-ui:icon-menu
 	direction="left-side"
-	icon="<%= StringPool.BLANK %>"
+	icon=""
 	markupView="lexicon"
-	message="<%= StringPool.BLANK %>"
+	message=""
 	showWhenSingleIcon="<%= true %>">
 	
 	

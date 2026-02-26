@@ -4,6 +4,7 @@ import com.liferay.captcha.util.CaptchaUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
+import com.liferay.portal.kernel.util.PortalUtil;
 
 import it.eng.allerta.utils.AllertaKeys;
 
@@ -42,7 +43,8 @@ public class AllertaUserRegistrationPortlet extends MVCPortlet {
 			throws IOException, PortletException {
 		
 		try {
-			CaptchaUtil.serveImage(resourceRequest, resourceResponse);
+			
+			CaptchaUtil.serveImage(PortalUtil.getHttpServletRequest(resourceRequest), PortalUtil.getHttpServletResponse(resourceResponse));
 
 		} catch (Exception e) {
 			_log.error(e);

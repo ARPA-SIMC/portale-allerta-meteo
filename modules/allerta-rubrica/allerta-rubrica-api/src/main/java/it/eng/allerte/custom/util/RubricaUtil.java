@@ -4,7 +4,7 @@ import java.util.Map;
 
 import com.liferay.portal.kernel.log.Log;
 
-import it.eng.allerta.utils.AllertaLegacy;
+//import it.eng.allerta.utils.AllertaLegacy;
 
 public class RubricaUtil {
 
@@ -57,9 +57,9 @@ public class RubricaUtil {
 	 * @param mappa
 	 */
 	public static void methodNoValid(Log logger, Map<String, Object> mappa) {
-		logger.error(AllertaLegacy.MSG_METHOD_NO_VALID);
-		mappa.put(AllertaLegacy.CODE, 405);
-		mappa.put(AllertaLegacy.ERROR, AllertaLegacy.METHOD_NO_VALID);
+		//logger.error(AllertaLegacy.MSG_METHOD_NO_VALID);
+		//mappa.put(AllertaLegacy.CODE, 405);
+		//mappa.put(AllertaLegacy.ERROR, AllertaLegacy.METHOD_NO_VALID);
 	}
 	
 }

@@ -1,24 +1,10 @@
 package it.eng.radarMeteo.cron;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Modified;
-import org.osgi.service.component.annotations.Reference;
-
 import com.liferay.counter.kernel.service.CounterLocalServiceUtil;
+import com.liferay.dispatch.executor.BaseDispatchTaskExecutor;
+import com.liferay.dispatch.executor.DispatchTaskExecutor;
+import com.liferay.dispatch.executor.DispatchTaskExecutorOutput;
+import com.liferay.dispatch.model.DispatchTrigger;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
@@ -28,34 +14,37 @@ import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.messaging.BaseMessageListener;
-import com.liferay.portal.kernel.messaging.DestinationNames;
-import com.liferay.portal.kernel.messaging.Message;
-import com.liferay.portal.kernel.messaging.MessageListener;
 import com.liferay.portal.kernel.scheduler.SchedulerEngineHelper;
-import com.liferay.portal.kernel.scheduler.SchedulerEntry;
-import com.liferay.portal.kernel.scheduler.SchedulerEntryImpl;
-import com.liferay.portal.kernel.scheduler.TimeUnit;
-import com.liferay.portal.kernel.scheduler.Trigger;
 import com.liferay.portal.kernel.scheduler.TriggerFactory;
-import com.liferay.portal.kernel.util.Base64;
 import com.liferay.portal.kernel.util.StreamUtil;
 
-import it.eng.allerta.configuration.schedulers.AllertaBaseSchedulersConfiguration;
-import it.eng.allerta.utils.AllertaTracker;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
 import it.eng.radarMeteo.exception.NoSuchImgException;
 import it.eng.radarMeteo.model.Img;
 import it.eng.radarMeteo.model.Json;
 import it.eng.radarMeteo.service.ImgLocalService;
-//import it.eng.radarMeteo.service.ImgLocalServiceUtil;
 import it.eng.radarMeteo.service.JsonLocalService;
-//import it.eng.radarMeteo.service.JsonLocalServiceUtil;
 
 @Component(
-  immediate = true, 			  
-  service = MessageListener.class
+  property = {
+	"dispatch.task.executor.name=Scarico immagini radar",
+	"dispatch.task.executor.type=task-scarico-radar"
+  },
+  service = DispatchTaskExecutor.class
 )
-public class RTImageScheduler extends BaseMessageListener {
+public class RTImageScheduler extends BaseDispatchTaskExecutor {
 
 	private Log _log = LogFactoryUtil.getLog(RTImageScheduler.class);
 
@@ -69,12 +58,12 @@ public class RTImageScheduler extends BaseMessageListener {
 	public static final String JSONURL_NEW = "https://apps.arpae.it/REST/meteo_radar_stima_pioggia/?sort=-_id&max_results=";
 	
 	@Override
-	protected void doReceive(Message message) throws Exception {
+	public void doExecute(DispatchTrigger dispatchTrigger, DispatchTaskExecutorOutput output) throws Exception {
 		
 		_log.info("RTImageScheduler - START");
 		
 		getAllImages(100);
-		
+		output.setOutput("Scarico radar completato");
 		_log.info("RTImageScheduler - END");
 	}
 
@@ -355,7 +344,7 @@ public class RTImageScheduler extends BaseMessageListener {
 		return json;
 	}
 
-	@Activate
+	/*@Activate
 	@Modified
 	protected void activate(Map<String, Object> properties) {
 		
@@ -384,7 +373,7 @@ public class RTImageScheduler extends BaseMessageListener {
 	@Deactivate
 	protected void deactivate() {
 		baseScheduler.unregister(this);
-	}
+	}*/
 	
 	@Reference
 	private SchedulerEngineHelper baseScheduler;
@@ -397,6 +386,11 @@ public class RTImageScheduler extends BaseMessageListener {
 	
 	@Reference
 	private TriggerFactory _triggerFactory;
+
+	@Override
+	public String getName() {
+		return "Scarico immagini radar";
+	}
 
 	
 }

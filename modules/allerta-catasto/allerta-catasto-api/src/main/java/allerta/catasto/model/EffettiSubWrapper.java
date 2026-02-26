@@ -1,30 +1,15 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package allerta.catasto.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -35,21 +20,12 @@ import java.util.Objects;
  * @see EffettiSub
  * @generated
  */
-@ProviderType
-public class EffettiSubWrapper implements EffettiSub, ModelWrapper<EffettiSub> {
+public class EffettiSubWrapper
+	extends BaseModelWrapper<EffettiSub>
+	implements EffettiSub, ModelWrapper<EffettiSub> {
 
 	public EffettiSubWrapper(EffettiSub effettiSub) {
-		_effettiSub = effettiSub;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return EffettiSub.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return EffettiSub.class.getName();
+		super(effettiSub);
 	}
 
 	@Override
@@ -85,13 +61,8 @@ public class EffettiSubWrapper implements EffettiSub, ModelWrapper<EffettiSub> {
 	}
 
 	@Override
-	public Object clone() {
-		return new EffettiSubWrapper((EffettiSub)_effettiSub.clone());
-	}
-
-	@Override
-	public int compareTo(allerta.catasto.model.EffettiSub effettiSub) {
-		return _effettiSub.compareTo(effettiSub);
+	public EffettiSub cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -101,12 +72,7 @@ public class EffettiSubWrapper implements EffettiSub, ModelWrapper<EffettiSub> {
 	 */
 	@Override
 	public String getDescrizione() {
-		return _effettiSub.getDescrizione();
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _effettiSub.getExpandoBridge();
+		return model.getDescrizione();
 	}
 
 	/**
@@ -116,7 +82,7 @@ public class EffettiSubWrapper implements EffettiSub, ModelWrapper<EffettiSub> {
 	 */
 	@Override
 	public long getId() {
-		return _effettiSub.getId();
+		return model.getId();
 	}
 
 	/**
@@ -126,7 +92,7 @@ public class EffettiSubWrapper implements EffettiSub, ModelWrapper<EffettiSub> {
 	 */
 	@Override
 	public long getIdEffetti() {
-		return _effettiSub.getIdEffetti();
+		return model.getIdEffetti();
 	}
 
 	/**
@@ -136,42 +102,12 @@ public class EffettiSubWrapper implements EffettiSub, ModelWrapper<EffettiSub> {
 	 */
 	@Override
 	public allerta.catasto.service.persistence.EffettiSubPK getPrimaryKey() {
-		return _effettiSub.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _effettiSub.getPrimaryKeyObj();
-	}
-
-	@Override
-	public int hashCode() {
-		return _effettiSub.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _effettiSub.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _effettiSub.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _effettiSub.isNew();
+		return model.getPrimaryKey();
 	}
 
 	@Override
 	public void persist() {
-		_effettiSub.persist();
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_effettiSub.setCachedModel(cachedModel);
+		model.persist();
 	}
 
 	/**
@@ -181,24 +117,7 @@ public class EffettiSubWrapper implements EffettiSub, ModelWrapper<EffettiSub> {
 	 */
 	@Override
 	public void setDescrizione(String descrizione) {
-		_effettiSub.setDescrizione(descrizione);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_effettiSub.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_effettiSub.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_effettiSub.setExpandoBridgeAttributes(serviceContext);
+		model.setDescrizione(descrizione);
 	}
 
 	/**
@@ -208,7 +127,7 @@ public class EffettiSubWrapper implements EffettiSub, ModelWrapper<EffettiSub> {
 	 */
 	@Override
 	public void setId(long id) {
-		_effettiSub.setId(id);
+		model.setId(id);
 	}
 
 	/**
@@ -218,12 +137,7 @@ public class EffettiSubWrapper implements EffettiSub, ModelWrapper<EffettiSub> {
 	 */
 	@Override
 	public void setIdEffetti(long idEffetti) {
-		_effettiSub.setIdEffetti(idEffetti);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_effettiSub.setNew(n);
+		model.setIdEffetti(idEffetti);
 	}
 
 	/**
@@ -235,80 +149,17 @@ public class EffettiSubWrapper implements EffettiSub, ModelWrapper<EffettiSub> {
 	public void setPrimaryKey(
 		allerta.catasto.service.persistence.EffettiSubPK primaryKey) {
 
-		_effettiSub.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_effettiSub.setPrimaryKeyObj(primaryKeyObj);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<allerta.catasto.model.EffettiSub> toCacheModel() {
-
-		return _effettiSub.toCacheModel();
-	}
-
-	@Override
-	public allerta.catasto.model.EffettiSub toEscapedModel() {
-		return new EffettiSubWrapper(_effettiSub.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _effettiSub.toString();
-	}
-
-	@Override
-	public allerta.catasto.model.EffettiSub toUnescapedModel() {
-		return new EffettiSubWrapper(_effettiSub.toUnescapedModel());
+		model.setPrimaryKey(primaryKey);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _effettiSub.toXmlString();
+		return model.toXmlString();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-
-		if (!(obj instanceof EffettiSubWrapper)) {
-			return false;
-		}
-
-		EffettiSubWrapper effettiSubWrapper = (EffettiSubWrapper)obj;
-
-		if (Objects.equals(_effettiSub, effettiSubWrapper._effettiSub)) {
-			return true;
-		}
-
-		return false;
+	protected EffettiSubWrapper wrap(EffettiSub effettiSub) {
+		return new EffettiSubWrapper(effettiSub);
 	}
-
-	@Override
-	public EffettiSub getWrappedModel() {
-		return _effettiSub;
-	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _effettiSub.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _effettiSub.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_effettiSub.resetOriginalValues();
-	}
-
-	private final EffettiSub _effettiSub;
 
 }

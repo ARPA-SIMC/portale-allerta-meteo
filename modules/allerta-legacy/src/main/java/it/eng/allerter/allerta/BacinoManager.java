@@ -17,7 +17,7 @@ public class BacinoManager implements Serializable{
 	Bacino bac;
 	BollettinoBacino bacino;
 	List<StazioneManager> stazioni;
-	
+	String ultimoBollettino;
 	
 	String note;
 	String ore;
@@ -73,6 +73,15 @@ public class BacinoManager implements Serializable{
 	public void setSelezionato(boolean selezionato) {
 		this.selezionato = selezionato;
 	}
+
+	public String getUltimoBollettino() {
+		return ultimoBollettino;
+	}
+
+	public void setUltimoBollettino(String ultimoBollettino) {
+		this.ultimoBollettino = ultimoBollettino;
+	}
+	
 	
 	
 }

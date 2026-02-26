@@ -1,38 +1,33 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.radarMeteo.service.persistence.impl;
 
-import com.liferay.portal.kernel.bean.BeanReference;
+import com.liferay.portal.kernel.configuration.Configuration;
+import com.liferay.portal.kernel.dao.orm.SessionFactory;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 
 import it.eng.radarMeteo.model.Img;
 import it.eng.radarMeteo.service.persistence.ImgPersistence;
-
-import java.lang.reflect.Field;
+import it.eng.radarMeteo.service.persistence.impl.constants.rt_portletPersistenceConstants;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import javax.sql.DataSource;
+
+import org.osgi.service.component.annotations.Reference;
+
 /**
  * @author Francesco
  * @generated
  */
-public class ImgFinderBaseImpl extends BasePersistenceImpl<Img> {
+public abstract class ImgFinderBaseImpl extends BasePersistenceImpl<Img> {
 
 	public ImgFinderBaseImpl() {
 		setModelClass(Img.class);
@@ -42,45 +37,41 @@ public class ImgFinderBaseImpl extends BasePersistenceImpl<Img> {
 		dbColumnNames.put("id", "id_");
 		dbColumnNames.put("data", "data_");
 
-		try {
-			Field field = BasePersistenceImpl.class.getDeclaredField(
-				"_dbColumnNames");
-
-			field.setAccessible(true);
-
-			field.set(this, dbColumnNames);
-		}
-		catch (Exception e) {
-			if (_log.isDebugEnabled()) {
-				_log.debug(e, e);
-			}
-		}
+		setDBColumnNames(dbColumnNames);
 	}
 
 	@Override
 	public Set<String> getBadColumnNames() {
-		return getImgPersistence().getBadColumnNames();
+		return imgPersistence.getBadColumnNames();
 	}
 
-	/**
-	 * Returns the img persistence.
-	 *
-	 * @return the img persistence
-	 */
-	public ImgPersistence getImgPersistence() {
-		return imgPersistence;
+	@Override
+	@Reference(
+		target = rt_portletPersistenceConstants.SERVICE_CONFIGURATION_FILTER,
+		unbind = "-"
+	)
+	public void setConfiguration(Configuration configuration) {
 	}
 
-	/**
-	 * Sets the img persistence.
-	 *
-	 * @param imgPersistence the img persistence
-	 */
-	public void setImgPersistence(ImgPersistence imgPersistence) {
-		this.imgPersistence = imgPersistence;
+	@Override
+	@Reference(
+		target = rt_portletPersistenceConstants.ORIGIN_BUNDLE_SYMBOLIC_NAME_FILTER,
+		unbind = "-"
+	)
+	public void setDataSource(DataSource dataSource) {
+		super.setDataSource(dataSource);
 	}
 
-	@BeanReference(type = ImgPersistence.class)
+	@Override
+	@Reference(
+		target = rt_portletPersistenceConstants.ORIGIN_BUNDLE_SYMBOLIC_NAME_FILTER,
+		unbind = "-"
+	)
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		super.setSessionFactory(sessionFactory);
+	}
+
+	@Reference
 	protected ImgPersistence imgPersistence;
 
 	private static final Log _log = LogFactoryUtil.getLog(

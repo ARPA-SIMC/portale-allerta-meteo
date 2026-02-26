@@ -15,9 +15,7 @@
 		<field name="ID_CONTATTO" type="long" />
 		<field name="FK_NOMINATIVO" type="long" />
 		<field name="FK_CANALE" type="long" />
-		<field name="CONTATTO" type="String">
-			<hint name="max-length">128</hint>
-		</field>
+		<field name="CONTATTO" type="String" />
 		<field name="ALLERTAMENTO" type="boolean" />
 		<field name="FK_UTENTE_CREAZIONE" type="long" />
 		<field name="DATA_CREAZIONE" type="Date" />
@@ -28,13 +26,9 @@
 	</model>
 	<model name="it.eng.allerte.model.RubricaGruppo">
 		<field name="ID_GRUPPO" type="long" />
-		<field name="NOME" type="String">
-			<hint name="max-length">512</hint>
-		</field>
+		<field name="NOME" type="String" />
 		<field name="FK_SITO_PROPRIETARIO" type="long" />
-		<field name="NOTE" type="String">
-			<hint name="max-length">2048</hint>
-		</field>
+		<field name="NOTE" type="String" />
 		<field name="FK_UTENTE_CREAZIONE" type="long" />
 		<field name="DATA_CREAZIONE" type="Date" />
 		<field name="FK_UTENTE_MODIFICA" type="long" />
@@ -58,23 +52,15 @@
 		<field name="TABELLA" type="String" />
 		<field name="TIPO_OPERAZIONE" type="String" />
 		<field name="ID_OGGETTO" type="String" />
-		<field name="NUOVA_DESCRIZIONE" type="String">
-			<hint name="max-length">5000</hint>
-		</field>
+		<field name="NUOVA_DESCRIZIONE" type="String" />
 		<field name="FK_UTENTE_MODIFICA" type="long" />
 		<field name="DATA_MODIFICA" type="Date" />
 	</model>
 	<model name="it.eng.allerte.model.RubricaNominativo">
 		<field name="ID_NOMINATIVO" type="long" />
-		<field name="COGNOME" type="String">
-			<hint name="max-length">128</hint>
-		</field>
-		<field name="NOME" type="String">
-			<hint name="max-length">128</hint>
-		</field>
-		<field name="INDIRIZZO" type="String">
-			<hint name="max-length">256</hint>
-		</field>
+		<field name="COGNOME" type="String" />
+		<field name="NOME" type="String" />
+		<field name="INDIRIZZO" type="String" />
 		<field name="FK_SITO_PROPRIETARIO" type="long" />
 		<field name="FK_UTENTE_PORTALE" type="long" />
 		<field name="FK_UTENTE_CREAZIONE" type="long" />
@@ -90,9 +76,7 @@
 	</model>
 	<model name="it.eng.allerte.model.RubricaRuolo">
 		<field name="ID_RUOLO" type="long" />
-		<field name="DESCRIZIONE" type="String">
-			<hint name="max-length">256</hint>
-		</field>
+		<field name="DESCRIZIONE" type="String" />
 		<field name="FK_RUOLO_LIFERAY" type="long" />
 	</model>
 	<model name="it.eng.allerte.model.RubricaRuoloPermessi">
@@ -105,9 +89,7 @@
 	</model>
 	<model name="it.eng.allerte.model.RubricaSito">
 		<field name="ID_SITO" type="long" />
-		<field name="NOME" type="String">
-			<hint name="max-length">128</hint>
-		</field>
+		<field name="NOME" type="String" />
 		<field name="FK_LIFERAY_SITE" type="long" />
 	</model>
 	<model name="it.eng.allerte.model.RubricaUtenteSito">

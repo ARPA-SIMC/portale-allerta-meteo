@@ -1,24 +1,22 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerte.service;
 
-import aQute.bnd.annotation.ProviderType;
+import com.liferay.petra.sql.dsl.query.DSLQuery;
+import com.liferay.portal.kernel.dao.orm.DynamicQuery;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.model.PersistedModel;
+import com.liferay.portal.kernel.module.service.Snapshot;
+import com.liferay.portal.kernel.util.OrderByComparator;
 
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.util.tracker.ServiceTracker;
+import it.eng.allerte.model.RubricaRuoloRubrica;
+
+import java.io.Serializable;
+
+import java.util.List;
 
 /**
  * Provides the local service utility for RubricaRuoloRubrica. This utility wraps
@@ -32,7 +30,6 @@ import org.osgi.util.tracker.ServiceTracker;
  * @see RubricaRuoloRubricaLocalService
  * @generated
  */
-@ProviderType
 public class RubricaRuoloRubricaLocalServiceUtil {
 
 	/*
@@ -44,14 +41,27 @@ public class RubricaRuoloRubricaLocalServiceUtil {
 	/**
 	 * Adds the rubrica ruolo rubrica to the database. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect RubricaRuoloRubricaLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param rubricaRuoloRubrica the rubrica ruolo rubrica
 	 * @return the rubrica ruolo rubrica that was added
 	 */
-	public static it.eng.allerte.model.RubricaRuoloRubrica
-		addRubricaRuoloRubrica(
-			it.eng.allerte.model.RubricaRuoloRubrica rubricaRuoloRubrica) {
+	public static RubricaRuoloRubrica addRubricaRuoloRubrica(
+		RubricaRuoloRubrica rubricaRuoloRubrica) {
 
 		return getService().addRubricaRuoloRubrica(rubricaRuoloRubrica);
+	}
+
+	/**
+	 * @throws PortalException
+	 */
+	public static PersistedModel createPersistedModel(
+			Serializable primaryKeyObj)
+		throws PortalException {
+
+		return getService().createPersistedModel(primaryKeyObj);
 	}
 
 	/**
@@ -60,19 +70,16 @@ public class RubricaRuoloRubricaLocalServiceUtil {
 	 * @param ID_RUOLO the primary key for the new rubrica ruolo rubrica
 	 * @return the new rubrica ruolo rubrica
 	 */
-	public static it.eng.allerte.model.RubricaRuoloRubrica
-		createRubricaRuoloRubrica(long ID_RUOLO) {
-
+	public static RubricaRuoloRubrica createRubricaRuoloRubrica(long ID_RUOLO) {
 		return getService().createRubricaRuoloRubrica(ID_RUOLO);
 	}
 
 	/**
 	 * @throws PortalException
 	 */
-	public static com.liferay.portal.kernel.model.PersistedModel
-			deletePersistedModel(
-				com.liferay.portal.kernel.model.PersistedModel persistedModel)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	public static PersistedModel deletePersistedModel(
+			PersistedModel persistedModel)
+		throws PortalException {
 
 		return getService().deletePersistedModel(persistedModel);
 	}
@@ -80,13 +87,16 @@ public class RubricaRuoloRubricaLocalServiceUtil {
 	/**
 	 * Deletes the rubrica ruolo rubrica with the primary key from the database. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect RubricaRuoloRubricaLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param ID_RUOLO the primary key of the rubrica ruolo rubrica
 	 * @return the rubrica ruolo rubrica that was removed
 	 * @throws PortalException if a rubrica ruolo rubrica with the primary key could not be found
 	 */
-	public static it.eng.allerte.model.RubricaRuoloRubrica
-			deleteRubricaRuoloRubrica(long ID_RUOLO)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	public static RubricaRuoloRubrica deleteRubricaRuoloRubrica(long ID_RUOLO)
+		throws PortalException {
 
 		return getService().deleteRubricaRuoloRubrica(ID_RUOLO);
 	}
@@ -94,19 +104,28 @@ public class RubricaRuoloRubricaLocalServiceUtil {
 	/**
 	 * Deletes the rubrica ruolo rubrica from the database. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect RubricaRuoloRubricaLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param rubricaRuoloRubrica the rubrica ruolo rubrica
 	 * @return the rubrica ruolo rubrica that was removed
 	 */
-	public static it.eng.allerte.model.RubricaRuoloRubrica
-		deleteRubricaRuoloRubrica(
-			it.eng.allerte.model.RubricaRuoloRubrica rubricaRuoloRubrica) {
+	public static RubricaRuoloRubrica deleteRubricaRuoloRubrica(
+		RubricaRuoloRubrica rubricaRuoloRubrica) {
 
 		return getService().deleteRubricaRuoloRubrica(rubricaRuoloRubrica);
 	}
 
-	public static com.liferay.portal.kernel.dao.orm.DynamicQuery
-		dynamicQuery() {
+	public static <T> T dslQuery(DSLQuery dslQuery) {
+		return getService().dslQuery(dslQuery);
+	}
 
+	public static int dslQueryCount(DSLQuery dslQuery) {
+		return getService().dslQueryCount(dslQuery);
+	}
+
+	public static DynamicQuery dynamicQuery() {
 		return getService().dynamicQuery();
 	}
 
@@ -116,9 +135,7 @@ public class RubricaRuoloRubricaLocalServiceUtil {
 	 * @param dynamicQuery the dynamic query
 	 * @return the matching rows
 	 */
-	public static <T> java.util.List<T> dynamicQuery(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery) {
-
+	public static <T> List<T> dynamicQuery(DynamicQuery dynamicQuery) {
 		return getService().dynamicQuery(dynamicQuery);
 	}
 
@@ -126,7 +143,7 @@ public class RubricaRuoloRubricaLocalServiceUtil {
 	 * Performs a dynamic query on the database and returns a range of the matching rows.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>it.eng.allerte.model.impl.RubricaRuoloRubricaModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>it.eng.allerte.model.impl.RubricaRuoloRubricaModelImpl</code>.
 	 * </p>
 	 *
 	 * @param dynamicQuery the dynamic query
@@ -134,9 +151,8 @@ public class RubricaRuoloRubricaLocalServiceUtil {
 	 * @param end the upper bound of the range of model instances (not inclusive)
 	 * @return the range of matching rows
 	 */
-	public static <T> java.util.List<T> dynamicQuery(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery, int start,
-		int end) {
+	public static <T> List<T> dynamicQuery(
+		DynamicQuery dynamicQuery, int start, int end) {
 
 		return getService().dynamicQuery(dynamicQuery, start, end);
 	}
@@ -145,7 +161,7 @@ public class RubricaRuoloRubricaLocalServiceUtil {
 	 * Performs a dynamic query on the database and returns an ordered range of the matching rows.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>it.eng.allerte.model.impl.RubricaRuoloRubricaModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>it.eng.allerte.model.impl.RubricaRuoloRubricaModelImpl</code>.
 	 * </p>
 	 *
 	 * @param dynamicQuery the dynamic query
@@ -154,10 +170,9 @@ public class RubricaRuoloRubricaLocalServiceUtil {
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching rows
 	 */
-	public static <T> java.util.List<T> dynamicQuery(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery, int start,
-		int end,
-		com.liferay.portal.kernel.util.OrderByComparator<T> orderByComparator) {
+	public static <T> List<T> dynamicQuery(
+		DynamicQuery dynamicQuery, int start, int end,
+		OrderByComparator<T> orderByComparator) {
 
 		return getService().dynamicQuery(
 			dynamicQuery, start, end, orderByComparator);
@@ -169,9 +184,7 @@ public class RubricaRuoloRubricaLocalServiceUtil {
 	 * @param dynamicQuery the dynamic query
 	 * @return the number of rows matching the dynamic query
 	 */
-	public static long dynamicQueryCount(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery) {
-
+	public static long dynamicQueryCount(DynamicQuery dynamicQuery) {
 		return getService().dynamicQueryCount(dynamicQuery);
 	}
 
@@ -183,15 +196,13 @@ public class RubricaRuoloRubricaLocalServiceUtil {
 	 * @return the number of rows matching the dynamic query
 	 */
 	public static long dynamicQueryCount(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery,
+		DynamicQuery dynamicQuery,
 		com.liferay.portal.kernel.dao.orm.Projection projection) {
 
 		return getService().dynamicQueryCount(dynamicQuery, projection);
 	}
 
-	public static it.eng.allerte.model.RubricaRuoloRubrica
-		fetchRubricaRuoloRubrica(long ID_RUOLO) {
-
+	public static RubricaRuoloRubrica fetchRubricaRuoloRubrica(long ID_RUOLO) {
 		return getService().fetchRubricaRuoloRubrica(ID_RUOLO);
 	}
 
@@ -217,9 +228,11 @@ public class RubricaRuoloRubricaLocalServiceUtil {
 		return getService().getOSGiServiceIdentifier();
 	}
 
-	public static com.liferay.portal.kernel.model.PersistedModel
-			getPersistedModel(java.io.Serializable primaryKeyObj)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	/**
+	 * @throws PortalException
+	 */
+	public static PersistedModel getPersistedModel(Serializable primaryKeyObj)
+		throws PortalException {
 
 		return getService().getPersistedModel(primaryKeyObj);
 	}
@@ -231,9 +244,8 @@ public class RubricaRuoloRubricaLocalServiceUtil {
 	 * @return the rubrica ruolo rubrica
 	 * @throws PortalException if a rubrica ruolo rubrica with the primary key could not be found
 	 */
-	public static it.eng.allerte.model.RubricaRuoloRubrica
-			getRubricaRuoloRubrica(long ID_RUOLO)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	public static RubricaRuoloRubrica getRubricaRuoloRubrica(long ID_RUOLO)
+		throws PortalException {
 
 		return getService().getRubricaRuoloRubrica(ID_RUOLO);
 	}
@@ -242,15 +254,15 @@ public class RubricaRuoloRubricaLocalServiceUtil {
 	 * Returns a range of all the rubrica ruolo rubricas.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>it.eng.allerte.model.impl.RubricaRuoloRubricaModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>it.eng.allerte.model.impl.RubricaRuoloRubricaModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of rubrica ruolo rubricas
 	 * @param end the upper bound of the range of rubrica ruolo rubricas (not inclusive)
 	 * @return the range of rubrica ruolo rubricas
 	 */
-	public static java.util.List<it.eng.allerte.model.RubricaRuoloRubrica>
-		getRubricaRuoloRubricas(int start, int end) {
+	public static List<RubricaRuoloRubrica> getRubricaRuoloRubricas(
+		int start, int end) {
 
 		return getService().getRubricaRuoloRubricas(start, end);
 	}
@@ -267,40 +279,26 @@ public class RubricaRuoloRubricaLocalServiceUtil {
 	/**
 	 * Updates the rubrica ruolo rubrica in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect RubricaRuoloRubricaLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param rubricaRuoloRubrica the rubrica ruolo rubrica
 	 * @return the rubrica ruolo rubrica that was updated
 	 */
-	public static it.eng.allerte.model.RubricaRuoloRubrica
-		updateRubricaRuoloRubrica(
-			it.eng.allerte.model.RubricaRuoloRubrica rubricaRuoloRubrica) {
+	public static RubricaRuoloRubrica updateRubricaRuoloRubrica(
+		RubricaRuoloRubrica rubricaRuoloRubrica) {
 
 		return getService().updateRubricaRuoloRubrica(rubricaRuoloRubrica);
 	}
 
 	public static RubricaRuoloRubricaLocalService getService() {
-		return _serviceTracker.getService();
+		return _serviceSnapshot.get();
 	}
 
-	private static ServiceTracker
-		<RubricaRuoloRubricaLocalService, RubricaRuoloRubricaLocalService>
-			_serviceTracker;
-
-	static {
-		Bundle bundle = FrameworkUtil.getBundle(
+	private static final Snapshot<RubricaRuoloRubricaLocalService>
+		_serviceSnapshot = new Snapshot<>(
+			RubricaRuoloRubricaLocalServiceUtil.class,
 			RubricaRuoloRubricaLocalService.class);
-
-		ServiceTracker
-			<RubricaRuoloRubricaLocalService, RubricaRuoloRubricaLocalService>
-				serviceTracker =
-					new ServiceTracker
-						<RubricaRuoloRubricaLocalService,
-						 RubricaRuoloRubricaLocalService>(
-							 bundle.getBundleContext(),
-							 RubricaRuoloRubricaLocalService.class, null);
-
-		serviceTracker.open();
-
-		_serviceTracker = serviceTracker;
-	}
 
 }

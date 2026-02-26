@@ -1,21 +1,12 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerte.service.persistence.impl;
 
-import aQute.bnd.annotation.ProviderType;
-
+import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
@@ -23,33 +14,42 @@ import com.liferay.portal.kernel.dao.orm.Query;
 import com.liferay.portal.kernel.dao.orm.QueryPos;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
+import com.liferay.portal.kernel.dao.orm.SessionFactory;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.kernel.util.PropsKeys;
+import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.ProxyUtil;
-import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringUtil;
-import com.liferay.portal.spring.extender.service.ServiceReference;
 
 import it.eng.allerte.exception.NoSuchRubricaGruppoException;
 import it.eng.allerte.model.RubricaGruppo;
+import it.eng.allerte.model.RubricaGruppoTable;
 import it.eng.allerte.model.impl.RubricaGruppoImpl;
 import it.eng.allerte.model.impl.RubricaGruppoModelImpl;
 import it.eng.allerte.service.persistence.RubricaGruppoPersistence;
+import it.eng.allerte.service.persistence.RubricaGruppoUtil;
+import it.eng.allerte.service.persistence.impl.constants.rubricaPersistenceConstants;
 
 import java.io.Serializable;
 
 import java.lang.reflect.InvocationHandler;
 
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+
+import javax.sql.DataSource;
+
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The persistence implementation for the rubrica gruppo service.
@@ -61,7 +61,7 @@ import java.util.Set;
  * @author Pratola_L
  * @generated
  */
-@ProviderType
+@Component(service = RubricaGruppoPersistence.class)
 public class RubricaGruppoPersistenceImpl
 	extends BasePersistenceImpl<RubricaGruppo>
 	implements RubricaGruppoPersistence {
@@ -84,7 +84,6 @@ public class RubricaGruppoPersistenceImpl
 	private FinderPath _finderPathWithoutPaginationFindAll;
 	private FinderPath _finderPathCountAll;
 	private FinderPath _finderPathFetchByRubricaGruppoSitoProprietario;
-	private FinderPath _finderPathCountByRubricaGruppoSitoProprietario;
 
 	/**
 	 * Returns the rubrica gruppo where ID_GRUPPO = &#63; and FK_SITO_PROPRIETARIO = &#63; or throws a <code>NoSuchRubricaGruppoException</code> if it could not be found.
@@ -103,23 +102,23 @@ public class RubricaGruppoPersistenceImpl
 			ID_GRUPPO, FK_SITO_PROPRIETARIO);
 
 		if (rubricaGruppo == null) {
-			StringBundler msg = new StringBundler(6);
+			StringBundler sb = new StringBundler(6);
 
-			msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+			sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-			msg.append("ID_GRUPPO=");
-			msg.append(ID_GRUPPO);
+			sb.append("ID_GRUPPO=");
+			sb.append(ID_GRUPPO);
 
-			msg.append(", FK_SITO_PROPRIETARIO=");
-			msg.append(FK_SITO_PROPRIETARIO);
+			sb.append(", FK_SITO_PROPRIETARIO=");
+			sb.append(FK_SITO_PROPRIETARIO);
 
-			msg.append("}");
+			sb.append("}");
 
 			if (_log.isDebugEnabled()) {
-				_log.debug(msg.toString());
+				_log.debug(sb.toString());
 			}
 
-			throw new NoSuchRubricaGruppoException(msg.toString());
+			throw new NoSuchRubricaGruppoException(sb.toString());
 		}
 
 		return rubricaGruppo;
@@ -145,19 +144,23 @@ public class RubricaGruppoPersistenceImpl
 	 *
 	 * @param ID_GRUPPO the id_gruppo
 	 * @param FK_SITO_PROPRIETARIO the fk_sito_proprietario
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the matching rubrica gruppo, or <code>null</code> if a matching rubrica gruppo could not be found
 	 */
 	@Override
 	public RubricaGruppo fetchByRubricaGruppoSitoProprietario(
-		long ID_GRUPPO, long FK_SITO_PROPRIETARIO, boolean retrieveFromCache) {
+		long ID_GRUPPO, long FK_SITO_PROPRIETARIO, boolean useFinderCache) {
 
-		Object[] finderArgs = new Object[] {ID_GRUPPO, FK_SITO_PROPRIETARIO};
+		Object[] finderArgs = null;
+
+		if (useFinderCache) {
+			finderArgs = new Object[] {ID_GRUPPO, FK_SITO_PROPRIETARIO};
+		}
 
 		Object result = null;
 
-		if (retrieveFromCache) {
-			result = finderCache.getResult(
+		if (useFinderCache) {
+			result = dummyFinderCache.getResult(
 				_finderPathFetchByRubricaGruppoSitoProprietario, finderArgs,
 				this);
 		}
@@ -174,43 +177,50 @@ public class RubricaGruppoPersistenceImpl
 		}
 
 		if (result == null) {
-			StringBundler query = new StringBundler(4);
+			StringBundler sb = new StringBundler(4);
 
-			query.append(_SQL_SELECT_RUBRICAGRUPPO_WHERE);
+			sb.append(_SQL_SELECT_RUBRICAGRUPPO_WHERE);
 
-			query.append(
-				_FINDER_COLUMN_RUBRICAGRUPPOSITOPROPRIETARIO_ID_GRUPPO_2);
+			sb.append(_FINDER_COLUMN_RUBRICAGRUPPOSITOPROPRIETARIO_ID_GRUPPO_2);
 
-			query.append(
+			sb.append(
 				_FINDER_COLUMN_RUBRICAGRUPPOSITOPROPRIETARIO_FK_SITO_PROPRIETARIO_2);
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
-				qPos.add(ID_GRUPPO);
+				queryPos.add(ID_GRUPPO);
 
-				qPos.add(FK_SITO_PROPRIETARIO);
+				queryPos.add(FK_SITO_PROPRIETARIO);
 
-				List<RubricaGruppo> list = q.list();
+				List<RubricaGruppo> list = query.list();
 
 				if (list.isEmpty()) {
-					finderCache.putResult(
-						_finderPathFetchByRubricaGruppoSitoProprietario,
-						finderArgs, list);
+					if (useFinderCache) {
+						dummyFinderCache.putResult(
+							_finderPathFetchByRubricaGruppoSitoProprietario,
+							finderArgs, list);
+					}
 				}
 				else {
 					if (list.size() > 1) {
 						Collections.sort(list, Collections.reverseOrder());
 
 						if (_log.isWarnEnabled()) {
+							if (!useFinderCache) {
+								finderArgs = new Object[] {
+									ID_GRUPPO, FK_SITO_PROPRIETARIO
+								};
+							}
+
 							_log.warn(
 								"RubricaGruppoPersistenceImpl.fetchByRubricaGruppoSitoProprietario(long, long, boolean) with parameters (" +
 									StringUtil.merge(finderArgs) +
@@ -225,12 +235,8 @@ public class RubricaGruppoPersistenceImpl
 					cacheResult(rubricaGruppo);
 				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(
-					_finderPathFetchByRubricaGruppoSitoProprietario,
-					finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -274,53 +280,14 @@ public class RubricaGruppoPersistenceImpl
 	public int countByRubricaGruppoSitoProprietario(
 		long ID_GRUPPO, long FK_SITO_PROPRIETARIO) {
 
-		FinderPath finderPath = _finderPathCountByRubricaGruppoSitoProprietario;
+		RubricaGruppo rubricaGruppo = fetchByRubricaGruppoSitoProprietario(
+			ID_GRUPPO, FK_SITO_PROPRIETARIO);
 
-		Object[] finderArgs = new Object[] {ID_GRUPPO, FK_SITO_PROPRIETARIO};
-
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
-
-		if (count == null) {
-			StringBundler query = new StringBundler(3);
-
-			query.append(_SQL_COUNT_RUBRICAGRUPPO_WHERE);
-
-			query.append(
-				_FINDER_COLUMN_RUBRICAGRUPPOSITOPROPRIETARIO_ID_GRUPPO_2);
-
-			query.append(
-				_FINDER_COLUMN_RUBRICAGRUPPOSITOPROPRIETARIO_FK_SITO_PROPRIETARIO_2);
-
-			String sql = query.toString();
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				Query q = session.createQuery(sql);
-
-				QueryPos qPos = QueryPos.getInstance(q);
-
-				qPos.add(ID_GRUPPO);
-
-				qPos.add(FK_SITO_PROPRIETARIO);
-
-				count = (Long)q.uniqueResult();
-
-				finderCache.putResult(finderPath, finderArgs, count);
-			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
+		if (rubricaGruppo == null) {
+			return 0;
 		}
 
-		return count.intValue();
+		return 1;
 	}
 
 	private static final String
@@ -332,7 +299,6 @@ public class RubricaGruppoPersistenceImpl
 			"rubricaGruppo.FK_SITO_PROPRIETARIO = ?";
 
 	private FinderPath _finderPathFetchByRubricaGruppoForOwnerAndName;
-	private FinderPath _finderPathCountByRubricaGruppoForOwnerAndName;
 
 	/**
 	 * Returns the rubrica gruppo where FK_SITO_PROPRIETARIO = &#63; and NOME = &#63; and DISABLED = &#63; or throws a <code>NoSuchRubricaGruppoException</code> if it could not be found.
@@ -352,26 +318,26 @@ public class RubricaGruppoPersistenceImpl
 			FK_SITO_PROPRIETARIO, NOME, DISABLED);
 
 		if (rubricaGruppo == null) {
-			StringBundler msg = new StringBundler(8);
+			StringBundler sb = new StringBundler(8);
 
-			msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+			sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-			msg.append("FK_SITO_PROPRIETARIO=");
-			msg.append(FK_SITO_PROPRIETARIO);
+			sb.append("FK_SITO_PROPRIETARIO=");
+			sb.append(FK_SITO_PROPRIETARIO);
 
-			msg.append(", NOME=");
-			msg.append(NOME);
+			sb.append(", NOME=");
+			sb.append(NOME);
 
-			msg.append(", DISABLED=");
-			msg.append(DISABLED);
+			sb.append(", DISABLED=");
+			sb.append(DISABLED);
 
-			msg.append("}");
+			sb.append("}");
 
 			if (_log.isDebugEnabled()) {
-				_log.debug(msg.toString());
+				_log.debug(sb.toString());
 			}
 
-			throw new NoSuchRubricaGruppoException(msg.toString());
+			throw new NoSuchRubricaGruppoException(sb.toString());
 		}
 
 		return rubricaGruppo;
@@ -399,24 +365,26 @@ public class RubricaGruppoPersistenceImpl
 	 * @param FK_SITO_PROPRIETARIO the fk_sito_proprietario
 	 * @param NOME the nome
 	 * @param DISABLED the disabled
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the matching rubrica gruppo, or <code>null</code> if a matching rubrica gruppo could not be found
 	 */
 	@Override
 	public RubricaGruppo fetchByRubricaGruppoForOwnerAndName(
 		long FK_SITO_PROPRIETARIO, String NOME, boolean DISABLED,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
 		NOME = Objects.toString(NOME, "");
 
-		Object[] finderArgs = new Object[] {
-			FK_SITO_PROPRIETARIO, NOME, DISABLED
-		};
+		Object[] finderArgs = null;
+
+		if (useFinderCache) {
+			finderArgs = new Object[] {FK_SITO_PROPRIETARIO, NOME, DISABLED};
+		}
 
 		Object result = null;
 
-		if (retrieveFromCache) {
-			result = finderCache.getResult(
+		if (useFinderCache) {
+			result = dummyFinderCache.getResult(
 				_finderPathFetchByRubricaGruppoForOwnerAndName, finderArgs,
 				this);
 		}
@@ -434,60 +402,65 @@ public class RubricaGruppoPersistenceImpl
 		}
 
 		if (result == null) {
-			StringBundler query = new StringBundler(5);
+			StringBundler sb = new StringBundler(5);
 
-			query.append(_SQL_SELECT_RUBRICAGRUPPO_WHERE);
+			sb.append(_SQL_SELECT_RUBRICAGRUPPO_WHERE);
 
-			query.append(
+			sb.append(
 				_FINDER_COLUMN_RUBRICAGRUPPOFOROWNERANDNAME_FK_SITO_PROPRIETARIO_2);
 
 			boolean bindNOME = false;
 
 			if (NOME.isEmpty()) {
-				query.append(
-					_FINDER_COLUMN_RUBRICAGRUPPOFOROWNERANDNAME_NOME_3);
+				sb.append(_FINDER_COLUMN_RUBRICAGRUPPOFOROWNERANDNAME_NOME_3);
 			}
 			else {
 				bindNOME = true;
 
-				query.append(
-					_FINDER_COLUMN_RUBRICAGRUPPOFOROWNERANDNAME_NOME_2);
+				sb.append(_FINDER_COLUMN_RUBRICAGRUPPOFOROWNERANDNAME_NOME_2);
 			}
 
-			query.append(
-				_FINDER_COLUMN_RUBRICAGRUPPOFOROWNERANDNAME_DISABLED_2);
+			sb.append(_FINDER_COLUMN_RUBRICAGRUPPOFOROWNERANDNAME_DISABLED_2);
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
-				qPos.add(FK_SITO_PROPRIETARIO);
+				queryPos.add(FK_SITO_PROPRIETARIO);
 
 				if (bindNOME) {
-					qPos.add(NOME);
+					queryPos.add(NOME);
 				}
 
-				qPos.add(DISABLED);
+				queryPos.add(DISABLED);
 
-				List<RubricaGruppo> list = q.list();
+				List<RubricaGruppo> list = query.list();
 
 				if (list.isEmpty()) {
-					finderCache.putResult(
-						_finderPathFetchByRubricaGruppoForOwnerAndName,
-						finderArgs, list);
+					if (useFinderCache) {
+						dummyFinderCache.putResult(
+							_finderPathFetchByRubricaGruppoForOwnerAndName,
+							finderArgs, list);
+					}
 				}
 				else {
 					if (list.size() > 1) {
 						Collections.sort(list, Collections.reverseOrder());
 
 						if (_log.isWarnEnabled()) {
+							if (!useFinderCache) {
+								finderArgs = new Object[] {
+									FK_SITO_PROPRIETARIO, NOME, DISABLED
+								};
+							}
+
 							_log.warn(
 								"RubricaGruppoPersistenceImpl.fetchByRubricaGruppoForOwnerAndName(long, String, boolean, boolean) with parameters (" +
 									StringUtil.merge(finderArgs) +
@@ -502,11 +475,8 @@ public class RubricaGruppoPersistenceImpl
 					cacheResult(rubricaGruppo);
 				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(
-					_finderPathFetchByRubricaGruppoForOwnerAndName, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -552,74 +522,14 @@ public class RubricaGruppoPersistenceImpl
 	public int countByRubricaGruppoForOwnerAndName(
 		long FK_SITO_PROPRIETARIO, String NOME, boolean DISABLED) {
 
-		NOME = Objects.toString(NOME, "");
+		RubricaGruppo rubricaGruppo = fetchByRubricaGruppoForOwnerAndName(
+			FK_SITO_PROPRIETARIO, NOME, DISABLED);
 
-		FinderPath finderPath = _finderPathCountByRubricaGruppoForOwnerAndName;
-
-		Object[] finderArgs = new Object[] {
-			FK_SITO_PROPRIETARIO, NOME, DISABLED
-		};
-
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
-
-		if (count == null) {
-			StringBundler query = new StringBundler(4);
-
-			query.append(_SQL_COUNT_RUBRICAGRUPPO_WHERE);
-
-			query.append(
-				_FINDER_COLUMN_RUBRICAGRUPPOFOROWNERANDNAME_FK_SITO_PROPRIETARIO_2);
-
-			boolean bindNOME = false;
-
-			if (NOME.isEmpty()) {
-				query.append(
-					_FINDER_COLUMN_RUBRICAGRUPPOFOROWNERANDNAME_NOME_3);
-			}
-			else {
-				bindNOME = true;
-
-				query.append(
-					_FINDER_COLUMN_RUBRICAGRUPPOFOROWNERANDNAME_NOME_2);
-			}
-
-			query.append(
-				_FINDER_COLUMN_RUBRICAGRUPPOFOROWNERANDNAME_DISABLED_2);
-
-			String sql = query.toString();
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				Query q = session.createQuery(sql);
-
-				QueryPos qPos = QueryPos.getInstance(q);
-
-				qPos.add(FK_SITO_PROPRIETARIO);
-
-				if (bindNOME) {
-					qPos.add(NOME);
-				}
-
-				qPos.add(DISABLED);
-
-				count = (Long)q.uniqueResult();
-
-				finderCache.putResult(finderPath, finderArgs, count);
-			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
+		if (rubricaGruppo == null) {
+			return 0;
 		}
 
-		return count.intValue();
+		return 1;
 	}
 
 	private static final String
@@ -639,7 +549,6 @@ public class RubricaGruppoPersistenceImpl
 			"rubricaGruppo.DISABLED = ?";
 
 	private FinderPath _finderPathFetchByRubricaGruppoCategoria;
-	private FinderPath _finderPathCountByRubricaGruppoCategoria;
 
 	/**
 	 * Returns the rubrica gruppo where FK_CATEGORIA = &#63; and FK_SITO_PROPRIETARIO = &#63; or throws a <code>NoSuchRubricaGruppoException</code> if it could not be found.
@@ -658,23 +567,23 @@ public class RubricaGruppoPersistenceImpl
 			FK_CATEGORIA, FK_SITO_PROPRIETARIO);
 
 		if (rubricaGruppo == null) {
-			StringBundler msg = new StringBundler(6);
+			StringBundler sb = new StringBundler(6);
 
-			msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+			sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-			msg.append("FK_CATEGORIA=");
-			msg.append(FK_CATEGORIA);
+			sb.append("FK_CATEGORIA=");
+			sb.append(FK_CATEGORIA);
 
-			msg.append(", FK_SITO_PROPRIETARIO=");
-			msg.append(FK_SITO_PROPRIETARIO);
+			sb.append(", FK_SITO_PROPRIETARIO=");
+			sb.append(FK_SITO_PROPRIETARIO);
 
-			msg.append("}");
+			sb.append("}");
 
 			if (_log.isDebugEnabled()) {
-				_log.debug(msg.toString());
+				_log.debug(sb.toString());
 			}
 
-			throw new NoSuchRubricaGruppoException(msg.toString());
+			throw new NoSuchRubricaGruppoException(sb.toString());
 		}
 
 		return rubricaGruppo;
@@ -700,20 +609,23 @@ public class RubricaGruppoPersistenceImpl
 	 *
 	 * @param FK_CATEGORIA the fk_categoria
 	 * @param FK_SITO_PROPRIETARIO the fk_sito_proprietario
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the matching rubrica gruppo, or <code>null</code> if a matching rubrica gruppo could not be found
 	 */
 	@Override
 	public RubricaGruppo fetchByRubricaGruppoCategoria(
-		long FK_CATEGORIA, long FK_SITO_PROPRIETARIO,
-		boolean retrieveFromCache) {
+		long FK_CATEGORIA, long FK_SITO_PROPRIETARIO, boolean useFinderCache) {
 
-		Object[] finderArgs = new Object[] {FK_CATEGORIA, FK_SITO_PROPRIETARIO};
+		Object[] finderArgs = null;
+
+		if (useFinderCache) {
+			finderArgs = new Object[] {FK_CATEGORIA, FK_SITO_PROPRIETARIO};
+		}
 
 		Object result = null;
 
-		if (retrieveFromCache) {
-			result = finderCache.getResult(
+		if (useFinderCache) {
+			result = dummyFinderCache.getResult(
 				_finderPathFetchByRubricaGruppoCategoria, finderArgs, this);
 		}
 
@@ -729,42 +641,50 @@ public class RubricaGruppoPersistenceImpl
 		}
 
 		if (result == null) {
-			StringBundler query = new StringBundler(4);
+			StringBundler sb = new StringBundler(4);
 
-			query.append(_SQL_SELECT_RUBRICAGRUPPO_WHERE);
+			sb.append(_SQL_SELECT_RUBRICAGRUPPO_WHERE);
 
-			query.append(_FINDER_COLUMN_RUBRICAGRUPPOCATEGORIA_FK_CATEGORIA_2);
+			sb.append(_FINDER_COLUMN_RUBRICAGRUPPOCATEGORIA_FK_CATEGORIA_2);
 
-			query.append(
+			sb.append(
 				_FINDER_COLUMN_RUBRICAGRUPPOCATEGORIA_FK_SITO_PROPRIETARIO_2);
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
-				qPos.add(FK_CATEGORIA);
+				queryPos.add(FK_CATEGORIA);
 
-				qPos.add(FK_SITO_PROPRIETARIO);
+				queryPos.add(FK_SITO_PROPRIETARIO);
 
-				List<RubricaGruppo> list = q.list();
+				List<RubricaGruppo> list = query.list();
 
 				if (list.isEmpty()) {
-					finderCache.putResult(
-						_finderPathFetchByRubricaGruppoCategoria, finderArgs,
-						list);
+					if (useFinderCache) {
+						dummyFinderCache.putResult(
+							_finderPathFetchByRubricaGruppoCategoria,
+							finderArgs, list);
+					}
 				}
 				else {
 					if (list.size() > 1) {
 						Collections.sort(list, Collections.reverseOrder());
 
 						if (_log.isWarnEnabled()) {
+							if (!useFinderCache) {
+								finderArgs = new Object[] {
+									FK_CATEGORIA, FK_SITO_PROPRIETARIO
+								};
+							}
+
 							_log.warn(
 								"RubricaGruppoPersistenceImpl.fetchByRubricaGruppoCategoria(long, long, boolean) with parameters (" +
 									StringUtil.merge(finderArgs) +
@@ -779,11 +699,8 @@ public class RubricaGruppoPersistenceImpl
 					cacheResult(rubricaGruppo);
 				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(
-					_finderPathFetchByRubricaGruppoCategoria, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -827,52 +744,14 @@ public class RubricaGruppoPersistenceImpl
 	public int countByRubricaGruppoCategoria(
 		long FK_CATEGORIA, long FK_SITO_PROPRIETARIO) {
 
-		FinderPath finderPath = _finderPathCountByRubricaGruppoCategoria;
+		RubricaGruppo rubricaGruppo = fetchByRubricaGruppoCategoria(
+			FK_CATEGORIA, FK_SITO_PROPRIETARIO);
 
-		Object[] finderArgs = new Object[] {FK_CATEGORIA, FK_SITO_PROPRIETARIO};
-
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
-
-		if (count == null) {
-			StringBundler query = new StringBundler(3);
-
-			query.append(_SQL_COUNT_RUBRICAGRUPPO_WHERE);
-
-			query.append(_FINDER_COLUMN_RUBRICAGRUPPOCATEGORIA_FK_CATEGORIA_2);
-
-			query.append(
-				_FINDER_COLUMN_RUBRICAGRUPPOCATEGORIA_FK_SITO_PROPRIETARIO_2);
-
-			String sql = query.toString();
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				Query q = session.createQuery(sql);
-
-				QueryPos qPos = QueryPos.getInstance(q);
-
-				qPos.add(FK_CATEGORIA);
-
-				qPos.add(FK_SITO_PROPRIETARIO);
-
-				count = (Long)q.uniqueResult();
-
-				finderCache.putResult(finderPath, finderArgs, count);
-			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
+		if (rubricaGruppo == null) {
+			return 0;
 		}
 
-		return count.intValue();
+		return 1;
 	}
 
 	private static final String
@@ -885,6 +764,11 @@ public class RubricaGruppoPersistenceImpl
 
 	public RubricaGruppoPersistenceImpl() {
 		setModelClass(RubricaGruppo.class);
+
+		setModelImplClass(RubricaGruppoImpl.class);
+		setModelPKClass(long.class);
+
+		setTable(RubricaGruppoTable.INSTANCE);
 	}
 
 	/**
@@ -894,12 +778,11 @@ public class RubricaGruppoPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(RubricaGruppo rubricaGruppo) {
-		entityCache.putResult(
-			RubricaGruppoModelImpl.ENTITY_CACHE_ENABLED,
+		dummyEntityCache.putResult(
 			RubricaGruppoImpl.class, rubricaGruppo.getPrimaryKey(),
 			rubricaGruppo);
 
-		finderCache.putResult(
+		dummyFinderCache.putResult(
 			_finderPathFetchByRubricaGruppoSitoProprietario,
 			new Object[] {
 				rubricaGruppo.getID_GRUPPO(),
@@ -907,7 +790,7 @@ public class RubricaGruppoPersistenceImpl
 			},
 			rubricaGruppo);
 
-		finderCache.putResult(
+		dummyFinderCache.putResult(
 			_finderPathFetchByRubricaGruppoForOwnerAndName,
 			new Object[] {
 				rubricaGruppo.getFK_SITO_PROPRIETARIO(),
@@ -915,16 +798,16 @@ public class RubricaGruppoPersistenceImpl
 			},
 			rubricaGruppo);
 
-		finderCache.putResult(
+		dummyFinderCache.putResult(
 			_finderPathFetchByRubricaGruppoCategoria,
 			new Object[] {
 				rubricaGruppo.getFK_CATEGORIA(),
 				rubricaGruppo.getFK_SITO_PROPRIETARIO()
 			},
 			rubricaGruppo);
-
-		rubricaGruppo.resetOriginalValues();
 	}
+
+	private int _valueObjectFinderCacheListThreshold;
 
 	/**
 	 * Caches the rubrica gruppos in the entity cache if it is enabled.
@@ -933,16 +816,19 @@ public class RubricaGruppoPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(List<RubricaGruppo> rubricaGruppos) {
+		if ((_valueObjectFinderCacheListThreshold == 0) ||
+			((_valueObjectFinderCacheListThreshold > 0) &&
+			 (rubricaGruppos.size() > _valueObjectFinderCacheListThreshold))) {
+
+			return;
+		}
+
 		for (RubricaGruppo rubricaGruppo : rubricaGruppos) {
-			if (entityCache.getResult(
-					RubricaGruppoModelImpl.ENTITY_CACHE_ENABLED,
+			if (dummyEntityCache.getResult(
 					RubricaGruppoImpl.class, rubricaGruppo.getPrimaryKey()) ==
 						null) {
 
 				cacheResult(rubricaGruppo);
-			}
-			else {
-				rubricaGruppo.resetOriginalValues();
 			}
 		}
 	}
@@ -956,11 +842,9 @@ public class RubricaGruppoPersistenceImpl
 	 */
 	@Override
 	public void clearCache() {
-		entityCache.clearCache(RubricaGruppoImpl.class);
+		dummyEntityCache.clearCache(RubricaGruppoImpl.class);
 
-		finderCache.clearCache(FINDER_CLASS_NAME_ENTITY);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		dummyFinderCache.clearCache(RubricaGruppoImpl.class);
 	}
 
 	/**
@@ -972,28 +856,23 @@ public class RubricaGruppoPersistenceImpl
 	 */
 	@Override
 	public void clearCache(RubricaGruppo rubricaGruppo) {
-		entityCache.removeResult(
-			RubricaGruppoModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaGruppoImpl.class, rubricaGruppo.getPrimaryKey());
-
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
-
-		clearUniqueFindersCache((RubricaGruppoModelImpl)rubricaGruppo, true);
+		dummyEntityCache.removeResult(RubricaGruppoImpl.class, rubricaGruppo);
 	}
 
 	@Override
 	public void clearCache(List<RubricaGruppo> rubricaGruppos) {
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
-
 		for (RubricaGruppo rubricaGruppo : rubricaGruppos) {
-			entityCache.removeResult(
-				RubricaGruppoModelImpl.ENTITY_CACHE_ENABLED,
-				RubricaGruppoImpl.class, rubricaGruppo.getPrimaryKey());
+			dummyEntityCache.removeResult(
+				RubricaGruppoImpl.class, rubricaGruppo);
+		}
+	}
 
-			clearUniqueFindersCache(
-				(RubricaGruppoModelImpl)rubricaGruppo, true);
+	@Override
+	public void clearCache(Set<Serializable> primaryKeys) {
+		dummyFinderCache.clearCache(RubricaGruppoImpl.class);
+
+		for (Serializable primaryKey : primaryKeys) {
+			dummyEntityCache.removeResult(RubricaGruppoImpl.class, primaryKey);
 		}
 	}
 
@@ -1005,12 +884,9 @@ public class RubricaGruppoPersistenceImpl
 			rubricaGruppoModelImpl.getFK_SITO_PROPRIETARIO()
 		};
 
-		finderCache.putResult(
-			_finderPathCountByRubricaGruppoSitoProprietario, args,
-			Long.valueOf(1), false);
-		finderCache.putResult(
+		dummyFinderCache.putResult(
 			_finderPathFetchByRubricaGruppoSitoProprietario, args,
-			rubricaGruppoModelImpl, false);
+			rubricaGruppoModelImpl);
 
 		args = new Object[] {
 			rubricaGruppoModelImpl.getFK_SITO_PROPRIETARIO(),
@@ -1018,111 +894,18 @@ public class RubricaGruppoPersistenceImpl
 			rubricaGruppoModelImpl.isDISABLED()
 		};
 
-		finderCache.putResult(
-			_finderPathCountByRubricaGruppoForOwnerAndName, args,
-			Long.valueOf(1), false);
-		finderCache.putResult(
+		dummyFinderCache.putResult(
 			_finderPathFetchByRubricaGruppoForOwnerAndName, args,
-			rubricaGruppoModelImpl, false);
+			rubricaGruppoModelImpl);
 
 		args = new Object[] {
 			rubricaGruppoModelImpl.getFK_CATEGORIA(),
 			rubricaGruppoModelImpl.getFK_SITO_PROPRIETARIO()
 		};
 
-		finderCache.putResult(
-			_finderPathCountByRubricaGruppoCategoria, args, Long.valueOf(1),
-			false);
-		finderCache.putResult(
+		dummyFinderCache.putResult(
 			_finderPathFetchByRubricaGruppoCategoria, args,
-			rubricaGruppoModelImpl, false);
-	}
-
-	protected void clearUniqueFindersCache(
-		RubricaGruppoModelImpl rubricaGruppoModelImpl, boolean clearCurrent) {
-
-		if (clearCurrent) {
-			Object[] args = new Object[] {
-				rubricaGruppoModelImpl.getID_GRUPPO(),
-				rubricaGruppoModelImpl.getFK_SITO_PROPRIETARIO()
-			};
-
-			finderCache.removeResult(
-				_finderPathCountByRubricaGruppoSitoProprietario, args);
-			finderCache.removeResult(
-				_finderPathFetchByRubricaGruppoSitoProprietario, args);
-		}
-
-		if ((rubricaGruppoModelImpl.getColumnBitmask() &
-			 _finderPathFetchByRubricaGruppoSitoProprietario.
-				 getColumnBitmask()) != 0) {
-
-			Object[] args = new Object[] {
-				rubricaGruppoModelImpl.getOriginalID_GRUPPO(),
-				rubricaGruppoModelImpl.getOriginalFK_SITO_PROPRIETARIO()
-			};
-
-			finderCache.removeResult(
-				_finderPathCountByRubricaGruppoSitoProprietario, args);
-			finderCache.removeResult(
-				_finderPathFetchByRubricaGruppoSitoProprietario, args);
-		}
-
-		if (clearCurrent) {
-			Object[] args = new Object[] {
-				rubricaGruppoModelImpl.getFK_SITO_PROPRIETARIO(),
-				rubricaGruppoModelImpl.getNOME(),
-				rubricaGruppoModelImpl.isDISABLED()
-			};
-
-			finderCache.removeResult(
-				_finderPathCountByRubricaGruppoForOwnerAndName, args);
-			finderCache.removeResult(
-				_finderPathFetchByRubricaGruppoForOwnerAndName, args);
-		}
-
-		if ((rubricaGruppoModelImpl.getColumnBitmask() &
-			 _finderPathFetchByRubricaGruppoForOwnerAndName.
-				 getColumnBitmask()) != 0) {
-
-			Object[] args = new Object[] {
-				rubricaGruppoModelImpl.getOriginalFK_SITO_PROPRIETARIO(),
-				rubricaGruppoModelImpl.getOriginalNOME(),
-				rubricaGruppoModelImpl.getOriginalDISABLED()
-			};
-
-			finderCache.removeResult(
-				_finderPathCountByRubricaGruppoForOwnerAndName, args);
-			finderCache.removeResult(
-				_finderPathFetchByRubricaGruppoForOwnerAndName, args);
-		}
-
-		if (clearCurrent) {
-			Object[] args = new Object[] {
-				rubricaGruppoModelImpl.getFK_CATEGORIA(),
-				rubricaGruppoModelImpl.getFK_SITO_PROPRIETARIO()
-			};
-
-			finderCache.removeResult(
-				_finderPathCountByRubricaGruppoCategoria, args);
-			finderCache.removeResult(
-				_finderPathFetchByRubricaGruppoCategoria, args);
-		}
-
-		if ((rubricaGruppoModelImpl.getColumnBitmask() &
-			 _finderPathFetchByRubricaGruppoCategoria.getColumnBitmask()) !=
-				 0) {
-
-			Object[] args = new Object[] {
-				rubricaGruppoModelImpl.getOriginalFK_CATEGORIA(),
-				rubricaGruppoModelImpl.getOriginalFK_SITO_PROPRIETARIO()
-			};
-
-			finderCache.removeResult(
-				_finderPathCountByRubricaGruppoCategoria, args);
-			finderCache.removeResult(
-				_finderPathFetchByRubricaGruppoCategoria, args);
-		}
+			rubricaGruppoModelImpl);
 	}
 
 	/**
@@ -1185,11 +968,11 @@ public class RubricaGruppoPersistenceImpl
 
 			return remove(rubricaGruppo);
 		}
-		catch (NoSuchRubricaGruppoException nsee) {
-			throw nsee;
+		catch (NoSuchRubricaGruppoException noSuchEntityException) {
+			throw noSuchEntityException;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -1212,8 +995,8 @@ public class RubricaGruppoPersistenceImpl
 				session.delete(rubricaGruppo);
 			}
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -1255,40 +1038,28 @@ public class RubricaGruppoPersistenceImpl
 		try {
 			session = openSession();
 
-			if (rubricaGruppo.isNew()) {
+			if (isNew) {
 				session.save(rubricaGruppo);
-
-				rubricaGruppo.setNew(false);
 			}
 			else {
 				rubricaGruppo = (RubricaGruppo)session.merge(rubricaGruppo);
 			}
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
 		}
 
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		dummyEntityCache.putResult(
+			RubricaGruppoImpl.class, rubricaGruppoModelImpl, false, true);
 
-		if (!RubricaGruppoModelImpl.COLUMN_BITMASK_ENABLED) {
-			finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
-		}
-		else if (isNew) {
-			finderCache.removeResult(_finderPathCountAll, FINDER_ARGS_EMPTY);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindAll, FINDER_ARGS_EMPTY);
-		}
-
-		entityCache.putResult(
-			RubricaGruppoModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaGruppoImpl.class, rubricaGruppo.getPrimaryKey(),
-			rubricaGruppo, false);
-
-		clearUniqueFindersCache(rubricaGruppoModelImpl, false);
 		cacheUniqueFindersCache(rubricaGruppoModelImpl);
+
+		if (isNew) {
+			rubricaGruppo.setNew(false);
+		}
 
 		rubricaGruppo.resetOriginalValues();
 
@@ -1337,161 +1108,12 @@ public class RubricaGruppoPersistenceImpl
 	/**
 	 * Returns the rubrica gruppo with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the rubrica gruppo
-	 * @return the rubrica gruppo, or <code>null</code> if a rubrica gruppo with the primary key could not be found
-	 */
-	@Override
-	public RubricaGruppo fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(
-			RubricaGruppoModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaGruppoImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		RubricaGruppo rubricaGruppo = (RubricaGruppo)serializable;
-
-		if (rubricaGruppo == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				rubricaGruppo = (RubricaGruppo)session.get(
-					RubricaGruppoImpl.class, primaryKey);
-
-				if (rubricaGruppo != null) {
-					cacheResult(rubricaGruppo);
-				}
-				else {
-					entityCache.putResult(
-						RubricaGruppoModelImpl.ENTITY_CACHE_ENABLED,
-						RubricaGruppoImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(
-					RubricaGruppoModelImpl.ENTITY_CACHE_ENABLED,
-					RubricaGruppoImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return rubricaGruppo;
-	}
-
-	/**
-	 * Returns the rubrica gruppo with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param ID_GRUPPO the primary key of the rubrica gruppo
 	 * @return the rubrica gruppo, or <code>null</code> if a rubrica gruppo with the primary key could not be found
 	 */
 	@Override
 	public RubricaGruppo fetchByPrimaryKey(long ID_GRUPPO) {
 		return fetchByPrimaryKey((Serializable)ID_GRUPPO);
-	}
-
-	@Override
-	public Map<Serializable, RubricaGruppo> fetchByPrimaryKeys(
-		Set<Serializable> primaryKeys) {
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, RubricaGruppo> map =
-			new HashMap<Serializable, RubricaGruppo>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			RubricaGruppo rubricaGruppo = fetchByPrimaryKey(primaryKey);
-
-			if (rubricaGruppo != null) {
-				map.put(primaryKey, rubricaGruppo);
-			}
-
-			return map;
-		}
-
-		Set<Serializable> uncachedPrimaryKeys = null;
-
-		for (Serializable primaryKey : primaryKeys) {
-			Serializable serializable = entityCache.getResult(
-				RubricaGruppoModelImpl.ENTITY_CACHE_ENABLED,
-				RubricaGruppoImpl.class, primaryKey);
-
-			if (serializable != nullModel) {
-				if (serializable == null) {
-					if (uncachedPrimaryKeys == null) {
-						uncachedPrimaryKeys = new HashSet<Serializable>();
-					}
-
-					uncachedPrimaryKeys.add(primaryKey);
-				}
-				else {
-					map.put(primaryKey, (RubricaGruppo)serializable);
-				}
-			}
-		}
-
-		if (uncachedPrimaryKeys == null) {
-			return map;
-		}
-
-		StringBundler query = new StringBundler(
-			uncachedPrimaryKeys.size() * 2 + 1);
-
-		query.append(_SQL_SELECT_RUBRICAGRUPPO_WHERE_PKS_IN);
-
-		for (Serializable primaryKey : uncachedPrimaryKeys) {
-			query.append((long)primaryKey);
-
-			query.append(",");
-		}
-
-		query.setIndex(query.index() - 1);
-
-		query.append(")");
-
-		String sql = query.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query q = session.createQuery(sql);
-
-			for (RubricaGruppo rubricaGruppo : (List<RubricaGruppo>)q.list()) {
-				map.put(rubricaGruppo.getPrimaryKeyObj(), rubricaGruppo);
-
-				cacheResult(rubricaGruppo);
-
-				uncachedPrimaryKeys.remove(rubricaGruppo.getPrimaryKeyObj());
-			}
-
-			for (Serializable primaryKey : uncachedPrimaryKeys) {
-				entityCache.putResult(
-					RubricaGruppoModelImpl.ENTITY_CACHE_ENABLED,
-					RubricaGruppoImpl.class, primaryKey, nullModel);
-			}
-		}
-		catch (Exception e) {
-			throw processException(e);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**
@@ -1508,7 +1130,7 @@ public class RubricaGruppoPersistenceImpl
 	 * Returns a range of all the rubrica gruppos.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaGruppoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaGruppoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of rubrica gruppos
@@ -1524,7 +1146,7 @@ public class RubricaGruppoPersistenceImpl
 	 * Returns an ordered range of all the rubrica gruppos.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaGruppoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaGruppoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of rubrica gruppos
@@ -1544,64 +1166,62 @@ public class RubricaGruppoPersistenceImpl
 	 * Returns an ordered range of all the rubrica gruppos.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaGruppoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaGruppoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of rubrica gruppos
 	 * @param end the upper bound of the range of rubrica gruppos (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of rubrica gruppos
 	 */
 	@Override
 	public List<RubricaGruppo> findAll(
 		int start, int end, OrderByComparator<RubricaGruppo> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindAll;
-			finderArgs = FINDER_ARGS_EMPTY;
+			if (useFinderCache) {
+				finderPath = _finderPathWithoutPaginationFindAll;
+				finderArgs = FINDER_ARGS_EMPTY;
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
 			finderArgs = new Object[] {start, end, orderByComparator};
 		}
 
 		List<RubricaGruppo> list = null;
 
-		if (retrieveFromCache) {
-			list = (List<RubricaGruppo>)finderCache.getResult(
+		if (useFinderCache) {
+			list = (List<RubricaGruppo>)dummyFinderCache.getResult(
 				finderPath, finderArgs, this);
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 			String sql = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					2 + (orderByComparator.getOrderByFields().length * 2));
 
-				query.append(_SQL_SELECT_RUBRICAGRUPPO);
+				sb.append(_SQL_SELECT_RUBRICAGRUPPO);
 
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 
-				sql = query.toString();
+				sql = sb.toString();
 			}
 			else {
 				sql = _SQL_SELECT_RUBRICAGRUPPO;
 
-				if (pagination) {
-					sql = sql.concat(RubricaGruppoModelImpl.ORDER_BY_JPQL);
-				}
+				sql = sql.concat(RubricaGruppoModelImpl.ORDER_BY_JPQL);
 			}
 
 			Session session = null;
@@ -1609,29 +1229,19 @@ public class RubricaGruppoPersistenceImpl
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				if (!pagination) {
-					list = (List<RubricaGruppo>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<RubricaGruppo>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<RubricaGruppo>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					dummyFinderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -1659,7 +1269,7 @@ public class RubricaGruppoPersistenceImpl
 	 */
 	@Override
 	public int countAll() {
-		Long count = (Long)finderCache.getResult(
+		Long count = (Long)dummyFinderCache.getResult(
 			_finderPathCountAll, FINDER_ARGS_EMPTY, this);
 
 		if (count == null) {
@@ -1668,18 +1278,15 @@ public class RubricaGruppoPersistenceImpl
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(_SQL_COUNT_RUBRICAGRUPPO);
+				Query query = session.createQuery(_SQL_COUNT_RUBRICAGRUPPO);
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
-				finderCache.putResult(
+				dummyFinderCache.putResult(
 					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -1690,6 +1297,21 @@ public class RubricaGruppoPersistenceImpl
 	}
 
 	@Override
+	protected EntityCache getEntityCache() {
+		return dummyEntityCache;
+	}
+
+	@Override
+	protected String getPKDBName() {
+		return "ID_GRUPPO";
+	}
+
+	@Override
+	protected String getSelectSQL() {
+		return _SQL_SELECT_RUBRICAGRUPPO;
+	}
+
+	@Override
 	protected Map<String, Integer> getTableColumnsMap() {
 		return RubricaGruppoModelImpl.TABLE_COLUMNS_MAP;
 	}
@@ -1697,99 +1319,79 @@ public class RubricaGruppoPersistenceImpl
 	/**
 	 * Initializes the rubrica gruppo persistence.
 	 */
-	public void afterPropertiesSet() {
+	@Activate
+	public void activate() {
+		_valueObjectFinderCacheListThreshold = GetterUtil.getInteger(
+			PropsUtil.get(PropsKeys.VALUE_OBJECT_FINDER_CACHE_LIST_THRESHOLD));
+
 		_finderPathWithPaginationFindAll = new FinderPath(
-			RubricaGruppoModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaGruppoModelImpl.FINDER_CACHE_ENABLED,
-			RubricaGruppoImpl.class, FINDER_CLASS_NAME_LIST_WITH_PAGINATION,
-			"findAll", new String[0]);
+			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findAll", new String[0],
+			new String[0], true);
 
 		_finderPathWithoutPaginationFindAll = new FinderPath(
-			RubricaGruppoModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaGruppoModelImpl.FINDER_CACHE_ENABLED,
-			RubricaGruppoImpl.class, FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
-			"findAll", new String[0]);
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findAll", new String[0],
+			new String[0], true);
 
 		_finderPathCountAll = new FinderPath(
-			RubricaGruppoModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaGruppoModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countAll",
-			new String[0]);
+			new String[0], new String[0], false);
 
 		_finderPathFetchByRubricaGruppoSitoProprietario = new FinderPath(
-			RubricaGruppoModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaGruppoModelImpl.FINDER_CACHE_ENABLED,
-			RubricaGruppoImpl.class, FINDER_CLASS_NAME_ENTITY,
-			"fetchByRubricaGruppoSitoProprietario",
+			FINDER_CLASS_NAME_ENTITY, "fetchByRubricaGruppoSitoProprietario",
 			new String[] {Long.class.getName(), Long.class.getName()},
-			RubricaGruppoModelImpl.ID_GRUPPO_COLUMN_BITMASK |
-			RubricaGruppoModelImpl.FK_SITO_PROPRIETARIO_COLUMN_BITMASK);
-
-		_finderPathCountByRubricaGruppoSitoProprietario = new FinderPath(
-			RubricaGruppoModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaGruppoModelImpl.FINDER_CACHE_ENABLED, Long.class,
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
-			"countByRubricaGruppoSitoProprietario",
-			new String[] {Long.class.getName(), Long.class.getName()});
+			new String[] {"ID_GRUPPO", "FK_SITO_PROPRIETARIO"}, true);
 
 		_finderPathFetchByRubricaGruppoForOwnerAndName = new FinderPath(
-			RubricaGruppoModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaGruppoModelImpl.FINDER_CACHE_ENABLED,
-			RubricaGruppoImpl.class, FINDER_CLASS_NAME_ENTITY,
-			"fetchByRubricaGruppoForOwnerAndName",
+			FINDER_CLASS_NAME_ENTITY, "fetchByRubricaGruppoForOwnerAndName",
 			new String[] {
 				Long.class.getName(), String.class.getName(),
 				Boolean.class.getName()
 			},
-			RubricaGruppoModelImpl.FK_SITO_PROPRIETARIO_COLUMN_BITMASK |
-			RubricaGruppoModelImpl.NOME_COLUMN_BITMASK |
-			RubricaGruppoModelImpl.DISABLED_COLUMN_BITMASK);
-
-		_finderPathCountByRubricaGruppoForOwnerAndName = new FinderPath(
-			RubricaGruppoModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaGruppoModelImpl.FINDER_CACHE_ENABLED, Long.class,
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
-			"countByRubricaGruppoForOwnerAndName",
-			new String[] {
-				Long.class.getName(), String.class.getName(),
-				Boolean.class.getName()
-			});
+			new String[] {"FK_SITO_PROPRIETARIO", "NOME", "DISABLED"}, true);
 
 		_finderPathFetchByRubricaGruppoCategoria = new FinderPath(
-			RubricaGruppoModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaGruppoModelImpl.FINDER_CACHE_ENABLED,
-			RubricaGruppoImpl.class, FINDER_CLASS_NAME_ENTITY,
-			"fetchByRubricaGruppoCategoria",
+			FINDER_CLASS_NAME_ENTITY, "fetchByRubricaGruppoCategoria",
 			new String[] {Long.class.getName(), Long.class.getName()},
-			RubricaGruppoModelImpl.FK_CATEGORIA_COLUMN_BITMASK |
-			RubricaGruppoModelImpl.FK_SITO_PROPRIETARIO_COLUMN_BITMASK);
+			new String[] {"FK_CATEGORIA", "FK_SITO_PROPRIETARIO"}, true);
 
-		_finderPathCountByRubricaGruppoCategoria = new FinderPath(
-			RubricaGruppoModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaGruppoModelImpl.FINDER_CACHE_ENABLED, Long.class,
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
-			"countByRubricaGruppoCategoria",
-			new String[] {Long.class.getName(), Long.class.getName()});
+		RubricaGruppoUtil.setPersistence(this);
 	}
 
-	public void destroy() {
-		entityCache.removeCache(RubricaGruppoImpl.class.getName());
-		finderCache.removeCache(FINDER_CLASS_NAME_ENTITY);
-		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+	@Deactivate
+	public void deactivate() {
+		RubricaGruppoUtil.setPersistence(null);
+
+		dummyEntityCache.removeCache(RubricaGruppoImpl.class.getName());
 	}
 
-	@ServiceReference(type = EntityCache.class)
-	protected EntityCache entityCache;
+	@Override
+	@Reference(
+		target = rubricaPersistenceConstants.SERVICE_CONFIGURATION_FILTER,
+		unbind = "-"
+	)
+	public void setConfiguration(Configuration configuration) {
+	}
 
-	@ServiceReference(type = FinderCache.class)
-	protected FinderCache finderCache;
+	@Override
+	@Reference(
+		target = rubricaPersistenceConstants.ORIGIN_BUNDLE_SYMBOLIC_NAME_FILTER,
+		unbind = "-"
+	)
+	public void setDataSource(DataSource dataSource) {
+		super.setDataSource(dataSource);
+	}
+
+	@Override
+	@Reference(
+		target = rubricaPersistenceConstants.ORIGIN_BUNDLE_SYMBOLIC_NAME_FILTER,
+		unbind = "-"
+	)
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		super.setSessionFactory(sessionFactory);
+	}
 
 	private static final String _SQL_SELECT_RUBRICAGRUPPO =
 		"SELECT rubricaGruppo FROM RubricaGruppo rubricaGruppo";
-
-	private static final String _SQL_SELECT_RUBRICAGRUPPO_WHERE_PKS_IN =
-		"SELECT rubricaGruppo FROM RubricaGruppo rubricaGruppo WHERE ID_GRUPPO IN (";
 
 	private static final String _SQL_SELECT_RUBRICAGRUPPO_WHERE =
 		"SELECT rubricaGruppo FROM RubricaGruppo rubricaGruppo WHERE ";
@@ -1810,5 +1412,10 @@ public class RubricaGruppoPersistenceImpl
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		RubricaGruppoPersistenceImpl.class);
+
+	@Override
+	protected FinderCache getFinderCache() {
+		return dummyFinderCache;
+	}
 
 }

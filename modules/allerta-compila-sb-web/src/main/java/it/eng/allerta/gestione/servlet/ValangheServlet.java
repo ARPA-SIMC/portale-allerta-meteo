@@ -26,11 +26,7 @@ import org.osgi.service.component.annotations.Component;
 import it.eng.bollettino.service.BollettinoLocalServiceUtil;
 
 @Component(
-	    immediate = true,
-	    property = {
-	        "osgi.http.whiteboard.context.path=/",
-	        "osgi.http.whiteboard.servlet.pattern=/api/stato-valanghe"
-	    },
+	    property = "osgi.http.whiteboard.servlet.pattern=/stato-valanghe",
 	    service = Servlet.class
 	)
 public class ValangheServlet extends HttpServlet {

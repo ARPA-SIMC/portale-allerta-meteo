@@ -1,5 +1,6 @@
 package it.eng.allerter.custom;
 
+import com.liferay.asset.entry.rel.service.AssetEntryAssetCategoryRelLocalServiceUtil;
 import com.liferay.asset.kernel.service.AssetCategoryLocalService;
 import com.liferay.asset.kernel.service.AssetEntryLocalService;
 import com.liferay.counter.kernel.service.CounterLocalService;
@@ -66,11 +67,7 @@ import it.eng.parer.service.ComponentiInvioLocalService;
 import it.eng.parer.service.DatiSpecificiInvioLocalService;
 
 @Component(
-	    immediate = true,
-	    property = {
-	        "osgi.http.whiteboard.context.path=/",
-	        "osgi.http.whiteboard.servlet.pattern=/approva-allerta"
-	    },
+	    property = "osgi.http.whiteboard.servlet.pattern=/approva-allerta",
 	    service = Servlet.class
 	)
 public class QuickApprovalServlet extends HttpServlet {
@@ -161,13 +158,13 @@ public class QuickApprovalServlet extends HttpServlet {
 			/*
 			 * mandaNotifica(feedback.getUtenteFirmaArpaId(),"Il documento "+feedback.
 			 * getNumero()
-			 * +" è in attesa di approvazione: https://allertameteo.regione.emilia-romagna.it"
+			 * +" ï¿½ in attesa di approvazione: https://allertameteo.regione.emilia-romagna.it"
 			 * ,feedback,tipo,sottotipo,l);
 			 * 
 			 * text = "<html><head></head><body>Il documento "+feedback.getNumero()
 			 * +" e' in attesa di approvazione su <a href=\"https://allertameteo.regione.emilia-romagna.it\">https://allertameteo.regione.emilia-romagna.it</a></body></html>"
 			 * ; subject =
-			 * "Il documento "+feedback.getNumero()+" è in attesa di approvazione";
+			 * "Il documento "+feedback.getNumero()+" ï¿½ in attesa di approvazione";
 			 * 
 			 * spedisciNotifiche(tipo, sottotipo, l, subject, text, feedback);
 			 */
@@ -189,12 +186,12 @@ public class QuickApprovalServlet extends HttpServlet {
 					mandaNotificaSoloEmail(feedback.getUtenteFirmaArpaId(), tipo, sottotipo, l + 1);
 					mandaNotifica(feedback.getUtenteFirmaProtId(),
 							"Il documento " + feedback.getNumero()
-									+ " è in attesa di approvazione su https://allertameteo.regione.emilia-romagna.it",
+									+ " ï¿½ in attesa di approvazione su https://allertameteo.regione.emilia-romagna.it",
 							feedback, tipo, sottotipo, l);
 
 					text = "<html><head></head><body>Il documento " + feedback.getNumero()
 							+ " e' in attesa di approvazione su <a href=\"https://allertameteo.regione.emilia-romagna.it\">https://allertameteo.regione.emilia-romagna.it</a></body></html>";
-					subject = "Il documento " + feedback.getNumero() + " è in attesa di approvazione";
+					subject = "Il documento " + feedback.getNumero() + " ï¿½ in attesa di approvazione";
 
 					textPlusOne = "<html><head></head><body>Hai approvato il documento " + feedback.getNumero()
 							+ ".</body></html>";
@@ -246,35 +243,44 @@ public class QuickApprovalServlet extends HttpServlet {
 			// mandaMessaggioRifiuto(feedback);
 			long id = assetEntryLocalService.getEntry(Allerta.class.getName(), feedback.getAllertaId())
 					.getEntryId();
-			assetCategoryLocalService.clearAssetEntryAssetCategories(id);
 			
-			assetCategoryLocalService.addAssetEntryAssetCategory(id, lavorazione);
+			AssetEntryAssetCategoryRelLocalServiceUtil.deleteAssetEntryAssetCategoryRelByAssetEntryId(id);
+			//assetCategoryLocalService.clearAssetEntryAssetCategories(id);
+			AssetEntryAssetCategoryRelLocalServiceUtil.addAssetEntryAssetCategoryRel(id, lavorazione);
+			//assetCategoryLocalService.addAssetEntryAssetCategory(id, lavorazione);
 		}
 
 		if (status == WorkflowConstants.STATUS_PENDING) {
 
 			mandaNotifica(feedback.getUtenteFirmaArpaId(),
 					"Il documento " + feedback.getNumero()
-							+ " è in attesa di approvazione: https://allertameteo.regione.emilia-romagna.it",
+							+ " ï¿½ in attesa di approvazione: https://allertameteo.regione.emilia-romagna.it",
 					feedback, tipo, sottotipo, l);
 
 			text = "<html><head></head><body>Il documento " + feedback.getNumero()
 					+ " e' in attesa di approvazione su <a href=\"https://allertameteo.regione.emilia-romagna.it\">https://allertameteo.regione.emilia-romagna.it</a></body></html>";
-			subject = "Il documento " + feedback.getNumero() + " è in attesa di approvazione";
+			subject = "Il documento " + feedback.getNumero() + " ï¿½ in attesa di approvazione";
 
 			long id = assetEntryLocalService.getEntry(Allerta.class.getName(), feedback.getAllertaId())
 					.getEntryId();
 
-			
-			assetCategoryLocalService.addAssetEntryAssetCategory(id, revisione);
+			AssetEntryAssetCategoryRelLocalServiceUtil.addAssetEntryAssetCategoryRel(id, revisione);
+
+			//assetCategoryLocalService.addAssetEntryAssetCategory(id, revisione);
 
 			if (feedback.isTipoAllerta())
-				assetCategoryLocalService.addAssetEntryAssetCategory(id, allerta);
+				AssetEntryAssetCategoryRelLocalServiceUtil.addAssetEntryAssetCategoryRel(id, allerta);
+
+				//assetCategoryLocalService.addAssetEntryAssetCategory(id, allerta);
 			if (!feedback.isTipoAllerta())
-				assetCategoryLocalService.addAssetEntryAssetCategory(id, bollettino);
+				AssetEntryAssetCategoryRelLocalServiceUtil.addAssetEntryAssetCategoryRel(id, bollettino);
+
+				//assetCategoryLocalService.addAssetEntryAssetCategory(id, bollettino);
 
 			try {
-				assetCategoryLocalService.deleteAssetEntryAssetCategory(id, lavorazione);
+				AssetEntryAssetCategoryRelLocalServiceUtil.deleteAssetEntryAssetCategoryRel(id, lavorazione);
+
+				//assetCategoryLocalService.deleteAssetEntryAssetCategory(id, lavorazione);
 			} catch (Exception e) {
 
 				logger.error(e);
@@ -360,18 +366,23 @@ public class QuickApprovalServlet extends HttpServlet {
 					.getEntryId();
 
 			try {
-				assetCategoryLocalService.deleteAssetEntryAssetCategory(id, lavorazione);
+				AssetEntryAssetCategoryRelLocalServiceUtil.deleteAssetEntryAssetCategoryRel(id, lavorazione);
+				//assetCategoryLocalService.deleteAssetEntryAssetCategory(id, lavorazione);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			try {
-					assetCategoryLocalService.deleteAssetEntryAssetCategory(id, revisione);
+				AssetEntryAssetCategoryRelLocalServiceUtil.deleteAssetEntryAssetCategoryRel(id, revisione);
+
+					//assetCategoryLocalService.deleteAssetEntryAssetCategory(id, revisione);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			assetCategoryLocalService.addAssetEntryAssetCategory(id, pubblicato);
-			assetCategoryLocalService.addAssetEntryAssetCategory(id, homepage);
-
+			//assetCategoryLocalService.addAssetEntryAssetCategory(id, pubblicato);
+			//assetCategoryLocalService.addAssetEntryAssetCategory(id, homepage);
+			AssetEntryAssetCategoryRelLocalServiceUtil.addAssetEntryAssetCategoryRel(id, pubblicato);
+			AssetEntryAssetCategoryRelLocalServiceUtil.addAssetEntryAssetCategoryRel(id, homepage);
+			
 			if (isIdrogeologica(feedback)) {
 				// attiva il controllo del monitoraggio
 				BollettinoParametro bp = bollettinoParametroLocalService

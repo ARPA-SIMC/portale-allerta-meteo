@@ -1,24 +1,22 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.bollettino.service;
 
-import aQute.bnd.annotation.ProviderType;
+import com.liferay.petra.sql.dsl.query.DSLQuery;
+import com.liferay.portal.kernel.dao.orm.DynamicQuery;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.model.PersistedModel;
+import com.liferay.portal.kernel.module.service.Snapshot;
+import com.liferay.portal.kernel.util.OrderByComparator;
 
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.util.tracker.ServiceTracker;
+import it.eng.bollettino.model.Bollettino;
+
+import java.io.Serializable;
+
+import java.util.List;
 
 /**
  * Provides the local service utility for Bollettino. This utility wraps
@@ -32,7 +30,6 @@ import org.osgi.util.tracker.ServiceTracker;
  * @see BollettinoLocalService
  * @generated
  */
-@ProviderType
 public class BollettinoLocalServiceUtil {
 
 	/*
@@ -44,12 +41,14 @@ public class BollettinoLocalServiceUtil {
 	/**
 	 * Adds the bollettino to the database. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect BollettinoLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param bollettino the bollettino
 	 * @return the bollettino that was added
 	 */
-	public static it.eng.bollettino.model.Bollettino addBollettino(
-		it.eng.bollettino.model.Bollettino bollettino) {
-
+	public static Bollettino addBollettino(Bollettino bollettino) {
 		return getService().addBollettino(bollettino);
 	}
 
@@ -69,34 +68,47 @@ public class BollettinoLocalServiceUtil {
 	 * @param bollettinoId the primary key for the new bollettino
 	 * @return the new bollettino
 	 */
-	public static it.eng.bollettino.model.Bollettino createBollettino(
-		long bollettinoId) {
-
+	public static Bollettino createBollettino(long bollettinoId) {
 		return getService().createBollettino(bollettinoId);
+	}
+
+	/**
+	 * @throws PortalException
+	 */
+	public static PersistedModel createPersistedModel(
+			Serializable primaryKeyObj)
+		throws PortalException {
+
+		return getService().createPersistedModel(primaryKeyObj);
 	}
 
 	/**
 	 * Deletes the bollettino from the database. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect BollettinoLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param bollettino the bollettino
 	 * @return the bollettino that was removed
 	 */
-	public static it.eng.bollettino.model.Bollettino deleteBollettino(
-		it.eng.bollettino.model.Bollettino bollettino) {
-
+	public static Bollettino deleteBollettino(Bollettino bollettino) {
 		return getService().deleteBollettino(bollettino);
 	}
 
 	/**
 	 * Deletes the bollettino with the primary key from the database. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect BollettinoLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param bollettinoId the primary key of the bollettino
 	 * @return the bollettino that was removed
 	 * @throws PortalException if a bollettino with the primary key could not be found
 	 */
-	public static it.eng.bollettino.model.Bollettino deleteBollettino(
-			long bollettinoId)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	public static Bollettino deleteBollettino(long bollettinoId)
+		throws PortalException {
 
 		return getService().deleteBollettino(bollettinoId);
 	}
@@ -104,17 +116,22 @@ public class BollettinoLocalServiceUtil {
 	/**
 	 * @throws PortalException
 	 */
-	public static com.liferay.portal.kernel.model.PersistedModel
-			deletePersistedModel(
-				com.liferay.portal.kernel.model.PersistedModel persistedModel)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	public static PersistedModel deletePersistedModel(
+			PersistedModel persistedModel)
+		throws PortalException {
 
 		return getService().deletePersistedModel(persistedModel);
 	}
 
-	public static com.liferay.portal.kernel.dao.orm.DynamicQuery
-		dynamicQuery() {
+	public static <T> T dslQuery(DSLQuery dslQuery) {
+		return getService().dslQuery(dslQuery);
+	}
 
+	public static int dslQueryCount(DSLQuery dslQuery) {
+		return getService().dslQueryCount(dslQuery);
+	}
+
+	public static DynamicQuery dynamicQuery() {
 		return getService().dynamicQuery();
 	}
 
@@ -124,9 +141,7 @@ public class BollettinoLocalServiceUtil {
 	 * @param dynamicQuery the dynamic query
 	 * @return the matching rows
 	 */
-	public static <T> java.util.List<T> dynamicQuery(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery) {
-
+	public static <T> List<T> dynamicQuery(DynamicQuery dynamicQuery) {
 		return getService().dynamicQuery(dynamicQuery);
 	}
 
@@ -134,7 +149,7 @@ public class BollettinoLocalServiceUtil {
 	 * Performs a dynamic query on the database and returns a range of the matching rows.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>it.eng.bollettino.model.impl.BollettinoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>it.eng.bollettino.model.impl.BollettinoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param dynamicQuery the dynamic query
@@ -142,9 +157,8 @@ public class BollettinoLocalServiceUtil {
 	 * @param end the upper bound of the range of model instances (not inclusive)
 	 * @return the range of matching rows
 	 */
-	public static <T> java.util.List<T> dynamicQuery(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery, int start,
-		int end) {
+	public static <T> List<T> dynamicQuery(
+		DynamicQuery dynamicQuery, int start, int end) {
 
 		return getService().dynamicQuery(dynamicQuery, start, end);
 	}
@@ -153,7 +167,7 @@ public class BollettinoLocalServiceUtil {
 	 * Performs a dynamic query on the database and returns an ordered range of the matching rows.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>it.eng.bollettino.model.impl.BollettinoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>it.eng.bollettino.model.impl.BollettinoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param dynamicQuery the dynamic query
@@ -162,10 +176,9 @@ public class BollettinoLocalServiceUtil {
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching rows
 	 */
-	public static <T> java.util.List<T> dynamicQuery(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery, int start,
-		int end,
-		com.liferay.portal.kernel.util.OrderByComparator<T> orderByComparator) {
+	public static <T> List<T> dynamicQuery(
+		DynamicQuery dynamicQuery, int start, int end,
+		OrderByComparator<T> orderByComparator) {
 
 		return getService().dynamicQuery(
 			dynamicQuery, start, end, orderByComparator);
@@ -177,9 +190,7 @@ public class BollettinoLocalServiceUtil {
 	 * @param dynamicQuery the dynamic query
 	 * @return the number of rows matching the dynamic query
 	 */
-	public static long dynamicQueryCount(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery) {
-
+	public static long dynamicQueryCount(DynamicQuery dynamicQuery) {
 		return getService().dynamicQueryCount(dynamicQuery);
 	}
 
@@ -191,7 +202,7 @@ public class BollettinoLocalServiceUtil {
 	 * @return the number of rows matching the dynamic query
 	 */
 	public static long dynamicQueryCount(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery,
+		DynamicQuery dynamicQuery,
 		com.liferay.portal.kernel.dao.orm.Projection projection) {
 
 		return getService().dynamicQueryCount(dynamicQuery, projection);
@@ -201,13 +212,11 @@ public class BollettinoLocalServiceUtil {
 		return getService().eseguiQueryGenerica(q);
 	}
 
-	public static java.util.List eseguiQueryGenericaLista(String q) {
+	public static List eseguiQueryGenericaLista(String q) {
 		return getService().eseguiQueryGenericaLista(q);
 	}
 
-	public static it.eng.bollettino.model.Bollettino fetchBollettino(
-		long bollettinoId) {
-
+	public static Bollettino fetchBollettino(long bollettinoId) {
 		return getService().fetchBollettino(bollettinoId);
 	}
 
@@ -218,8 +227,8 @@ public class BollettinoLocalServiceUtil {
 	 * @param groupId the primary key of the group
 	 * @return the matching bollettino, or <code>null</code> if a matching bollettino could not be found
 	 */
-	public static it.eng.bollettino.model.Bollettino
-		fetchBollettinoByUuidAndGroupId(String uuid, long groupId) {
+	public static Bollettino fetchBollettinoByUuidAndGroupId(
+		String uuid, long groupId) {
 
 		return getService().fetchBollettinoByUuidAndGroupId(uuid, groupId);
 	}
@@ -263,9 +272,8 @@ public class BollettinoLocalServiceUtil {
 	 * @return the bollettino
 	 * @throws PortalException if a bollettino with the primary key could not be found
 	 */
-	public static it.eng.bollettino.model.Bollettino getBollettino(
-			long bollettinoId)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	public static Bollettino getBollettino(long bollettinoId)
+		throws PortalException {
 
 		return getService().getBollettino(bollettinoId);
 	}
@@ -278,9 +286,9 @@ public class BollettinoLocalServiceUtil {
 	 * @return the matching bollettino
 	 * @throws PortalException if a matching bollettino could not be found
 	 */
-	public static it.eng.bollettino.model.Bollettino
-			getBollettinoByUuidAndGroupId(String uuid, long groupId)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	public static Bollettino getBollettinoByUuidAndGroupId(
+			String uuid, long groupId)
+		throws PortalException {
 
 		return getService().getBollettinoByUuidAndGroupId(uuid, groupId);
 	}
@@ -289,16 +297,14 @@ public class BollettinoLocalServiceUtil {
 	 * Returns a range of all the bollettinos.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>it.eng.bollettino.model.impl.BollettinoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>it.eng.bollettino.model.impl.BollettinoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of bollettinos
 	 * @param end the upper bound of the range of bollettinos (not inclusive)
 	 * @return the range of bollettinos
 	 */
-	public static java.util.List<it.eng.bollettino.model.Bollettino>
-		getBollettinos(int start, int end) {
-
+	public static List<Bollettino> getBollettinos(int start, int end) {
 		return getService().getBollettinos(start, end);
 	}
 
@@ -309,8 +315,8 @@ public class BollettinoLocalServiceUtil {
 	 * @param companyId the primary key of the company
 	 * @return the matching bollettinos, or an empty list if no matches were found
 	 */
-	public static java.util.List<it.eng.bollettino.model.Bollettino>
-		getBollettinosByUuidAndCompanyId(String uuid, long companyId) {
+	public static List<Bollettino> getBollettinosByUuidAndCompanyId(
+		String uuid, long companyId) {
 
 		return getService().getBollettinosByUuidAndCompanyId(uuid, companyId);
 	}
@@ -325,11 +331,9 @@ public class BollettinoLocalServiceUtil {
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the range of matching bollettinos, or an empty list if no matches were found
 	 */
-	public static java.util.List<it.eng.bollettino.model.Bollettino>
-		getBollettinosByUuidAndCompanyId(
-			String uuid, long companyId, int start, int end,
-			com.liferay.portal.kernel.util.OrderByComparator
-				<it.eng.bollettino.model.Bollettino> orderByComparator) {
+	public static List<Bollettino> getBollettinosByUuidAndCompanyId(
+		String uuid, long companyId, int start, int end,
+		OrderByComparator<Bollettino> orderByComparator) {
 
 		return getService().getBollettinosByUuidAndCompanyId(
 			uuid, companyId, start, end, orderByComparator);
@@ -352,7 +356,7 @@ public class BollettinoLocalServiceUtil {
 		return getService().getExportActionableDynamicQuery(portletDataContext);
 	}
 
-	public static java.util.List<Object> getFiumiBollettino(long id) {
+	public static List<Object> getFiumiBollettino(long id) {
 		return getService().getFiumiBollettino(id);
 	}
 
@@ -363,9 +367,7 @@ public class BollettinoLocalServiceUtil {
 		return getService().getIndexableActionableDynamicQuery();
 	}
 
-	public static java.util.List<it.eng.bollettino.model.Bollettino>
-		getListaBollettiniMonitoraggio() {
-
+	public static List<Bollettino> getListaBollettiniMonitoraggio() {
 		return getService().getListaBollettiniMonitoraggio();
 	}
 
@@ -378,9 +380,11 @@ public class BollettinoLocalServiceUtil {
 		return getService().getOSGiServiceIdentifier();
 	}
 
-	public static com.liferay.portal.kernel.model.PersistedModel
-			getPersistedModel(java.io.Serializable primaryKeyObj)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	/**
+	 * @throws PortalException
+	 */
+	public static PersistedModel getPersistedModel(Serializable primaryKeyObj)
+		throws PortalException {
 
 		return getService().getPersistedModel(primaryKeyObj);
 	}
@@ -402,35 +406,23 @@ public class BollettinoLocalServiceUtil {
 	/**
 	 * Updates the bollettino in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect BollettinoLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param bollettino the bollettino
 	 * @return the bollettino that was updated
 	 */
-	public static it.eng.bollettino.model.Bollettino updateBollettino(
-		it.eng.bollettino.model.Bollettino bollettino) {
-
+	public static Bollettino updateBollettino(Bollettino bollettino) {
 		return getService().updateBollettino(bollettino);
 	}
 
 	public static BollettinoLocalService getService() {
-		return _serviceTracker.getService();
+		return _serviceSnapshot.get();
 	}
 
-	private static ServiceTracker
-		<BollettinoLocalService, BollettinoLocalService> _serviceTracker;
-
-	static {
-		Bundle bundle = FrameworkUtil.getBundle(BollettinoLocalService.class);
-
-		ServiceTracker<BollettinoLocalService, BollettinoLocalService>
-			serviceTracker =
-				new ServiceTracker
-					<BollettinoLocalService, BollettinoLocalService>(
-						bundle.getBundleContext(), BollettinoLocalService.class,
-						null);
-
-		serviceTracker.open();
-
-		_serviceTracker = serviceTracker;
-	}
+	private static final Snapshot<BollettinoLocalService> _serviceSnapshot =
+		new Snapshot<>(
+			BollettinoLocalServiceUtil.class, BollettinoLocalService.class);
 
 }

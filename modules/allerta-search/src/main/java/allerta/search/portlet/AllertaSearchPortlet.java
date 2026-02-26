@@ -4,6 +4,7 @@ import allerta.search.constants.AllertaSearchPortletKeys;
 
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
+import com.liferay.portal.kernel.util.PortalUtil;
 
 import java.io.IOException;
 import java.util.Map;
@@ -21,7 +22,7 @@ import org.osgi.service.component.annotations.Modified;
  * @author GFavini
  */
 @Component(
-	configurationPid="allerta.search.portlet.AllertaSearchPortlet",
+	configurationPid="allerta.search.portlet.SearchPortletConfig",
 	immediate = true,
 	property = {
 		"com.liferay.portlet.display-category=category.sample",
@@ -50,6 +51,20 @@ public class AllertaSearchPortlet extends MVCPortlet {
             renderRequest.setAttribute(
             		SearchPortletConfig.class.getName(),
                     configuration);
+            
+            String url = PortalUtil.getHttpServletRequest(renderRequest).getRequestURI();
+            String searchable = "";
+            if (url==null) url = "";
+            searchable = "allerta";
+            if (url.contains("valang")) searchable = "valanghe";
+            if (url.contains("monitoraggi")) searchable = "monitoraggio";
+            if (url.contains("briefing")) searchable = "allerta-briefing";
+            if (url.contains("post-evento")) searchable = "report-post-evento";
+            if (url.contains("verifiche-allerte")) searchable = "verifica-settimanale";
+
+            
+            
+            renderRequest.setAttribute("searchable", searchable);
 
             super.doView(renderRequest, renderResponse);
     }

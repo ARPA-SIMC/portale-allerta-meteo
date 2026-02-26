@@ -14,12 +14,12 @@ taglib uri="http://liferay.com/tld/ui" prefix="liferay-ui" %>
 
 <portlet:defineObjects />
 
-<%@ page import="allerta.search.portlet.SearchPortletConfig" %>
 
 
 <%
-	SearchPortletConfig cf = 
-		portletDisplay.getPortletInstanceConfiguration(SearchPortletConfig.class);
 
-	Searchable searchable = SearchFactory.getSearchable(cf.oggetto());
+
+	String s = (String)renderRequest.getAttribute("searchable");
+
+	Searchable searchable = SearchFactory.getSearchable(s);
 %>

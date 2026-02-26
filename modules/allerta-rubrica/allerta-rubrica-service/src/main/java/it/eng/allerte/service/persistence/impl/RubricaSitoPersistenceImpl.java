@@ -1,21 +1,12 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerte.service.persistence.impl;
 
-import aQute.bnd.annotation.ProviderType;
-
+import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
@@ -23,31 +14,39 @@ import com.liferay.portal.kernel.dao.orm.Query;
 import com.liferay.portal.kernel.dao.orm.QueryPos;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
+import com.liferay.portal.kernel.dao.orm.SessionFactory;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.kernel.util.PropsKeys;
+import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.ProxyUtil;
-import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.spring.extender.service.ServiceReference;
 
 import it.eng.allerte.exception.NoSuchRubricaSitoException;
 import it.eng.allerte.model.RubricaSito;
+import it.eng.allerte.model.RubricaSitoTable;
 import it.eng.allerte.model.impl.RubricaSitoImpl;
 import it.eng.allerte.model.impl.RubricaSitoModelImpl;
 import it.eng.allerte.service.persistence.RubricaSitoPersistence;
+import it.eng.allerte.service.persistence.RubricaSitoUtil;
+import it.eng.allerte.service.persistence.impl.constants.rubricaPersistenceConstants;
 
 import java.io.Serializable;
 
 import java.lang.reflect.InvocationHandler;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.sql.DataSource;
+
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The persistence implementation for the rubrica sito service.
@@ -59,7 +58,7 @@ import java.util.Set;
  * @author Pratola_L
  * @generated
  */
-@ProviderType
+@Component(service = RubricaSitoPersistence.class)
 public class RubricaSitoPersistenceImpl
 	extends BasePersistenceImpl<RubricaSito> implements RubricaSitoPersistence {
 
@@ -100,7 +99,7 @@ public class RubricaSitoPersistenceImpl
 	 * Returns a range of all the rubrica sitos where FK_LIFERAY_SITE = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaSitoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaSitoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param FK_LIFERAY_SITE the fk_liferay_site
@@ -119,7 +118,7 @@ public class RubricaSitoPersistenceImpl
 	 * Returns an ordered range of all the rubrica sitos where FK_LIFERAY_SITE = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaSitoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaSitoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param FK_LIFERAY_SITE the fk_liferay_site
@@ -141,34 +140,34 @@ public class RubricaSitoPersistenceImpl
 	 * Returns an ordered range of all the rubrica sitos where FK_LIFERAY_SITE = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaSitoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaSitoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param FK_LIFERAY_SITE the fk_liferay_site
 	 * @param start the lower bound of the range of rubrica sitos
 	 * @param end the upper bound of the range of rubrica sitos (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching rubrica sitos
 	 */
 	@Override
 	public List<RubricaSito> findByLiferaySite(
 		long FK_LIFERAY_SITE, int start, int end,
 		OrderByComparator<RubricaSito> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindByLiferaySite;
-			finderArgs = new Object[] {FK_LIFERAY_SITE};
+			if (useFinderCache) {
+				finderPath = _finderPathWithoutPaginationFindByLiferaySite;
+				finderArgs = new Object[] {FK_LIFERAY_SITE};
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByLiferaySite;
 			finderArgs = new Object[] {
 				FK_LIFERAY_SITE, start, end, orderByComparator
@@ -177,13 +176,13 @@ public class RubricaSitoPersistenceImpl
 
 		List<RubricaSito> list = null;
 
-		if (retrieveFromCache) {
-			list = (List<RubricaSito>)finderCache.getResult(
+		if (useFinderCache) {
+			list = (List<RubricaSito>)dummyFinderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (RubricaSito rubricaSito : list) {
-					if ((FK_LIFERAY_SITE != rubricaSito.getFK_LIFERAY_SITE())) {
+					if (FK_LIFERAY_SITE != rubricaSito.getFK_LIFERAY_SITE()) {
 						list = null;
 
 						break;
@@ -193,62 +192,52 @@ public class RubricaSitoPersistenceImpl
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					3 + (orderByComparator.getOrderByFields().length * 2));
 			}
 			else {
-				query = new StringBundler(3);
+				sb = new StringBundler(3);
 			}
 
-			query.append(_SQL_SELECT_RUBRICASITO_WHERE);
+			sb.append(_SQL_SELECT_RUBRICASITO_WHERE);
 
-			query.append(_FINDER_COLUMN_LIFERAYSITE_FK_LIFERAY_SITE_2);
+			sb.append(_FINDER_COLUMN_LIFERAYSITE_FK_LIFERAY_SITE_2);
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 			}
-			else if (pagination) {
-				query.append(RubricaSitoModelImpl.ORDER_BY_JPQL);
+			else {
+				sb.append(RubricaSitoModelImpl.ORDER_BY_JPQL);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
-				qPos.add(FK_LIFERAY_SITE);
+				queryPos.add(FK_LIFERAY_SITE);
 
-				if (!pagination) {
-					list = (List<RubricaSito>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<RubricaSito>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<RubricaSito>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					dummyFinderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -279,16 +268,16 @@ public class RubricaSitoPersistenceImpl
 			return rubricaSito;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("FK_LIFERAY_SITE=");
-		msg.append(FK_LIFERAY_SITE);
+		sb.append("FK_LIFERAY_SITE=");
+		sb.append(FK_LIFERAY_SITE);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchRubricaSitoException(msg.toString());
+		throw new NoSuchRubricaSitoException(sb.toString());
 	}
 
 	/**
@@ -334,16 +323,16 @@ public class RubricaSitoPersistenceImpl
 			return rubricaSito;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("FK_LIFERAY_SITE=");
-		msg.append(FK_LIFERAY_SITE);
+		sb.append("FK_LIFERAY_SITE=");
+		sb.append(FK_LIFERAY_SITE);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchRubricaSitoException(msg.toString());
+		throw new NoSuchRubricaSitoException(sb.toString());
 	}
 
 	/**
@@ -409,8 +398,8 @@ public class RubricaSitoPersistenceImpl
 
 			return array;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -421,101 +410,101 @@ public class RubricaSitoPersistenceImpl
 		Session session, RubricaSito rubricaSito, long FK_LIFERAY_SITE,
 		OrderByComparator<RubricaSito> orderByComparator, boolean previous) {
 
-		StringBundler query = null;
+		StringBundler sb = null;
 
 		if (orderByComparator != null) {
-			query = new StringBundler(
+			sb = new StringBundler(
 				4 + (orderByComparator.getOrderByConditionFields().length * 3) +
 					(orderByComparator.getOrderByFields().length * 3));
 		}
 		else {
-			query = new StringBundler(3);
+			sb = new StringBundler(3);
 		}
 
-		query.append(_SQL_SELECT_RUBRICASITO_WHERE);
+		sb.append(_SQL_SELECT_RUBRICASITO_WHERE);
 
-		query.append(_FINDER_COLUMN_LIFERAYSITE_FK_LIFERAY_SITE_2);
+		sb.append(_FINDER_COLUMN_LIFERAYSITE_FK_LIFERAY_SITE_2);
 
 		if (orderByComparator != null) {
 			String[] orderByConditionFields =
 				orderByComparator.getOrderByConditionFields();
 
 			if (orderByConditionFields.length > 0) {
-				query.append(WHERE_AND);
+				sb.append(WHERE_AND);
 			}
 
 			for (int i = 0; i < orderByConditionFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByConditionFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByConditionFields[i]);
 
 				if ((i + 1) < orderByConditionFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+						sb.append(WHERE_GREATER_THAN_HAS_NEXT);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+						sb.append(WHERE_LESSER_THAN_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN);
+						sb.append(WHERE_GREATER_THAN);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN);
+						sb.append(WHERE_LESSER_THAN);
 					}
 				}
 			}
 
-			query.append(ORDER_BY_CLAUSE);
+			sb.append(ORDER_BY_CLAUSE);
 
 			String[] orderByFields = orderByComparator.getOrderByFields();
 
 			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByFields[i]);
 
 				if ((i + 1) < orderByFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC_HAS_NEXT);
+						sb.append(ORDER_BY_ASC_HAS_NEXT);
 					}
 					else {
-						query.append(ORDER_BY_DESC_HAS_NEXT);
+						sb.append(ORDER_BY_DESC_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC);
+						sb.append(ORDER_BY_ASC);
 					}
 					else {
-						query.append(ORDER_BY_DESC);
+						sb.append(ORDER_BY_DESC);
 					}
 				}
 			}
 		}
 		else {
-			query.append(RubricaSitoModelImpl.ORDER_BY_JPQL);
+			sb.append(RubricaSitoModelImpl.ORDER_BY_JPQL);
 		}
 
-		String sql = query.toString();
+		String sql = sb.toString();
 
-		Query q = session.createQuery(sql);
+		Query query = session.createQuery(sql);
 
-		q.setFirstResult(0);
-		q.setMaxResults(2);
+		query.setFirstResult(0);
+		query.setMaxResults(2);
 
-		QueryPos qPos = QueryPos.getInstance(q);
+		QueryPos queryPos = QueryPos.getInstance(query);
 
-		qPos.add(FK_LIFERAY_SITE);
+		queryPos.add(FK_LIFERAY_SITE);
 
 		if (orderByComparator != null) {
 			for (Object orderByConditionValue :
 					orderByComparator.getOrderByConditionValues(rubricaSito)) {
 
-				qPos.add(orderByConditionValue);
+				queryPos.add(orderByConditionValue);
 			}
 		}
 
-		List<RubricaSito> list = q.list();
+		List<RubricaSito> list = query.list();
 
 		if (list.size() == 2) {
 			return list.get(1);
@@ -553,36 +542,35 @@ public class RubricaSitoPersistenceImpl
 
 		Object[] finderArgs = new Object[] {FK_LIFERAY_SITE};
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = (Long)dummyFinderCache.getResult(
+			finderPath, finderArgs, this);
 
 		if (count == null) {
-			StringBundler query = new StringBundler(2);
+			StringBundler sb = new StringBundler(2);
 
-			query.append(_SQL_COUNT_RUBRICASITO_WHERE);
+			sb.append(_SQL_COUNT_RUBRICASITO_WHERE);
 
-			query.append(_FINDER_COLUMN_LIFERAYSITE_FK_LIFERAY_SITE_2);
+			sb.append(_FINDER_COLUMN_LIFERAYSITE_FK_LIFERAY_SITE_2);
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
-				qPos.add(FK_LIFERAY_SITE);
+				queryPos.add(FK_LIFERAY_SITE);
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
-				finderCache.putResult(finderPath, finderArgs, count);
+				dummyFinderCache.putResult(finderPath, finderArgs, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -597,6 +585,11 @@ public class RubricaSitoPersistenceImpl
 
 	public RubricaSitoPersistenceImpl() {
 		setModelClass(RubricaSito.class);
+
+		setModelImplClass(RubricaSitoImpl.class);
+		setModelPKClass(long.class);
+
+		setTable(RubricaSitoTable.INSTANCE);
 	}
 
 	/**
@@ -606,12 +599,11 @@ public class RubricaSitoPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(RubricaSito rubricaSito) {
-		entityCache.putResult(
-			RubricaSitoModelImpl.ENTITY_CACHE_ENABLED, RubricaSitoImpl.class,
-			rubricaSito.getPrimaryKey(), rubricaSito);
-
-		rubricaSito.resetOriginalValues();
+		dummyEntityCache.putResult(
+			RubricaSitoImpl.class, rubricaSito.getPrimaryKey(), rubricaSito);
 	}
+
+	private int _valueObjectFinderCacheListThreshold;
 
 	/**
 	 * Caches the rubrica sitos in the entity cache if it is enabled.
@@ -620,16 +612,19 @@ public class RubricaSitoPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(List<RubricaSito> rubricaSitos) {
+		if ((_valueObjectFinderCacheListThreshold == 0) ||
+			((_valueObjectFinderCacheListThreshold > 0) &&
+			 (rubricaSitos.size() > _valueObjectFinderCacheListThreshold))) {
+
+			return;
+		}
+
 		for (RubricaSito rubricaSito : rubricaSitos) {
-			if (entityCache.getResult(
-					RubricaSitoModelImpl.ENTITY_CACHE_ENABLED,
+			if (dummyEntityCache.getResult(
 					RubricaSitoImpl.class, rubricaSito.getPrimaryKey()) ==
 						null) {
 
 				cacheResult(rubricaSito);
-			}
-			else {
-				rubricaSito.resetOriginalValues();
 			}
 		}
 	}
@@ -643,11 +638,9 @@ public class RubricaSitoPersistenceImpl
 	 */
 	@Override
 	public void clearCache() {
-		entityCache.clearCache(RubricaSitoImpl.class);
+		dummyEntityCache.clearCache(RubricaSitoImpl.class);
 
-		finderCache.clearCache(FINDER_CLASS_NAME_ENTITY);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		dummyFinderCache.clearCache(RubricaSitoImpl.class);
 	}
 
 	/**
@@ -659,23 +652,22 @@ public class RubricaSitoPersistenceImpl
 	 */
 	@Override
 	public void clearCache(RubricaSito rubricaSito) {
-		entityCache.removeResult(
-			RubricaSitoModelImpl.ENTITY_CACHE_ENABLED, RubricaSitoImpl.class,
-			rubricaSito.getPrimaryKey());
-
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		dummyEntityCache.removeResult(RubricaSitoImpl.class, rubricaSito);
 	}
 
 	@Override
 	public void clearCache(List<RubricaSito> rubricaSitos) {
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
-
 		for (RubricaSito rubricaSito : rubricaSitos) {
-			entityCache.removeResult(
-				RubricaSitoModelImpl.ENTITY_CACHE_ENABLED,
-				RubricaSitoImpl.class, rubricaSito.getPrimaryKey());
+			dummyEntityCache.removeResult(RubricaSitoImpl.class, rubricaSito);
+		}
+	}
+
+	@Override
+	public void clearCache(Set<Serializable> primaryKeys) {
+		dummyFinderCache.clearCache(RubricaSitoImpl.class);
+
+		for (Serializable primaryKey : primaryKeys) {
+			dummyEntityCache.removeResult(RubricaSitoImpl.class, primaryKey);
 		}
 	}
 
@@ -737,11 +729,11 @@ public class RubricaSitoPersistenceImpl
 
 			return remove(rubricaSito);
 		}
-		catch (NoSuchRubricaSitoException nsee) {
-			throw nsee;
+		catch (NoSuchRubricaSitoException noSuchEntityException) {
+			throw noSuchEntityException;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -764,8 +756,8 @@ public class RubricaSitoPersistenceImpl
 				session.delete(rubricaSito);
 			}
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -806,64 +798,26 @@ public class RubricaSitoPersistenceImpl
 		try {
 			session = openSession();
 
-			if (rubricaSito.isNew()) {
+			if (isNew) {
 				session.save(rubricaSito);
-
-				rubricaSito.setNew(false);
 			}
 			else {
 				rubricaSito = (RubricaSito)session.merge(rubricaSito);
 			}
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
 		}
 
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		dummyEntityCache.putResult(
+			RubricaSitoImpl.class, rubricaSitoModelImpl, false, true);
 
-		if (!RubricaSitoModelImpl.COLUMN_BITMASK_ENABLED) {
-			finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		if (isNew) {
+			rubricaSito.setNew(false);
 		}
-		else if (isNew) {
-			Object[] args = new Object[] {
-				rubricaSitoModelImpl.getFK_LIFERAY_SITE()
-			};
-
-			finderCache.removeResult(_finderPathCountByLiferaySite, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByLiferaySite, args);
-
-			finderCache.removeResult(_finderPathCountAll, FINDER_ARGS_EMPTY);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindAll, FINDER_ARGS_EMPTY);
-		}
-		else {
-			if ((rubricaSitoModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByLiferaySite.
-					 getColumnBitmask()) != 0) {
-
-				Object[] args = new Object[] {
-					rubricaSitoModelImpl.getOriginalFK_LIFERAY_SITE()
-				};
-
-				finderCache.removeResult(_finderPathCountByLiferaySite, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByLiferaySite, args);
-
-				args = new Object[] {rubricaSitoModelImpl.getFK_LIFERAY_SITE()};
-
-				finderCache.removeResult(_finderPathCountByLiferaySite, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByLiferaySite, args);
-			}
-		}
-
-		entityCache.putResult(
-			RubricaSitoModelImpl.ENTITY_CACHE_ENABLED, RubricaSitoImpl.class,
-			rubricaSito.getPrimaryKey(), rubricaSito, false);
 
 		rubricaSito.resetOriginalValues();
 
@@ -912,161 +866,12 @@ public class RubricaSitoPersistenceImpl
 	/**
 	 * Returns the rubrica sito with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the rubrica sito
-	 * @return the rubrica sito, or <code>null</code> if a rubrica sito with the primary key could not be found
-	 */
-	@Override
-	public RubricaSito fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(
-			RubricaSitoModelImpl.ENTITY_CACHE_ENABLED, RubricaSitoImpl.class,
-			primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		RubricaSito rubricaSito = (RubricaSito)serializable;
-
-		if (rubricaSito == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				rubricaSito = (RubricaSito)session.get(
-					RubricaSitoImpl.class, primaryKey);
-
-				if (rubricaSito != null) {
-					cacheResult(rubricaSito);
-				}
-				else {
-					entityCache.putResult(
-						RubricaSitoModelImpl.ENTITY_CACHE_ENABLED,
-						RubricaSitoImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(
-					RubricaSitoModelImpl.ENTITY_CACHE_ENABLED,
-					RubricaSitoImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return rubricaSito;
-	}
-
-	/**
-	 * Returns the rubrica sito with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param ID_SITO the primary key of the rubrica sito
 	 * @return the rubrica sito, or <code>null</code> if a rubrica sito with the primary key could not be found
 	 */
 	@Override
 	public RubricaSito fetchByPrimaryKey(long ID_SITO) {
 		return fetchByPrimaryKey((Serializable)ID_SITO);
-	}
-
-	@Override
-	public Map<Serializable, RubricaSito> fetchByPrimaryKeys(
-		Set<Serializable> primaryKeys) {
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, RubricaSito> map =
-			new HashMap<Serializable, RubricaSito>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			RubricaSito rubricaSito = fetchByPrimaryKey(primaryKey);
-
-			if (rubricaSito != null) {
-				map.put(primaryKey, rubricaSito);
-			}
-
-			return map;
-		}
-
-		Set<Serializable> uncachedPrimaryKeys = null;
-
-		for (Serializable primaryKey : primaryKeys) {
-			Serializable serializable = entityCache.getResult(
-				RubricaSitoModelImpl.ENTITY_CACHE_ENABLED,
-				RubricaSitoImpl.class, primaryKey);
-
-			if (serializable != nullModel) {
-				if (serializable == null) {
-					if (uncachedPrimaryKeys == null) {
-						uncachedPrimaryKeys = new HashSet<Serializable>();
-					}
-
-					uncachedPrimaryKeys.add(primaryKey);
-				}
-				else {
-					map.put(primaryKey, (RubricaSito)serializable);
-				}
-			}
-		}
-
-		if (uncachedPrimaryKeys == null) {
-			return map;
-		}
-
-		StringBundler query = new StringBundler(
-			uncachedPrimaryKeys.size() * 2 + 1);
-
-		query.append(_SQL_SELECT_RUBRICASITO_WHERE_PKS_IN);
-
-		for (Serializable primaryKey : uncachedPrimaryKeys) {
-			query.append((long)primaryKey);
-
-			query.append(",");
-		}
-
-		query.setIndex(query.index() - 1);
-
-		query.append(")");
-
-		String sql = query.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query q = session.createQuery(sql);
-
-			for (RubricaSito rubricaSito : (List<RubricaSito>)q.list()) {
-				map.put(rubricaSito.getPrimaryKeyObj(), rubricaSito);
-
-				cacheResult(rubricaSito);
-
-				uncachedPrimaryKeys.remove(rubricaSito.getPrimaryKeyObj());
-			}
-
-			for (Serializable primaryKey : uncachedPrimaryKeys) {
-				entityCache.putResult(
-					RubricaSitoModelImpl.ENTITY_CACHE_ENABLED,
-					RubricaSitoImpl.class, primaryKey, nullModel);
-			}
-		}
-		catch (Exception e) {
-			throw processException(e);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**
@@ -1083,7 +888,7 @@ public class RubricaSitoPersistenceImpl
 	 * Returns a range of all the rubrica sitos.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaSitoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaSitoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of rubrica sitos
@@ -1099,7 +904,7 @@ public class RubricaSitoPersistenceImpl
 	 * Returns an ordered range of all the rubrica sitos.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaSitoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaSitoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of rubrica sitos
@@ -1118,64 +923,62 @@ public class RubricaSitoPersistenceImpl
 	 * Returns an ordered range of all the rubrica sitos.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaSitoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaSitoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of rubrica sitos
 	 * @param end the upper bound of the range of rubrica sitos (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of rubrica sitos
 	 */
 	@Override
 	public List<RubricaSito> findAll(
 		int start, int end, OrderByComparator<RubricaSito> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindAll;
-			finderArgs = FINDER_ARGS_EMPTY;
+			if (useFinderCache) {
+				finderPath = _finderPathWithoutPaginationFindAll;
+				finderArgs = FINDER_ARGS_EMPTY;
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
 			finderArgs = new Object[] {start, end, orderByComparator};
 		}
 
 		List<RubricaSito> list = null;
 
-		if (retrieveFromCache) {
-			list = (List<RubricaSito>)finderCache.getResult(
+		if (useFinderCache) {
+			list = (List<RubricaSito>)dummyFinderCache.getResult(
 				finderPath, finderArgs, this);
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 			String sql = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					2 + (orderByComparator.getOrderByFields().length * 2));
 
-				query.append(_SQL_SELECT_RUBRICASITO);
+				sb.append(_SQL_SELECT_RUBRICASITO);
 
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 
-				sql = query.toString();
+				sql = sb.toString();
 			}
 			else {
 				sql = _SQL_SELECT_RUBRICASITO;
 
-				if (pagination) {
-					sql = sql.concat(RubricaSitoModelImpl.ORDER_BY_JPQL);
-				}
+				sql = sql.concat(RubricaSitoModelImpl.ORDER_BY_JPQL);
 			}
 
 			Session session = null;
@@ -1183,29 +986,19 @@ public class RubricaSitoPersistenceImpl
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				if (!pagination) {
-					list = (List<RubricaSito>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<RubricaSito>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<RubricaSito>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					dummyFinderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -1233,7 +1026,7 @@ public class RubricaSitoPersistenceImpl
 	 */
 	@Override
 	public int countAll() {
-		Long count = (Long)finderCache.getResult(
+		Long count = (Long)dummyFinderCache.getResult(
 			_finderPathCountAll, FINDER_ARGS_EMPTY, this);
 
 		if (count == null) {
@@ -1242,18 +1035,15 @@ public class RubricaSitoPersistenceImpl
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(_SQL_COUNT_RUBRICASITO);
+				Query query = session.createQuery(_SQL_COUNT_RUBRICASITO);
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
-				finderCache.putResult(
+				dummyFinderCache.putResult(
 					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -1264,6 +1054,21 @@ public class RubricaSitoPersistenceImpl
 	}
 
 	@Override
+	protected EntityCache getEntityCache() {
+		return dummyEntityCache;
+	}
+
+	@Override
+	protected String getPKDBName() {
+		return "ID_SITO";
+	}
+
+	@Override
+	protected String getSelectSQL() {
+		return _SQL_SELECT_RUBRICASITO;
+	}
+
+	@Override
 	protected Map<String, Integer> getTableColumnsMap() {
 		return RubricaSitoModelImpl.TABLE_COLUMNS_MAP;
 	}
@@ -1271,65 +1076,79 @@ public class RubricaSitoPersistenceImpl
 	/**
 	 * Initializes the rubrica sito persistence.
 	 */
-	public void afterPropertiesSet() {
+	@Activate
+	public void activate() {
+		_valueObjectFinderCacheListThreshold = GetterUtil.getInteger(
+			PropsUtil.get(PropsKeys.VALUE_OBJECT_FINDER_CACHE_LIST_THRESHOLD));
+
 		_finderPathWithPaginationFindAll = new FinderPath(
-			RubricaSitoModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaSitoModelImpl.FINDER_CACHE_ENABLED, RubricaSitoImpl.class,
-			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findAll", new String[0]);
+			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findAll", new String[0],
+			new String[0], true);
 
 		_finderPathWithoutPaginationFindAll = new FinderPath(
-			RubricaSitoModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaSitoModelImpl.FINDER_CACHE_ENABLED, RubricaSitoImpl.class,
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findAll",
-			new String[0]);
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findAll", new String[0],
+			new String[0], true);
 
 		_finderPathCountAll = new FinderPath(
-			RubricaSitoModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaSitoModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countAll",
-			new String[0]);
+			new String[0], new String[0], false);
 
 		_finderPathWithPaginationFindByLiferaySite = new FinderPath(
-			RubricaSitoModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaSitoModelImpl.FINDER_CACHE_ENABLED, RubricaSitoImpl.class,
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByLiferaySite",
 			new String[] {
 				Long.class.getName(), Integer.class.getName(),
 				Integer.class.getName(), OrderByComparator.class.getName()
-			});
+			},
+			new String[] {"FK_LIFERAY_SITE"}, true);
 
 		_finderPathWithoutPaginationFindByLiferaySite = new FinderPath(
-			RubricaSitoModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaSitoModelImpl.FINDER_CACHE_ENABLED, RubricaSitoImpl.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByLiferaySite",
 			new String[] {Long.class.getName()},
-			RubricaSitoModelImpl.FK_LIFERAY_SITE_COLUMN_BITMASK);
+			new String[] {"FK_LIFERAY_SITE"}, true);
 
 		_finderPathCountByLiferaySite = new FinderPath(
-			RubricaSitoModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaSitoModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByLiferaySite",
-			new String[] {Long.class.getName()});
+			new String[] {Long.class.getName()},
+			new String[] {"FK_LIFERAY_SITE"}, false);
+
+		RubricaSitoUtil.setPersistence(this);
 	}
 
-	public void destroy() {
-		entityCache.removeCache(RubricaSitoImpl.class.getName());
-		finderCache.removeCache(FINDER_CLASS_NAME_ENTITY);
-		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+	@Deactivate
+	public void deactivate() {
+		RubricaSitoUtil.setPersistence(null);
+
+		dummyEntityCache.removeCache(RubricaSitoImpl.class.getName());
 	}
 
-	@ServiceReference(type = EntityCache.class)
-	protected EntityCache entityCache;
+	@Override
+	@Reference(
+		target = rubricaPersistenceConstants.SERVICE_CONFIGURATION_FILTER,
+		unbind = "-"
+	)
+	public void setConfiguration(Configuration configuration) {
+	}
 
-	@ServiceReference(type = FinderCache.class)
-	protected FinderCache finderCache;
+	@Override
+	@Reference(
+		target = rubricaPersistenceConstants.ORIGIN_BUNDLE_SYMBOLIC_NAME_FILTER,
+		unbind = "-"
+	)
+	public void setDataSource(DataSource dataSource) {
+		super.setDataSource(dataSource);
+	}
+
+	@Override
+	@Reference(
+		target = rubricaPersistenceConstants.ORIGIN_BUNDLE_SYMBOLIC_NAME_FILTER,
+		unbind = "-"
+	)
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		super.setSessionFactory(sessionFactory);
+	}
 
 	private static final String _SQL_SELECT_RUBRICASITO =
 		"SELECT rubricaSito FROM RubricaSito rubricaSito";
-
-	private static final String _SQL_SELECT_RUBRICASITO_WHERE_PKS_IN =
-		"SELECT rubricaSito FROM RubricaSito rubricaSito WHERE ID_SITO IN (";
 
 	private static final String _SQL_SELECT_RUBRICASITO_WHERE =
 		"SELECT rubricaSito FROM RubricaSito rubricaSito WHERE ";
@@ -1350,5 +1169,10 @@ public class RubricaSitoPersistenceImpl
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		RubricaSitoPersistenceImpl.class);
+
+	@Override
+	protected FinderCache getFinderCache() {
+		return dummyFinderCache;
+	}
 
 }

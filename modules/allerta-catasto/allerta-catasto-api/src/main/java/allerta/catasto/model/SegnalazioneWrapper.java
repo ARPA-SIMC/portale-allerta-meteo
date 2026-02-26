@@ -1,31 +1,16 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package allerta.catasto.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -36,22 +21,12 @@ import java.util.Objects;
  * @see Segnalazione
  * @generated
  */
-@ProviderType
 public class SegnalazioneWrapper
-	implements Segnalazione, ModelWrapper<Segnalazione> {
+	extends BaseModelWrapper<Segnalazione>
+	implements ModelWrapper<Segnalazione>, Segnalazione {
 
 	public SegnalazioneWrapper(Segnalazione segnalazione) {
-		_segnalazione = segnalazione;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return Segnalazione.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return Segnalazione.class.getName();
+		super(segnalazione);
 	}
 
 	@Override
@@ -241,13 +216,8 @@ public class SegnalazioneWrapper
 	}
 
 	@Override
-	public Object clone() {
-		return new SegnalazioneWrapper((Segnalazione)_segnalazione.clone());
-	}
-
-	@Override
-	public int compareTo(allerta.catasto.model.Segnalazione segnalazione) {
-		return _segnalazione.compareTo(segnalazione);
+	public Segnalazione cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -257,7 +227,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public String getArea() {
-		return _segnalazione.getArea();
+		return model.getArea();
 	}
 
 	/**
@@ -267,7 +237,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public long getCategoria() {
-		return _segnalazione.getCategoria();
+		return model.getCategoria();
 	}
 
 	/**
@@ -277,7 +247,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public String getCivico() {
-		return _segnalazione.getCivico();
+		return model.getCivico();
 	}
 
 	/**
@@ -287,7 +257,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public long getCompanyId() {
-		return _segnalazione.getCompanyId();
+		return model.getCompanyId();
 	}
 
 	/**
@@ -297,7 +267,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public String getComune() {
-		return _segnalazione.getComune();
+		return model.getComune();
 	}
 
 	/**
@@ -307,7 +277,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public Date getCreateDate() {
-		return _segnalazione.getCreateDate();
+		return model.getCreateDate();
 	}
 
 	/**
@@ -317,7 +287,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public Date getDataEvento() {
-		return _segnalazione.getDataEvento();
+		return model.getDataEvento();
 	}
 
 	/**
@@ -327,7 +297,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public String getDescrizione() {
-		return _segnalazione.getDescrizione();
+		return model.getDescrizione();
 	}
 
 	/**
@@ -337,7 +307,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public long getDocumentoAssociato() {
-		return _segnalazione.getDocumentoAssociato();
+		return model.getDocumentoAssociato();
 	}
 
 	/**
@@ -347,7 +317,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public long getEffetti() {
-		return _segnalazione.getEffetti();
+		return model.getEffetti();
 	}
 
 	/**
@@ -357,7 +327,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public long getEffettiSub() {
-		return _segnalazione.getEffettiSub();
+		return model.getEffettiSub();
 	}
 
 	/**
@@ -367,12 +337,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public String getEnteSegnalante() {
-		return _segnalazione.getEnteSegnalante();
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _segnalazione.getExpandoBridge();
+		return model.getEnteSegnalante();
 	}
 
 	/**
@@ -382,7 +347,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public long getFonte() {
-		return _segnalazione.getFonte();
+		return model.getFonte();
 	}
 
 	/**
@@ -392,7 +357,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public long getGroupId() {
-		return _segnalazione.getGroupId();
+		return model.getGroupId();
 	}
 
 	/**
@@ -402,7 +367,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public long getId() {
-		return _segnalazione.getId();
+		return model.getId();
 	}
 
 	/**
@@ -412,7 +377,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public String getIndirizzo() {
-		return _segnalazione.getIndirizzo();
+		return model.getIndirizzo();
 	}
 
 	/**
@@ -422,7 +387,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public double getLat() {
-		return _segnalazione.getLat();
+		return model.getLat();
 	}
 
 	/**
@@ -432,7 +397,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public double getLon() {
-		return _segnalazione.getLon();
+		return model.getLon();
 	}
 
 	/**
@@ -442,7 +407,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public Date getModifiedDate() {
-		return _segnalazione.getModifiedDate();
+		return model.getModifiedDate();
 	}
 
 	/**
@@ -452,7 +417,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public String getNote() {
-		return _segnalazione.getNote();
+		return model.getNote();
 	}
 
 	/**
@@ -462,12 +427,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public long getPrimaryKey() {
-		return _segnalazione.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _segnalazione.getPrimaryKeyObj();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -477,7 +437,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public String getProvincia() {
-		return _segnalazione.getProvincia();
+		return model.getProvincia();
 	}
 
 	/**
@@ -487,7 +447,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public String getRiferimento() {
-		return _segnalazione.getRiferimento();
+		return model.getRiferimento();
 	}
 
 	/**
@@ -497,7 +457,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public long getSottocategoria() {
-		return _segnalazione.getSottocategoria();
+		return model.getSottocategoria();
 	}
 
 	/**
@@ -507,7 +467,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public long getUserId() {
-		return _segnalazione.getUserId();
+		return model.getUserId();
 	}
 
 	/**
@@ -517,7 +477,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public String getUserName() {
-		return _segnalazione.getUserName();
+		return model.getUserName();
 	}
 
 	/**
@@ -527,32 +487,12 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public String getUserUuid() {
-		return _segnalazione.getUserUuid();
-	}
-
-	@Override
-	public int hashCode() {
-		return _segnalazione.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _segnalazione.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _segnalazione.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _segnalazione.isNew();
+		return model.getUserUuid();
 	}
 
 	@Override
 	public void persist() {
-		_segnalazione.persist();
+		model.persist();
 	}
 
 	/**
@@ -562,12 +502,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public void setArea(String area) {
-		_segnalazione.setArea(area);
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_segnalazione.setCachedModel(cachedModel);
+		model.setArea(area);
 	}
 
 	/**
@@ -577,7 +512,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public void setCategoria(long categoria) {
-		_segnalazione.setCategoria(categoria);
+		model.setCategoria(categoria);
 	}
 
 	/**
@@ -587,7 +522,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public void setCivico(String civico) {
-		_segnalazione.setCivico(civico);
+		model.setCivico(civico);
 	}
 
 	/**
@@ -597,7 +532,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public void setCompanyId(long companyId) {
-		_segnalazione.setCompanyId(companyId);
+		model.setCompanyId(companyId);
 	}
 
 	/**
@@ -607,7 +542,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public void setComune(String comune) {
-		_segnalazione.setComune(comune);
+		model.setComune(comune);
 	}
 
 	/**
@@ -617,7 +552,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public void setCreateDate(Date createDate) {
-		_segnalazione.setCreateDate(createDate);
+		model.setCreateDate(createDate);
 	}
 
 	/**
@@ -627,7 +562,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public void setDataEvento(Date dataEvento) {
-		_segnalazione.setDataEvento(dataEvento);
+		model.setDataEvento(dataEvento);
 	}
 
 	/**
@@ -637,7 +572,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public void setDescrizione(String descrizione) {
-		_segnalazione.setDescrizione(descrizione);
+		model.setDescrizione(descrizione);
 	}
 
 	/**
@@ -647,7 +582,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public void setDocumentoAssociato(long documentoAssociato) {
-		_segnalazione.setDocumentoAssociato(documentoAssociato);
+		model.setDocumentoAssociato(documentoAssociato);
 	}
 
 	/**
@@ -657,7 +592,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public void setEffetti(long effetti) {
-		_segnalazione.setEffetti(effetti);
+		model.setEffetti(effetti);
 	}
 
 	/**
@@ -667,7 +602,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public void setEffettiSub(long effettiSub) {
-		_segnalazione.setEffettiSub(effettiSub);
+		model.setEffettiSub(effettiSub);
 	}
 
 	/**
@@ -677,24 +612,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public void setEnteSegnalante(String enteSegnalante) {
-		_segnalazione.setEnteSegnalante(enteSegnalante);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_segnalazione.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_segnalazione.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_segnalazione.setExpandoBridgeAttributes(serviceContext);
+		model.setEnteSegnalante(enteSegnalante);
 	}
 
 	/**
@@ -704,7 +622,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public void setFonte(long fonte) {
-		_segnalazione.setFonte(fonte);
+		model.setFonte(fonte);
 	}
 
 	/**
@@ -714,7 +632,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public void setGroupId(long groupId) {
-		_segnalazione.setGroupId(groupId);
+		model.setGroupId(groupId);
 	}
 
 	/**
@@ -724,7 +642,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public void setId(long id) {
-		_segnalazione.setId(id);
+		model.setId(id);
 	}
 
 	/**
@@ -734,7 +652,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public void setIndirizzo(String indirizzo) {
-		_segnalazione.setIndirizzo(indirizzo);
+		model.setIndirizzo(indirizzo);
 	}
 
 	/**
@@ -744,7 +662,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public void setLat(double lat) {
-		_segnalazione.setLat(lat);
+		model.setLat(lat);
 	}
 
 	/**
@@ -754,7 +672,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public void setLon(double lon) {
-		_segnalazione.setLon(lon);
+		model.setLon(lon);
 	}
 
 	/**
@@ -764,12 +682,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public void setModifiedDate(Date modifiedDate) {
-		_segnalazione.setModifiedDate(modifiedDate);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_segnalazione.setNew(n);
+		model.setModifiedDate(modifiedDate);
 	}
 
 	/**
@@ -779,7 +692,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public void setNote(String note) {
-		_segnalazione.setNote(note);
+		model.setNote(note);
 	}
 
 	/**
@@ -789,12 +702,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public void setPrimaryKey(long primaryKey) {
-		_segnalazione.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_segnalazione.setPrimaryKeyObj(primaryKeyObj);
+		model.setPrimaryKey(primaryKey);
 	}
 
 	/**
@@ -804,7 +712,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public void setProvincia(String provincia) {
-		_segnalazione.setProvincia(provincia);
+		model.setProvincia(provincia);
 	}
 
 	/**
@@ -814,7 +722,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public void setRiferimento(String riferimento) {
-		_segnalazione.setRiferimento(riferimento);
+		model.setRiferimento(riferimento);
 	}
 
 	/**
@@ -824,7 +732,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public void setSottocategoria(long sottocategoria) {
-		_segnalazione.setSottocategoria(sottocategoria);
+		model.setSottocategoria(sottocategoria);
 	}
 
 	/**
@@ -834,7 +742,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public void setUserId(long userId) {
-		_segnalazione.setUserId(userId);
+		model.setUserId(userId);
 	}
 
 	/**
@@ -844,7 +752,7 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public void setUserName(String userName) {
-		_segnalazione.setUserName(userName);
+		model.setUserName(userName);
 	}
 
 	/**
@@ -854,75 +762,17 @@ public class SegnalazioneWrapper
 	 */
 	@Override
 	public void setUserUuid(String userUuid) {
-		_segnalazione.setUserUuid(userUuid);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<allerta.catasto.model.Segnalazione> toCacheModel() {
-
-		return _segnalazione.toCacheModel();
-	}
-
-	@Override
-	public allerta.catasto.model.Segnalazione toEscapedModel() {
-		return new SegnalazioneWrapper(_segnalazione.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _segnalazione.toString();
-	}
-
-	@Override
-	public allerta.catasto.model.Segnalazione toUnescapedModel() {
-		return new SegnalazioneWrapper(_segnalazione.toUnescapedModel());
+		model.setUserUuid(userUuid);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _segnalazione.toXmlString();
+		return model.toXmlString();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-
-		if (!(obj instanceof SegnalazioneWrapper)) {
-			return false;
-		}
-
-		SegnalazioneWrapper segnalazioneWrapper = (SegnalazioneWrapper)obj;
-
-		if (Objects.equals(_segnalazione, segnalazioneWrapper._segnalazione)) {
-			return true;
-		}
-
-		return false;
+	protected SegnalazioneWrapper wrap(Segnalazione segnalazione) {
+		return new SegnalazioneWrapper(segnalazione);
 	}
-
-	@Override
-	public Segnalazione getWrappedModel() {
-		return _segnalazione;
-	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _segnalazione.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _segnalazione.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_segnalazione.resetOriginalValues();
-	}
-
-	private final Segnalazione _segnalazione;
 
 }

@@ -1,24 +1,23 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerter.service;
 
-import aQute.bnd.annotation.ProviderType;
+import com.liferay.petra.sql.dsl.query.DSLQuery;
+import com.liferay.portal.kernel.dao.orm.DynamicQuery;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.model.PersistedModel;
+import com.liferay.portal.kernel.module.service.Snapshot;
+import com.liferay.portal.kernel.util.OrderByComparator;
 
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.util.tracker.ServiceTracker;
+import it.eng.allerter.model.AllertaValanghe;
+
+import java.io.Serializable;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Provides the local service utility for AllertaValanghe. This utility wraps
@@ -32,7 +31,6 @@ import org.osgi.util.tracker.ServiceTracker;
  * @see AllertaValangheLocalService
  * @generated
  */
-@ProviderType
 public class AllertaValangheLocalServiceUtil {
 
 	/*
@@ -44,11 +42,15 @@ public class AllertaValangheLocalServiceUtil {
 	/**
 	 * Adds the allerta valanghe to the database. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect AllertaValangheLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param allertaValanghe the allerta valanghe
 	 * @return the allerta valanghe that was added
 	 */
-	public static it.eng.allerter.model.AllertaValanghe addAllertaValanghe(
-		it.eng.allerter.model.AllertaValanghe allertaValanghe) {
+	public static AllertaValanghe addAllertaValanghe(
+		AllertaValanghe allertaValanghe) {
 
 		return getService().addAllertaValanghe(allertaValanghe);
 	}
@@ -59,20 +61,34 @@ public class AllertaValangheLocalServiceUtil {
 	 * @param allertaValangheId the primary key for the new allerta valanghe
 	 * @return the new allerta valanghe
 	 */
-	public static it.eng.allerter.model.AllertaValanghe createAllertaValanghe(
+	public static AllertaValanghe createAllertaValanghe(
 		long allertaValangheId) {
 
 		return getService().createAllertaValanghe(allertaValangheId);
 	}
 
 	/**
+	 * @throws PortalException
+	 */
+	public static PersistedModel createPersistedModel(
+			Serializable primaryKeyObj)
+		throws PortalException {
+
+		return getService().createPersistedModel(primaryKeyObj);
+	}
+
+	/**
 	 * Deletes the allerta valanghe from the database. Also notifies the appropriate model listeners.
+	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect AllertaValangheLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
 	 *
 	 * @param allertaValanghe the allerta valanghe
 	 * @return the allerta valanghe that was removed
 	 */
-	public static it.eng.allerter.model.AllertaValanghe deleteAllertaValanghe(
-		it.eng.allerter.model.AllertaValanghe allertaValanghe) {
+	public static AllertaValanghe deleteAllertaValanghe(
+		AllertaValanghe allertaValanghe) {
 
 		return getService().deleteAllertaValanghe(allertaValanghe);
 	}
@@ -80,13 +96,16 @@ public class AllertaValangheLocalServiceUtil {
 	/**
 	 * Deletes the allerta valanghe with the primary key from the database. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect AllertaValangheLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param allertaValangheId the primary key of the allerta valanghe
 	 * @return the allerta valanghe that was removed
 	 * @throws PortalException if a allerta valanghe with the primary key could not be found
 	 */
-	public static it.eng.allerter.model.AllertaValanghe deleteAllertaValanghe(
-			long allertaValangheId)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	public static AllertaValanghe deleteAllertaValanghe(long allertaValangheId)
+		throws PortalException {
 
 		return getService().deleteAllertaValanghe(allertaValangheId);
 	}
@@ -94,17 +113,22 @@ public class AllertaValangheLocalServiceUtil {
 	/**
 	 * @throws PortalException
 	 */
-	public static com.liferay.portal.kernel.model.PersistedModel
-			deletePersistedModel(
-				com.liferay.portal.kernel.model.PersistedModel persistedModel)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	public static PersistedModel deletePersistedModel(
+			PersistedModel persistedModel)
+		throws PortalException {
 
 		return getService().deletePersistedModel(persistedModel);
 	}
 
-	public static com.liferay.portal.kernel.dao.orm.DynamicQuery
-		dynamicQuery() {
+	public static <T> T dslQuery(DSLQuery dslQuery) {
+		return getService().dslQuery(dslQuery);
+	}
 
+	public static int dslQueryCount(DSLQuery dslQuery) {
+		return getService().dslQueryCount(dslQuery);
+	}
+
+	public static DynamicQuery dynamicQuery() {
 		return getService().dynamicQuery();
 	}
 
@@ -114,9 +138,7 @@ public class AllertaValangheLocalServiceUtil {
 	 * @param dynamicQuery the dynamic query
 	 * @return the matching rows
 	 */
-	public static <T> java.util.List<T> dynamicQuery(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery) {
-
+	public static <T> List<T> dynamicQuery(DynamicQuery dynamicQuery) {
 		return getService().dynamicQuery(dynamicQuery);
 	}
 
@@ -124,7 +146,7 @@ public class AllertaValangheLocalServiceUtil {
 	 * Performs a dynamic query on the database and returns a range of the matching rows.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>it.eng.allerter.model.impl.AllertaValangheModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>it.eng.allerter.model.impl.AllertaValangheModelImpl</code>.
 	 * </p>
 	 *
 	 * @param dynamicQuery the dynamic query
@@ -132,9 +154,8 @@ public class AllertaValangheLocalServiceUtil {
 	 * @param end the upper bound of the range of model instances (not inclusive)
 	 * @return the range of matching rows
 	 */
-	public static <T> java.util.List<T> dynamicQuery(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery, int start,
-		int end) {
+	public static <T> List<T> dynamicQuery(
+		DynamicQuery dynamicQuery, int start, int end) {
 
 		return getService().dynamicQuery(dynamicQuery, start, end);
 	}
@@ -143,7 +164,7 @@ public class AllertaValangheLocalServiceUtil {
 	 * Performs a dynamic query on the database and returns an ordered range of the matching rows.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>it.eng.allerter.model.impl.AllertaValangheModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>it.eng.allerter.model.impl.AllertaValangheModelImpl</code>.
 	 * </p>
 	 *
 	 * @param dynamicQuery the dynamic query
@@ -152,10 +173,9 @@ public class AllertaValangheLocalServiceUtil {
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching rows
 	 */
-	public static <T> java.util.List<T> dynamicQuery(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery, int start,
-		int end,
-		com.liferay.portal.kernel.util.OrderByComparator<T> orderByComparator) {
+	public static <T> List<T> dynamicQuery(
+		DynamicQuery dynamicQuery, int start, int end,
+		OrderByComparator<T> orderByComparator) {
 
 		return getService().dynamicQuery(
 			dynamicQuery, start, end, orderByComparator);
@@ -167,9 +187,7 @@ public class AllertaValangheLocalServiceUtil {
 	 * @param dynamicQuery the dynamic query
 	 * @return the number of rows matching the dynamic query
 	 */
-	public static long dynamicQueryCount(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery) {
-
+	public static long dynamicQueryCount(DynamicQuery dynamicQuery) {
 		return getService().dynamicQueryCount(dynamicQuery);
 	}
 
@@ -181,15 +199,13 @@ public class AllertaValangheLocalServiceUtil {
 	 * @return the number of rows matching the dynamic query
 	 */
 	public static long dynamicQueryCount(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery,
+		DynamicQuery dynamicQuery,
 		com.liferay.portal.kernel.dao.orm.Projection projection) {
 
 		return getService().dynamicQueryCount(dynamicQuery, projection);
 	}
 
-	public static it.eng.allerter.model.AllertaValanghe fetchAllertaValanghe(
-		long allertaValangheId) {
-
+	public static AllertaValanghe fetchAllertaValanghe(long allertaValangheId) {
 		return getService().fetchAllertaValanghe(allertaValangheId);
 	}
 
@@ -200,8 +216,8 @@ public class AllertaValangheLocalServiceUtil {
 	 * @param groupId the primary key of the group
 	 * @return the matching allerta valanghe, or <code>null</code> if a matching allerta valanghe could not be found
 	 */
-	public static it.eng.allerter.model.AllertaValanghe
-		fetchAllertaValangheByUuidAndGroupId(String uuid, long groupId) {
+	public static AllertaValanghe fetchAllertaValangheByUuidAndGroupId(
+		String uuid, long groupId) {
 
 		return getService().fetchAllertaValangheByUuidAndGroupId(uuid, groupId);
 	}
@@ -235,9 +251,8 @@ public class AllertaValangheLocalServiceUtil {
 	 * @return the allerta valanghe
 	 * @throws PortalException if a allerta valanghe with the primary key could not be found
 	 */
-	public static it.eng.allerter.model.AllertaValanghe getAllertaValanghe(
-			long allertaValangheId)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	public static AllertaValanghe getAllertaValanghe(long allertaValangheId)
+		throws PortalException {
 
 		return getService().getAllertaValanghe(allertaValangheId);
 	}
@@ -250,9 +265,9 @@ public class AllertaValangheLocalServiceUtil {
 	 * @return the matching allerta valanghe
 	 * @throws PortalException if a matching allerta valanghe could not be found
 	 */
-	public static it.eng.allerter.model.AllertaValanghe
-			getAllertaValangheByUuidAndGroupId(String uuid, long groupId)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	public static AllertaValanghe getAllertaValangheByUuidAndGroupId(
+			String uuid, long groupId)
+		throws PortalException {
 
 		return getService().getAllertaValangheByUuidAndGroupId(uuid, groupId);
 	}
@@ -261,15 +276,15 @@ public class AllertaValangheLocalServiceUtil {
 	 * Returns a range of all the allerta valanghes.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>it.eng.allerter.model.impl.AllertaValangheModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>it.eng.allerter.model.impl.AllertaValangheModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of allerta valanghes
 	 * @param end the upper bound of the range of allerta valanghes (not inclusive)
 	 * @return the range of allerta valanghes
 	 */
-	public static java.util.List<it.eng.allerter.model.AllertaValanghe>
-		getAllertaValanghes(int start, int end) {
+	public static List<AllertaValanghe> getAllertaValanghes(
+		int start, int end) {
 
 		return getService().getAllertaValanghes(start, end);
 	}
@@ -281,8 +296,8 @@ public class AllertaValangheLocalServiceUtil {
 	 * @param companyId the primary key of the company
 	 * @return the matching allerta valanghes, or an empty list if no matches were found
 	 */
-	public static java.util.List<it.eng.allerter.model.AllertaValanghe>
-		getAllertaValanghesByUuidAndCompanyId(String uuid, long companyId) {
+	public static List<AllertaValanghe> getAllertaValanghesByUuidAndCompanyId(
+		String uuid, long companyId) {
 
 		return getService().getAllertaValanghesByUuidAndCompanyId(
 			uuid, companyId);
@@ -298,11 +313,9 @@ public class AllertaValangheLocalServiceUtil {
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the range of matching allerta valanghes, or an empty list if no matches were found
 	 */
-	public static java.util.List<it.eng.allerter.model.AllertaValanghe>
-		getAllertaValanghesByUuidAndCompanyId(
-			String uuid, long companyId, int start, int end,
-			com.liferay.portal.kernel.util.OrderByComparator
-				<it.eng.allerter.model.AllertaValanghe> orderByComparator) {
+	public static List<AllertaValanghe> getAllertaValanghesByUuidAndCompanyId(
+		String uuid, long companyId, int start, int end,
+		OrderByComparator<AllertaValanghe> orderByComparator) {
 
 		return getService().getAllertaValanghesByUuidAndCompanyId(
 			uuid, companyId, start, end, orderByComparator);
@@ -317,11 +330,8 @@ public class AllertaValangheLocalServiceUtil {
 		return getService().getAllertaValanghesCount();
 	}
 
-	public static java.util.List<it.eng.allerter.model.AllertaValanghe>
-		getAllertaValanghesOrdered(
-			int start, int end,
-			com.liferay.portal.kernel.util.OrderByComparator
-				<it.eng.allerter.model.AllertaValanghe> comparator) {
+	public static List<AllertaValanghe> getAllertaValanghesOrdered(
+		int start, int end, OrderByComparator<AllertaValanghe> comparator) {
 
 		return getService().getAllertaValanghesOrdered(start, end, comparator);
 	}
@@ -359,17 +369,15 @@ public class AllertaValangheLocalServiceUtil {
 		return getService().getIndexableActionableDynamicQuery();
 	}
 
-	public static java.util.Map<String, Object> getInfoValanghe() {
+	public static Map<String, Object> getInfoValanghe() {
 		return getService().getInfoValanghe();
 	}
 
-	public static java.util.Map<String, Object> getInfoValangheDomani() {
+	public static Map<String, Object> getInfoValangheDomani() {
 		return getService().getInfoValangheDomani();
 	}
 
-	public static java.util.List<it.eng.allerter.model.AllertaValanghe>
-		getListaAllerteValanghe() {
-
+	public static List<AllertaValanghe> getListaAllerteValanghe() {
 		return getService().getListaAllerteValanghe();
 	}
 
@@ -382,9 +390,11 @@ public class AllertaValangheLocalServiceUtil {
 		return getService().getOSGiServiceIdentifier();
 	}
 
-	public static com.liferay.portal.kernel.model.PersistedModel
-			getPersistedModel(java.io.Serializable primaryKeyObj)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	/**
+	 * @throws PortalException
+	 */
+	public static PersistedModel getPersistedModel(Serializable primaryKeyObj)
+		throws PortalException {
 
 		return getService().getPersistedModel(primaryKeyObj);
 	}
@@ -395,7 +405,7 @@ public class AllertaValangheLocalServiceUtil {
 
 	public static void spedisciNotifiche(
 		String tipo, String sottotipo, long l, String emailSubject,
-		String emailText, it.eng.allerter.model.AllertaValanghe av) {
+		String emailText, AllertaValanghe av) {
 
 		getService().spedisciNotifiche(
 			tipo, sottotipo, l, emailSubject, emailText, av);
@@ -404,37 +414,26 @@ public class AllertaValangheLocalServiceUtil {
 	/**
 	 * Updates the allerta valanghe in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect AllertaValangheLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param allertaValanghe the allerta valanghe
 	 * @return the allerta valanghe that was updated
 	 */
-	public static it.eng.allerter.model.AllertaValanghe updateAllertaValanghe(
-		it.eng.allerter.model.AllertaValanghe allertaValanghe) {
+	public static AllertaValanghe updateAllertaValanghe(
+		AllertaValanghe allertaValanghe) {
 
 		return getService().updateAllertaValanghe(allertaValanghe);
 	}
 
 	public static AllertaValangheLocalService getService() {
-		return _serviceTracker.getService();
+		return _serviceSnapshot.get();
 	}
 
-	private static ServiceTracker
-		<AllertaValangheLocalService, AllertaValangheLocalService>
-			_serviceTracker;
-
-	static {
-		Bundle bundle = FrameworkUtil.getBundle(
+	private static final Snapshot<AllertaValangheLocalService>
+		_serviceSnapshot = new Snapshot<>(
+			AllertaValangheLocalServiceUtil.class,
 			AllertaValangheLocalService.class);
-
-		ServiceTracker<AllertaValangheLocalService, AllertaValangheLocalService>
-			serviceTracker =
-				new ServiceTracker
-					<AllertaValangheLocalService, AllertaValangheLocalService>(
-						bundle.getBundleContext(),
-						AllertaValangheLocalService.class, null);
-
-		serviceTracker.open();
-
-		_serviceTracker = serviceTracker;
-	}
 
 }

@@ -305,17 +305,17 @@ AllertaBean allBean = new AllertaBean(allertaId, request);
 					<thead class="rf-dt-thd">
 						<tr class="rf-dt-shdr">
 							<th scope="col"></th>
-							<th class="rf-dt-shdr-c" <% if (!sintesi) { %>onclick="toggleColonnaNuovo<%=gr%>(1);"<% } %> scope="col">${allBean.eventi[0]}</th>
-							<th class="rf-dt-shdr-c" <% if (!sintesi) { %>onclick="toggleColonnaNuovo<%=gr%>(2);"<% } %> scope="col">${allBean.eventi[1]}</th>
+							<th class="rf-dt-shdr-c" <% if (!sintesi) { %>onclick="toggleColonnaNuovo<%=gr%>(1);"<% } %> scope="col">${allBean.eventiHtml[0]}</th>
+							<th class="rf-dt-shdr-c" <% if (!sintesi) { %>onclick="toggleColonnaNuovo<%=gr%>(2);"<% } %> scope="col">${allBean.eventiHtml[1]}</th>
 							<th class="rf-dt-shdr-c bordodestro" <% if (!sintesi) { %>onclick="toggleColonnaNuovo<%=gr%>(3);"<% } %>
-								scope="col">${allBean.eventi[2]}</th>
-							<th class="rf-dt-shdr-c" <% if (!sintesi) { %>onclick="toggleColonnaNuovo<%=gr%>(4);"<% } %> scope="col">${allBean.eventi[3]}</th>
-							<th class="rf-dt-shdr-c" <% if (!sintesi) { %>onclick="toggleColonnaNuovo<%=gr%>(5);"<% } %> scope="col">${allBean.eventi[4]}</th>
-							<th class="rf-dt-shdr-c" <% if (!sintesi) { %>onclick="toggleColonnaNuovo<%=gr%>(6);"<% } %> scope="col">${allBean.eventi[5]}</th>
+								scope="col">${allBean.eventiHtml[2]}</th>
+							<th class="rf-dt-shdr-c" <% if (!sintesi) { %>onclick="toggleColonnaNuovo<%=gr%>(4);"<% } %> scope="col">${allBean.eventiHtml[3]}</th>
+							<th class="rf-dt-shdr-c" <% if (!sintesi) { %>onclick="toggleColonnaNuovo<%=gr%>(5);"<% } %> scope="col">${allBean.eventiHtml[4]}</th>
+							<th class="rf-dt-shdr-c" <% if (!sintesi) { %>onclick="toggleColonnaNuovo<%=gr%>(6);"<% } %> scope="col">${allBean.eventiHtml[5]}</th>
 							<th class="rf-dt-shdr-c bordodestro" <% if (!sintesi) { %>onclick="toggleColonnaNuovo<%=gr%>(7);"<% } %>
-								scope="col">${allBean.eventi[6]}</th>
-							<th class="rf-dt-shdr-c" <% if (!sintesi) { %>onclick="toggleColonnaNuovo<%=gr%>(8);"<% } %> scope="col">${allBean.eventi[7]}</th>
-							<th class="rf-dt-shdr-c" <% if (!sintesi) { %>onclick="toggleColonnaNuovo<%=gr%>(9);"<% } %> scope="col">${allBean.eventi[8]}</th>
+								scope="col">${allBean.eventiHtml[6]}</th>
+							<th class="rf-dt-shdr-c" <% if (!sintesi) { %>onclick="toggleColonnaNuovo<%=gr%>(8);"<% } %> scope="col">${allBean.eventiHtml[7]}</th>
+							<th class="rf-dt-shdr-c" <% if (!sintesi) { %>onclick="toggleColonnaNuovo<%=gr%>(9);"<% } %> scope="col">${allBean.eventiHtml[8]}</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -372,14 +372,23 @@ AllertaBean allBean = new AllertaBean(allertaId, request);
 				onclick="<portlet:namespace/>getAllertaDefaults('titolo','<%=allertaFieldsDefaultstURL.toString()%>')"
 				class="btn btn-primary">Genera</button>
 			</c:if>
+			<c:if test="<%=sintesi %>">
+				<label class="control-label">Titolo (English)</label>
+				<input id="titoloEng" type="text" name="titoloEng" value="${allBean.titoloEng}" class="form-control">
+
+			</c:if>
 		</div>
 	</div>
 	
 		
 	<div class="row">
 		<div class="col-6 form-group">
-			<label class="control-label">Sintesi</label>
+			<label class="control-label">Testo pubblicazione notizia sul sito</label>
 			<textarea name="sintesi" style="height: 100px" class="form-control">${allBean.sintesi}</textarea>
+			<c:if test="<%=sintesi %>">
+			<label class="control-label">Testo pubblicazione notizia sul sito (English)</label>
+			<textarea name="sintesiEng" style="height: 100px" class="form-control">${allBean.sintesiEng}</textarea>
+			</c:if>
 		</div>
 		
 		<div class="col-6 form-group">
@@ -549,7 +558,7 @@ AllertaBean allBean = new AllertaBean(allertaId, request);
    		      if (window.location.href.lastIndexOf("AllertaCompilaSbPortlet")!=-1) {
    		    	console.log("Mando heartbeat");
    		    	$.ajax({
-  			      url: '/o/api/heartbeat/'+new Date().getTime(),
+  			      url: '/o/heartbeat/'+new Date().getTime(),
   			      method: 'GET',
   			    }).then(function (resp) {
 			   

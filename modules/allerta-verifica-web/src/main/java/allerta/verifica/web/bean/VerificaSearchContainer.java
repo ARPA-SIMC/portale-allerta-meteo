@@ -40,6 +40,13 @@ public class VerificaSearchContainer extends SearchContainer<Verifica> {
 		VerificaDisplayTerms displayTerms = (VerificaDisplayTerms) getDisplayTerms();
 		iteratorURL.setParameter("dataInvioDa", displayTerms.getDataDa());
 		iteratorURL.setParameter("dataInvioA", displayTerms.getDataA());
+		iteratorURL.setParameter("zona", displayTerms.getZona());
+		iteratorURL.setParameter("evento", displayTerms.getEvento());
+		iteratorURL.setParameter("correttezza", displayTerms.getCorrettezza());
+		iteratorURL.setParameter("magnitudo", displayTerms.getMagnitudo());
+		iteratorURL.setParameter("localizzazione", displayTerms.getLocalizzazione());
+		iteratorURL.setParameter("colorePre", displayTerms.getColorePre());
+		iteratorURL.setParameter("colorePost", displayTerms.getColorePost());
 
 	}
 

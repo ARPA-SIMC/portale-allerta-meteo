@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE xml>
-<custom-sql>
-	<sql file="custom-sql/sms.xml" />
-</custom-sql>

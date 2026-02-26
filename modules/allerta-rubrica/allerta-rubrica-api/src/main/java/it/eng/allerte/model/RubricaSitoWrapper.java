@@ -1,30 +1,15 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerte.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -35,22 +20,12 @@ import java.util.Objects;
  * @see RubricaSito
  * @generated
  */
-@ProviderType
 public class RubricaSitoWrapper
-	implements RubricaSito, ModelWrapper<RubricaSito> {
+	extends BaseModelWrapper<RubricaSito>
+	implements ModelWrapper<RubricaSito>, RubricaSito {
 
 	public RubricaSitoWrapper(RubricaSito rubricaSito) {
-		_rubricaSito = rubricaSito;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return RubricaSito.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return RubricaSito.class.getName();
+		super(rubricaSito);
 	}
 
 	@Override
@@ -86,18 +61,8 @@ public class RubricaSitoWrapper
 	}
 
 	@Override
-	public Object clone() {
-		return new RubricaSitoWrapper((RubricaSito)_rubricaSito.clone());
-	}
-
-	@Override
-	public int compareTo(it.eng.allerte.model.RubricaSito rubricaSito) {
-		return _rubricaSito.compareTo(rubricaSito);
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _rubricaSito.getExpandoBridge();
+	public RubricaSito cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -107,7 +72,7 @@ public class RubricaSitoWrapper
 	 */
 	@Override
 	public long getFK_LIFERAY_SITE() {
-		return _rubricaSito.getFK_LIFERAY_SITE();
+		return model.getFK_LIFERAY_SITE();
 	}
 
 	/**
@@ -117,7 +82,7 @@ public class RubricaSitoWrapper
 	 */
 	@Override
 	public long getID_SITO() {
-		return _rubricaSito.getID_SITO();
+		return model.getID_SITO();
 	}
 
 	/**
@@ -127,7 +92,7 @@ public class RubricaSitoWrapper
 	 */
 	@Override
 	public String getNOME() {
-		return _rubricaSito.getNOME();
+		return model.getNOME();
 	}
 
 	/**
@@ -137,59 +102,12 @@ public class RubricaSitoWrapper
 	 */
 	@Override
 	public long getPrimaryKey() {
-		return _rubricaSito.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _rubricaSito.getPrimaryKeyObj();
-	}
-
-	@Override
-	public int hashCode() {
-		return _rubricaSito.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _rubricaSito.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _rubricaSito.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _rubricaSito.isNew();
+		return model.getPrimaryKey();
 	}
 
 	@Override
 	public void persist() {
-		_rubricaSito.persist();
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_rubricaSito.setCachedModel(cachedModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_rubricaSito.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_rubricaSito.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_rubricaSito.setExpandoBridgeAttributes(serviceContext);
+		model.persist();
 	}
 
 	/**
@@ -199,7 +117,7 @@ public class RubricaSitoWrapper
 	 */
 	@Override
 	public void setFK_LIFERAY_SITE(long FK_LIFERAY_SITE) {
-		_rubricaSito.setFK_LIFERAY_SITE(FK_LIFERAY_SITE);
+		model.setFK_LIFERAY_SITE(FK_LIFERAY_SITE);
 	}
 
 	/**
@@ -209,12 +127,7 @@ public class RubricaSitoWrapper
 	 */
 	@Override
 	public void setID_SITO(long ID_SITO) {
-		_rubricaSito.setID_SITO(ID_SITO);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_rubricaSito.setNew(n);
+		model.setID_SITO(ID_SITO);
 	}
 
 	/**
@@ -224,7 +137,7 @@ public class RubricaSitoWrapper
 	 */
 	@Override
 	public void setNOME(String NOME) {
-		_rubricaSito.setNOME(NOME);
+		model.setNOME(NOME);
 	}
 
 	/**
@@ -234,80 +147,17 @@ public class RubricaSitoWrapper
 	 */
 	@Override
 	public void setPrimaryKey(long primaryKey) {
-		_rubricaSito.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_rubricaSito.setPrimaryKeyObj(primaryKeyObj);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<it.eng.allerte.model.RubricaSito> toCacheModel() {
-
-		return _rubricaSito.toCacheModel();
-	}
-
-	@Override
-	public it.eng.allerte.model.RubricaSito toEscapedModel() {
-		return new RubricaSitoWrapper(_rubricaSito.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _rubricaSito.toString();
-	}
-
-	@Override
-	public it.eng.allerte.model.RubricaSito toUnescapedModel() {
-		return new RubricaSitoWrapper(_rubricaSito.toUnescapedModel());
+		model.setPrimaryKey(primaryKey);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _rubricaSito.toXmlString();
+		return model.toXmlString();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-
-		if (!(obj instanceof RubricaSitoWrapper)) {
-			return false;
-		}
-
-		RubricaSitoWrapper rubricaSitoWrapper = (RubricaSitoWrapper)obj;
-
-		if (Objects.equals(_rubricaSito, rubricaSitoWrapper._rubricaSito)) {
-			return true;
-		}
-
-		return false;
+	protected RubricaSitoWrapper wrap(RubricaSito rubricaSito) {
+		return new RubricaSitoWrapper(rubricaSito);
 	}
-
-	@Override
-	public RubricaSito getWrappedModel() {
-		return _rubricaSito;
-	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _rubricaSito.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _rubricaSito.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_rubricaSito.resetOriginalValues();
-	}
-
-	private final RubricaSito _rubricaSito;
 
 }

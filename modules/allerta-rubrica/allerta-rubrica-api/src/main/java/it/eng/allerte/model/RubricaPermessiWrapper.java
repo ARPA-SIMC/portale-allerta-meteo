@@ -1,30 +1,15 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerte.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -35,22 +20,12 @@ import java.util.Objects;
  * @see RubricaPermessi
  * @generated
  */
-@ProviderType
 public class RubricaPermessiWrapper
-	implements RubricaPermessi, ModelWrapper<RubricaPermessi> {
+	extends BaseModelWrapper<RubricaPermessi>
+	implements ModelWrapper<RubricaPermessi>, RubricaPermessi {
 
 	public RubricaPermessiWrapper(RubricaPermessi rubricaPermessi) {
-		_rubricaPermessi = rubricaPermessi;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return RubricaPermessi.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return RubricaPermessi.class.getName();
+		super(rubricaPermessi);
 	}
 
 	@Override
@@ -79,19 +54,8 @@ public class RubricaPermessiWrapper
 	}
 
 	@Override
-	public Object clone() {
-		return new RubricaPermessiWrapper(
-			(RubricaPermessi)_rubricaPermessi.clone());
-	}
-
-	@Override
-	public int compareTo(it.eng.allerte.model.RubricaPermessi rubricaPermessi) {
-		return _rubricaPermessi.compareTo(rubricaPermessi);
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _rubricaPermessi.getExpandoBridge();
+	public RubricaPermessi cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -101,7 +65,7 @@ public class RubricaPermessiWrapper
 	 */
 	@Override
 	public String getID_PERMESSO() {
-		return _rubricaPermessi.getID_PERMESSO();
+		return model.getID_PERMESSO();
 	}
 
 	/**
@@ -111,7 +75,7 @@ public class RubricaPermessiWrapper
 	 */
 	@Override
 	public String getNOME_PERMESSO() {
-		return _rubricaPermessi.getNOME_PERMESSO();
+		return model.getNOME_PERMESSO();
 	}
 
 	/**
@@ -121,54 +85,7 @@ public class RubricaPermessiWrapper
 	 */
 	@Override
 	public String getPrimaryKey() {
-		return _rubricaPermessi.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _rubricaPermessi.getPrimaryKeyObj();
-	}
-
-	@Override
-	public int hashCode() {
-		return _rubricaPermessi.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _rubricaPermessi.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _rubricaPermessi.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _rubricaPermessi.isNew();
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_rubricaPermessi.setCachedModel(cachedModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_rubricaPermessi.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_rubricaPermessi.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_rubricaPermessi.setExpandoBridgeAttributes(serviceContext);
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -178,12 +95,7 @@ public class RubricaPermessiWrapper
 	 */
 	@Override
 	public void setID_PERMESSO(String ID_PERMESSO) {
-		_rubricaPermessi.setID_PERMESSO(ID_PERMESSO);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_rubricaPermessi.setNew(n);
+		model.setID_PERMESSO(ID_PERMESSO);
 	}
 
 	/**
@@ -193,7 +105,7 @@ public class RubricaPermessiWrapper
 	 */
 	@Override
 	public void setNOME_PERMESSO(String NOME_PERMESSO) {
-		_rubricaPermessi.setNOME_PERMESSO(NOME_PERMESSO);
+		model.setNOME_PERMESSO(NOME_PERMESSO);
 	}
 
 	/**
@@ -203,83 +115,17 @@ public class RubricaPermessiWrapper
 	 */
 	@Override
 	public void setPrimaryKey(String primaryKey) {
-		_rubricaPermessi.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_rubricaPermessi.setPrimaryKeyObj(primaryKeyObj);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<it.eng.allerte.model.RubricaPermessi> toCacheModel() {
-
-		return _rubricaPermessi.toCacheModel();
-	}
-
-	@Override
-	public it.eng.allerte.model.RubricaPermessi toEscapedModel() {
-		return new RubricaPermessiWrapper(_rubricaPermessi.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _rubricaPermessi.toString();
-	}
-
-	@Override
-	public it.eng.allerte.model.RubricaPermessi toUnescapedModel() {
-		return new RubricaPermessiWrapper(_rubricaPermessi.toUnescapedModel());
+		model.setPrimaryKey(primaryKey);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _rubricaPermessi.toXmlString();
+		return model.toXmlString();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-
-		if (!(obj instanceof RubricaPermessiWrapper)) {
-			return false;
-		}
-
-		RubricaPermessiWrapper rubricaPermessiWrapper =
-			(RubricaPermessiWrapper)obj;
-
-		if (Objects.equals(
-				_rubricaPermessi, rubricaPermessiWrapper._rubricaPermessi)) {
-
-			return true;
-		}
-
-		return false;
+	protected RubricaPermessiWrapper wrap(RubricaPermessi rubricaPermessi) {
+		return new RubricaPermessiWrapper(rubricaPermessi);
 	}
-
-	@Override
-	public RubricaPermessi getWrappedModel() {
-		return _rubricaPermessi;
-	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _rubricaPermessi.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _rubricaPermessi.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_rubricaPermessi.resetOriginalValues();
-	}
-
-	private final RubricaPermessi _rubricaPermessi;
 
 }

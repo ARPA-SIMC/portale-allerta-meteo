@@ -1,0 +1,7 @@
+Bundle-Name: allerta-controlpanel
+Bundle-SymbolicName: it.eng.allerta.controlpanel
+Bundle-Version: 1.0.0
+Export-Package: it.eng.allerta.controlpanel.constants
+Provide-Capability:\
+	liferay.language.resources;\
+		resource.bundle.base.name="content.Language"

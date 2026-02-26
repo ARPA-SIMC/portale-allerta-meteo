@@ -17,7 +17,9 @@ public class EventiHelper {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 		
 		int num = end - start;
-		String q = "select * from sms_invii_vw where 1=1 ";
+		//String q = "select * from sms_invii_vw where 1=1 ";
+		String q = "select * from allerter_invii where 1=1 ";
+		
 		
 		if ( Validator.isNotNull(displayTerms.getDataInvioDa())) {
 			
@@ -45,7 +47,7 @@ public class EventiHelper {
 			q+=" and(upper(evento) like " + t + " or upper(tipo_evento) like " + t + ")";
 		}
 		
-		q += " limit " + num;
+		q += " order by creazione desc limit " + num;
 		if (start > 0) q += " offset " + start;
 		
 		List evts = BollettinoLocalServiceUtil.eseguiQueryGenericaLista(q);
@@ -57,7 +59,8 @@ public class EventiHelper {
 			Object[] o = (Object[])oo;
 			
 			EventiBean evento = new EventiBean();
-			
+			try {
+
 			evento.setId( o[0].toString());
 			evento.setEvento( o[1].toString());
 			evento.setTipoEvento( o[2].toString());
@@ -67,6 +70,12 @@ public class EventiHelper {
 			evento.setPercSuccesso(o[6].toString());
 			evento.setUltimoAggiornamento( o[7].toString());
 			evento.setDataGenerazione( o[8].toString());
+			evento.setGruppiRaggiunti(o[9].toString());
+			evento.setGruppiTotali(o[10].toString());
+			evento.setTuttiRaggiunti(((Boolean)o[11])?"SI":"NO");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			
 			eventi.add(evento);
 		}

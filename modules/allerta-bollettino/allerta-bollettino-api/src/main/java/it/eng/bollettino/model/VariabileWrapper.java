@@ -1,30 +1,15 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.bollettino.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -35,21 +20,12 @@ import java.util.Objects;
  * @see Variabile
  * @generated
  */
-@ProviderType
-public class VariabileWrapper implements Variabile, ModelWrapper<Variabile> {
+public class VariabileWrapper
+	extends BaseModelWrapper<Variabile>
+	implements ModelWrapper<Variabile>, Variabile {
 
 	public VariabileWrapper(Variabile variabile) {
-		_variabile = variabile;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return Variabile.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return Variabile.class.getName();
+		super(variabile);
 	}
 
 	@Override
@@ -148,13 +124,8 @@ public class VariabileWrapper implements Variabile, ModelWrapper<Variabile> {
 	}
 
 	@Override
-	public Object clone() {
-		return new VariabileWrapper((Variabile)_variabile.clone());
-	}
-
-	@Override
-	public int compareTo(it.eng.bollettino.model.Variabile variabile) {
-		return _variabile.compareTo(variabile);
+	public Variabile cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -164,7 +135,7 @@ public class VariabileWrapper implements Variabile, ModelWrapper<Variabile> {
 	 */
 	@Override
 	public String getBcode() {
-		return _variabile.getBcode();
+		return model.getBcode();
 	}
 
 	/**
@@ -174,12 +145,7 @@ public class VariabileWrapper implements Variabile, ModelWrapper<Variabile> {
 	 */
 	@Override
 	public String getDescription_it() {
-		return _variabile.getDescription_it();
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _variabile.getExpandoBridge();
+		return model.getDescription_it();
 	}
 
 	/**
@@ -189,7 +155,7 @@ public class VariabileWrapper implements Variabile, ModelWrapper<Variabile> {
 	 */
 	@Override
 	public String getId() {
-		return _variabile.getId();
+		return model.getId();
 	}
 
 	/**
@@ -199,7 +165,7 @@ public class VariabileWrapper implements Variabile, ModelWrapper<Variabile> {
 	 */
 	@Override
 	public int getLevel_t1() {
-		return _variabile.getLevel_t1();
+		return model.getLevel_t1();
 	}
 
 	/**
@@ -209,7 +175,7 @@ public class VariabileWrapper implements Variabile, ModelWrapper<Variabile> {
 	 */
 	@Override
 	public int getLevel_t2() {
-		return _variabile.getLevel_t2();
+		return model.getLevel_t2();
 	}
 
 	/**
@@ -219,7 +185,7 @@ public class VariabileWrapper implements Variabile, ModelWrapper<Variabile> {
 	 */
 	@Override
 	public int getLevel_v1() {
-		return _variabile.getLevel_v1();
+		return model.getLevel_v1();
 	}
 
 	/**
@@ -229,7 +195,7 @@ public class VariabileWrapper implements Variabile, ModelWrapper<Variabile> {
 	 */
 	@Override
 	public int getLevel_v2() {
-		return _variabile.getLevel_v2();
+		return model.getLevel_v2();
 	}
 
 	/**
@@ -239,12 +205,7 @@ public class VariabileWrapper implements Variabile, ModelWrapper<Variabile> {
 	 */
 	@Override
 	public String getPrimaryKey() {
-		return _variabile.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _variabile.getPrimaryKeyObj();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -254,7 +215,7 @@ public class VariabileWrapper implements Variabile, ModelWrapper<Variabile> {
 	 */
 	@Override
 	public int getTrange_p1() {
-		return _variabile.getTrange_p1();
+		return model.getTrange_p1();
 	}
 
 	/**
@@ -264,7 +225,7 @@ public class VariabileWrapper implements Variabile, ModelWrapper<Variabile> {
 	 */
 	@Override
 	public int getTrange_p2() {
-		return _variabile.getTrange_p2();
+		return model.getTrange_p2();
 	}
 
 	/**
@@ -274,7 +235,7 @@ public class VariabileWrapper implements Variabile, ModelWrapper<Variabile> {
 	 */
 	@Override
 	public int getTrange_pind() {
-		return _variabile.getTrange_pind();
+		return model.getTrange_pind();
 	}
 
 	/**
@@ -284,7 +245,7 @@ public class VariabileWrapper implements Variabile, ModelWrapper<Variabile> {
 	 */
 	@Override
 	public String getUnit() {
-		return _variabile.getUnit();
+		return model.getUnit();
 	}
 
 	/**
@@ -294,32 +255,12 @@ public class VariabileWrapper implements Variabile, ModelWrapper<Variabile> {
 	 */
 	@Override
 	public String getUuid() {
-		return _variabile.getUuid();
-	}
-
-	@Override
-	public int hashCode() {
-		return _variabile.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _variabile.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _variabile.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _variabile.isNew();
+		return model.getUuid();
 	}
 
 	@Override
 	public void persist() {
-		_variabile.persist();
+		model.persist();
 	}
 
 	/**
@@ -329,12 +270,7 @@ public class VariabileWrapper implements Variabile, ModelWrapper<Variabile> {
 	 */
 	@Override
 	public void setBcode(String bcode) {
-		_variabile.setBcode(bcode);
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_variabile.setCachedModel(cachedModel);
+		model.setBcode(bcode);
 	}
 
 	/**
@@ -344,24 +280,7 @@ public class VariabileWrapper implements Variabile, ModelWrapper<Variabile> {
 	 */
 	@Override
 	public void setDescription_it(String description_it) {
-		_variabile.setDescription_it(description_it);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_variabile.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_variabile.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_variabile.setExpandoBridgeAttributes(serviceContext);
+		model.setDescription_it(description_it);
 	}
 
 	/**
@@ -371,7 +290,7 @@ public class VariabileWrapper implements Variabile, ModelWrapper<Variabile> {
 	 */
 	@Override
 	public void setId(String id) {
-		_variabile.setId(id);
+		model.setId(id);
 	}
 
 	/**
@@ -381,7 +300,7 @@ public class VariabileWrapper implements Variabile, ModelWrapper<Variabile> {
 	 */
 	@Override
 	public void setLevel_t1(int level_t1) {
-		_variabile.setLevel_t1(level_t1);
+		model.setLevel_t1(level_t1);
 	}
 
 	/**
@@ -391,7 +310,7 @@ public class VariabileWrapper implements Variabile, ModelWrapper<Variabile> {
 	 */
 	@Override
 	public void setLevel_t2(int level_t2) {
-		_variabile.setLevel_t2(level_t2);
+		model.setLevel_t2(level_t2);
 	}
 
 	/**
@@ -401,7 +320,7 @@ public class VariabileWrapper implements Variabile, ModelWrapper<Variabile> {
 	 */
 	@Override
 	public void setLevel_v1(int level_v1) {
-		_variabile.setLevel_v1(level_v1);
+		model.setLevel_v1(level_v1);
 	}
 
 	/**
@@ -411,12 +330,7 @@ public class VariabileWrapper implements Variabile, ModelWrapper<Variabile> {
 	 */
 	@Override
 	public void setLevel_v2(int level_v2) {
-		_variabile.setLevel_v2(level_v2);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_variabile.setNew(n);
+		model.setLevel_v2(level_v2);
 	}
 
 	/**
@@ -426,12 +340,7 @@ public class VariabileWrapper implements Variabile, ModelWrapper<Variabile> {
 	 */
 	@Override
 	public void setPrimaryKey(String primaryKey) {
-		_variabile.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_variabile.setPrimaryKeyObj(primaryKeyObj);
+		model.setPrimaryKey(primaryKey);
 	}
 
 	/**
@@ -441,7 +350,7 @@ public class VariabileWrapper implements Variabile, ModelWrapper<Variabile> {
 	 */
 	@Override
 	public void setTrange_p1(int trange_p1) {
-		_variabile.setTrange_p1(trange_p1);
+		model.setTrange_p1(trange_p1);
 	}
 
 	/**
@@ -451,7 +360,7 @@ public class VariabileWrapper implements Variabile, ModelWrapper<Variabile> {
 	 */
 	@Override
 	public void setTrange_p2(int trange_p2) {
-		_variabile.setTrange_p2(trange_p2);
+		model.setTrange_p2(trange_p2);
 	}
 
 	/**
@@ -461,7 +370,7 @@ public class VariabileWrapper implements Variabile, ModelWrapper<Variabile> {
 	 */
 	@Override
 	public void setTrange_pind(int trange_pind) {
-		_variabile.setTrange_pind(trange_pind);
+		model.setTrange_pind(trange_pind);
 	}
 
 	/**
@@ -471,7 +380,7 @@ public class VariabileWrapper implements Variabile, ModelWrapper<Variabile> {
 	 */
 	@Override
 	public void setUnit(String unit) {
-		_variabile.setUnit(unit);
+		model.setUnit(unit);
 	}
 
 	/**
@@ -481,75 +390,17 @@ public class VariabileWrapper implements Variabile, ModelWrapper<Variabile> {
 	 */
 	@Override
 	public void setUuid(String uuid) {
-		_variabile.setUuid(uuid);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<it.eng.bollettino.model.Variabile> toCacheModel() {
-
-		return _variabile.toCacheModel();
-	}
-
-	@Override
-	public it.eng.bollettino.model.Variabile toEscapedModel() {
-		return new VariabileWrapper(_variabile.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _variabile.toString();
-	}
-
-	@Override
-	public it.eng.bollettino.model.Variabile toUnescapedModel() {
-		return new VariabileWrapper(_variabile.toUnescapedModel());
+		model.setUuid(uuid);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _variabile.toXmlString();
+		return model.toXmlString();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-
-		if (!(obj instanceof VariabileWrapper)) {
-			return false;
-		}
-
-		VariabileWrapper variabileWrapper = (VariabileWrapper)obj;
-
-		if (Objects.equals(_variabile, variabileWrapper._variabile)) {
-			return true;
-		}
-
-		return false;
+	protected VariabileWrapper wrap(Variabile variabile) {
+		return new VariabileWrapper(variabile);
 	}
-
-	@Override
-	public Variabile getWrappedModel() {
-		return _variabile;
-	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _variabile.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _variabile.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_variabile.resetOriginalValues();
-	}
-
-	private final Variabile _variabile;
 
 }

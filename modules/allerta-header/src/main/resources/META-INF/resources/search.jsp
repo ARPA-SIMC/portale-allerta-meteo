@@ -29,49 +29,48 @@ try {
 </div>
 
 <li class="nav-item"><a data-toggle="search" href="#search-menu"
-	title="Mostra / nascondi lo strumento di ricerca dei comuni"
+	title="<liferay-ui:message key="allertaheader_reader1" />"
 	class="d-block d-lg-none d-print-none"> <span
-		class="icon i-search-comune" title="Cerca un comune"></span> <span
-		class="sr-only">Cerca un comune</span>
+		class="icon i-search-comune" title="<liferay-ui:message key="allertaheader_reader2" />"></span> <span
+		class="sr-only"><liferay-ui:message key="allertaheader_reader2" /></span>
 </a>
 
 	<div class="d-lg-block d-print-block search-menu" id="search-menu">
 
 		<div class="search-menu__head">
 			<div class="d-flex justify-content-between d-lg-none d-print-none">
-				<label for="search-menu-box">Cosa succede nel tuo comune?</label> <a
+				<label for="search-menu-box"><liferay-ui:message key="allertaheader_chesuccede" /></label> <a
 					href="#search-menu" data-toggle="search" class="d-lg-none"><span
-					class="icon i-times" title="Chiudi il box di ricerca"></span></a>
+					class="icon i-times" title="<liferay-ui:message key="allertaheader_reader3" />"></span></a>
 			</div>
 
 			<div class="d-flex flex-row">
 				<input type="text" id="search-menu-box" class="form-control"
-					value="" placeholder="Cosa succede nel tuo comune?"
+					value="" placeholder="<liferay-ui:message key="allertaheader_chesuccede" />"
 					aria-describedby="search-menu-box-message" autocomplete="off"
 					data-trigger="search" data-results="#search-menu__results"
 					data-islogged="1">
 				<button class="btn btn-transparent">
-					<span class="icon i-search-comune" title="Cerca comune"></span>
+					<span class="icon i-search-comune" title="<liferay-ui:message key="allertaheader_reader2" />"></span>
 				</button>
 			</div>
 		</div>
 
 		<!-- messaggio (screen reader only-->
-		<small class="sr-only" id="search-menu-box-message" role="alert">Digita
-			le iniziali del comune che vuoi cercare</small>
+		<small class="sr-only" id="search-menu-box-message" role="alert"><liferay-ui:message key="allertaheader_initials" /></small>
 
 		<div id="search-menu__results" class="search-menu__results">
 			<div class="search-menu__results__list"></div>
 			<c:if test="<%=favorities.size() > 0 %>">
 			
 			<div class="search-menu__results__fav">
-				<h4>I tuoi luoghi preferiti</h4>
+				<h4><liferay-ui:message key="allertaheader_preferiti" /></h4>
 				<c:forEach items="<%=favorities %>" var="g">
 				<a class="search-menu__results__item" href="${g.getDisplayURL(themeDisplay) }"
-					title="Vai a ${g.getName(locale) }">
+					title="<liferay-ui:message key="allertaheader_goto" /> ${g.getName(locale) }">
 					<div class="icon i-map-marker" aria-hidden="true"></div>
 					<div>${g.getName(locale) }</div>
-					<div class="icon i-heart u-favourite-icon" title="Luogo preferito"></div>
+					<div class="icon i-heart u-favourite-icon" title="<liferay-ui:message key="allertaheader_preferito" />"></div>
 				</a> 
 				</c:forEach>
 			</div>

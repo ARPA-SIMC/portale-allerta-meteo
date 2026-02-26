@@ -1,49 +1,48 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerte.service.persistence.impl;
 
-import aQute.bnd.annotation.ProviderType;
-
+import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
 import com.liferay.portal.kernel.dao.orm.Query;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
+import com.liferay.portal.kernel.dao.orm.SessionFactory;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
-import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.spring.extender.service.ServiceReference;
+import com.liferay.portal.kernel.util.PropsKeys;
+import com.liferay.portal.kernel.util.PropsUtil;
 
 import it.eng.allerte.exception.NoSuchRubricaCanaleException;
 import it.eng.allerte.model.RubricaCanale;
+import it.eng.allerte.model.RubricaCanaleTable;
 import it.eng.allerte.model.impl.RubricaCanaleImpl;
 import it.eng.allerte.model.impl.RubricaCanaleModelImpl;
 import it.eng.allerte.service.persistence.RubricaCanalePersistence;
+import it.eng.allerte.service.persistence.RubricaCanaleUtil;
+import it.eng.allerte.service.persistence.impl.constants.rubricaPersistenceConstants;
 
 import java.io.Serializable;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.sql.DataSource;
+
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The persistence implementation for the rubrica canale service.
@@ -55,7 +54,7 @@ import java.util.Set;
  * @author Pratola_L
  * @generated
  */
-@ProviderType
+@Component(service = RubricaCanalePersistence.class)
 public class RubricaCanalePersistenceImpl
 	extends BasePersistenceImpl<RubricaCanale>
 	implements RubricaCanalePersistence {
@@ -80,6 +79,11 @@ public class RubricaCanalePersistenceImpl
 
 	public RubricaCanalePersistenceImpl() {
 		setModelClass(RubricaCanale.class);
+
+		setModelImplClass(RubricaCanaleImpl.class);
+		setModelPKClass(long.class);
+
+		setTable(RubricaCanaleTable.INSTANCE);
 	}
 
 	/**
@@ -89,13 +93,12 @@ public class RubricaCanalePersistenceImpl
 	 */
 	@Override
 	public void cacheResult(RubricaCanale rubricaCanale) {
-		entityCache.putResult(
-			RubricaCanaleModelImpl.ENTITY_CACHE_ENABLED,
+		dummyEntityCache.putResult(
 			RubricaCanaleImpl.class, rubricaCanale.getPrimaryKey(),
 			rubricaCanale);
-
-		rubricaCanale.resetOriginalValues();
 	}
+
+	private int _valueObjectFinderCacheListThreshold;
 
 	/**
 	 * Caches the rubrica canales in the entity cache if it is enabled.
@@ -104,16 +107,19 @@ public class RubricaCanalePersistenceImpl
 	 */
 	@Override
 	public void cacheResult(List<RubricaCanale> rubricaCanales) {
+		if ((_valueObjectFinderCacheListThreshold == 0) ||
+			((_valueObjectFinderCacheListThreshold > 0) &&
+			 (rubricaCanales.size() > _valueObjectFinderCacheListThreshold))) {
+
+			return;
+		}
+
 		for (RubricaCanale rubricaCanale : rubricaCanales) {
-			if (entityCache.getResult(
-					RubricaCanaleModelImpl.ENTITY_CACHE_ENABLED,
+			if (dummyEntityCache.getResult(
 					RubricaCanaleImpl.class, rubricaCanale.getPrimaryKey()) ==
 						null) {
 
 				cacheResult(rubricaCanale);
-			}
-			else {
-				rubricaCanale.resetOriginalValues();
 			}
 		}
 	}
@@ -127,11 +133,9 @@ public class RubricaCanalePersistenceImpl
 	 */
 	@Override
 	public void clearCache() {
-		entityCache.clearCache(RubricaCanaleImpl.class);
+		dummyEntityCache.clearCache(RubricaCanaleImpl.class);
 
-		finderCache.clearCache(FINDER_CLASS_NAME_ENTITY);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		dummyFinderCache.clearCache(RubricaCanaleImpl.class);
 	}
 
 	/**
@@ -143,23 +147,23 @@ public class RubricaCanalePersistenceImpl
 	 */
 	@Override
 	public void clearCache(RubricaCanale rubricaCanale) {
-		entityCache.removeResult(
-			RubricaCanaleModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaCanaleImpl.class, rubricaCanale.getPrimaryKey());
-
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		dummyEntityCache.removeResult(RubricaCanaleImpl.class, rubricaCanale);
 	}
 
 	@Override
 	public void clearCache(List<RubricaCanale> rubricaCanales) {
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
-
 		for (RubricaCanale rubricaCanale : rubricaCanales) {
-			entityCache.removeResult(
-				RubricaCanaleModelImpl.ENTITY_CACHE_ENABLED,
-				RubricaCanaleImpl.class, rubricaCanale.getPrimaryKey());
+			dummyEntityCache.removeResult(
+				RubricaCanaleImpl.class, rubricaCanale);
+		}
+	}
+
+	@Override
+	public void clearCache(Set<Serializable> primaryKeys) {
+		dummyFinderCache.clearCache(RubricaCanaleImpl.class);
+
+		for (Serializable primaryKey : primaryKeys) {
+			dummyEntityCache.removeResult(RubricaCanaleImpl.class, primaryKey);
 		}
 	}
 
@@ -223,11 +227,11 @@ public class RubricaCanalePersistenceImpl
 
 			return remove(rubricaCanale);
 		}
-		catch (NoSuchRubricaCanaleException nsee) {
-			throw nsee;
+		catch (NoSuchRubricaCanaleException noSuchEntityException) {
+			throw noSuchEntityException;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -250,8 +254,8 @@ public class RubricaCanalePersistenceImpl
 				session.delete(rubricaCanale);
 			}
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -273,34 +277,26 @@ public class RubricaCanalePersistenceImpl
 		try {
 			session = openSession();
 
-			if (rubricaCanale.isNew()) {
+			if (isNew) {
 				session.save(rubricaCanale);
-
-				rubricaCanale.setNew(false);
 			}
 			else {
 				rubricaCanale = (RubricaCanale)session.merge(rubricaCanale);
 			}
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
 		}
 
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		dummyEntityCache.putResult(
+			RubricaCanaleImpl.class, rubricaCanale, false, true);
 
 		if (isNew) {
-			finderCache.removeResult(_finderPathCountAll, FINDER_ARGS_EMPTY);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindAll, FINDER_ARGS_EMPTY);
+			rubricaCanale.setNew(false);
 		}
-
-		entityCache.putResult(
-			RubricaCanaleModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaCanaleImpl.class, rubricaCanale.getPrimaryKey(),
-			rubricaCanale, false);
 
 		rubricaCanale.resetOriginalValues();
 
@@ -349,161 +345,12 @@ public class RubricaCanalePersistenceImpl
 	/**
 	 * Returns the rubrica canale with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the rubrica canale
-	 * @return the rubrica canale, or <code>null</code> if a rubrica canale with the primary key could not be found
-	 */
-	@Override
-	public RubricaCanale fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(
-			RubricaCanaleModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaCanaleImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		RubricaCanale rubricaCanale = (RubricaCanale)serializable;
-
-		if (rubricaCanale == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				rubricaCanale = (RubricaCanale)session.get(
-					RubricaCanaleImpl.class, primaryKey);
-
-				if (rubricaCanale != null) {
-					cacheResult(rubricaCanale);
-				}
-				else {
-					entityCache.putResult(
-						RubricaCanaleModelImpl.ENTITY_CACHE_ENABLED,
-						RubricaCanaleImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(
-					RubricaCanaleModelImpl.ENTITY_CACHE_ENABLED,
-					RubricaCanaleImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return rubricaCanale;
-	}
-
-	/**
-	 * Returns the rubrica canale with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param ID_CANALE the primary key of the rubrica canale
 	 * @return the rubrica canale, or <code>null</code> if a rubrica canale with the primary key could not be found
 	 */
 	@Override
 	public RubricaCanale fetchByPrimaryKey(long ID_CANALE) {
 		return fetchByPrimaryKey((Serializable)ID_CANALE);
-	}
-
-	@Override
-	public Map<Serializable, RubricaCanale> fetchByPrimaryKeys(
-		Set<Serializable> primaryKeys) {
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, RubricaCanale> map =
-			new HashMap<Serializable, RubricaCanale>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			RubricaCanale rubricaCanale = fetchByPrimaryKey(primaryKey);
-
-			if (rubricaCanale != null) {
-				map.put(primaryKey, rubricaCanale);
-			}
-
-			return map;
-		}
-
-		Set<Serializable> uncachedPrimaryKeys = null;
-
-		for (Serializable primaryKey : primaryKeys) {
-			Serializable serializable = entityCache.getResult(
-				RubricaCanaleModelImpl.ENTITY_CACHE_ENABLED,
-				RubricaCanaleImpl.class, primaryKey);
-
-			if (serializable != nullModel) {
-				if (serializable == null) {
-					if (uncachedPrimaryKeys == null) {
-						uncachedPrimaryKeys = new HashSet<Serializable>();
-					}
-
-					uncachedPrimaryKeys.add(primaryKey);
-				}
-				else {
-					map.put(primaryKey, (RubricaCanale)serializable);
-				}
-			}
-		}
-
-		if (uncachedPrimaryKeys == null) {
-			return map;
-		}
-
-		StringBundler query = new StringBundler(
-			uncachedPrimaryKeys.size() * 2 + 1);
-
-		query.append(_SQL_SELECT_RUBRICACANALE_WHERE_PKS_IN);
-
-		for (Serializable primaryKey : uncachedPrimaryKeys) {
-			query.append((long)primaryKey);
-
-			query.append(",");
-		}
-
-		query.setIndex(query.index() - 1);
-
-		query.append(")");
-
-		String sql = query.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query q = session.createQuery(sql);
-
-			for (RubricaCanale rubricaCanale : (List<RubricaCanale>)q.list()) {
-				map.put(rubricaCanale.getPrimaryKeyObj(), rubricaCanale);
-
-				cacheResult(rubricaCanale);
-
-				uncachedPrimaryKeys.remove(rubricaCanale.getPrimaryKeyObj());
-			}
-
-			for (Serializable primaryKey : uncachedPrimaryKeys) {
-				entityCache.putResult(
-					RubricaCanaleModelImpl.ENTITY_CACHE_ENABLED,
-					RubricaCanaleImpl.class, primaryKey, nullModel);
-			}
-		}
-		catch (Exception e) {
-			throw processException(e);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**
@@ -520,7 +367,7 @@ public class RubricaCanalePersistenceImpl
 	 * Returns a range of all the rubrica canales.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaCanaleModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaCanaleModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of rubrica canales
@@ -536,7 +383,7 @@ public class RubricaCanalePersistenceImpl
 	 * Returns an ordered range of all the rubrica canales.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaCanaleModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaCanaleModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of rubrica canales
@@ -556,64 +403,62 @@ public class RubricaCanalePersistenceImpl
 	 * Returns an ordered range of all the rubrica canales.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaCanaleModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaCanaleModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of rubrica canales
 	 * @param end the upper bound of the range of rubrica canales (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of rubrica canales
 	 */
 	@Override
 	public List<RubricaCanale> findAll(
 		int start, int end, OrderByComparator<RubricaCanale> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindAll;
-			finderArgs = FINDER_ARGS_EMPTY;
+			if (useFinderCache) {
+				finderPath = _finderPathWithoutPaginationFindAll;
+				finderArgs = FINDER_ARGS_EMPTY;
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
 			finderArgs = new Object[] {start, end, orderByComparator};
 		}
 
 		List<RubricaCanale> list = null;
 
-		if (retrieveFromCache) {
-			list = (List<RubricaCanale>)finderCache.getResult(
+		if (useFinderCache) {
+			list = (List<RubricaCanale>)dummyFinderCache.getResult(
 				finderPath, finderArgs, this);
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 			String sql = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					2 + (orderByComparator.getOrderByFields().length * 2));
 
-				query.append(_SQL_SELECT_RUBRICACANALE);
+				sb.append(_SQL_SELECT_RUBRICACANALE);
 
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 
-				sql = query.toString();
+				sql = sb.toString();
 			}
 			else {
 				sql = _SQL_SELECT_RUBRICACANALE;
 
-				if (pagination) {
-					sql = sql.concat(RubricaCanaleModelImpl.ORDER_BY_JPQL);
-				}
+				sql = sql.concat(RubricaCanaleModelImpl.ORDER_BY_JPQL);
 			}
 
 			Session session = null;
@@ -621,29 +466,19 @@ public class RubricaCanalePersistenceImpl
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				if (!pagination) {
-					list = (List<RubricaCanale>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<RubricaCanale>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<RubricaCanale>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					dummyFinderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -671,7 +506,7 @@ public class RubricaCanalePersistenceImpl
 	 */
 	@Override
 	public int countAll() {
-		Long count = (Long)finderCache.getResult(
+		Long count = (Long)dummyFinderCache.getResult(
 			_finderPathCountAll, FINDER_ARGS_EMPTY, this);
 
 		if (count == null) {
@@ -680,18 +515,15 @@ public class RubricaCanalePersistenceImpl
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(_SQL_COUNT_RUBRICACANALE);
+				Query query = session.createQuery(_SQL_COUNT_RUBRICACANALE);
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
-				finderCache.putResult(
+				dummyFinderCache.putResult(
 					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -702,6 +534,21 @@ public class RubricaCanalePersistenceImpl
 	}
 
 	@Override
+	protected EntityCache getEntityCache() {
+		return dummyEntityCache;
+	}
+
+	@Override
+	protected String getPKDBName() {
+		return "ID_CANALE";
+	}
+
+	@Override
+	protected String getSelectSQL() {
+		return _SQL_SELECT_RUBRICACANALE;
+	}
+
+	@Override
 	protected Map<String, Integer> getTableColumnsMap() {
 		return RubricaCanaleModelImpl.TABLE_COLUMNS_MAP;
 	}
@@ -709,44 +556,61 @@ public class RubricaCanalePersistenceImpl
 	/**
 	 * Initializes the rubrica canale persistence.
 	 */
-	public void afterPropertiesSet() {
+	@Activate
+	public void activate() {
+		_valueObjectFinderCacheListThreshold = GetterUtil.getInteger(
+			PropsUtil.get(PropsKeys.VALUE_OBJECT_FINDER_CACHE_LIST_THRESHOLD));
+
 		_finderPathWithPaginationFindAll = new FinderPath(
-			RubricaCanaleModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaCanaleModelImpl.FINDER_CACHE_ENABLED,
-			RubricaCanaleImpl.class, FINDER_CLASS_NAME_LIST_WITH_PAGINATION,
-			"findAll", new String[0]);
+			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findAll", new String[0],
+			new String[0], true);
 
 		_finderPathWithoutPaginationFindAll = new FinderPath(
-			RubricaCanaleModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaCanaleModelImpl.FINDER_CACHE_ENABLED,
-			RubricaCanaleImpl.class, FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
-			"findAll", new String[0]);
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findAll", new String[0],
+			new String[0], true);
 
 		_finderPathCountAll = new FinderPath(
-			RubricaCanaleModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaCanaleModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countAll",
-			new String[0]);
+			new String[0], new String[0], false);
+
+		RubricaCanaleUtil.setPersistence(this);
 	}
 
-	public void destroy() {
-		entityCache.removeCache(RubricaCanaleImpl.class.getName());
-		finderCache.removeCache(FINDER_CLASS_NAME_ENTITY);
-		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+	@Deactivate
+	public void deactivate() {
+		RubricaCanaleUtil.setPersistence(null);
+
+		dummyEntityCache.removeCache(RubricaCanaleImpl.class.getName());
 	}
 
-	@ServiceReference(type = EntityCache.class)
-	protected EntityCache entityCache;
+	@Override
+	@Reference(
+		target = rubricaPersistenceConstants.SERVICE_CONFIGURATION_FILTER,
+		unbind = "-"
+	)
+	public void setConfiguration(Configuration configuration) {
+	}
 
-	@ServiceReference(type = FinderCache.class)
-	protected FinderCache finderCache;
+	@Override
+	@Reference(
+		target = rubricaPersistenceConstants.ORIGIN_BUNDLE_SYMBOLIC_NAME_FILTER,
+		unbind = "-"
+	)
+	public void setDataSource(DataSource dataSource) {
+		super.setDataSource(dataSource);
+	}
+
+	@Override
+	@Reference(
+		target = rubricaPersistenceConstants.ORIGIN_BUNDLE_SYMBOLIC_NAME_FILTER,
+		unbind = "-"
+	)
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		super.setSessionFactory(sessionFactory);
+	}
 
 	private static final String _SQL_SELECT_RUBRICACANALE =
 		"SELECT rubricaCanale FROM RubricaCanale rubricaCanale";
-
-	private static final String _SQL_SELECT_RUBRICACANALE_WHERE_PKS_IN =
-		"SELECT rubricaCanale FROM RubricaCanale rubricaCanale WHERE ID_CANALE IN (";
 
 	private static final String _SQL_COUNT_RUBRICACANALE =
 		"SELECT COUNT(rubricaCanale) FROM RubricaCanale rubricaCanale";
@@ -758,5 +622,10 @@ public class RubricaCanalePersistenceImpl
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		RubricaCanalePersistenceImpl.class);
+
+	@Override
+	protected FinderCache getFinderCache() {
+		return dummyFinderCache;
+	}
 
 }

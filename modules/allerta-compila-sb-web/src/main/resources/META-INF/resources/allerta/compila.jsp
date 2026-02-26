@@ -26,69 +26,69 @@ AllertaBean allBean = new AllertaBean(allertaId, request);
 	</portlet:actionURL>
 
 	<portlet:actionURL var="salvaSintesiURL" name="/allertaer/allerta/salva-sintesi">
-		<portlet:param name="redirect" value="<%=themeDisplay.getURLCurrent() %>"/>		
+		<portlet:param name="redirect" value="<%=themeDisplay.getURLCurrent() %>"/>
 	</portlet:actionURL>
-	
+
 	<portlet:actionURL var="salvaURL" name="/allertaer/allerta/salva">
-		<portlet:param name="redirect" value="<%=themeDisplay.getURLCurrent() %>"/>		
+		<portlet:param name="redirect" value="<%=themeDisplay.getURLCurrent() %>"/>
 	</portlet:actionURL>
-	
+
 	<portlet:actionURL var="salvaInviaURL" name="/allertaer/allerta/salva-invia">
-		<portlet:param name="redirect" value=""/>		
+		<portlet:param name="redirect" value=""/>
 	</portlet:actionURL>
-	
+
 	<portlet:actionURL var="eliminaURL" name="/allertaer/allerta/elimina">
-		<portlet:param name="redirect" value=""/>		
+		<portlet:param name="redirect" value=""/>
 	</portlet:actionURL>
 
 <c:set value="<%=allBean%>" var="allBean" scope="request"></c:set>
 
 
 <aui:form method="post" name="fmCompila" id="fmCompila">
-	
+
 	<input type="hidden" name="allertaId" value="${allBean.allertaId}">
 	<input type="hidden" id="generaField" name="generaField" value="">
-	
+
 	<script type="text/javascript">
 		function <portlet:namespace/>getAllertaDefaults(field, serviceUrl){
-			
+
 			$('#generaField').val(field);
-			
+
 			serviceUrl += "&allerta=" + isAllerta();
-			
+
 			console.log(serviceUrl);
-		
+
 			$.ajax({
 			      url: serviceUrl,
 			      method: 'POST',
 			      data: $('#<portlet:namespace/>fmCompila').serialize(),
 			      dataType: 'text',
 			    }).then(function (resp) {
-			   
+
 			    	if( field == 'titolo')
 			    		$('#titolo').val(resp);
 			    	else if( field == 'numero')
 			    		$('#numero').val(resp);
-			    	
+
 			      	if (resp.hasError) {
 			      		console.log('error');
 			      	} else {
 			        	console.log('success');
 			      	}
-			      	
+
 			    }).fail(function (resp) {
 			      	console.log('fail');
 			});
-			
+
 		}
-	</script>	
-					
+	</script>
+
 	<div class="row w-100 justify-content-between">
         <h1 class="col-12 col-lg-8">Compila Allerta</h1>
 	</div>
-                    
+
 	<c:if test="${allBean.url != null }">
-		
+
 		<div class="row">
 			<div class="col">
 				<!-- Card -->
@@ -98,7 +98,7 @@ AllertaBean allBean = new AllertaBean(allertaId, request);
                				<span class="icon i-info" title="Icona di card di informazione"></span>
           				</div>
            				<div class="card__category">
-           					Visualizza 
+           					Visualizza
            					<c:choose>
 	           					<c:when test="${allBean.allertaCorrente.tipoAllerta}">
 	           						Allerta
@@ -109,69 +109,69 @@ AllertaBean allBean = new AllertaBean(allertaId, request);
            					</c:choose>
            				</div>
         			</div>
-        			
+
         			<div class="card-body">
               			<p class="card-text">
                   			<a href='${allBean.allertaCorrente.link}'
 							class="btn btn-primary" target="_blank">Visualizza PDF</a>
               			</p>
 	       			</div>
-        			
+
 				<!-- /  Card -->
-					
+
 			</div>
-				
+
 		</div>
-	
+
 	</c:if>
 	<div class="row">
-	
+
 		<div class="col">
-	
+
 		<c:if test="<%=SessionErrors.contains(request, Exception.class) %>">
 	 		<div class="alert alert-danger" role="alert">
-    			<span class="icon i-error"></span> 
+    			<span class="icon i-error"></span>
     			<span><%= SessionErrors.get(request, Exception.class)%></span>
   			</div>
-		</c:if>		
-		
+		</c:if>
+
 		<liferay-ui:success key="saved" message="Salvataggio riuscito" />
-	
+
 		</div>
-	
+
 	</div>
-	
-	
-	
+
+
+
 	<div class="panel panel--foreground panel--reserved-tools">
-	
+
     	<div class="row panel__body">
-    	
+
     		<div class="col form-group">
 
 				<label class="control-label" for="datetimepicker1"> Inizio
 					Validit&agrave;</label>
-	
-	<!-- 
+
+	<!--
 				<div class="input-group input-group--date-picker">
 					<input type="text" class="datepicker" name="dataInizio"
 						value="${allBean.dataInizioString}" placeholder="gg/mm/aaaa">
 					</div>
 				</div>
-	 -->			
+	 -->
 				<div class='input-group date input-group--date-picker' id="datetimepicker1">
 		            <input <%=sintesi?"disabled":"" %>
-						type="text" 
-						class="form-control" 
+						type="text"
+						class="form-control"
 						name="dataInizio"
-						value="${allBean.dataInizioString}" 
+						value="${allBean.dataInizioString}"
 						placeholder="gg/mm/aaaa" />
 	                <span class="input-group-addon">
 	                   <i class="far fa-calendar-minus"></i>
 	                </span>
 	             </div>
-				                
-	  
+
+
 	             <script type="text/javascript">
 		            $(function () {
 		                $('#datetimepicker1').datetimepicker({
@@ -188,35 +188,35 @@ AllertaBean allBean = new AllertaBean(allertaId, request);
 		                });
 		            });
 		        </script>
-	  	 	</div> 
+	  	 	</div>
 
 			<div class="col form-group">
 				<label class="control-label" for="datetimepicker2"> Fine
 					Validit&agrave;</label>
-	
-	<!-- 
+
+	<!--
 					<div class="input-group input-group--date-picker">
 					<input type="text" class="datepicker" name="dataFine"
-						value="${allBean.dataFineString}" placeholder="gg/mm/aaaa">					
+						value="${allBean.dataFineString}" placeholder="gg/mm/aaaa">
 					</div>
 	 -->
-							
+
 				<div class='input-group date input-group--date-picker' id="datetimepicker2">
 					<input <%=sintesi?"disabled":"" %>
-						type="text" 
-						class="form-control" 
+						type="text"
+						class="form-control"
 						name="dataFine"
-						value="${allBean.dataFineString}" 
-						placeholder="gg/mm/aaaa"/>		
+						value="${allBean.dataFineString}"
+						placeholder="gg/mm/aaaa"/>
 					 <span class="input-group-addon">
 	                    <i class="far fa-calendar-minus"></i>
-	                 </span>			
+	                 </span>
 				</div>
-				
+
 			    <script type="text/javascript">
 		            $(function () {
 		                $('#datetimepicker2').datetimepicker({
-		                	
+
 		                	<%if( allertaId <=0) {%>
 		                	useCurrent: false,
 		                	date: moment().add('d', 2).hours(0).minutes(0).seconds(0).toDate(),
@@ -229,27 +229,27 @@ AllertaBean allBean = new AllertaBean(allertaId, request);
 		                     }
 		                });
 		            });
-	            </script> 						
-				
+	            </script>
+
 			</div>
-		
+
     	</div>
 	</div>
 
 
 	<div class="row">
-	
-		
+
+
 
 	</div>
 
 	<div class="row">
 		<div class="col-6 ">
-			<h2 class="h2">Criticità idraulica, idrogeologica, temporali</h2>
+			<h2 class="h2">Criticitï¿½ idraulica, idrogeologica, temporali</h2>
 			<jsp:include page="/allerta/component/svg.jsp"></jsp:include>
 		</div>
 		<div class="col-6 ">
-			<h2 class="h2">Criticità meteo e marino-costiera</h2>
+			<h2 class="h2">Criticitï¿½ meteo e marino-costiera</h2>
 			<jsp:include page="/allerta/component/svg2.jsp"></jsp:include>
 		</div>
 	</div>
@@ -286,8 +286,8 @@ AllertaBean allBean = new AllertaBean(allertaId, request);
 								<td rowspan="${riga.rowspan}" class="rf-dt-shdr-c">
 									${riga.rowspan eq '1' ? '1' : ''}</td>
 								<c:forEach items="${riga.celle}" var="cella">
-									<td 
-									
+									<td
+
 									<% if (!sintesi) { %>onclick="toggleAllerta(${cella.riga},${cella.colonna},1);"<% } %>
 										id="cella${cella.riga}-${cella.colonna}-1"
 										rowspan="${cella.rowspan}" class="rf-dt-c ${cella.style1}">
@@ -328,7 +328,7 @@ AllertaBean allBean = new AllertaBean(allertaId, request);
 
 
 	<div class="row">
-	
+
 		<div class="col-6 form-group">
 			<label class="control-label">Numero</label>
 			<input <%=sintesi?"disabled":"" %> id="numero" type="text" name="numero" value="${allBean.numero}" class="form-control">
@@ -339,32 +339,45 @@ AllertaBean allBean = new AllertaBean(allertaId, request);
 		</div>
 
 		<div class="col-6 form-group">
-		
+
 			<label class="control-label">Titolo</label>
 			<input <%=sintesi?"disabled":"" %> id="titolo" type="text" name="titolo" value="${allBean.titolo}" class="form-control">
 			<c:if test="<%=!sintesi %>">
-			<button 
-				type="button"  
+			<button
+				type="button"
 				onclick="<portlet:namespace/>getAllertaDefaults('titolo','<%=allertaFieldsDefaultstURL.toString()%>')"
 				class="btn btn-primary">Genera</button>
 			</c:if>
 		</div>
+		</div>
+
+		<div class="row">
+			<div class="col-6 form-group">
+				<label class="control-label">Titolo (English)</label>
+				<input <%=sintesi?"disabled":"" %> id="titoloEng" type="text" name="titoloEng" value="${allBean.titoloEng}" class="form-control">
+			</div>
 	</div>
-	
-		
+
+
 	<div class="row">
 		<div class="col-6 form-group">
-			<label class="control-label">Sintesi</label>
+			<label class="control-label">Testo pubblicazione notizia sul sito</label>
 			<textarea name="sintesi" style="height: 100px" class="form-control">${allBean.sintesi}</textarea>
 		</div>
-		
+
 		<div class="col-6 form-group">
 			<label class="control-label">Descrizione dei fenomeni</label>
 			<textarea <%=sintesi?"readonly":"" %> name=descrizioneMeteo style="height: 100px" class="form-control">${allBean.descrizioneMeteo}</textarea>
 		</div>
-		
 	</div>
-	
+
+	<div class="row">
+		<div class="col-6 form-group">
+			<label class="control-label">Testo pubblicazione notizia sul sito (English)</label>
+			<textarea name="sintesiEng" style="height: 100px" class="form-control">${allBean.sintesiEng}</textarea>
+		</div>
+	</div>
+
 	<div class="row">
 		<div class="col-6 form-group">
 			<label class="control-label">Tendenza nelle successive 48 ore</label>
@@ -374,23 +387,23 @@ AllertaBean allBean = new AllertaBean(allertaId, request);
 				<option value="3" ${allBean.tendenza == '3' ? 'selected' : ''}>Attenuazione</option>
 				<option value="4" ${allBean.tendenza == '4' ? 'selected' : ''}>In esaurimento</option>
 			</select>
-			
+
 		</div>
 	</div>
-	
+
 	<div class="row">
 		<div class="col-6 form-group">
 			<label class="control-label">Note</label>
 			<textarea <%=sintesi?"readonly":"" %> name="note" style="height: 100px" class="form-control">${allBean.note}</textarea>
 		</div>
-		
+
 		<div class="col-6 form-group">
 			<label class="control-label">Riferimenti e contatti</label>
 			<textarea <%=sintesi?"readonly":"" %> name=riferimenti style="height: 100px" class="form-control">${allBean.riferimenti}</textarea>
 		</div>
-		
+
 	</div>
-	
+
 	<div class="row">
 		<div class="col-6 form-group">
 			<label class="control-label">Approvatore Arpae</label>
@@ -400,7 +413,7 @@ AllertaBean allBean = new AllertaBean(allertaId, request);
 			for(User approvatore : allBean.getListaApprovatoriArpae()) {
 				long approvatoreId = approvatore.getUserId();
 			%>
-			<option value="<%=approvatoreId%>" 
+			<option value="<%=approvatoreId%>"
 			<%=String.valueOf(approvatoreId).equals(allBean.getApprovatoreArpae()) ? "selected" : ""%>>
 			<%=approvatore.getFullName() %></option>
 			<%
@@ -408,7 +421,7 @@ AllertaBean allBean = new AllertaBean(allertaId, request);
 			%>
 			</select>
 		</div>
-		
+
 		<div class="col-6 form-group">
 			<label class="control-label">Approvatore Protezione Civile</label>
 			<select name="approvatorePc" class="form-control" <%=sintesi?"disabled":"" %>>
@@ -426,10 +439,10 @@ AllertaBean allBean = new AllertaBean(allertaId, request);
 			</select>
 		</div>
 	</div>
-	
-	
+
+
 	<c:if test="${allBean.url != null }">
-		
+
 		<div class="row">
 			<div class="col-9">
 				<!-- Card -->
@@ -439,7 +452,7 @@ AllertaBean allBean = new AllertaBean(allertaId, request);
                				<span class="icon i-info" title="Icona di card di informazione"></span>
           				</div>
            				<div class="card__category">
-           					Visualizza 
+           					Visualizza
            					<c:choose>
 	           					<c:when test="${allBean.allertaCorrente.tipoAllerta}">
 	           						Allerta
@@ -457,51 +470,51 @@ AllertaBean allBean = new AllertaBean(allertaId, request);
         			</div>
 				</div>
 				<!-- /  Card -->
-					
+
 			</div>
-				
+
 		</div>
-	
+
 	</c:if>
-	
+
 <script type="text/javascript">
 	function <portlet:namespace/>submitAllertaForm(actionUrl) {
 		document.forms.<portlet:namespace/>fmCompila.action = actionUrl;
 		document.forms.<portlet:namespace/>fmCompila.submit();
-	          
+
 	}
-	
+
 </script>
-	
+
 	<aui:button-row>
-	
+
 		<c:if test="<%=sintesi %>">
 			<button type="button" onclick="<portlet:namespace/>submitAllertaForm('<%=salvaSintesiURL.toString()%>')"
 				class="btn btn-primary">Salva sintesi</button>
 		</c:if>
-		
+
 		<c:if test="<%=!sintesi %>">
 		<c:if test="${allBean.mostraSalva }">
 			<button type="button" onclick="<portlet:namespace/>submitAllertaForm('<%=salvaURL.toString()%>')"
 				class="btn btn-primary">Salva</button>
-			
+
 		</c:if>
-		
+
 		<c:if test="${allBean.mostraInviaApprovazione }">
 			<button type="button" onclick="<portlet:namespace/>submitAllertaForm('<%=salvaInviaURL.toString()%>')"
 				class="btn btn-primary">Salva e invia per approvazione</button>
-			
+
 		</c:if>
-		
+
 		<c:if test="${allBean.mostraInviaApprovazione }">
 			<button type="button" onclick="<portlet:namespace/>submitAllertaForm('<%=eliminaURL.toString()%>')"
 				class="btn btn-secondary">Elimina</button>
-			
+
 		</c:if>
 		</c:if>
 
 	</aui:button-row>
-	
+
 </aui:form>
 
 

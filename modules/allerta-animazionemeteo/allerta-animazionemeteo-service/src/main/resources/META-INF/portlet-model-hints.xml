@@ -6,17 +6,13 @@
 		<field name="name" type="String" />
 		<field name="type" type="String" />
 		<field name="inserted" type="Date" />
-		<field name="data" type="String">
-			<hint name="max-length">5000</hint>
-		</field>
+		<field name="data" type="String" />
 	</model>
 	<model name="it.eng.animaeteo.model.AnimeteoSmallImg">
 		<field name="id" type="long" />
 		<field name="name" type="String" />
 		<field name="type" type="String" />
 		<field name="inserted" type="Date" />
-		<field name="data" type="String">
-			<hint name="max-length">5000</hint>
-		</field>
+		<field name="data" type="String" />
 	</model>
 </model-hints>

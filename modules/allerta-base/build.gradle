@@ -8,12 +8,14 @@ dependencies {
 	
 	
    	compileOnly group: "javax.portlet", name: "portlet-api"
-	compileOnly group: "javax.servlet", name: "javax.servlet-api"
+	compileOnly group: "javax.servlet", name: "javax.servlet-api", version: "3.0.1"
 	
-	compile group: "biz.aQute.bnd", name: "biz.aQute.bndlib", version: "3.1.0"
-   	compileOnly group: "com.liferay", name: "com.liferay.portal.configuration.metatype.api", version: "2.0.0"
+   	compileOnly group: "com.liferay", name: "com.liferay.portal.configuration.metatype.api"
+    compileOnly group: "com.liferay", name: "com.liferay.portal.configuration.module.configuration.api"
   
-  	compileOnly 'com.liferay:com.liferay.configuration.admin.api:2.0.0'
+    compileOnly group: "biz.aQute.bnd", name: "biz.aQute.bndlib", version: "3.1.0"
+  
+  	compileOnly 'com.liferay:com.liferay.configuration.admin.api'
   	
   	compileOnly group: "com.liferay", name: "com.liferay.blogs.api"
   

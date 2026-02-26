@@ -34,8 +34,7 @@ DocumentazioneConfiguration doc = AllertaTracker.getDocumentazioneConfiguration(
 
 
 <section id="map-section--home" class=" map-section">
-	<h2 class="sr-only">Sezione con previsioni di oggi, domani ed
-		eventuale monitoraggio degli eventi in corso</h2>
+	<h2 class="sr-only"><liferay-ui:message key="allertaprevisioniweb_reader1" /></h2>
 	<div class="container-fluid c-xl-container">
 
 		<jsp:include page="maps/template-dati-osservati.jsp?v=0.1"></jsp:include>
@@ -49,14 +48,14 @@ DocumentazioneConfiguration doc = AllertaTracker.getDocumentazioneConfiguration(
 			<%if( mapModelBean.getHomePage()) { %>
 		
 				<li class="nav-item">
-					<a class="nav-link active" href="#tab--oggi" data-toggle="tab" role="tab" aria-controls="tab--oggi" aria-selected="true"> 
-						<span class="u-label">Oggi</span><small>Previsione</small>
+					<a id="tab1" class="nav-link active" href="#tab--oggi" data-toggle="tab" role="tab" aria-controls="tab--oggi" aria-selected="true"> 
+						<span class="u-label"><liferay-ui:message key="allertaprevisioniweb_oggi" /></span><small><liferay-ui:message key="allertaprevisioniweb_previsione" /></small>
 					</a>
 				</li>
 				
 				<li class="nav-item">
-					<a class="nav-link " href="#tab--domani" data-toggle="tab" role="tab" aria-controls="tab--domani" aria-selected="false"> 
-						<span class="u-label">Domani</span> <small>Previsione</small>
+					<a id="tab2" class="nav-link " href="#tab--domani" data-toggle="tab" role="tab" aria-controls="tab--domani" aria-selected="false"> 
+						<span class="u-label"><liferay-ui:message key="allertaprevisioniweb_domani" /></span> <small><liferay-ui:message key="allertaprevisioniweb_previsione" /></small>
 					</a>
 				</li>
 			<%} %>	
@@ -64,12 +63,11 @@ DocumentazioneConfiguration doc = AllertaTracker.getDocumentazioneConfiguration(
 				
 				<%if( mapModelBean.isGestMonAttivo()) { %>
 				<li class="nav-item ">
-					<a class="nav-link" href="#tab--monitoraggio" data-toggle="tab" role="tab" aria-controls="tab--monitoraggio" aria-selected="false">
+					<a id="tab3" class="nav-link" href="#tab--monitoraggio" data-toggle="tab" role="tab" aria-controls="tab--monitoraggio" aria-selected="false">
 						<div class="map-tab-head--monitoring">
 							<span class="icon i-warning-triangle-o"></span>
 							<div>
-								<span class="u-label">Monitoraggio</span> <small>Eventi
-									in corso</small>
+								<span class="u-label"><liferay-ui:message key="allertaprevisioniweb_monitoraggio" /></span> <small><liferay-ui:message key="allertaprevisioniweb_eventiincorso" /></small>
 							</div>
 						</div>
 					</a>
@@ -109,8 +107,7 @@ DocumentazioneConfiguration doc = AllertaTracker.getDocumentazioneConfiguration(
 						
 						<br/><br/>
 						<div class="map-section__emitted" style="">
-						 <h4><strong>La mappa sar&agrave; disponibile all'emissione della prossima allerta o bollettino di vigilanza
-						 meteo idrogeologica e idraulica</strong></h4>
+						 <h4><strong><liferay-ui:message key="allertaprevisioniweb_nomappa" /></strong></h4>
 						</div>
 						
 					</div>
@@ -127,8 +124,7 @@ DocumentazioneConfiguration doc = AllertaTracker.getDocumentazioneConfiguration(
 						
 						<br/><br/>
 						<div class="map-section__emitted" style="">
-							<h4><strong>La mappa sar&agrave; disponibile all'emissione della prossima allerta o bollettino di vigilanza
-						 meteo idrogeologica e idraulica</strong></h4>
+							<h4><strong><liferay-ui:message key="allertaprevisioniweb_nomappa" /></strong></h4>
 						</div>
 					</div>
 				<%} 

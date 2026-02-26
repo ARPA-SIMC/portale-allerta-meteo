@@ -109,7 +109,7 @@ public class AllertaIndexer extends BaseIndexer<Allerta> {
 		                    }
 		                }
 		            });
-		        indexableActionableDynamicQuery.setSearchEngineId(getSearchEngineId());
+		        //indexableActionableDynamicQuery.setSearchEngineId(getSearchEngineId());
 		        indexableActionableDynamicQuery.performActions();
 		
 	}
@@ -121,8 +121,8 @@ public class AllertaIndexer extends BaseIndexer<Allerta> {
 	
 		Document d = getDocument(object);
 		
-		indexWriterHelper.updateDocument(getSearchEngineId(), 
-				object.getCompanyId(), d, true);
+		indexWriterHelper.updateDocument( 
+				object.getCompanyId(), d);
 	}
 	
 	@Reference

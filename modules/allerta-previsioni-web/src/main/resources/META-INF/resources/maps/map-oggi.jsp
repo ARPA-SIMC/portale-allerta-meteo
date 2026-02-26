@@ -1,6 +1,8 @@
 
 <%@ include file="../init.jsp"%>
 <%
+
+	boolean inglese = themeDisplay.getLanguageId().contains("en");
 	
 	MapModelBean mapModelBean = (MapModelBean) renderRequest.getAttribute("MapModelBean");
 
@@ -8,7 +10,9 @@
 	boolean tutto =  mapModelBean.getAllertaOggiTitolo() != null && mapModelBean.getValangheOggiTitolo() != null;
 
 	String spiegazione = tutto?"Previsioni emesse con ":(qualcosa?"Previsione emessa con ":null);
-
+	if (spiegazione!=null && inglese) {
+		spiegazione = "Forecast released with ";
+	}
 	String tipoAllerta, tipoValanghe;
 	
 	tipoAllerta = mapModelBean.getAllertaOggiTipo();
@@ -33,7 +37,7 @@
 						<%=spiegazione %>
 						<% if( mapModelBean.getAllertaOggiTitolo()!=null) { %>
 						<a href="<%=mapModelBean.getAllertaOggiLink()%>">
-							<span class="icon i-warning-o" title="Meteo"></span>
+							<span class="icon i-warning-o" title="<%=inglese?"Weather":"Meteo" %>"></span>
 							<%=tipoAllerta %>
 						</a>
 						<% } %>
@@ -41,7 +45,7 @@
 						<% } %>
 						<% if( mapModelBean.getValangheOggiTitolo()!=null) { %>
 						<a href="<%=mapModelBean.getValangheOggiLink()%>">
-							<span class="icon i-warning-o" title="Valanghe"></span>
+							<span class="icon i-warning-o" title="<%=inglese?"Avalanches":"Valanghe" %>"></span>
 							<%=tipoValanghe %>
 						</a>
 						<% } %>

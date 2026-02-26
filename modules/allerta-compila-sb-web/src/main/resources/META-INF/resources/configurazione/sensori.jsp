@@ -1,3 +1,5 @@
+<%@page import="java.util.List"%>
+<%@page import="it.eng.bollettino.service.BollettinoLocalServiceUtil"%>
 <%@page import="javax.portlet.PortletRequest"%>
 <%@page import="com.liferay.portal.kernel.portlet.PortletURLFactoryUtil"%>
 <%@page import="javax.portlet.PortletURL"%>
@@ -13,6 +15,8 @@ SensoreBean sensori = (SensoreBean) request.getAttribute("sensori");
 long playoutId = PortalUtil.getPlidFromPortletId( themeDisplay.getScopeGroupId(), AllertaKeys.AllertaGraficoPortlet);
 PortletURL pUrl =  PortletURLFactoryUtil.create(renderRequest, AllertaKeys.AllertaGraficoPortlet, playoutId, PortletRequest.RENDER_PHASE);
 pUrl.setParameter("mvcRenderCommandName", new String[]{"/allerta/animazione/grafico"});
+
+List<Object[]> opzioni = BollettinoLocalServiceUtil.eseguiQueryGenericaLista("select idopzione, descrizione from bollettino_opzioni_log_sensori order by idopzione asc");
 
 %>
 
@@ -81,7 +85,17 @@ pUrl.setParameter("mvcRenderCommandName", new String[]{"/allerta/animazione/graf
 						onclick="window.open('/o/report/sc/comuni');"
 						
 						>Scarica Excel Comuni-sensori</button> 
+					<c:if test="${sensori.canModifica }">
+					<button
+						type="button" 
+						
+						class="btn btn-primary" 
+						onclick="window.open('/o/report/logsensori');"
+						
+						>Scarica Excel log sensori</button> 
+					</c:if>
 					</div>
+					
 					
 					<c:if test="${sensori.canModifica }">
 					<div class="col form-group">
@@ -165,6 +179,7 @@ pUrl.setParameter("mvcRenderCommandName", new String[]{"/allerta/animazione/graf
 										<th>Nome sensore</th>
 										<th>Bacino</th>
 										<th >Fiume</th>
+										<th >Gestore</th>
 										<th >Comuni associati</th>
 										<c:if test="${sensori.canVede }">
 										<th >Soglia 1</th>
@@ -190,6 +205,7 @@ pUrl.setParameter("mvcRenderCommandName", new String[]{"/allerta/animazione/graf
 										<td> ${regola.name}</td>
 										<td> ${regola.basin}</td>
 										<td> ${regola.subbasin}</td>
+										<td> ${regola.manager}</td>
 										<td> ${regola.comuni}</td>
 										<c:if test="${sensori.canVede }">
 										<td>
@@ -239,9 +255,21 @@ pUrl.setParameter("mvcRenderCommandName", new String[]{"/allerta/animazione/graf
 											        NO
 											    </c:otherwise>
 											</c:choose>
+											<c:if test="${regola.dataDisattivazione ne null}">
+												<span>(da ${regola.dataDisattivazione})</span>
+											</c:if>
 											</span>
 											<c:if test="${sensori.canModifica }">
 												<input type='hidden' id='stato_${sid}_${vid}' value='${regola.funzionante}' />
+												<select id='motivazione_${sid}_${vid}' name='motivazione_${sid}_${vid}' style='display:none'>
+													<%
+													for (Object[] o : opzioni) {
+														%><option value="<%=o[0].toString() %>" label="<%=o[1].toString() %>"></option><%
+													}
+														
+													%>
+										
+												</select>
 												<button 
 													type="button" 
 													id="vstato_${sid}_${vid}"
@@ -278,6 +306,7 @@ pUrl.setParameter("mvcRenderCommandName", new String[]{"/allerta/animazione/graf
 										<th>Nome sensore</th>
 										<th>Bacino</th>
 										<th >Sottobacino</th>
+										<th >Gestore</th>
 										<th >Comuni associati</th>
 										<c:if test="${sensori.canVede }">
 										<th >Soglia 1h</th>
@@ -302,6 +331,7 @@ pUrl.setParameter("mvcRenderCommandName", new String[]{"/allerta/animazione/graf
 										<td> ${regola.name}</td>
 										<td> ${regola.basin}</td>
 										<td> ${regola.subbasin}</td>
+										<td> ${regola.manager}</td>
 										<td> ${regola.comuni}</td>
 										<c:if test="${sensori.canVede }">
 										<td>
@@ -480,10 +510,19 @@ pUrl.setParameter("mvcRenderCommandName", new String[]{"/allerta/animazione/graf
 				
 				function <portlet:namespace/>salvaStato(id, idStazione, idVariabile, stato) {
 					
+					//se stai spegnendo e il menu delle motivazioni non è visibile, accendilo ed esci
+					if (jQuery('#stato_' + id).val()=='true') {
+						if (jQuery('#motivazione_'+id).css("display")=="none") {
+							jQuery('#motivazione_'+id).css("display","")
+							return
+						}
+					}
+					
 					var opUrl = '<%=salvaStato.toString()%>';
 					
 					opUrl += '&<portlet:namespace/>idStazione=' + idStazione;
 					opUrl += '&<portlet:namespace/>idVariabile=' + idVariabile;
+					opUrl += '&<portlet:namespace/>motivazione=' + jQuery('#motivazione_' + id).val();;
 					opUrl += '&<portlet:namespace/>attivo=' + jQuery('#stato_' + id).val();
 					
 					jQuery.ajax({
@@ -492,10 +531,17 @@ pUrl.setParameter("mvcRenderCommandName", new String[]{"/allerta/animazione/graf
 				        dataType: "json",
 				    	success: function(result) {
 				    		
-				    		jQuery('#td_soglia_' + id).attr('style', result.style);
+				    		/*jQuery('#td_soglia_' + id).attr('style', result.style);
 				    		jQuery('#vstato_' + id).html(result.testo);
 				    		jQuery('#testo_' + id).html(result.label);
-				    		jQuery('#stato_' + id).val(result.stato);
+				    		jQuery('#stato_' + id).val(result.stato);*/
+				    		console.log('ok')
+				    		
+				    		window.location.reload(true);
+				    	},
+				    	error: function(request,error) {
+				    		console.log('ko')
+				    		window.location.reload(true);
 				    	}
 				       
 					});
@@ -510,10 +556,10 @@ pUrl.setParameter("mvcRenderCommandName", new String[]{"/allerta/animazione/graf
 		                "order": [[ 0, "asc" ]],
 		                'columnDefs': [ {
 		                	<c:if test="${sensori.canVede }">
-		                	'targets': [3,7,10], // column index (start from 0)
+		                	'targets': [4,8,11], // column index (start from 0)
 							</c:if>
 		                	<c:if test="${not sensori.canVede }">
-		                	'targets': [3,6], // column index (start from 0)
+		                	'targets': [4,7], // column index (start from 0)
 							</c:if>
 		                    'orderable': false, // set orderable false for selected columns
 		                 }
@@ -527,10 +573,10 @@ pUrl.setParameter("mvcRenderCommandName", new String[]{"/allerta/animazione/graf
 		                "order": [[ 1, "desc" ]],
 		                'columnDefs': [ {
 		                	<c:if test="${sensori.canVede }">
-		                	'targets': [3,9], // column index (start from 0)
+		                	'targets': [4,10], // column index (start from 0)
 							</c:if>
 		                	<c:if test="${not sensori.canVede }">
-		                	'targets': [3,6], // column index (start from 0)
+		                	'targets': [4,7], // column index (start from 0)
 							</c:if>
 		                    'orderable': false, // set orderable false for selected columns
 		                 }

@@ -51,6 +51,8 @@ public class VerificaAllertaConsolidaCommand extends BaseMVCActionCommand{
 		
 		long allertaId = ParamUtil.getLong(actionRequest, "id");
 		
+		long gotoHome = ParamUtil.getLong(actionRequest, "home");
+		
 		//HttpServletRequest r = PortalUtil.getHttpServletRequest(actionRequest);
 		//allertaId  =   Long.parseLong(PortalUtil.getOriginalServletRequest(r).getParameter("id"));
 		
@@ -93,7 +95,7 @@ public class VerificaAllertaConsolidaCommand extends BaseMVCActionCommand{
 		compilaParameters.put("mvcRenderCommandName", new String[]{"/allertaer/verifica/compila"});
 		compilaParameters.put("id", new String[]{String.valueOf(allertaId)});
 		
-		compilaURL.setParameters(compilaParameters);
+		if (gotoHome==0) compilaURL.setParameters(compilaParameters);
 		
 		actionResponse.sendRedirect( compilaURL.toString());
 		

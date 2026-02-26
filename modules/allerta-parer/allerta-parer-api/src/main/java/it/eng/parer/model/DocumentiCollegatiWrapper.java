@@ -1,30 +1,15 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.parer.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -35,22 +20,12 @@ import java.util.Objects;
  * @see DocumentiCollegati
  * @generated
  */
-@ProviderType
 public class DocumentiCollegatiWrapper
+	extends BaseModelWrapper<DocumentiCollegati>
 	implements DocumentiCollegati, ModelWrapper<DocumentiCollegati> {
 
 	public DocumentiCollegatiWrapper(DocumentiCollegati documentiCollegati) {
-		_documentiCollegati = documentiCollegati;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return DocumentiCollegati.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return DocumentiCollegati.class.getName();
+		super(documentiCollegati);
 	}
 
 	@Override
@@ -106,16 +81,8 @@ public class DocumentiCollegatiWrapper
 	}
 
 	@Override
-	public Object clone() {
-		return new DocumentiCollegatiWrapper(
-			(DocumentiCollegati)_documentiCollegati.clone());
-	}
-
-	@Override
-	public int compareTo(
-		it.eng.parer.model.DocumentiCollegati documentiCollegati) {
-
-		return _documentiCollegati.compareTo(documentiCollegati);
+	public DocumentiCollegati cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -125,7 +92,7 @@ public class DocumentiCollegatiWrapper
 	 */
 	@Override
 	public String getDESCRIZIONE_COLLEGAMENTO() {
-		return _documentiCollegati.getDESCRIZIONE_COLLEGAMENTO();
+		return model.getDESCRIZIONE_COLLEGAMENTO();
 	}
 
 	/**
@@ -135,7 +102,7 @@ public class DocumentiCollegatiWrapper
 	 */
 	@Override
 	public int getDOC_COLLEGATO_ANNO() {
-		return _documentiCollegati.getDOC_COLLEGATO_ANNO();
+		return model.getDOC_COLLEGATO_ANNO();
 	}
 
 	/**
@@ -145,7 +112,7 @@ public class DocumentiCollegatiWrapper
 	 */
 	@Override
 	public String getDOC_COLLEGATO_NUMERO() {
-		return _documentiCollegati.getDOC_COLLEGATO_NUMERO();
+		return model.getDOC_COLLEGATO_NUMERO();
 	}
 
 	/**
@@ -155,12 +122,7 @@ public class DocumentiCollegatiWrapper
 	 */
 	@Override
 	public String getDOC_COLLEGATO_TIPO_REGISTRO() {
-		return _documentiCollegati.getDOC_COLLEGATO_TIPO_REGISTRO();
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _documentiCollegati.getExpandoBridge();
+		return model.getDOC_COLLEGATO_TIPO_REGISTRO();
 	}
 
 	/**
@@ -170,7 +132,7 @@ public class DocumentiCollegatiWrapper
 	 */
 	@Override
 	public long getID_INVIO() {
-		return _documentiCollegati.getID_INVIO();
+		return model.getID_INVIO();
 	}
 
 	/**
@@ -182,42 +144,12 @@ public class DocumentiCollegatiWrapper
 	public it.eng.parer.service.persistence.DocumentiCollegatiPK
 		getPrimaryKey() {
 
-		return _documentiCollegati.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _documentiCollegati.getPrimaryKeyObj();
-	}
-
-	@Override
-	public int hashCode() {
-		return _documentiCollegati.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _documentiCollegati.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _documentiCollegati.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _documentiCollegati.isNew();
+		return model.getPrimaryKey();
 	}
 
 	@Override
 	public void persist() {
-		_documentiCollegati.persist();
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_documentiCollegati.setCachedModel(cachedModel);
+		model.persist();
 	}
 
 	/**
@@ -227,8 +159,7 @@ public class DocumentiCollegatiWrapper
 	 */
 	@Override
 	public void setDESCRIZIONE_COLLEGAMENTO(String DESCRIZIONE_COLLEGAMENTO) {
-		_documentiCollegati.setDESCRIZIONE_COLLEGAMENTO(
-			DESCRIZIONE_COLLEGAMENTO);
+		model.setDESCRIZIONE_COLLEGAMENTO(DESCRIZIONE_COLLEGAMENTO);
 	}
 
 	/**
@@ -238,7 +169,7 @@ public class DocumentiCollegatiWrapper
 	 */
 	@Override
 	public void setDOC_COLLEGATO_ANNO(int DOC_COLLEGATO_ANNO) {
-		_documentiCollegati.setDOC_COLLEGATO_ANNO(DOC_COLLEGATO_ANNO);
+		model.setDOC_COLLEGATO_ANNO(DOC_COLLEGATO_ANNO);
 	}
 
 	/**
@@ -248,7 +179,7 @@ public class DocumentiCollegatiWrapper
 	 */
 	@Override
 	public void setDOC_COLLEGATO_NUMERO(String DOC_COLLEGATO_NUMERO) {
-		_documentiCollegati.setDOC_COLLEGATO_NUMERO(DOC_COLLEGATO_NUMERO);
+		model.setDOC_COLLEGATO_NUMERO(DOC_COLLEGATO_NUMERO);
 	}
 
 	/**
@@ -260,25 +191,7 @@ public class DocumentiCollegatiWrapper
 	public void setDOC_COLLEGATO_TIPO_REGISTRO(
 		String DOC_COLLEGATO_TIPO_REGISTRO) {
 
-		_documentiCollegati.setDOC_COLLEGATO_TIPO_REGISTRO(
-			DOC_COLLEGATO_TIPO_REGISTRO);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_documentiCollegati.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_documentiCollegati.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_documentiCollegati.setExpandoBridgeAttributes(serviceContext);
+		model.setDOC_COLLEGATO_TIPO_REGISTRO(DOC_COLLEGATO_TIPO_REGISTRO);
 	}
 
 	/**
@@ -288,12 +201,7 @@ public class DocumentiCollegatiWrapper
 	 */
 	@Override
 	public void setID_INVIO(long ID_INVIO) {
-		_documentiCollegati.setID_INVIO(ID_INVIO);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_documentiCollegati.setNew(n);
+		model.setID_INVIO(ID_INVIO);
 	}
 
 	/**
@@ -305,86 +213,19 @@ public class DocumentiCollegatiWrapper
 	public void setPrimaryKey(
 		it.eng.parer.service.persistence.DocumentiCollegatiPK primaryKey) {
 
-		_documentiCollegati.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_documentiCollegati.setPrimaryKeyObj(primaryKeyObj);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<it.eng.parer.model.DocumentiCollegati> toCacheModel() {
-
-		return _documentiCollegati.toCacheModel();
-	}
-
-	@Override
-	public it.eng.parer.model.DocumentiCollegati toEscapedModel() {
-		return new DocumentiCollegatiWrapper(
-			_documentiCollegati.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _documentiCollegati.toString();
-	}
-
-	@Override
-	public it.eng.parer.model.DocumentiCollegati toUnescapedModel() {
-		return new DocumentiCollegatiWrapper(
-			_documentiCollegati.toUnescapedModel());
+		model.setPrimaryKey(primaryKey);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _documentiCollegati.toXmlString();
+		return model.toXmlString();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
+	protected DocumentiCollegatiWrapper wrap(
+		DocumentiCollegati documentiCollegati) {
 
-		if (!(obj instanceof DocumentiCollegatiWrapper)) {
-			return false;
-		}
-
-		DocumentiCollegatiWrapper documentiCollegatiWrapper =
-			(DocumentiCollegatiWrapper)obj;
-
-		if (Objects.equals(
-				_documentiCollegati,
-				documentiCollegatiWrapper._documentiCollegati)) {
-
-			return true;
-		}
-
-		return false;
+		return new DocumentiCollegatiWrapper(documentiCollegati);
 	}
-
-	@Override
-	public DocumentiCollegati getWrappedModel() {
-		return _documentiCollegati;
-	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _documentiCollegati.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _documentiCollegati.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_documentiCollegati.resetOriginalValues();
-	}
-
-	private final DocumentiCollegati _documentiCollegati;
 
 }

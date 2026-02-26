@@ -1,3 +1,8 @@
+<%@page import="com.liferay.portal.kernel.workflow.WorkflowInstanceManagerUtil"%>
+<%@page import="com.liferay.portal.kernel.workflow.WorkflowInstance"%>
+<%@page import="com.liferay.portal.kernel.model.WorkflowInstanceLink"%>
+<%@page import="com.liferay.portal.kernel.exception.NoSuchWorkflowInstanceLinkException"%>
+<%@page import="it.eng.allerter.service.LogInternoLocalServiceUtil"%>
 <%@page import="com.liferay.portal.kernel.workflow.permission.WorkflowPermissionUtil"%>
 <%@page import="com.liferay.portal.kernel.workflow.WorkflowTaskManagerUtil"%>
 <%@page import="com.liferay.portal.kernel.workflow.WorkflowTask"%>
@@ -8,10 +13,7 @@
 <%@page import="com.liferay.portal.kernel.service.UserNotificationEventLocalServiceUtil"%>
 <%@page import="com.liferay.portal.kernel.util.ParamUtil"%>
 <%@page import="com.liferay.portal.kernel.util.PortalUtil"%>
-<%@page import="com.liferay.journal.model.JournalArticleDisplay"%>
-<%@page import="com.liferay.journal.model.JournalArticle"%>
-<%@page
-	import="com.liferay.journal.service.JournalArticleLocalServiceUtil"%>
+
 <%@page import="it.eng.allerta.utils.AllertaKeys"%>
 <%@page import="it.eng.allerter.model.AllertaParametro"%>
 <%@page
@@ -37,7 +39,6 @@
 <%@taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet"%>
 <%@taglib uri="http://liferay.com/tld/theme" prefix="theme"%>
 <%@taglib uri="http://liferay.com/tld/portlet" prefix="liferay-portlet"%>
-<%@taglib uri="http://liferay.com/tld/journal" prefix="liferay-journal"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
 <portlet:defineObjects />
@@ -45,6 +46,8 @@
 
 <%
 	Allerta feedback = null;
+
+	LogInternoLocalServiceUtil.log("bollettinoJsp", "1", "1", "");
 
 	SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.ITALY);
 	SimpleDateFormat sdf2 = new SimpleDateFormat("dd MMMM yyyy", Locale.ITALY);
@@ -83,6 +86,9 @@
 	
 	String sintesiLink = "";
 	String modificaLink = "";
+	
+	long workflowTaskId = 0;
+
 
 	try {
 		AllertaParametro ap = AllertaParametroLocalServiceUtil
@@ -155,55 +161,63 @@
 		e.printStackTrace();
 	}
 
-	
+	LogInternoLocalServiceUtil.log("bollettinoJsp", "2", "2", "");
 
 	long wflMonitoraggioPlid = PortalUtil.getPlidFromPortletId(feedback.getGroupId(), false, AllertaKeys.AllertaCompilaSbPortlet);
-	long workflowTaskId = ParamUtil.getLong(request, "workflowTaskId");
-	long userNotificationEventId = ParamUtil.getLong(request, "userNotificationEventId");
-	
-	
-	if(feedback.getStato() == WorkflowConstants.STATUS_APPROVED || feedback.getStato() == WorkflowConstants.STATUS_DENIED) {
-		workflowTaskId = 0;
-		userNotificationEventId = 0;
-	}
-	
-	if( userNotificationEventId > 0) {
-		
-		DynamicQuery query = UserNotificationEventLocalServiceUtil.dynamicQuery();
-		query.add(PropertyFactoryUtil.forName("userNotificationEventId").eq(userNotificationEventId));
-		
-		List<UserNotificationEvent> unevt = UserNotificationEventLocalServiceUtil.dynamicQuery(query);
-		
-		if( unevt.size() > 0) {
-			
-			UserNotificationEvent evt = unevt.get(0);
-			
-			JSONObject payload = JSONFactoryUtil.createJSONObject(evt.getPayload());
-			workflowTaskId = payload.getLong("workflowTaskId");
-			
+
+	try {
+		if (feedback.getStato()==1 || feedback.getStato()==1000) {
+			//in approvazione?
+			long allertaId = feedback.getAllertaId();
 			boolean hasWfl = 
 					WorkflowInstanceLinkLocalServiceUtil.hasWorkflowInstanceLink(
-							themeDisplay.getCompanyId(), 
+							feedback.getCompanyId(), 
 							feedback.getGroupId(), 
 							Allerta.class.getName(), 
-							feedback.getAllertaId());
-			
-			if( !hasWfl)
-				workflowTaskId = 0;
-			else {
-				 WorkflowTask task = WorkflowTaskManagerUtil.getWorkflowTask(themeDisplay.getCompanyId(), workflowTaskId);
-				 
-	             boolean taskPerm = WorkflowPermissionUtil.hasPermission(
-					                		themeDisplay.getPermissionChecker(), 
-					                		feedback.getGroupId(), 
-					                		Allerta.class.getName(), 
-					                		feedback.getAllertaId(), 
-					                		task.getName());
-	             
-	             if( !taskPerm)
-	            	 workflowTaskId = 0;
+							allertaId);
+			if (hasWfl) {
+				WorkflowInstanceLink wil= null;
+				
+				try {
+					wil = WorkflowInstanceLinkLocalServiceUtil.getWorkflowInstanceLink(
+										feedback.getCompanyId(), 
+										feedback.getGroupId(), 
+										Allerta.class.getName(), 
+										allertaId);
+					
+				} catch( NoSuchWorkflowInstanceLinkException nse) {
+					
+				}
+				
+				if( wil != null) { 
+					WorkflowInstance workflowInstance = 
+	           			 WorkflowInstanceManagerUtil.getWorkflowInstance(themeDisplay.getCompanyId(), wil.getWorkflowInstanceId());
+					List<WorkflowTask> ls = WorkflowTaskManagerUtil.getWorkflowTasksByWorkflowInstance(themeDisplay.getCompanyId(), 0L, workflowInstance.getWorkflowInstanceId(), false, -1, -1, null);
+					if (ls!=null) {
+	       			 for (WorkflowTask wt : ls) { 
+	       				 if (!wt.isCompleted()) {
+	       					 
+	       					boolean taskPerm = WorkflowPermissionUtil.hasPermission(
+			                		themeDisplay.getPermissionChecker(), 
+			                		feedback.getGroupId(), 
+			                		Allerta.class.getName(), 
+			                		allertaId, 
+			                		wt.getName());
+	       					
+	       					if (!taskPerm) continue;
+	       					 
+	           				 LogInternoLocalServiceUtil.log("workflow", "test", "taskId->"+wt.getWorkflowTaskId(), null);
+	           				 workflowTaskId = wt.getWorkflowTaskId();
+	       					 break;
+	       				 }
+	       			 }
+	       		 }
+				}
 			}
 		}
+
+	} catch (Exception e) {
+		LogInternoLocalServiceUtil.log("bottettinoJsp", "task", e, "");
 	}
 %>
 
@@ -276,10 +290,10 @@
 		<div class="row">
 	
 			<%if( workflowTaskId > 0) { %>
-			<div class="col-6 ">
+			<div class="col-6 " style="text-align: center;">
 				<a href="<%=approveUrl %>" class="btn btn-primary"> Approva </a>
 			</div>
-			<div class="col-6 ">
+			<div class="col-6 " style="text-align: center;">
 				<a href="<%=rejectUrl %>" class="btn btn-primary"> Rifiuta </a>
 			</div>
 			<%} %>

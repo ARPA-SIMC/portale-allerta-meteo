@@ -46,15 +46,9 @@
 		<field name="dataEmissione" type="Date" />
 		<field name="dataInizio" type="Date" />
 		<field name="dataFine" type="Date" />
-		<field name="noteMeteo" type="String">
-			<hint name="max-length">5000</hint>
-		</field>
-		<field name="stringaMeteo" type="String">
-			<hint name="max-length">5000</hint>
-		</field>
-		<field name="link" type="String">
-			<hint name="max-length">256</hint>
-		</field>
+		<field name="noteMeteo" type="String" />
+		<field name="stringaMeteo" type="String" />
+		<field name="link" type="String" />
 		<field name="ultimo" type="boolean" />
 		<field name="hash" type="String" />
 	</model>
@@ -66,9 +60,7 @@
 		<field name="idBacino" type="String" />
 		<field name="nomeBacino" type="String" />
 		<field name="oreOsservazione" type="String" />
-		<field name="note" type="String">
-			<hint name="max-length">5000</hint>
-		</field>
+		<field name="note" type="String" />
 	</model>
 	<model name="it.eng.bollettino.model.BollettinoIcona">
 		<field name="uuid" type="String" />
@@ -80,9 +72,7 @@
 	</model>
 	<model name="it.eng.bollettino.model.BollettinoParametro">
 		<field name="parametroId" type="String" />
-		<field name="valore" type="String">
-			<hint name="max-length">5000</hint>
-		</field>
+		<field name="valore" type="String" />
 	</model>
 	<model name="it.eng.bollettino.model.BollettinoSensore">
 		<field name="uuid" type="String" />
@@ -125,9 +115,7 @@
 		<field name="uuid" type="String" />
 		<field name="id" type="long" />
 		<field name="nome" type="String" />
-		<field name="espressione" type="String">
-			<hint name="max-length">1024</hint>
-		</field>
+		<field name="espressione" type="String" />
 		<field name="descrizione" type="String" />
 		<field name="colore" type="int" />
 		<field name="attivo" type="boolean" />
@@ -197,9 +185,7 @@
 	<model name="it.eng.bollettino.model.Variabile">
 		<field name="uuid" type="String" />
 		<field name="id" type="String" />
-		<field name="description_it" type="String">
-			<hint name="max-length">5000</hint>
-		</field>
+		<field name="description_it" type="String" />
 		<field name="level_t1" type="int" />
 		<field name="level_t2" type="int" />
 		<field name="level_v1" type="int" />

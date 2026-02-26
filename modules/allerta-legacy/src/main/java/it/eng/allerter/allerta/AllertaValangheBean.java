@@ -21,6 +21,8 @@ import java.util.Map;
 import javax.portlet.ActionRequest;
 import javax.portlet.PortletRequest;
 import javax.servlet.http.HttpServletRequest;
+
+import com.liferay.asset.entry.rel.service.AssetEntryAssetCategoryRelLocalServiceUtil;
 import com.liferay.asset.kernel.model.AssetCategory;
 import com.liferay.asset.kernel.model.AssetEntry;
 import com.liferay.asset.kernel.service.AssetCategoryLocalServiceUtil;
@@ -650,7 +652,8 @@ public class AllertaValangheBean implements Serializable {
 				
 				for (AssetCategory ac : c) {
 					if (ac.getName().equals("allerta-valanghe-lavorazione")) {
-						AssetCategoryLocalServiceUtil.addAssetEntryAssetCategory(id, ac);
+						AssetEntryAssetCategoryRelLocalServiceUtil.addAssetEntryAssetCategoryRel(id, ac.getCategoryId());
+						//AssetCategoryLocalServiceUtil.addAssetEntryAssetCategory(id, ac);
 						break;
 					}
 				}
@@ -689,7 +692,7 @@ public class AllertaValangheBean implements Serializable {
 
 		try {
 			ServiceContext serviceContext = ServiceContextFactory.getInstance(DLFolder.class.getName(), httpRequest);
-			Folder folder = DLAppServiceUtil.addFolder(repositoryId, parentFolderId, name, description, serviceContext);
+			Folder folder = DLAppServiceUtil.addFolder("AllertaValangheFolder_"+name,repositoryId, parentFolderId, name, description, serviceContext);
 
 			Role guestRole = RoleLocalServiceUtil.getRole(themeDisplay.getCompanyId(), RoleConstants.GUEST);
 			ResourcePermissionLocalServiceUtil.setResourcePermissions(themeDisplay.getCompanyId(),
@@ -715,11 +718,17 @@ public class AllertaValangheBean implements Serializable {
 			return null;
 		}
 	}
+	
+	public String creaReport() {
+		return creaReport(true);
+	}
 
 	/**
 	 * TODO : da rivedere
 	 */
-	public void creaReport() {
+	public String creaReport(boolean salva) {
+		
+		String hash = "";
 		int statiMacroaree[] = new int[3];
 		int statiMacroareeOggi[] = new int[3];
 		
@@ -794,17 +803,23 @@ public class AllertaValangheBean implements Serializable {
 			byte[] report = ju.generateReportAllertaValanghe(
 				f.getAbsolutePath(),f2!=null?f2.getAbsolutePath():"", allertaValangheCorrente.getAllertaValangheId(), map
 			);
-			_log.debug("REPORT: " + (report != null ? report.length : 0));
+			System.out.println("REPORT: " + (report != null ? report.length : 0));
 
 			if (report != null && report.length > 0) {
-				File f3 = FileUtil.createTempFile(report);
-
+				
 				String numero = "";
 				if (allertaValangheCorrente.getNumero() != null) {
 					numero = allertaValangheCorrente.getNumero().replace("/", "_");
 				}
 				
 				String nomeFile = allertaValangheCorrente.isTipoAllerta() ? "allerta_valanghe" + numero + ".pdf"	: "bollettino_valanghe" + numero + ".pdf";
+				
+				
+				File f3 = FileUtil.createTempFile(report);
+				File f4 = new File(f3.getParent(), nomeFile);
+				f3.renameTo(f4);
+				f3 = f4;
+
 				String tipoFile = allertaValangheCorrente.isTipoAllerta() ? "Allerta Valanghe" : "Bollettino Valanghe";
 				ServiceContext serviceContext;
 				
@@ -826,12 +841,15 @@ public class AllertaValangheBean implements Serializable {
 					"allerta-valanghe-" + allertaValangheCorrente.getAllertaValangheId(),
 					nomeFile
 				);
-
+				System.out.println("LINK PDF: " + pdfLink);
 				allertaValangheCorrente.setLink(pdfLink);
-				allertaValangheCorrente.setHash(this.getHash(report));
-				AllertaValangheLocalServiceUtil.updateAllertaValanghe(allertaValangheCorrente);
+				System.out.println("SET HASH");
+				hash = this.getHash(report);
+				allertaValangheCorrente.setHash(hash);
+				System.out.println("SAVING");
+				if (salva) AllertaValangheLocalServiceUtil.updateAllertaValanghe(allertaValangheCorrente);
 
-				_log.debug("LINK PDF: " + pdfLink);
+				System.out.println("LINK PDF: " + pdfLink);
 					
 				FileUtil.delete(f3);
 			}
@@ -841,6 +859,7 @@ public class AllertaValangheBean implements Serializable {
 			_log.error(e);
 			//LogInternoLocalServiceUtil.log("allertaBean", "creaReport", e, "");			
 		}
+		return hash;
 	}
 
 	public String getStringaStato(int stato) {
@@ -919,14 +938,14 @@ public class AllertaValangheBean implements Serializable {
 				// long l = new Date().getTime();
 
 				// mandaNotifica(allertaCorrente.getUtenteFirmaArpaId(),"Il documento
-				// "+allertaCorrente.getNumero()+" � in attesa di approvazione:
+				// "+allertaCorrente.getNumero()+" è in attesa di approvazione:
 				// https://allertameteo.regione.emilia-romagna.it"
 				// ,allertaCorrente,tipo,sottotipo,l);
 
 				// String text = "<html><head></head><body>Il documento
 				// "+allertaCorrente.getNumero()+" e' in attesa di approvazione su <a
 				// href=\"https://allertameteo.regione.emilia-romagna.it\">https://allertameteo.regione.emilia-romagna.it</a></body></html>";
-				// String subject = "Il documento "+allertaCorrente.getNumero()+" � in attesa di
+				// String subject = "Il documento "+allertaCorrente.getNumero()+" è in attesa di
 				// approvazione";
 
 				// spedisciNotifiche(tipo, sottotipo, l, subject, text, allertaCorrente);
@@ -1694,7 +1713,8 @@ public class AllertaValangheBean implements Serializable {
 					
 					for (AssetCategory ac : cx) {
 						if (ac.getName().equals("allerta-valanghe-lavorazione")) {
-							AssetCategoryLocalServiceUtil.addAssetEntryAssetCategory(id, ac);
+							AssetEntryAssetCategoryRelLocalServiceUtil.addAssetEntryAssetCategoryRel(id, ac.getCategoryId());
+							//AssetCategoryLocalServiceUtil.addAssetEntryAssetCategory(id, ac);
 							break;
 						}
 					}

@@ -10,6 +10,10 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 
+import com.liferay.dispatch.executor.BaseDispatchTaskExecutor;
+import com.liferay.dispatch.executor.DispatchTaskExecutor;
+import com.liferay.dispatch.executor.DispatchTaskExecutorOutput;
+import com.liferay.dispatch.model.DispatchTrigger;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.messaging.BaseMessageListener;
@@ -35,19 +39,23 @@ import it.eng.parer.xmlGen.util.TipoDatoDaInviare;
 
 
 @Component(
-	immediate = true,
-	service = MessageListener.class
-)
-public class ParerScheduler extends BaseMessageListener implements IJavaToXMLParerConstants {
+		  property = {
+			"dispatch.task.executor.name=Reinvio Parer",
+			"dispatch.task.executor.type=task-reinvio-parer"
+		  },
+		  service = DispatchTaskExecutor.class
+		)
+public class ParerScheduler extends BaseDispatchTaskExecutor implements IJavaToXMLParerConstants {
 
 	private Log _log = LogFactoryUtil.getLog(ParerScheduler.class);
 	
 	@Override
-	protected void doReceive(Message message) throws Exception {
+	public void doExecute(DispatchTrigger dispatchTrigger, DispatchTaskExecutorOutput output) {
 		
 		_log.info("Parer Scheduler - START");
 		
 		inviaDocumentiParer();
+		output.setOutput("Reinvio Parer terminato");
 		
 		_log.info("Parer Scheduler - END");
 		
@@ -117,7 +125,7 @@ public class ParerScheduler extends BaseMessageListener implements IJavaToXMLPar
 	}
 
 
-	@Activate
+	/*@Activate
 	@Modified
 	protected void activate(Map<String, Object> properties) {
 		
@@ -138,7 +146,7 @@ public class ParerScheduler extends BaseMessageListener implements IJavaToXMLPar
 	@Deactivate
 	protected void deactivate() {
 		baseScheduler.unregister(this);
-	}
+	}*/
 	
 	@Reference
 	private SchedulerEngineHelper baseScheduler;
@@ -151,6 +159,11 @@ public class ParerScheduler extends BaseMessageListener implements IJavaToXMLPar
 	
 	@Reference
 	private Portal portal;
+
+	@Override
+	public String getName() {
+		return "Reinvio Parer";
+	}
 
 }
 

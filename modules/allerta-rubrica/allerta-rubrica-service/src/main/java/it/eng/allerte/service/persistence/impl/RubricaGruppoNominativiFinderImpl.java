@@ -2,7 +2,8 @@ package it.eng.allerte.service.persistence.impl;
 
 import java.util.List;
 
-import com.liferay.portal.dao.orm.custom.sql.CustomSQL;
+import org.osgi.service.component.annotations.Component;
+
 import com.liferay.portal.kernel.dao.orm.QueryPos;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.SQLQuery;
@@ -11,17 +12,16 @@ import com.liferay.portal.kernel.dao.orm.Type;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.spring.extender.service.ServiceReference;
 
 import it.eng.allerte.service.persistence.RubricaGruppoNominativiFinder;
 
-
+@Component(service = RubricaGruppoNominativiFinder.class)
 public class RubricaGruppoNominativiFinderImpl extends RubricaGruppoNominativiFinderBaseImpl 
 	implements RubricaGruppoNominativiFinder{
 		
 	public static final Log _log = LogFactoryUtil.getLog(RubricaGruppoNominativiFinderImpl.class);
 		
-	private String DEL_GRUPPO_BY_NOMINATIVO = RubricaGruppoNominativiFinderImpl.class.getName()
+	/*private String DEL_GRUPPO_BY_NOMINATIVO = RubricaGruppoNominativiFinderImpl.class.getName()
 					+ ".deleteByNominativo";
 		
 	private String DEL_GRUPPO_NOMINATIVO_BY_GRUPPO = RubricaGruppoNominativiFinderImpl.class.getName()
@@ -37,7 +37,28 @@ public class RubricaGruppoNominativiFinderImpl extends RubricaGruppoNominativiFi
 			+ ".loadNominativiGruppo";
 	
 	private String LOAD_RUOLI_BY_NOMINATIVO = RubricaGruppoNominativiFinderImpl.class.getName()
-			+ ".laodRuoliByNominativo";
+			+ ".laodRuoliByNominativo";*/
+	
+	private String DEL_GRUPPO_BY_NOMINATIVO = "delete from  rubrica_rubricaGruppoNominativi where FK_NOMINATIVO = ?";
+
+private String DEL_GRUPPO_NOMINATIVO_BY_GRUPPO = RubricaGruppoNominativiFinderImpl.class.getName()
+	+ ".deleteByGruppo";
+
+private String DEL_NOMINATIVO_FROM_GRUPPO ="delete from  rubrica_rubricaGruppoNominativi where FK_GRUPPO = ? and FK_NOMINATIVO = ?";
+
+private String LOAD_GRUPPO_BY_NOMINATIVO = "select FK_GRUPPO, FK_NOMINATIVO from  rubrica_rubricaGruppoNominativi where FK_RUOLO = ?";
+
+private String LOAD_NOMINATIVI_GRUPPO = "select gn.FK_GRUPPO, gn.FK_NOMINATIVO, gn.FK_RUOLO, gn.SPECIFICA_RUOLO \r\n"
+		+ "	 from  rubrica_rubricaGruppoNominativi gn, rubrica_rubricaNominativo n\r\n"
+		+ "	 where gn.FK_GRUPPO = ? \r\n"
+		+ "	 	   and gn.fk_nominativo = n.id_nominativo \r\n"
+		+ "	 	   and not n.disabled and n.fk_sito_Proprietario = ? ";
+
+private String LOAD_RUOLI_BY_NOMINATIVO = "select rgn.FK_GRUPPO, rgn.FK_NOMINATIVO, rgn.FK_RUOLO, rgn.SPECIFICA_RUOLO \r\n"
+		+ "	from  rubrica_rubricaGruppoNominativi rgn, rubrica_rubricaNominativo rn \r\n"
+		+ "	where rgn.FK_NOMINATIVO = ?\r\n"
+		+ "		  and rgn.FK_NOMINATIVO = rn.ID_NOMINATIVO\r\n"
+		+ "		  and not rn.disabled";
 		
 
 	public void deleteByNominativo(Long fkNominativo) {
@@ -45,7 +66,7 @@ public class RubricaGruppoNominativiFinderImpl extends RubricaGruppoNominativiFi
 		try{
 			session = openSession();
 
-			String sql = customSQL.get(this.getClass(), DEL_GRUPPO_BY_NOMINATIVO);
+			String sql =  DEL_GRUPPO_BY_NOMINATIVO;
 
 			SQLQuery query = session.createSQLQuery(sql);
 			query.setCacheable(true);
@@ -73,7 +94,7 @@ public class RubricaGruppoNominativiFinderImpl extends RubricaGruppoNominativiFi
 		try{
 			session = openSession();
 
-			String sql = customSQL.get(this.getClass(), DEL_GRUPPO_NOMINATIVO_BY_GRUPPO);
+			String sql =  DEL_GRUPPO_NOMINATIVO_BY_GRUPPO;
 
 			SQLQuery query = session.createSQLQuery(sql);
 			query.setCacheable(true);
@@ -102,7 +123,7 @@ public class RubricaGruppoNominativiFinderImpl extends RubricaGruppoNominativiFi
 		try{
 			session = openSession();
 
-			String sql = customSQL.get(this.getClass(), DEL_NOMINATIVO_FROM_GRUPPO);
+			String sql =  DEL_NOMINATIVO_FROM_GRUPPO;
 
 			SQLQuery query = session.createSQLQuery(sql);
 			query.setCacheable(true);
@@ -134,7 +155,7 @@ public class RubricaGruppoNominativiFinderImpl extends RubricaGruppoNominativiFi
 			
 			session = openSession();
 
-			String sql = customSQL.get(this.getClass(), LOAD_GRUPPO_BY_NOMINATIVO);
+			String sql =  LOAD_GRUPPO_BY_NOMINATIVO;
 			SQLQuery query = session.createSQLQuery(sql);
 			query.setCacheable(true);
 			query.addScalar("FK_GRUPPO", Type.LONG);
@@ -169,7 +190,7 @@ public class RubricaGruppoNominativiFinderImpl extends RubricaGruppoNominativiFi
 			
 			session = openSession();
 
-			String sql = customSQL.get(this.getClass(), LOAD_NOMINATIVI_GRUPPO);
+			String sql =  LOAD_NOMINATIVI_GRUPPO;
 			SQLQuery query = session.createSQLQuery(sql);
 			query.setCacheable(false);
 			query.addScalar("FK_GRUPPO", Type.LONG);
@@ -207,7 +228,7 @@ public class RubricaGruppoNominativiFinderImpl extends RubricaGruppoNominativiFi
 			
 			session = openSession();
 
-			String sql = customSQL.get(this.getClass(), LOAD_RUOLI_BY_NOMINATIVO);
+			String sql =  LOAD_RUOLI_BY_NOMINATIVO;
 			SQLQuery query = session.createSQLQuery(sql);
 			query.setCacheable(false);
 			query.addScalar("FK_GRUPPO", Type.LONG);
@@ -234,9 +255,7 @@ public class RubricaGruppoNominativiFinderImpl extends RubricaGruppoNominativiFi
 		}
 		return null;
 	}
-	
-	@ServiceReference(type = CustomSQL.class)
-	private CustomSQL customSQL;
+
 
 }
 

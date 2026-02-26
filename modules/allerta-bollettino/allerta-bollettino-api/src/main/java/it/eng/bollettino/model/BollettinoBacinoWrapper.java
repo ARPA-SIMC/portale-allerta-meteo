@@ -1,30 +1,15 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.bollettino.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -35,22 +20,12 @@ import java.util.Objects;
  * @see BollettinoBacino
  * @generated
  */
-@ProviderType
 public class BollettinoBacinoWrapper
+	extends BaseModelWrapper<BollettinoBacino>
 	implements BollettinoBacino, ModelWrapper<BollettinoBacino> {
 
 	public BollettinoBacinoWrapper(BollettinoBacino bollettinoBacino) {
-		_bollettinoBacino = bollettinoBacino;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return BollettinoBacino.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return BollettinoBacino.class.getName();
+		super(bollettinoBacino);
 	}
 
 	@Override
@@ -121,21 +96,8 @@ public class BollettinoBacinoWrapper
 	}
 
 	@Override
-	public Object clone() {
-		return new BollettinoBacinoWrapper(
-			(BollettinoBacino)_bollettinoBacino.clone());
-	}
-
-	@Override
-	public int compareTo(
-		it.eng.bollettino.model.BollettinoBacino bollettinoBacino) {
-
-		return _bollettinoBacino.compareTo(bollettinoBacino);
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _bollettinoBacino.getExpandoBridge();
+	public BollettinoBacino cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -145,7 +107,7 @@ public class BollettinoBacinoWrapper
 	 */
 	@Override
 	public long getId() {
-		return _bollettinoBacino.getId();
+		return model.getId();
 	}
 
 	/**
@@ -155,7 +117,7 @@ public class BollettinoBacinoWrapper
 	 */
 	@Override
 	public String getIdBacino() {
-		return _bollettinoBacino.getIdBacino();
+		return model.getIdBacino();
 	}
 
 	/**
@@ -165,7 +127,7 @@ public class BollettinoBacinoWrapper
 	 */
 	@Override
 	public long getIdBollettino() {
-		return _bollettinoBacino.getIdBollettino();
+		return model.getIdBollettino();
 	}
 
 	/**
@@ -175,7 +137,7 @@ public class BollettinoBacinoWrapper
 	 */
 	@Override
 	public String getNomeBacino() {
-		return _bollettinoBacino.getNomeBacino();
+		return model.getNomeBacino();
 	}
 
 	/**
@@ -185,7 +147,7 @@ public class BollettinoBacinoWrapper
 	 */
 	@Override
 	public String getNote() {
-		return _bollettinoBacino.getNote();
+		return model.getNote();
 	}
 
 	/**
@@ -195,7 +157,7 @@ public class BollettinoBacinoWrapper
 	 */
 	@Override
 	public String getOreOsservazione() {
-		return _bollettinoBacino.getOreOsservazione();
+		return model.getOreOsservazione();
 	}
 
 	/**
@@ -205,12 +167,7 @@ public class BollettinoBacinoWrapper
 	 */
 	@Override
 	public long getPrimaryKey() {
-		return _bollettinoBacino.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _bollettinoBacino.getPrimaryKeyObj();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -220,7 +177,7 @@ public class BollettinoBacinoWrapper
 	 */
 	@Override
 	public int getProgressivo() {
-		return _bollettinoBacino.getProgressivo();
+		return model.getProgressivo();
 	}
 
 	/**
@@ -230,54 +187,12 @@ public class BollettinoBacinoWrapper
 	 */
 	@Override
 	public String getUuid() {
-		return _bollettinoBacino.getUuid();
-	}
-
-	@Override
-	public int hashCode() {
-		return _bollettinoBacino.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _bollettinoBacino.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _bollettinoBacino.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _bollettinoBacino.isNew();
+		return model.getUuid();
 	}
 
 	@Override
 	public void persist() {
-		_bollettinoBacino.persist();
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_bollettinoBacino.setCachedModel(cachedModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_bollettinoBacino.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_bollettinoBacino.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_bollettinoBacino.setExpandoBridgeAttributes(serviceContext);
+		model.persist();
 	}
 
 	/**
@@ -287,7 +202,7 @@ public class BollettinoBacinoWrapper
 	 */
 	@Override
 	public void setId(long id) {
-		_bollettinoBacino.setId(id);
+		model.setId(id);
 	}
 
 	/**
@@ -297,7 +212,7 @@ public class BollettinoBacinoWrapper
 	 */
 	@Override
 	public void setIdBacino(String idBacino) {
-		_bollettinoBacino.setIdBacino(idBacino);
+		model.setIdBacino(idBacino);
 	}
 
 	/**
@@ -307,12 +222,7 @@ public class BollettinoBacinoWrapper
 	 */
 	@Override
 	public void setIdBollettino(long idBollettino) {
-		_bollettinoBacino.setIdBollettino(idBollettino);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_bollettinoBacino.setNew(n);
+		model.setIdBollettino(idBollettino);
 	}
 
 	/**
@@ -322,7 +232,7 @@ public class BollettinoBacinoWrapper
 	 */
 	@Override
 	public void setNomeBacino(String nomeBacino) {
-		_bollettinoBacino.setNomeBacino(nomeBacino);
+		model.setNomeBacino(nomeBacino);
 	}
 
 	/**
@@ -332,7 +242,7 @@ public class BollettinoBacinoWrapper
 	 */
 	@Override
 	public void setNote(String note) {
-		_bollettinoBacino.setNote(note);
+		model.setNote(note);
 	}
 
 	/**
@@ -342,7 +252,7 @@ public class BollettinoBacinoWrapper
 	 */
 	@Override
 	public void setOreOsservazione(String oreOsservazione) {
-		_bollettinoBacino.setOreOsservazione(oreOsservazione);
+		model.setOreOsservazione(oreOsservazione);
 	}
 
 	/**
@@ -352,12 +262,7 @@ public class BollettinoBacinoWrapper
 	 */
 	@Override
 	public void setPrimaryKey(long primaryKey) {
-		_bollettinoBacino.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_bollettinoBacino.setPrimaryKeyObj(primaryKeyObj);
+		model.setPrimaryKey(primaryKey);
 	}
 
 	/**
@@ -367,7 +272,7 @@ public class BollettinoBacinoWrapper
 	 */
 	@Override
 	public void setProgressivo(int progressivo) {
-		_bollettinoBacino.setProgressivo(progressivo);
+		model.setProgressivo(progressivo);
 	}
 
 	/**
@@ -377,79 +282,17 @@ public class BollettinoBacinoWrapper
 	 */
 	@Override
 	public void setUuid(String uuid) {
-		_bollettinoBacino.setUuid(uuid);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<it.eng.bollettino.model.BollettinoBacino> toCacheModel() {
-
-		return _bollettinoBacino.toCacheModel();
-	}
-
-	@Override
-	public it.eng.bollettino.model.BollettinoBacino toEscapedModel() {
-		return new BollettinoBacinoWrapper(_bollettinoBacino.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _bollettinoBacino.toString();
-	}
-
-	@Override
-	public it.eng.bollettino.model.BollettinoBacino toUnescapedModel() {
-		return new BollettinoBacinoWrapper(
-			_bollettinoBacino.toUnescapedModel());
+		model.setUuid(uuid);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _bollettinoBacino.toXmlString();
+		return model.toXmlString();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-
-		if (!(obj instanceof BollettinoBacinoWrapper)) {
-			return false;
-		}
-
-		BollettinoBacinoWrapper bollettinoBacinoWrapper =
-			(BollettinoBacinoWrapper)obj;
-
-		if (Objects.equals(
-				_bollettinoBacino, bollettinoBacinoWrapper._bollettinoBacino)) {
-
-			return true;
-		}
-
-		return false;
+	protected BollettinoBacinoWrapper wrap(BollettinoBacino bollettinoBacino) {
+		return new BollettinoBacinoWrapper(bollettinoBacino);
 	}
-
-	@Override
-	public BollettinoBacino getWrappedModel() {
-		return _bollettinoBacino;
-	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _bollettinoBacino.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _bollettinoBacino.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_bollettinoBacino.resetOriginalValues();
-	}
-
-	private final BollettinoBacino _bollettinoBacino;
 
 }

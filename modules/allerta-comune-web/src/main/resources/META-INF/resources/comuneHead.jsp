@@ -21,32 +21,32 @@
 	<div class="container-fluid c-lg-container d-flex">
 		<div class="row w-100 justify-content-between">
 	        <div class="col-10 col-lg-8 d-flex  ">
-	            <div class="page__head__icon icon i-map-marker" title="Icona per Luogo"></div>
+	            <div class="page__head__icon icon i-map-marker" title="<liferay-ui:message key="allertacomuneweb.icona" />"></div>
 	            <div>
 	                <h1><%=comune %></h1>
 	                <p class="col-12 lead">
-	                    Area di allertamento <%=area%>
+	                    <liferay-ui:message key="allertacomuneweb.area" /> <%=area%>
 	                </p>
 	            </div>
 	        </div>
                             
 
-            <div class="d-flex page-tools" role="group" aria-label="Azioni sulla pagina">
-                    <button type="button" class="btn btn-transparent page-tools__item" title="Condividi sui social media" data-toggle="share-popover">
-                        <span class="icon i-share-alt" title="Icona di condivisione"></span> <span class="sr-only">Condividi</span>
+            <div class="d-flex page-tools" role="group" aria-label="<liferay-ui:message key="allertacomuneweb.azioni" />">
+                    <button type="button" class="btn btn-transparent page-tools__item" title="<liferay-ui:message key="allertacomuneweb.social" />" data-toggle="share-popover">
+                        <span class="icon i-share-alt" title="<liferay-ui:message key="allertacomuneweb.condivisione" />"></span> <span class="sr-only"><liferay-ui:message key="allertacomuneweb.condividi" /></span>
                     </button> 
             
                     <div class="page-tools__share-popover-content">
                         <div class="d-flex flex-row flex-lg-column addthis_inline_share_toolbox d-print-flex">
                         
                             <a data-am-share-channel="fb" class="share-component__item">
-                                <span class="icon i-facebook" title="Condividi su Facebook"></span>
+                                <span class="icon i-facebook" title="<liferay-ui:message key="allertacomuneweb.condividi1" />"></span>
                             </a>
                             <a data-am-share-channel="tw" class="share-component__item">
-                                <span class="icon i-twitter" title="Condividi su Twitter"></span>
+                                <span class="icon i-twitter" title="<liferay-ui:message key="allertacomuneweb.condividi2" />"></span>
                             </a>
                             <a data-am-share-channel="wa" class="share-component__item">
-                                <span class="icon i-whatsapp" title="Condividi via WhatsApp"></span>
+                                <span class="icon i-whatsapp" title="<liferay-ui:message key="allertacomuneweb.condividi3" />"></span>
                             </a>
             
                         </div>

@@ -14,7 +14,7 @@ create table rubrica_RubricaContatto (
 	ID_CONTATTO LONG not null primary key,
 	FK_NOMINATIVO LONG,
 	FK_CANALE LONG,
-	CONTATTO VARCHAR(128) null,
+	CONTATTO VARCHAR(75) null,
 	ALLERTAMENTO BOOLEAN,
 	FK_UTENTE_CREAZIONE LONG,
 	DATA_CREAZIONE DATE null,
@@ -26,9 +26,9 @@ create table rubrica_RubricaContatto (
 
 create table rubrica_RubricaGruppo (
 	ID_GRUPPO LONG not null primary key,
-	NOME VARCHAR(512) null,
+	NOME VARCHAR(75) null,
 	FK_SITO_PROPRIETARIO LONG,
-	NOTE VARCHAR(2048) null,
+	NOTE VARCHAR(75) null,
 	FK_UTENTE_CREAZIONE LONG,
 	DATA_CREAZIONE DATE null,
 	FK_UTENTE_MODIFICA LONG,
@@ -57,16 +57,16 @@ create table rubrica_RubricaLog (
 	TABELLA VARCHAR(75) null,
 	TIPO_OPERAZIONE VARCHAR(75) null,
 	ID_OGGETTO VARCHAR(75) null,
-	NUOVA_DESCRIZIONE TEXT null,
+	NUOVA_DESCRIZIONE VARCHAR(75) null,
 	FK_UTENTE_MODIFICA LONG,
 	DATA_MODIFICA DATE null
 );
 
 create table rubrica_RubricaNominativo (
 	ID_NOMINATIVO LONG not null primary key,
-	COGNOME VARCHAR(128) null,
-	NOME VARCHAR(128) null,
-	INDIRIZZO VARCHAR(256) null,
+	COGNOME VARCHAR(75) null,
+	NOME VARCHAR(75) null,
+	INDIRIZZO VARCHAR(75) null,
 	FK_SITO_PROPRIETARIO LONG,
 	FK_UTENTE_PORTALE LONG,
 	FK_UTENTE_CREAZIONE LONG,
@@ -84,7 +84,7 @@ create table rubrica_RubricaPermessi (
 
 create table rubrica_RubricaRuolo (
 	ID_RUOLO LONG not null primary key,
-	DESCRIZIONE VARCHAR(256) null,
+	DESCRIZIONE VARCHAR(75) null,
 	FK_RUOLO_LIFERAY LONG
 );
 
@@ -101,7 +101,7 @@ create table rubrica_RubricaRuoloRubrica (
 
 create table rubrica_RubricaSito (
 	ID_SITO LONG not null primary key,
-	NOME VARCHAR(128) null,
+	NOME VARCHAR(75) null,
 	FK_LIFERAY_SITE LONG
 );
 

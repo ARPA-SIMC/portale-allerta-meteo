@@ -1,7 +1,7 @@
 <%@ include file="./init.jsp" %>
 
 
-<h3 class="mt-2 mb-3"><span class="icon i-doc-comune" aria-hidden="true"></span> Documenti del comune</h3>
+<h3 class="mt-2 mb-3"><span class="icon i-doc-comune" aria-hidden="true"></span> <liferay-ui:message key="allertacomuneweb.d1" /></h3>
 <nav role="navigation" class="nav-vertical ">
 	<ul class="nav flex-column">
 

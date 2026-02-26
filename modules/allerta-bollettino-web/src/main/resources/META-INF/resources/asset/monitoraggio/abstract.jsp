@@ -67,6 +67,8 @@ long wflMonitoraggioPlid = PortalUtil.getPlidFromPortletId(feedback.getGroupId()
 long workflowTaskId = ParamUtil.getLong(request, "workflowTaskId");
 long userNotificationEventId = ParamUtil.getLong(request, "userNotificationEventId");
 
+System.out.println("WorkflowTaskId="+workflowTaskId+", userNotificationEventId="+userNotificationEventId);
+
 if(feedback.getStato() == WorkflowConstants.STATUS_APPROVED || feedback.getStato() == WorkflowConstants.STATUS_DENIED) {
 	workflowTaskId = 0;
 	userNotificationEventId = 0;

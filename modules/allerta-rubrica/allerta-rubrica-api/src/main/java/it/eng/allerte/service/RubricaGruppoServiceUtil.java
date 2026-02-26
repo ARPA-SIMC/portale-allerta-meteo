@@ -1,24 +1,15 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerte.service;
 
-import aQute.bnd.annotation.ProviderType;
+import com.liferay.portal.kernel.module.service.Snapshot;
 
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.util.tracker.ServiceTracker;
+import it.eng.allerte.model.RubricaGruppo;
+
+import java.util.Map;
 
 /**
  * Provides the remote service utility for RubricaGruppo. This utility wraps
@@ -32,7 +23,6 @@ import org.osgi.util.tracker.ServiceTracker;
  * @see RubricaGruppoService
  * @generated
  */
-@ProviderType
 public class RubricaGruppoServiceUtil {
 
 	/*
@@ -40,36 +30,36 @@ public class RubricaGruppoServiceUtil {
 	 *
 	 * Never modify this class directly. Add custom service methods to <code>it.eng.allerte.service.impl.RubricaGruppoServiceImpl</code> and rerun ServiceBuilder to regenerate this class.
 	 */
-	public static java.util.Map<String, Object> addGroup(String data) {
+	public static Map<String, Object> addGroup(String data) {
 		return getService().addGroup(data);
 	}
 
-	public static java.util.Map<String, Object> deleteGroups(Long id) {
+	public static Map<String, Object> deleteGroups(Long id) {
 		return getService().deleteGroups(id);
 	}
 
-	public static java.util.Map<String, Object> deleteGroupsMulti(String data) {
+	public static Map<String, Object> deleteGroupsMulti(String data) {
 		return getService().deleteGroupsMulti(data);
 	}
 
 	/**
 	 * Il metodo restituisce le info sul gruppo a partire dal nome e per il sito proprietario
 	 */
-	public static it.eng.allerte.model.RubricaGruppo getGroupForOwnerByName(
+	public static RubricaGruppo getGroupForOwnerByName(
 		Long ownerId, String groupName) {
 
 		return getService().getGroupForOwnerByName(ownerId, groupName);
 	}
 
-	public static java.util.Map<String, Object> getGroups() {
+	public static Map<String, Object> getGroups() {
 		return getService().getGroups();
 	}
 
-	public static java.util.Map<String, Object> getGroups(Long id) {
+	public static Map<String, Object> getGroups(Long id) {
 		return getService().getGroups(id);
 	}
 
-	public static java.util.Map<String, Object> getGroups(
+	public static Map<String, Object> getGroups(
 		String name, Long categoria, int limit, int offset) {
 
 		return getService().getGroups(name, categoria, limit, offset);
@@ -84,31 +74,16 @@ public class RubricaGruppoServiceUtil {
 		return getService().getOSGiServiceIdentifier();
 	}
 
-	public static java.util.Map<String, Object> updateGroups(
-		Long id, String data) {
-
+	public static Map<String, Object> updateGroups(Long id, String data) {
 		return getService().updateGroups(id, data);
 	}
 
 	public static RubricaGruppoService getService() {
-		return _serviceTracker.getService();
+		return _serviceSnapshot.get();
 	}
 
-	private static ServiceTracker<RubricaGruppoService, RubricaGruppoService>
-		_serviceTracker;
-
-	static {
-		Bundle bundle = FrameworkUtil.getBundle(RubricaGruppoService.class);
-
-		ServiceTracker<RubricaGruppoService, RubricaGruppoService>
-			serviceTracker =
-				new ServiceTracker<RubricaGruppoService, RubricaGruppoService>(
-					bundle.getBundleContext(), RubricaGruppoService.class,
-					null);
-
-		serviceTracker.open();
-
-		_serviceTracker = serviceTracker;
-	}
+	private static final Snapshot<RubricaGruppoService> _serviceSnapshot =
+		new Snapshot<>(
+			RubricaGruppoServiceUtil.class, RubricaGruppoService.class);
 
 }

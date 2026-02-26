@@ -14,6 +14,7 @@ import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.service.UserLocalServiceUtil;
 
 import it.eng.allerter.model.Allerta;
+import it.eng.allerter.service.LogInternoLocalServiceUtil;
 
 /**
  * Portlet implementation class FeedbackAction
@@ -107,6 +108,10 @@ public class AllertaAssetRenderer extends BaseJSPAssetRenderer<Allerta>{
 //		} else {
 //			return null;
 //		}
+		
+		if (!"full_content".equals(template) && !"abstract".equals(template)) {
+			LogInternoLocalServiceUtil.log("AllertaAssetRenderer", "getJspPath", "template: "+template, "");
+		}
 		
 		request.setAttribute("allerta", _feedback);
 		return "/asset/allerta-bollettino/" + template + ".jsp";

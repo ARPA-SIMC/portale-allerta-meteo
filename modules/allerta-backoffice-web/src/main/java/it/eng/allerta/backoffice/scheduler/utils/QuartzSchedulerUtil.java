@@ -32,9 +32,9 @@ import javax.portlet.PortletRequest;
 
 public class QuartzSchedulerUtil {
 	
-	public static SchedulerJobBean getSchedulerJob(SchedulerResponse schedulerResponse) {
+	/*Spublic static SchedulerJobBean getSchedulerJob(SchedulerResponse schedulerResponse) {
 		
-		SchedulerJobBean schedulerJobBean = new SchedulerJobBeanImpl();
+		chedulerJobBean schedulerJobBean = new SchedulerJobBeanImpl();
 				
 		if( ! schedulerResponse.getJobName().startsWith("it.eng"))
 			return null;
@@ -58,9 +58,9 @@ public class QuartzSchedulerUtil {
         schedulerJobBean.setStorageType(storageType == null ? SchedulerJobBean.NULL_VALUE_DISPLAY : storageType.toString().trim());
         
         return schedulerJobBean;
-    }
+    }*/
 	
-	public static List<SchedulerJobBean> getSchedulerJobsList(List<SchedulerResponse> schedulerResponses) {
+	/*public static List<SchedulerJobBean> getSchedulerJobsList(List<SchedulerResponse> schedulerResponses) {
 		
         List<SchedulerJobBean> schedulerJobBeans = new ArrayList<SchedulerJobBean>();
         
@@ -72,15 +72,15 @@ public class QuartzSchedulerUtil {
         }
         
         return schedulerJobBeans;
-    }
+    }*/
 	
-	public static void scheduleJobServiceAction(String action) throws SchedulerException {
+	/*public static void scheduleJobServiceAction(String action) throws SchedulerException {
         
         if (action.equals(ACTION_SHUTDOWN)) {
             _log.info(LOG_SHUTDOWN_ACTION_MSG);
             SchedulerEngineHelperUtil.shutdown();
         }
-    }
+    }*/
 	
 	public static void scheduleJobAction(PortletRequest request, String action) throws SchedulerException, ParseException {
 		 
@@ -187,7 +187,7 @@ public class QuartzSchedulerUtil {
         
     }
 	
-	public static void getSchedulerJobs(PortletRequest request) throws SchedulerException {
+	/*public static void getSchedulerJobs(PortletRequest request) throws SchedulerException {
 		
         // Scheduler List
         List<SchedulerResponse> schedulerJobs = SchedulerEngineHelperUtil.getScheduledJobs();
@@ -195,7 +195,7 @@ public class QuartzSchedulerUtil {
         
         request.setAttribute(ATTRIBUTE_JOBS_LIST, schedulerJobBeans);
         request.setAttribute(ATTRIBUTE_COUNT, schedulerJobBeans.size());
-    }
+    }*/
 	
 	public static final String ATTRIBUTE_JOBS_LIST = "schedulerJobsList";
     public static final String ATTRIBUTE_COUNT = "count";

@@ -1,21 +1,12 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerter.service.persistence.impl;
 
-import aQute.bnd.annotation.ProviderType;
-
+import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
@@ -23,37 +14,45 @@ import com.liferay.portal.kernel.dao.orm.Query;
 import com.liferay.portal.kernel.dao.orm.QueryPos;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
+import com.liferay.portal.kernel.dao.orm.SessionFactory;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.kernel.util.PropsKeys;
+import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.SetUtil;
-import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.spring.extender.service.ServiceReference;
 
 import it.eng.allerter.exception.NoSuchSMSException;
 import it.eng.allerter.model.SMS;
+import it.eng.allerter.model.SMSTable;
 import it.eng.allerter.model.impl.SMSImpl;
 import it.eng.allerter.model.impl.SMSModelImpl;
 import it.eng.allerter.service.persistence.SMSPersistence;
+import it.eng.allerter.service.persistence.SMSUtil;
+import it.eng.allerter.service.persistence.impl.constants.ALLERTERPersistenceConstants;
 
 import java.io.Serializable;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 
 import java.sql.Timestamp;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+
+import javax.sql.DataSource;
+
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The persistence implementation for the sms service.
@@ -65,7 +64,7 @@ import java.util.Set;
  * @author GFAVINI
  * @generated
  */
-@ProviderType
+@Component(service = SMSPersistence.class)
 public class SMSPersistenceImpl
 	extends BasePersistenceImpl<SMS> implements SMSPersistence {
 
@@ -106,7 +105,7 @@ public class SMSPersistenceImpl
 	 * Returns a range of all the smses where destinatario = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>SMSModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>SMSModelImpl</code>.
 	 * </p>
 	 *
 	 * @param destinatario the destinatario
@@ -123,7 +122,7 @@ public class SMSPersistenceImpl
 	 * Returns an ordered range of all the smses where destinatario = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>SMSModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>SMSModelImpl</code>.
 	 * </p>
 	 *
 	 * @param destinatario the destinatario
@@ -145,33 +144,33 @@ public class SMSPersistenceImpl
 	 * Returns an ordered range of all the smses where destinatario = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>SMSModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>SMSModelImpl</code>.
 	 * </p>
 	 *
 	 * @param destinatario the destinatario
 	 * @param start the lower bound of the range of smses
 	 * @param end the upper bound of the range of smses (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching smses
 	 */
 	@Override
 	public List<SMS> findByDestinatario(
 		long destinatario, int start, int end,
-		OrderByComparator<SMS> orderByComparator, boolean retrieveFromCache) {
+		OrderByComparator<SMS> orderByComparator, boolean useFinderCache) {
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindByDestinatario;
-			finderArgs = new Object[] {destinatario};
+			if (useFinderCache) {
+				finderPath = _finderPathWithoutPaginationFindByDestinatario;
+				finderArgs = new Object[] {destinatario};
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByDestinatario;
 			finderArgs = new Object[] {
 				destinatario, start, end, orderByComparator
@@ -180,13 +179,13 @@ public class SMSPersistenceImpl
 
 		List<SMS> list = null;
 
-		if (retrieveFromCache) {
+		if (useFinderCache) {
 			list = (List<SMS>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (SMS sms : list) {
-					if ((destinatario != sms.getDestinatario())) {
+					if (destinatario != sms.getDestinatario()) {
 						list = null;
 
 						break;
@@ -196,62 +195,52 @@ public class SMSPersistenceImpl
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					3 + (orderByComparator.getOrderByFields().length * 2));
 			}
 			else {
-				query = new StringBundler(3);
+				sb = new StringBundler(3);
 			}
 
-			query.append(_SQL_SELECT_SMS_WHERE);
+			sb.append(_SQL_SELECT_SMS_WHERE);
 
-			query.append(_FINDER_COLUMN_DESTINATARIO_DESTINATARIO_2);
+			sb.append(_FINDER_COLUMN_DESTINATARIO_DESTINATARIO_2);
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 			}
-			else if (pagination) {
-				query.append(SMSModelImpl.ORDER_BY_JPQL);
+			else {
+				sb.append(SMSModelImpl.ORDER_BY_JPQL);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
-				qPos.add(destinatario);
+				queryPos.add(destinatario);
 
-				if (!pagination) {
-					list = (List<SMS>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<SMS>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<SMS>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					finderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -280,16 +269,16 @@ public class SMSPersistenceImpl
 			return sms;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("destinatario=");
-		msg.append(destinatario);
+		sb.append("destinatario=");
+		sb.append(destinatario);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchSMSException(msg.toString());
+		throw new NoSuchSMSException(sb.toString());
 	}
 
 	/**
@@ -332,16 +321,16 @@ public class SMSPersistenceImpl
 			return sms;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("destinatario=");
-		msg.append(destinatario);
+		sb.append("destinatario=");
+		sb.append(destinatario);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchSMSException(msg.toString());
+		throw new NoSuchSMSException(sb.toString());
 	}
 
 	/**
@@ -405,8 +394,8 @@ public class SMSPersistenceImpl
 
 			return array;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -417,101 +406,101 @@ public class SMSPersistenceImpl
 		Session session, SMS sms, long destinatario,
 		OrderByComparator<SMS> orderByComparator, boolean previous) {
 
-		StringBundler query = null;
+		StringBundler sb = null;
 
 		if (orderByComparator != null) {
-			query = new StringBundler(
+			sb = new StringBundler(
 				4 + (orderByComparator.getOrderByConditionFields().length * 3) +
 					(orderByComparator.getOrderByFields().length * 3));
 		}
 		else {
-			query = new StringBundler(3);
+			sb = new StringBundler(3);
 		}
 
-		query.append(_SQL_SELECT_SMS_WHERE);
+		sb.append(_SQL_SELECT_SMS_WHERE);
 
-		query.append(_FINDER_COLUMN_DESTINATARIO_DESTINATARIO_2);
+		sb.append(_FINDER_COLUMN_DESTINATARIO_DESTINATARIO_2);
 
 		if (orderByComparator != null) {
 			String[] orderByConditionFields =
 				orderByComparator.getOrderByConditionFields();
 
 			if (orderByConditionFields.length > 0) {
-				query.append(WHERE_AND);
+				sb.append(WHERE_AND);
 			}
 
 			for (int i = 0; i < orderByConditionFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByConditionFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByConditionFields[i]);
 
 				if ((i + 1) < orderByConditionFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+						sb.append(WHERE_GREATER_THAN_HAS_NEXT);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+						sb.append(WHERE_LESSER_THAN_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN);
+						sb.append(WHERE_GREATER_THAN);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN);
+						sb.append(WHERE_LESSER_THAN);
 					}
 				}
 			}
 
-			query.append(ORDER_BY_CLAUSE);
+			sb.append(ORDER_BY_CLAUSE);
 
 			String[] orderByFields = orderByComparator.getOrderByFields();
 
 			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByFields[i]);
 
 				if ((i + 1) < orderByFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC_HAS_NEXT);
+						sb.append(ORDER_BY_ASC_HAS_NEXT);
 					}
 					else {
-						query.append(ORDER_BY_DESC_HAS_NEXT);
+						sb.append(ORDER_BY_DESC_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC);
+						sb.append(ORDER_BY_ASC);
 					}
 					else {
-						query.append(ORDER_BY_DESC);
+						sb.append(ORDER_BY_DESC);
 					}
 				}
 			}
 		}
 		else {
-			query.append(SMSModelImpl.ORDER_BY_JPQL);
+			sb.append(SMSModelImpl.ORDER_BY_JPQL);
 		}
 
-		String sql = query.toString();
+		String sql = sb.toString();
 
-		Query q = session.createQuery(sql);
+		Query query = session.createQuery(sql);
 
-		q.setFirstResult(0);
-		q.setMaxResults(2);
+		query.setFirstResult(0);
+		query.setMaxResults(2);
 
-		QueryPos qPos = QueryPos.getInstance(q);
+		QueryPos queryPos = QueryPos.getInstance(query);
 
-		qPos.add(destinatario);
+		queryPos.add(destinatario);
 
 		if (orderByComparator != null) {
 			for (Object orderByConditionValue :
 					orderByComparator.getOrderByConditionValues(sms)) {
 
-				qPos.add(orderByConditionValue);
+				queryPos.add(orderByConditionValue);
 			}
 		}
 
-		List<SMS> list = q.list();
+		List<SMS> list = query.list();
 
 		if (list.size() == 2) {
 			return list.get(1);
@@ -551,33 +540,31 @@ public class SMSPersistenceImpl
 		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
-			StringBundler query = new StringBundler(2);
+			StringBundler sb = new StringBundler(2);
 
-			query.append(_SQL_COUNT_SMS_WHERE);
+			sb.append(_SQL_COUNT_SMS_WHERE);
 
-			query.append(_FINDER_COLUMN_DESTINATARIO_DESTINATARIO_2);
+			sb.append(_FINDER_COLUMN_DESTINATARIO_DESTINATARIO_2);
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
-				qPos.add(destinatario);
+				queryPos.add(destinatario);
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
 				finderCache.putResult(finderPath, finderArgs, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -609,7 +596,7 @@ public class SMSPersistenceImpl
 	 * Returns a range of all the smses where numero = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>SMSModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>SMSModelImpl</code>.
 	 * </p>
 	 *
 	 * @param numero the numero
@@ -626,7 +613,7 @@ public class SMSPersistenceImpl
 	 * Returns an ordered range of all the smses where numero = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>SMSModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>SMSModelImpl</code>.
 	 * </p>
 	 *
 	 * @param numero the numero
@@ -647,42 +634,42 @@ public class SMSPersistenceImpl
 	 * Returns an ordered range of all the smses where numero = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>SMSModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>SMSModelImpl</code>.
 	 * </p>
 	 *
 	 * @param numero the numero
 	 * @param start the lower bound of the range of smses
 	 * @param end the upper bound of the range of smses (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching smses
 	 */
 	@Override
 	public List<SMS> findByNumero(
 		String numero, int start, int end,
-		OrderByComparator<SMS> orderByComparator, boolean retrieveFromCache) {
+		OrderByComparator<SMS> orderByComparator, boolean useFinderCache) {
 
 		numero = Objects.toString(numero, "");
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindByNumero;
-			finderArgs = new Object[] {numero};
+			if (useFinderCache) {
+				finderPath = _finderPathWithoutPaginationFindByNumero;
+				finderArgs = new Object[] {numero};
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByNumero;
 			finderArgs = new Object[] {numero, start, end, orderByComparator};
 		}
 
 		List<SMS> list = null;
 
-		if (retrieveFromCache) {
+		if (useFinderCache) {
 			list = (List<SMS>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
@@ -698,73 +685,63 @@ public class SMSPersistenceImpl
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					3 + (orderByComparator.getOrderByFields().length * 2));
 			}
 			else {
-				query = new StringBundler(3);
+				sb = new StringBundler(3);
 			}
 
-			query.append(_SQL_SELECT_SMS_WHERE);
+			sb.append(_SQL_SELECT_SMS_WHERE);
 
 			boolean bindNumero = false;
 
 			if (numero.isEmpty()) {
-				query.append(_FINDER_COLUMN_NUMERO_NUMERO_3);
+				sb.append(_FINDER_COLUMN_NUMERO_NUMERO_3);
 			}
 			else {
 				bindNumero = true;
 
-				query.append(_FINDER_COLUMN_NUMERO_NUMERO_2);
+				sb.append(_FINDER_COLUMN_NUMERO_NUMERO_2);
 			}
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 			}
-			else if (pagination) {
-				query.append(SMSModelImpl.ORDER_BY_JPQL);
+			else {
+				sb.append(SMSModelImpl.ORDER_BY_JPQL);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindNumero) {
-					qPos.add(numero);
+					queryPos.add(numero);
 				}
 
-				if (!pagination) {
-					list = (List<SMS>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<SMS>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<SMS>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					finderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -793,16 +770,16 @@ public class SMSPersistenceImpl
 			return sms;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("numero=");
-		msg.append(numero);
+		sb.append("numero=");
+		sb.append(numero);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchSMSException(msg.toString());
+		throw new NoSuchSMSException(sb.toString());
 	}
 
 	/**
@@ -844,16 +821,16 @@ public class SMSPersistenceImpl
 			return sms;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("numero=");
-		msg.append(numero);
+		sb.append("numero=");
+		sb.append(numero);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchSMSException(msg.toString());
+		throw new NoSuchSMSException(sb.toString());
 	}
 
 	/**
@@ -918,8 +895,8 @@ public class SMSPersistenceImpl
 
 			return array;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -930,28 +907,28 @@ public class SMSPersistenceImpl
 		Session session, SMS sms, String numero,
 		OrderByComparator<SMS> orderByComparator, boolean previous) {
 
-		StringBundler query = null;
+		StringBundler sb = null;
 
 		if (orderByComparator != null) {
-			query = new StringBundler(
+			sb = new StringBundler(
 				4 + (orderByComparator.getOrderByConditionFields().length * 3) +
 					(orderByComparator.getOrderByFields().length * 3));
 		}
 		else {
-			query = new StringBundler(3);
+			sb = new StringBundler(3);
 		}
 
-		query.append(_SQL_SELECT_SMS_WHERE);
+		sb.append(_SQL_SELECT_SMS_WHERE);
 
 		boolean bindNumero = false;
 
 		if (numero.isEmpty()) {
-			query.append(_FINDER_COLUMN_NUMERO_NUMERO_3);
+			sb.append(_FINDER_COLUMN_NUMERO_NUMERO_3);
 		}
 		else {
 			bindNumero = true;
 
-			query.append(_FINDER_COLUMN_NUMERO_NUMERO_2);
+			sb.append(_FINDER_COLUMN_NUMERO_NUMERO_2);
 		}
 
 		if (orderByComparator != null) {
@@ -959,83 +936,83 @@ public class SMSPersistenceImpl
 				orderByComparator.getOrderByConditionFields();
 
 			if (orderByConditionFields.length > 0) {
-				query.append(WHERE_AND);
+				sb.append(WHERE_AND);
 			}
 
 			for (int i = 0; i < orderByConditionFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByConditionFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByConditionFields[i]);
 
 				if ((i + 1) < orderByConditionFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+						sb.append(WHERE_GREATER_THAN_HAS_NEXT);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+						sb.append(WHERE_LESSER_THAN_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN);
+						sb.append(WHERE_GREATER_THAN);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN);
+						sb.append(WHERE_LESSER_THAN);
 					}
 				}
 			}
 
-			query.append(ORDER_BY_CLAUSE);
+			sb.append(ORDER_BY_CLAUSE);
 
 			String[] orderByFields = orderByComparator.getOrderByFields();
 
 			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByFields[i]);
 
 				if ((i + 1) < orderByFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC_HAS_NEXT);
+						sb.append(ORDER_BY_ASC_HAS_NEXT);
 					}
 					else {
-						query.append(ORDER_BY_DESC_HAS_NEXT);
+						sb.append(ORDER_BY_DESC_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC);
+						sb.append(ORDER_BY_ASC);
 					}
 					else {
-						query.append(ORDER_BY_DESC);
+						sb.append(ORDER_BY_DESC);
 					}
 				}
 			}
 		}
 		else {
-			query.append(SMSModelImpl.ORDER_BY_JPQL);
+			sb.append(SMSModelImpl.ORDER_BY_JPQL);
 		}
 
-		String sql = query.toString();
+		String sql = sb.toString();
 
-		Query q = session.createQuery(sql);
+		Query query = session.createQuery(sql);
 
-		q.setFirstResult(0);
-		q.setMaxResults(2);
+		query.setFirstResult(0);
+		query.setMaxResults(2);
 
-		QueryPos qPos = QueryPos.getInstance(q);
+		QueryPos queryPos = QueryPos.getInstance(query);
 
 		if (bindNumero) {
-			qPos.add(numero);
+			queryPos.add(numero);
 		}
 
 		if (orderByComparator != null) {
 			for (Object orderByConditionValue :
 					orderByComparator.getOrderByConditionValues(sms)) {
 
-				qPos.add(orderByConditionValue);
+				queryPos.add(orderByConditionValue);
 			}
 		}
 
-		List<SMS> list = q.list();
+		List<SMS> list = query.list();
 
 		if (list.size() == 2) {
 			return list.get(1);
@@ -1077,44 +1054,42 @@ public class SMSPersistenceImpl
 		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
-			StringBundler query = new StringBundler(2);
+			StringBundler sb = new StringBundler(2);
 
-			query.append(_SQL_COUNT_SMS_WHERE);
+			sb.append(_SQL_COUNT_SMS_WHERE);
 
 			boolean bindNumero = false;
 
 			if (numero.isEmpty()) {
-				query.append(_FINDER_COLUMN_NUMERO_NUMERO_3);
+				sb.append(_FINDER_COLUMN_NUMERO_NUMERO_3);
 			}
 			else {
 				bindNumero = true;
 
-				query.append(_FINDER_COLUMN_NUMERO_NUMERO_2);
+				sb.append(_FINDER_COLUMN_NUMERO_NUMERO_2);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindNumero) {
-					qPos.add(numero);
+					queryPos.add(numero);
 				}
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
 				finderCache.putResult(finderPath, finderArgs, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -1151,7 +1126,7 @@ public class SMSPersistenceImpl
 	 * Returns a range of all the smses where numero = &#63; and dataAck = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>SMSModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>SMSModelImpl</code>.
 	 * </p>
 	 *
 	 * @param numero the numero
@@ -1171,7 +1146,7 @@ public class SMSPersistenceImpl
 	 * Returns an ordered range of all the smses where numero = &#63; and dataAck = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>SMSModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>SMSModelImpl</code>.
 	 * </p>
 	 *
 	 * @param numero the numero
@@ -1194,7 +1169,7 @@ public class SMSPersistenceImpl
 	 * Returns an ordered range of all the smses where numero = &#63; and dataAck = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>SMSModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>SMSModelImpl</code>.
 	 * </p>
 	 *
 	 * @param numero the numero
@@ -1202,28 +1177,28 @@ public class SMSPersistenceImpl
 	 * @param start the lower bound of the range of smses
 	 * @param end the upper bound of the range of smses (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching smses
 	 */
 	@Override
 	public List<SMS> findByNumeroDataAck(
 		String numero, Date dataAck, int start, int end,
-		OrderByComparator<SMS> orderByComparator, boolean retrieveFromCache) {
+		OrderByComparator<SMS> orderByComparator, boolean useFinderCache) {
 
 		numero = Objects.toString(numero, "");
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindByNumeroDataAck;
-			finderArgs = new Object[] {numero, _getTime(dataAck)};
+			if (useFinderCache) {
+				finderPath = _finderPathWithoutPaginationFindByNumeroDataAck;
+				finderArgs = new Object[] {numero, _getTime(dataAck)};
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByNumeroDataAck;
 			finderArgs = new Object[] {
 				numero, _getTime(dataAck), start, end, orderByComparator
@@ -1232,7 +1207,7 @@ public class SMSPersistenceImpl
 
 		List<SMS> list = null;
 
-		if (retrieveFromCache) {
+		if (useFinderCache) {
 			list = (List<SMS>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
@@ -1250,88 +1225,78 @@ public class SMSPersistenceImpl
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					4 + (orderByComparator.getOrderByFields().length * 2));
 			}
 			else {
-				query = new StringBundler(4);
+				sb = new StringBundler(4);
 			}
 
-			query.append(_SQL_SELECT_SMS_WHERE);
+			sb.append(_SQL_SELECT_SMS_WHERE);
 
 			boolean bindNumero = false;
 
 			if (numero.isEmpty()) {
-				query.append(_FINDER_COLUMN_NUMERODATAACK_NUMERO_3);
+				sb.append(_FINDER_COLUMN_NUMERODATAACK_NUMERO_3);
 			}
 			else {
 				bindNumero = true;
 
-				query.append(_FINDER_COLUMN_NUMERODATAACK_NUMERO_2);
+				sb.append(_FINDER_COLUMN_NUMERODATAACK_NUMERO_2);
 			}
 
 			boolean bindDataAck = false;
 
 			if (dataAck == null) {
-				query.append(_FINDER_COLUMN_NUMERODATAACK_DATAACK_1);
+				sb.append(_FINDER_COLUMN_NUMERODATAACK_DATAACK_1);
 			}
 			else {
 				bindDataAck = true;
 
-				query.append(_FINDER_COLUMN_NUMERODATAACK_DATAACK_2);
+				sb.append(_FINDER_COLUMN_NUMERODATAACK_DATAACK_2);
 			}
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 			}
-			else if (pagination) {
-				query.append(SMSModelImpl.ORDER_BY_JPQL);
+			else {
+				sb.append(SMSModelImpl.ORDER_BY_JPQL);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindNumero) {
-					qPos.add(numero);
+					queryPos.add(numero);
 				}
 
 				if (bindDataAck) {
-					qPos.add(new Timestamp(dataAck.getTime()));
+					queryPos.add(new Timestamp(dataAck.getTime()));
 				}
 
-				if (!pagination) {
-					list = (List<SMS>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<SMS>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<SMS>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					finderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -1363,19 +1328,19 @@ public class SMSPersistenceImpl
 			return sms;
 		}
 
-		StringBundler msg = new StringBundler(6);
+		StringBundler sb = new StringBundler(6);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("numero=");
-		msg.append(numero);
+		sb.append("numero=");
+		sb.append(numero);
 
-		msg.append(", dataAck=");
-		msg.append(dataAck);
+		sb.append(", dataAck=");
+		sb.append(dataAck);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchSMSException(msg.toString());
+		throw new NoSuchSMSException(sb.toString());
 	}
 
 	/**
@@ -1421,19 +1386,19 @@ public class SMSPersistenceImpl
 			return sms;
 		}
 
-		StringBundler msg = new StringBundler(6);
+		StringBundler sb = new StringBundler(6);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("numero=");
-		msg.append(numero);
+		sb.append("numero=");
+		sb.append(numero);
 
-		msg.append(", dataAck=");
-		msg.append(dataAck);
+		sb.append(", dataAck=");
+		sb.append(dataAck);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchSMSException(msg.toString());
+		throw new NoSuchSMSException(sb.toString());
 	}
 
 	/**
@@ -1501,8 +1466,8 @@ public class SMSPersistenceImpl
 
 			return array;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -1513,39 +1478,39 @@ public class SMSPersistenceImpl
 		Session session, SMS sms, String numero, Date dataAck,
 		OrderByComparator<SMS> orderByComparator, boolean previous) {
 
-		StringBundler query = null;
+		StringBundler sb = null;
 
 		if (orderByComparator != null) {
-			query = new StringBundler(
+			sb = new StringBundler(
 				5 + (orderByComparator.getOrderByConditionFields().length * 3) +
 					(orderByComparator.getOrderByFields().length * 3));
 		}
 		else {
-			query = new StringBundler(4);
+			sb = new StringBundler(4);
 		}
 
-		query.append(_SQL_SELECT_SMS_WHERE);
+		sb.append(_SQL_SELECT_SMS_WHERE);
 
 		boolean bindNumero = false;
 
 		if (numero.isEmpty()) {
-			query.append(_FINDER_COLUMN_NUMERODATAACK_NUMERO_3);
+			sb.append(_FINDER_COLUMN_NUMERODATAACK_NUMERO_3);
 		}
 		else {
 			bindNumero = true;
 
-			query.append(_FINDER_COLUMN_NUMERODATAACK_NUMERO_2);
+			sb.append(_FINDER_COLUMN_NUMERODATAACK_NUMERO_2);
 		}
 
 		boolean bindDataAck = false;
 
 		if (dataAck == null) {
-			query.append(_FINDER_COLUMN_NUMERODATAACK_DATAACK_1);
+			sb.append(_FINDER_COLUMN_NUMERODATAACK_DATAACK_1);
 		}
 		else {
 			bindDataAck = true;
 
-			query.append(_FINDER_COLUMN_NUMERODATAACK_DATAACK_2);
+			sb.append(_FINDER_COLUMN_NUMERODATAACK_DATAACK_2);
 		}
 
 		if (orderByComparator != null) {
@@ -1553,87 +1518,87 @@ public class SMSPersistenceImpl
 				orderByComparator.getOrderByConditionFields();
 
 			if (orderByConditionFields.length > 0) {
-				query.append(WHERE_AND);
+				sb.append(WHERE_AND);
 			}
 
 			for (int i = 0; i < orderByConditionFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByConditionFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByConditionFields[i]);
 
 				if ((i + 1) < orderByConditionFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+						sb.append(WHERE_GREATER_THAN_HAS_NEXT);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+						sb.append(WHERE_LESSER_THAN_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN);
+						sb.append(WHERE_GREATER_THAN);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN);
+						sb.append(WHERE_LESSER_THAN);
 					}
 				}
 			}
 
-			query.append(ORDER_BY_CLAUSE);
+			sb.append(ORDER_BY_CLAUSE);
 
 			String[] orderByFields = orderByComparator.getOrderByFields();
 
 			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByFields[i]);
 
 				if ((i + 1) < orderByFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC_HAS_NEXT);
+						sb.append(ORDER_BY_ASC_HAS_NEXT);
 					}
 					else {
-						query.append(ORDER_BY_DESC_HAS_NEXT);
+						sb.append(ORDER_BY_DESC_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC);
+						sb.append(ORDER_BY_ASC);
 					}
 					else {
-						query.append(ORDER_BY_DESC);
+						sb.append(ORDER_BY_DESC);
 					}
 				}
 			}
 		}
 		else {
-			query.append(SMSModelImpl.ORDER_BY_JPQL);
+			sb.append(SMSModelImpl.ORDER_BY_JPQL);
 		}
 
-		String sql = query.toString();
+		String sql = sb.toString();
 
-		Query q = session.createQuery(sql);
+		Query query = session.createQuery(sql);
 
-		q.setFirstResult(0);
-		q.setMaxResults(2);
+		query.setFirstResult(0);
+		query.setMaxResults(2);
 
-		QueryPos qPos = QueryPos.getInstance(q);
+		QueryPos queryPos = QueryPos.getInstance(query);
 
 		if (bindNumero) {
-			qPos.add(numero);
+			queryPos.add(numero);
 		}
 
 		if (bindDataAck) {
-			qPos.add(new Timestamp(dataAck.getTime()));
+			queryPos.add(new Timestamp(dataAck.getTime()));
 		}
 
 		if (orderByComparator != null) {
 			for (Object orderByConditionValue :
 					orderByComparator.getOrderByConditionValues(sms)) {
 
-				qPos.add(orderByConditionValue);
+				queryPos.add(orderByConditionValue);
 			}
 		}
 
-		List<SMS> list = q.list();
+		List<SMS> list = query.list();
 
 		if (list.size() == 2) {
 			return list.get(1);
@@ -1678,59 +1643,57 @@ public class SMSPersistenceImpl
 		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
-			StringBundler query = new StringBundler(3);
+			StringBundler sb = new StringBundler(3);
 
-			query.append(_SQL_COUNT_SMS_WHERE);
+			sb.append(_SQL_COUNT_SMS_WHERE);
 
 			boolean bindNumero = false;
 
 			if (numero.isEmpty()) {
-				query.append(_FINDER_COLUMN_NUMERODATAACK_NUMERO_3);
+				sb.append(_FINDER_COLUMN_NUMERODATAACK_NUMERO_3);
 			}
 			else {
 				bindNumero = true;
 
-				query.append(_FINDER_COLUMN_NUMERODATAACK_NUMERO_2);
+				sb.append(_FINDER_COLUMN_NUMERODATAACK_NUMERO_2);
 			}
 
 			boolean bindDataAck = false;
 
 			if (dataAck == null) {
-				query.append(_FINDER_COLUMN_NUMERODATAACK_DATAACK_1);
+				sb.append(_FINDER_COLUMN_NUMERODATAACK_DATAACK_1);
 			}
 			else {
 				bindDataAck = true;
 
-				query.append(_FINDER_COLUMN_NUMERODATAACK_DATAACK_2);
+				sb.append(_FINDER_COLUMN_NUMERODATAACK_DATAACK_2);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindNumero) {
-					qPos.add(numero);
+					queryPos.add(numero);
 				}
 
 				if (bindDataAck) {
-					qPos.add(new Timestamp(dataAck.getTime()));
+					queryPos.add(new Timestamp(dataAck.getTime()));
 				}
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
 				finderCache.putResult(finderPath, finderArgs, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -1774,7 +1737,7 @@ public class SMSPersistenceImpl
 	 * Returns a range of all the smses where tipo = &#63; and sottotipo = &#63; and param = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>SMSModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>SMSModelImpl</code>.
 	 * </p>
 	 *
 	 * @param tipo the tipo
@@ -1795,7 +1758,7 @@ public class SMSPersistenceImpl
 	 * Returns an ordered range of all the smses where tipo = &#63; and sottotipo = &#63; and param = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>SMSModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>SMSModelImpl</code>.
 	 * </p>
 	 *
 	 * @param tipo the tipo
@@ -1819,7 +1782,7 @@ public class SMSPersistenceImpl
 	 * Returns an ordered range of all the smses where tipo = &#63; and sottotipo = &#63; and param = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>SMSModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>SMSModelImpl</code>.
 	 * </p>
 	 *
 	 * @param tipo the tipo
@@ -1828,29 +1791,29 @@ public class SMSPersistenceImpl
 	 * @param start the lower bound of the range of smses
 	 * @param end the upper bound of the range of smses (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching smses
 	 */
 	@Override
 	public List<SMS> findByInvio(
 		String tipo, String sottotipo, long param, int start, int end,
-		OrderByComparator<SMS> orderByComparator, boolean retrieveFromCache) {
+		OrderByComparator<SMS> orderByComparator, boolean useFinderCache) {
 
 		tipo = Objects.toString(tipo, "");
 		sottotipo = Objects.toString(sottotipo, "");
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindByInvio;
-			finderArgs = new Object[] {tipo, sottotipo, param};
+			if (useFinderCache) {
+				finderPath = _finderPathWithoutPaginationFindByInvio;
+				finderArgs = new Object[] {tipo, sottotipo, param};
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByInvio;
 			finderArgs = new Object[] {
 				tipo, sottotipo, param, start, end, orderByComparator
@@ -1859,7 +1822,7 @@ public class SMSPersistenceImpl
 
 		List<SMS> list = null;
 
-		if (retrieveFromCache) {
+		if (useFinderCache) {
 			list = (List<SMS>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
@@ -1878,92 +1841,82 @@ public class SMSPersistenceImpl
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					5 + (orderByComparator.getOrderByFields().length * 2));
 			}
 			else {
-				query = new StringBundler(5);
+				sb = new StringBundler(5);
 			}
 
-			query.append(_SQL_SELECT_SMS_WHERE);
+			sb.append(_SQL_SELECT_SMS_WHERE);
 
 			boolean bindTipo = false;
 
 			if (tipo.isEmpty()) {
-				query.append(_FINDER_COLUMN_INVIO_TIPO_3);
+				sb.append(_FINDER_COLUMN_INVIO_TIPO_3);
 			}
 			else {
 				bindTipo = true;
 
-				query.append(_FINDER_COLUMN_INVIO_TIPO_2);
+				sb.append(_FINDER_COLUMN_INVIO_TIPO_2);
 			}
 
 			boolean bindSottotipo = false;
 
 			if (sottotipo.isEmpty()) {
-				query.append(_FINDER_COLUMN_INVIO_SOTTOTIPO_3);
+				sb.append(_FINDER_COLUMN_INVIO_SOTTOTIPO_3);
 			}
 			else {
 				bindSottotipo = true;
 
-				query.append(_FINDER_COLUMN_INVIO_SOTTOTIPO_2);
+				sb.append(_FINDER_COLUMN_INVIO_SOTTOTIPO_2);
 			}
 
-			query.append(_FINDER_COLUMN_INVIO_PARAM_2);
+			sb.append(_FINDER_COLUMN_INVIO_PARAM_2);
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 			}
-			else if (pagination) {
-				query.append(SMSModelImpl.ORDER_BY_JPQL);
+			else {
+				sb.append(SMSModelImpl.ORDER_BY_JPQL);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindTipo) {
-					qPos.add(tipo);
+					queryPos.add(tipo);
 				}
 
 				if (bindSottotipo) {
-					qPos.add(sottotipo);
+					queryPos.add(sottotipo);
 				}
 
-				qPos.add(param);
+				queryPos.add(param);
 
-				if (!pagination) {
-					list = (List<SMS>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<SMS>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<SMS>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					finderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -1995,22 +1948,22 @@ public class SMSPersistenceImpl
 			return sms;
 		}
 
-		StringBundler msg = new StringBundler(8);
+		StringBundler sb = new StringBundler(8);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("tipo=");
-		msg.append(tipo);
+		sb.append("tipo=");
+		sb.append(tipo);
 
-		msg.append(", sottotipo=");
-		msg.append(sottotipo);
+		sb.append(", sottotipo=");
+		sb.append(sottotipo);
 
-		msg.append(", param=");
-		msg.append(param);
+		sb.append(", param=");
+		sb.append(param);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchSMSException(msg.toString());
+		throw new NoSuchSMSException(sb.toString());
 	}
 
 	/**
@@ -2059,22 +2012,22 @@ public class SMSPersistenceImpl
 			return sms;
 		}
 
-		StringBundler msg = new StringBundler(8);
+		StringBundler sb = new StringBundler(8);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("tipo=");
-		msg.append(tipo);
+		sb.append("tipo=");
+		sb.append(tipo);
 
-		msg.append(", sottotipo=");
-		msg.append(sottotipo);
+		sb.append(", sottotipo=");
+		sb.append(sottotipo);
 
-		msg.append(", param=");
-		msg.append(param);
+		sb.append(", param=");
+		sb.append(param);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchSMSException(msg.toString());
+		throw new NoSuchSMSException(sb.toString());
 	}
 
 	/**
@@ -2146,8 +2099,8 @@ public class SMSPersistenceImpl
 
 			return array;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -2158,131 +2111,131 @@ public class SMSPersistenceImpl
 		Session session, SMS sms, String tipo, String sottotipo, long param,
 		OrderByComparator<SMS> orderByComparator, boolean previous) {
 
-		StringBundler query = null;
+		StringBundler sb = null;
 
 		if (orderByComparator != null) {
-			query = new StringBundler(
+			sb = new StringBundler(
 				6 + (orderByComparator.getOrderByConditionFields().length * 3) +
 					(orderByComparator.getOrderByFields().length * 3));
 		}
 		else {
-			query = new StringBundler(5);
+			sb = new StringBundler(5);
 		}
 
-		query.append(_SQL_SELECT_SMS_WHERE);
+		sb.append(_SQL_SELECT_SMS_WHERE);
 
 		boolean bindTipo = false;
 
 		if (tipo.isEmpty()) {
-			query.append(_FINDER_COLUMN_INVIO_TIPO_3);
+			sb.append(_FINDER_COLUMN_INVIO_TIPO_3);
 		}
 		else {
 			bindTipo = true;
 
-			query.append(_FINDER_COLUMN_INVIO_TIPO_2);
+			sb.append(_FINDER_COLUMN_INVIO_TIPO_2);
 		}
 
 		boolean bindSottotipo = false;
 
 		if (sottotipo.isEmpty()) {
-			query.append(_FINDER_COLUMN_INVIO_SOTTOTIPO_3);
+			sb.append(_FINDER_COLUMN_INVIO_SOTTOTIPO_3);
 		}
 		else {
 			bindSottotipo = true;
 
-			query.append(_FINDER_COLUMN_INVIO_SOTTOTIPO_2);
+			sb.append(_FINDER_COLUMN_INVIO_SOTTOTIPO_2);
 		}
 
-		query.append(_FINDER_COLUMN_INVIO_PARAM_2);
+		sb.append(_FINDER_COLUMN_INVIO_PARAM_2);
 
 		if (orderByComparator != null) {
 			String[] orderByConditionFields =
 				orderByComparator.getOrderByConditionFields();
 
 			if (orderByConditionFields.length > 0) {
-				query.append(WHERE_AND);
+				sb.append(WHERE_AND);
 			}
 
 			for (int i = 0; i < orderByConditionFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByConditionFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByConditionFields[i]);
 
 				if ((i + 1) < orderByConditionFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+						sb.append(WHERE_GREATER_THAN_HAS_NEXT);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+						sb.append(WHERE_LESSER_THAN_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN);
+						sb.append(WHERE_GREATER_THAN);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN);
+						sb.append(WHERE_LESSER_THAN);
 					}
 				}
 			}
 
-			query.append(ORDER_BY_CLAUSE);
+			sb.append(ORDER_BY_CLAUSE);
 
 			String[] orderByFields = orderByComparator.getOrderByFields();
 
 			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByFields[i]);
 
 				if ((i + 1) < orderByFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC_HAS_NEXT);
+						sb.append(ORDER_BY_ASC_HAS_NEXT);
 					}
 					else {
-						query.append(ORDER_BY_DESC_HAS_NEXT);
+						sb.append(ORDER_BY_DESC_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC);
+						sb.append(ORDER_BY_ASC);
 					}
 					else {
-						query.append(ORDER_BY_DESC);
+						sb.append(ORDER_BY_DESC);
 					}
 				}
 			}
 		}
 		else {
-			query.append(SMSModelImpl.ORDER_BY_JPQL);
+			sb.append(SMSModelImpl.ORDER_BY_JPQL);
 		}
 
-		String sql = query.toString();
+		String sql = sb.toString();
 
-		Query q = session.createQuery(sql);
+		Query query = session.createQuery(sql);
 
-		q.setFirstResult(0);
-		q.setMaxResults(2);
+		query.setFirstResult(0);
+		query.setMaxResults(2);
 
-		QueryPos qPos = QueryPos.getInstance(q);
+		QueryPos queryPos = QueryPos.getInstance(query);
 
 		if (bindTipo) {
-			qPos.add(tipo);
+			queryPos.add(tipo);
 		}
 
 		if (bindSottotipo) {
-			qPos.add(sottotipo);
+			queryPos.add(sottotipo);
 		}
 
-		qPos.add(param);
+		queryPos.add(param);
 
 		if (orderByComparator != null) {
 			for (Object orderByConditionValue :
 					orderByComparator.getOrderByConditionValues(sms)) {
 
-				qPos.add(orderByConditionValue);
+				queryPos.add(orderByConditionValue);
 			}
 		}
 
-		List<SMS> list = q.list();
+		List<SMS> list = query.list();
 
 		if (list.size() == 2) {
 			return list.get(1);
@@ -2330,63 +2283,61 @@ public class SMSPersistenceImpl
 		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
-			StringBundler query = new StringBundler(4);
+			StringBundler sb = new StringBundler(4);
 
-			query.append(_SQL_COUNT_SMS_WHERE);
+			sb.append(_SQL_COUNT_SMS_WHERE);
 
 			boolean bindTipo = false;
 
 			if (tipo.isEmpty()) {
-				query.append(_FINDER_COLUMN_INVIO_TIPO_3);
+				sb.append(_FINDER_COLUMN_INVIO_TIPO_3);
 			}
 			else {
 				bindTipo = true;
 
-				query.append(_FINDER_COLUMN_INVIO_TIPO_2);
+				sb.append(_FINDER_COLUMN_INVIO_TIPO_2);
 			}
 
 			boolean bindSottotipo = false;
 
 			if (sottotipo.isEmpty()) {
-				query.append(_FINDER_COLUMN_INVIO_SOTTOTIPO_3);
+				sb.append(_FINDER_COLUMN_INVIO_SOTTOTIPO_3);
 			}
 			else {
 				bindSottotipo = true;
 
-				query.append(_FINDER_COLUMN_INVIO_SOTTOTIPO_2);
+				sb.append(_FINDER_COLUMN_INVIO_SOTTOTIPO_2);
 			}
 
-			query.append(_FINDER_COLUMN_INVIO_PARAM_2);
+			sb.append(_FINDER_COLUMN_INVIO_PARAM_2);
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindTipo) {
-					qPos.add(tipo);
+					queryPos.add(tipo);
 				}
 
 				if (bindSottotipo) {
-					qPos.add(sottotipo);
+					queryPos.add(sottotipo);
 				}
 
-				qPos.add(param);
+				queryPos.add(param);
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
 				finderCache.putResult(finderPath, finderArgs, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -2431,7 +2382,7 @@ public class SMSPersistenceImpl
 	 * Returns a range of all the smses where tipo = &#63; and sottotipo = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>SMSModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>SMSModelImpl</code>.
 	 * </p>
 	 *
 	 * @param tipo the tipo
@@ -2451,7 +2402,7 @@ public class SMSPersistenceImpl
 	 * Returns an ordered range of all the smses where tipo = &#63; and sottotipo = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>SMSModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>SMSModelImpl</code>.
 	 * </p>
 	 *
 	 * @param tipo the tipo
@@ -2474,7 +2425,7 @@ public class SMSPersistenceImpl
 	 * Returns an ordered range of all the smses where tipo = &#63; and sottotipo = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>SMSModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>SMSModelImpl</code>.
 	 * </p>
 	 *
 	 * @param tipo the tipo
@@ -2482,29 +2433,29 @@ public class SMSPersistenceImpl
 	 * @param start the lower bound of the range of smses
 	 * @param end the upper bound of the range of smses (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching smses
 	 */
 	@Override
 	public List<SMS> findByTipoSottotipo(
 		String tipo, String sottotipo, int start, int end,
-		OrderByComparator<SMS> orderByComparator, boolean retrieveFromCache) {
+		OrderByComparator<SMS> orderByComparator, boolean useFinderCache) {
 
 		tipo = Objects.toString(tipo, "");
 		sottotipo = Objects.toString(sottotipo, "");
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindByTipoSottotipo;
-			finderArgs = new Object[] {tipo, sottotipo};
+			if (useFinderCache) {
+				finderPath = _finderPathWithoutPaginationFindByTipoSottotipo;
+				finderArgs = new Object[] {tipo, sottotipo};
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByTipoSottotipo;
 			finderArgs = new Object[] {
 				tipo, sottotipo, start, end, orderByComparator
@@ -2513,7 +2464,7 @@ public class SMSPersistenceImpl
 
 		List<SMS> list = null;
 
-		if (retrieveFromCache) {
+		if (useFinderCache) {
 			list = (List<SMS>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
@@ -2531,88 +2482,78 @@ public class SMSPersistenceImpl
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					4 + (orderByComparator.getOrderByFields().length * 2));
 			}
 			else {
-				query = new StringBundler(4);
+				sb = new StringBundler(4);
 			}
 
-			query.append(_SQL_SELECT_SMS_WHERE);
+			sb.append(_SQL_SELECT_SMS_WHERE);
 
 			boolean bindTipo = false;
 
 			if (tipo.isEmpty()) {
-				query.append(_FINDER_COLUMN_TIPOSOTTOTIPO_TIPO_3);
+				sb.append(_FINDER_COLUMN_TIPOSOTTOTIPO_TIPO_3);
 			}
 			else {
 				bindTipo = true;
 
-				query.append(_FINDER_COLUMN_TIPOSOTTOTIPO_TIPO_2);
+				sb.append(_FINDER_COLUMN_TIPOSOTTOTIPO_TIPO_2);
 			}
 
 			boolean bindSottotipo = false;
 
 			if (sottotipo.isEmpty()) {
-				query.append(_FINDER_COLUMN_TIPOSOTTOTIPO_SOTTOTIPO_3);
+				sb.append(_FINDER_COLUMN_TIPOSOTTOTIPO_SOTTOTIPO_3);
 			}
 			else {
 				bindSottotipo = true;
 
-				query.append(_FINDER_COLUMN_TIPOSOTTOTIPO_SOTTOTIPO_2);
+				sb.append(_FINDER_COLUMN_TIPOSOTTOTIPO_SOTTOTIPO_2);
 			}
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 			}
-			else if (pagination) {
-				query.append(SMSModelImpl.ORDER_BY_JPQL);
+			else {
+				sb.append(SMSModelImpl.ORDER_BY_JPQL);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindTipo) {
-					qPos.add(tipo);
+					queryPos.add(tipo);
 				}
 
 				if (bindSottotipo) {
-					qPos.add(sottotipo);
+					queryPos.add(sottotipo);
 				}
 
-				if (!pagination) {
-					list = (List<SMS>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<SMS>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<SMS>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					finderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -2644,19 +2585,19 @@ public class SMSPersistenceImpl
 			return sms;
 		}
 
-		StringBundler msg = new StringBundler(6);
+		StringBundler sb = new StringBundler(6);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("tipo=");
-		msg.append(tipo);
+		sb.append("tipo=");
+		sb.append(tipo);
 
-		msg.append(", sottotipo=");
-		msg.append(sottotipo);
+		sb.append(", sottotipo=");
+		sb.append(sottotipo);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchSMSException(msg.toString());
+		throw new NoSuchSMSException(sb.toString());
 	}
 
 	/**
@@ -2703,19 +2644,19 @@ public class SMSPersistenceImpl
 			return sms;
 		}
 
-		StringBundler msg = new StringBundler(6);
+		StringBundler sb = new StringBundler(6);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("tipo=");
-		msg.append(tipo);
+		sb.append("tipo=");
+		sb.append(tipo);
 
-		msg.append(", sottotipo=");
-		msg.append(sottotipo);
+		sb.append(", sottotipo=");
+		sb.append(sottotipo);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchSMSException(msg.toString());
+		throw new NoSuchSMSException(sb.toString());
 	}
 
 	/**
@@ -2785,8 +2726,8 @@ public class SMSPersistenceImpl
 
 			return array;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -2797,39 +2738,39 @@ public class SMSPersistenceImpl
 		Session session, SMS sms, String tipo, String sottotipo,
 		OrderByComparator<SMS> orderByComparator, boolean previous) {
 
-		StringBundler query = null;
+		StringBundler sb = null;
 
 		if (orderByComparator != null) {
-			query = new StringBundler(
+			sb = new StringBundler(
 				5 + (orderByComparator.getOrderByConditionFields().length * 3) +
 					(orderByComparator.getOrderByFields().length * 3));
 		}
 		else {
-			query = new StringBundler(4);
+			sb = new StringBundler(4);
 		}
 
-		query.append(_SQL_SELECT_SMS_WHERE);
+		sb.append(_SQL_SELECT_SMS_WHERE);
 
 		boolean bindTipo = false;
 
 		if (tipo.isEmpty()) {
-			query.append(_FINDER_COLUMN_TIPOSOTTOTIPO_TIPO_3);
+			sb.append(_FINDER_COLUMN_TIPOSOTTOTIPO_TIPO_3);
 		}
 		else {
 			bindTipo = true;
 
-			query.append(_FINDER_COLUMN_TIPOSOTTOTIPO_TIPO_2);
+			sb.append(_FINDER_COLUMN_TIPOSOTTOTIPO_TIPO_2);
 		}
 
 		boolean bindSottotipo = false;
 
 		if (sottotipo.isEmpty()) {
-			query.append(_FINDER_COLUMN_TIPOSOTTOTIPO_SOTTOTIPO_3);
+			sb.append(_FINDER_COLUMN_TIPOSOTTOTIPO_SOTTOTIPO_3);
 		}
 		else {
 			bindSottotipo = true;
 
-			query.append(_FINDER_COLUMN_TIPOSOTTOTIPO_SOTTOTIPO_2);
+			sb.append(_FINDER_COLUMN_TIPOSOTTOTIPO_SOTTOTIPO_2);
 		}
 
 		if (orderByComparator != null) {
@@ -2837,87 +2778,87 @@ public class SMSPersistenceImpl
 				orderByComparator.getOrderByConditionFields();
 
 			if (orderByConditionFields.length > 0) {
-				query.append(WHERE_AND);
+				sb.append(WHERE_AND);
 			}
 
 			for (int i = 0; i < orderByConditionFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByConditionFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByConditionFields[i]);
 
 				if ((i + 1) < orderByConditionFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+						sb.append(WHERE_GREATER_THAN_HAS_NEXT);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+						sb.append(WHERE_LESSER_THAN_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN);
+						sb.append(WHERE_GREATER_THAN);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN);
+						sb.append(WHERE_LESSER_THAN);
 					}
 				}
 			}
 
-			query.append(ORDER_BY_CLAUSE);
+			sb.append(ORDER_BY_CLAUSE);
 
 			String[] orderByFields = orderByComparator.getOrderByFields();
 
 			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByFields[i]);
 
 				if ((i + 1) < orderByFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC_HAS_NEXT);
+						sb.append(ORDER_BY_ASC_HAS_NEXT);
 					}
 					else {
-						query.append(ORDER_BY_DESC_HAS_NEXT);
+						sb.append(ORDER_BY_DESC_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC);
+						sb.append(ORDER_BY_ASC);
 					}
 					else {
-						query.append(ORDER_BY_DESC);
+						sb.append(ORDER_BY_DESC);
 					}
 				}
 			}
 		}
 		else {
-			query.append(SMSModelImpl.ORDER_BY_JPQL);
+			sb.append(SMSModelImpl.ORDER_BY_JPQL);
 		}
 
-		String sql = query.toString();
+		String sql = sb.toString();
 
-		Query q = session.createQuery(sql);
+		Query query = session.createQuery(sql);
 
-		q.setFirstResult(0);
-		q.setMaxResults(2);
+		query.setFirstResult(0);
+		query.setMaxResults(2);
 
-		QueryPos qPos = QueryPos.getInstance(q);
+		QueryPos queryPos = QueryPos.getInstance(query);
 
 		if (bindTipo) {
-			qPos.add(tipo);
+			queryPos.add(tipo);
 		}
 
 		if (bindSottotipo) {
-			qPos.add(sottotipo);
+			queryPos.add(sottotipo);
 		}
 
 		if (orderByComparator != null) {
 			for (Object orderByConditionValue :
 					orderByComparator.getOrderByConditionValues(sms)) {
 
-				qPos.add(orderByConditionValue);
+				queryPos.add(orderByConditionValue);
 			}
 		}
 
-		List<SMS> list = q.list();
+		List<SMS> list = query.list();
 
 		if (list.size() == 2) {
 			return list.get(1);
@@ -2963,59 +2904,57 @@ public class SMSPersistenceImpl
 		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
-			StringBundler query = new StringBundler(3);
+			StringBundler sb = new StringBundler(3);
 
-			query.append(_SQL_COUNT_SMS_WHERE);
+			sb.append(_SQL_COUNT_SMS_WHERE);
 
 			boolean bindTipo = false;
 
 			if (tipo.isEmpty()) {
-				query.append(_FINDER_COLUMN_TIPOSOTTOTIPO_TIPO_3);
+				sb.append(_FINDER_COLUMN_TIPOSOTTOTIPO_TIPO_3);
 			}
 			else {
 				bindTipo = true;
 
-				query.append(_FINDER_COLUMN_TIPOSOTTOTIPO_TIPO_2);
+				sb.append(_FINDER_COLUMN_TIPOSOTTOTIPO_TIPO_2);
 			}
 
 			boolean bindSottotipo = false;
 
 			if (sottotipo.isEmpty()) {
-				query.append(_FINDER_COLUMN_TIPOSOTTOTIPO_SOTTOTIPO_3);
+				sb.append(_FINDER_COLUMN_TIPOSOTTOTIPO_SOTTOTIPO_3);
 			}
 			else {
 				bindSottotipo = true;
 
-				query.append(_FINDER_COLUMN_TIPOSOTTOTIPO_SOTTOTIPO_2);
+				sb.append(_FINDER_COLUMN_TIPOSOTTOTIPO_SOTTOTIPO_2);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindTipo) {
-					qPos.add(tipo);
+					queryPos.add(tipo);
 				}
 
 				if (bindSottotipo) {
-					qPos.add(sottotipo);
+					queryPos.add(sottotipo);
 				}
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
 				finderCache.putResult(finderPath, finderArgs, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -3058,7 +2997,7 @@ public class SMSPersistenceImpl
 	 * Returns a range of all the smses where tipo = &#63; and param = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>SMSModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>SMSModelImpl</code>.
 	 * </p>
 	 *
 	 * @param tipo the tipo
@@ -3078,7 +3017,7 @@ public class SMSPersistenceImpl
 	 * Returns an ordered range of all the smses where tipo = &#63; and param = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>SMSModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>SMSModelImpl</code>.
 	 * </p>
 	 *
 	 * @param tipo the tipo
@@ -3101,7 +3040,7 @@ public class SMSPersistenceImpl
 	 * Returns an ordered range of all the smses where tipo = &#63; and param = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>SMSModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>SMSModelImpl</code>.
 	 * </p>
 	 *
 	 * @param tipo the tipo
@@ -3109,28 +3048,28 @@ public class SMSPersistenceImpl
 	 * @param start the lower bound of the range of smses
 	 * @param end the upper bound of the range of smses (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching smses
 	 */
 	@Override
 	public List<SMS> findByTipoParam(
 		String tipo, long param, int start, int end,
-		OrderByComparator<SMS> orderByComparator, boolean retrieveFromCache) {
+		OrderByComparator<SMS> orderByComparator, boolean useFinderCache) {
 
 		tipo = Objects.toString(tipo, "");
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindByTipoParam;
-			finderArgs = new Object[] {tipo, param};
+			if (useFinderCache) {
+				finderPath = _finderPathWithoutPaginationFindByTipoParam;
+				finderArgs = new Object[] {tipo, param};
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByTipoParam;
 			finderArgs = new Object[] {
 				tipo, param, start, end, orderByComparator
@@ -3139,7 +3078,7 @@ public class SMSPersistenceImpl
 
 		List<SMS> list = null;
 
-		if (retrieveFromCache) {
+		if (useFinderCache) {
 			list = (List<SMS>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
@@ -3157,77 +3096,67 @@ public class SMSPersistenceImpl
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					4 + (orderByComparator.getOrderByFields().length * 2));
 			}
 			else {
-				query = new StringBundler(4);
+				sb = new StringBundler(4);
 			}
 
-			query.append(_SQL_SELECT_SMS_WHERE);
+			sb.append(_SQL_SELECT_SMS_WHERE);
 
 			boolean bindTipo = false;
 
 			if (tipo.isEmpty()) {
-				query.append(_FINDER_COLUMN_TIPOPARAM_TIPO_3);
+				sb.append(_FINDER_COLUMN_TIPOPARAM_TIPO_3);
 			}
 			else {
 				bindTipo = true;
 
-				query.append(_FINDER_COLUMN_TIPOPARAM_TIPO_2);
+				sb.append(_FINDER_COLUMN_TIPOPARAM_TIPO_2);
 			}
 
-			query.append(_FINDER_COLUMN_TIPOPARAM_PARAM_2);
+			sb.append(_FINDER_COLUMN_TIPOPARAM_PARAM_2);
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 			}
-			else if (pagination) {
-				query.append(SMSModelImpl.ORDER_BY_JPQL);
+			else {
+				sb.append(SMSModelImpl.ORDER_BY_JPQL);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindTipo) {
-					qPos.add(tipo);
+					queryPos.add(tipo);
 				}
 
-				qPos.add(param);
+				queryPos.add(param);
 
-				if (!pagination) {
-					list = (List<SMS>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<SMS>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<SMS>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					finderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -3257,19 +3186,19 @@ public class SMSPersistenceImpl
 			return sms;
 		}
 
-		StringBundler msg = new StringBundler(6);
+		StringBundler sb = new StringBundler(6);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("tipo=");
-		msg.append(tipo);
+		sb.append("tipo=");
+		sb.append(tipo);
 
-		msg.append(", param=");
-		msg.append(param);
+		sb.append(", param=");
+		sb.append(param);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchSMSException(msg.toString());
+		throw new NoSuchSMSException(sb.toString());
 	}
 
 	/**
@@ -3313,19 +3242,19 @@ public class SMSPersistenceImpl
 			return sms;
 		}
 
-		StringBundler msg = new StringBundler(6);
+		StringBundler sb = new StringBundler(6);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("tipo=");
-		msg.append(tipo);
+		sb.append("tipo=");
+		sb.append(tipo);
 
-		msg.append(", param=");
-		msg.append(param);
+		sb.append(", param=");
+		sb.append(param);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchSMSException(msg.toString());
+		throw new NoSuchSMSException(sb.toString());
 	}
 
 	/**
@@ -3393,8 +3322,8 @@ public class SMSPersistenceImpl
 
 			return array;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -3405,116 +3334,116 @@ public class SMSPersistenceImpl
 		Session session, SMS sms, String tipo, long param,
 		OrderByComparator<SMS> orderByComparator, boolean previous) {
 
-		StringBundler query = null;
+		StringBundler sb = null;
 
 		if (orderByComparator != null) {
-			query = new StringBundler(
+			sb = new StringBundler(
 				5 + (orderByComparator.getOrderByConditionFields().length * 3) +
 					(orderByComparator.getOrderByFields().length * 3));
 		}
 		else {
-			query = new StringBundler(4);
+			sb = new StringBundler(4);
 		}
 
-		query.append(_SQL_SELECT_SMS_WHERE);
+		sb.append(_SQL_SELECT_SMS_WHERE);
 
 		boolean bindTipo = false;
 
 		if (tipo.isEmpty()) {
-			query.append(_FINDER_COLUMN_TIPOPARAM_TIPO_3);
+			sb.append(_FINDER_COLUMN_TIPOPARAM_TIPO_3);
 		}
 		else {
 			bindTipo = true;
 
-			query.append(_FINDER_COLUMN_TIPOPARAM_TIPO_2);
+			sb.append(_FINDER_COLUMN_TIPOPARAM_TIPO_2);
 		}
 
-		query.append(_FINDER_COLUMN_TIPOPARAM_PARAM_2);
+		sb.append(_FINDER_COLUMN_TIPOPARAM_PARAM_2);
 
 		if (orderByComparator != null) {
 			String[] orderByConditionFields =
 				orderByComparator.getOrderByConditionFields();
 
 			if (orderByConditionFields.length > 0) {
-				query.append(WHERE_AND);
+				sb.append(WHERE_AND);
 			}
 
 			for (int i = 0; i < orderByConditionFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByConditionFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByConditionFields[i]);
 
 				if ((i + 1) < orderByConditionFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+						sb.append(WHERE_GREATER_THAN_HAS_NEXT);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+						sb.append(WHERE_LESSER_THAN_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN);
+						sb.append(WHERE_GREATER_THAN);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN);
+						sb.append(WHERE_LESSER_THAN);
 					}
 				}
 			}
 
-			query.append(ORDER_BY_CLAUSE);
+			sb.append(ORDER_BY_CLAUSE);
 
 			String[] orderByFields = orderByComparator.getOrderByFields();
 
 			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByFields[i]);
 
 				if ((i + 1) < orderByFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC_HAS_NEXT);
+						sb.append(ORDER_BY_ASC_HAS_NEXT);
 					}
 					else {
-						query.append(ORDER_BY_DESC_HAS_NEXT);
+						sb.append(ORDER_BY_DESC_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC);
+						sb.append(ORDER_BY_ASC);
 					}
 					else {
-						query.append(ORDER_BY_DESC);
+						sb.append(ORDER_BY_DESC);
 					}
 				}
 			}
 		}
 		else {
-			query.append(SMSModelImpl.ORDER_BY_JPQL);
+			sb.append(SMSModelImpl.ORDER_BY_JPQL);
 		}
 
-		String sql = query.toString();
+		String sql = sb.toString();
 
-		Query q = session.createQuery(sql);
+		Query query = session.createQuery(sql);
 
-		q.setFirstResult(0);
-		q.setMaxResults(2);
+		query.setFirstResult(0);
+		query.setMaxResults(2);
 
-		QueryPos qPos = QueryPos.getInstance(q);
+		QueryPos queryPos = QueryPos.getInstance(query);
 
 		if (bindTipo) {
-			qPos.add(tipo);
+			queryPos.add(tipo);
 		}
 
-		qPos.add(param);
+		queryPos.add(param);
 
 		if (orderByComparator != null) {
 			for (Object orderByConditionValue :
 					orderByComparator.getOrderByConditionValues(sms)) {
 
-				qPos.add(orderByConditionValue);
+				queryPos.add(orderByConditionValue);
 			}
 		}
 
-		List<SMS> list = q.list();
+		List<SMS> list = query.list();
 
 		if (list.size() == 2) {
 			return list.get(1);
@@ -3558,48 +3487,46 @@ public class SMSPersistenceImpl
 		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
-			StringBundler query = new StringBundler(3);
+			StringBundler sb = new StringBundler(3);
 
-			query.append(_SQL_COUNT_SMS_WHERE);
+			sb.append(_SQL_COUNT_SMS_WHERE);
 
 			boolean bindTipo = false;
 
 			if (tipo.isEmpty()) {
-				query.append(_FINDER_COLUMN_TIPOPARAM_TIPO_3);
+				sb.append(_FINDER_COLUMN_TIPOPARAM_TIPO_3);
 			}
 			else {
 				bindTipo = true;
 
-				query.append(_FINDER_COLUMN_TIPOPARAM_TIPO_2);
+				sb.append(_FINDER_COLUMN_TIPOPARAM_TIPO_2);
 			}
 
-			query.append(_FINDER_COLUMN_TIPOPARAM_PARAM_2);
+			sb.append(_FINDER_COLUMN_TIPOPARAM_PARAM_2);
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindTipo) {
-					qPos.add(tipo);
+					queryPos.add(tipo);
 				}
 
-				qPos.add(param);
+				queryPos.add(param);
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
 				finderCache.putResult(finderPath, finderArgs, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -3638,7 +3565,7 @@ public class SMSPersistenceImpl
 	 * Returns a range of all the smses where timestamp = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>SMSModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>SMSModelImpl</code>.
 	 * </p>
 	 *
 	 * @param timestamp the timestamp
@@ -3655,7 +3582,7 @@ public class SMSPersistenceImpl
 	 * Returns an ordered range of all the smses where timestamp = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>SMSModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>SMSModelImpl</code>.
 	 * </p>
 	 *
 	 * @param timestamp the timestamp
@@ -3676,35 +3603,35 @@ public class SMSPersistenceImpl
 	 * Returns an ordered range of all the smses where timestamp = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>SMSModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>SMSModelImpl</code>.
 	 * </p>
 	 *
 	 * @param timestamp the timestamp
 	 * @param start the lower bound of the range of smses
 	 * @param end the upper bound of the range of smses (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching smses
 	 */
 	@Override
 	public List<SMS> findByTimestamp(
 		String timestamp, int start, int end,
-		OrderByComparator<SMS> orderByComparator, boolean retrieveFromCache) {
+		OrderByComparator<SMS> orderByComparator, boolean useFinderCache) {
 
 		timestamp = Objects.toString(timestamp, "");
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindByTimestamp;
-			finderArgs = new Object[] {timestamp};
+			if (useFinderCache) {
+				finderPath = _finderPathWithoutPaginationFindByTimestamp;
+				finderArgs = new Object[] {timestamp};
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByTimestamp;
 			finderArgs = new Object[] {
 				timestamp, start, end, orderByComparator
@@ -3713,7 +3640,7 @@ public class SMSPersistenceImpl
 
 		List<SMS> list = null;
 
-		if (retrieveFromCache) {
+		if (useFinderCache) {
 			list = (List<SMS>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
@@ -3729,73 +3656,63 @@ public class SMSPersistenceImpl
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					3 + (orderByComparator.getOrderByFields().length * 2));
 			}
 			else {
-				query = new StringBundler(3);
+				sb = new StringBundler(3);
 			}
 
-			query.append(_SQL_SELECT_SMS_WHERE);
+			sb.append(_SQL_SELECT_SMS_WHERE);
 
 			boolean bindTimestamp = false;
 
 			if (timestamp.isEmpty()) {
-				query.append(_FINDER_COLUMN_TIMESTAMP_TIMESTAMP_3);
+				sb.append(_FINDER_COLUMN_TIMESTAMP_TIMESTAMP_3);
 			}
 			else {
 				bindTimestamp = true;
 
-				query.append(_FINDER_COLUMN_TIMESTAMP_TIMESTAMP_2);
+				sb.append(_FINDER_COLUMN_TIMESTAMP_TIMESTAMP_2);
 			}
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 			}
-			else if (pagination) {
-				query.append(SMSModelImpl.ORDER_BY_JPQL);
+			else {
+				sb.append(SMSModelImpl.ORDER_BY_JPQL);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindTimestamp) {
-					qPos.add(timestamp);
+					queryPos.add(timestamp);
 				}
 
-				if (!pagination) {
-					list = (List<SMS>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<SMS>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<SMS>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					finderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -3824,16 +3741,16 @@ public class SMSPersistenceImpl
 			return sms;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("timestamp=");
-		msg.append(timestamp);
+		sb.append("timestamp=");
+		sb.append(timestamp);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchSMSException(msg.toString());
+		throw new NoSuchSMSException(sb.toString());
 	}
 
 	/**
@@ -3875,16 +3792,16 @@ public class SMSPersistenceImpl
 			return sms;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("timestamp=");
-		msg.append(timestamp);
+		sb.append("timestamp=");
+		sb.append(timestamp);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchSMSException(msg.toString());
+		throw new NoSuchSMSException(sb.toString());
 	}
 
 	/**
@@ -3949,8 +3866,8 @@ public class SMSPersistenceImpl
 
 			return array;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -3961,28 +3878,28 @@ public class SMSPersistenceImpl
 		Session session, SMS sms, String timestamp,
 		OrderByComparator<SMS> orderByComparator, boolean previous) {
 
-		StringBundler query = null;
+		StringBundler sb = null;
 
 		if (orderByComparator != null) {
-			query = new StringBundler(
+			sb = new StringBundler(
 				4 + (orderByComparator.getOrderByConditionFields().length * 3) +
 					(orderByComparator.getOrderByFields().length * 3));
 		}
 		else {
-			query = new StringBundler(3);
+			sb = new StringBundler(3);
 		}
 
-		query.append(_SQL_SELECT_SMS_WHERE);
+		sb.append(_SQL_SELECT_SMS_WHERE);
 
 		boolean bindTimestamp = false;
 
 		if (timestamp.isEmpty()) {
-			query.append(_FINDER_COLUMN_TIMESTAMP_TIMESTAMP_3);
+			sb.append(_FINDER_COLUMN_TIMESTAMP_TIMESTAMP_3);
 		}
 		else {
 			bindTimestamp = true;
 
-			query.append(_FINDER_COLUMN_TIMESTAMP_TIMESTAMP_2);
+			sb.append(_FINDER_COLUMN_TIMESTAMP_TIMESTAMP_2);
 		}
 
 		if (orderByComparator != null) {
@@ -3990,83 +3907,83 @@ public class SMSPersistenceImpl
 				orderByComparator.getOrderByConditionFields();
 
 			if (orderByConditionFields.length > 0) {
-				query.append(WHERE_AND);
+				sb.append(WHERE_AND);
 			}
 
 			for (int i = 0; i < orderByConditionFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByConditionFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByConditionFields[i]);
 
 				if ((i + 1) < orderByConditionFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+						sb.append(WHERE_GREATER_THAN_HAS_NEXT);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+						sb.append(WHERE_LESSER_THAN_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN);
+						sb.append(WHERE_GREATER_THAN);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN);
+						sb.append(WHERE_LESSER_THAN);
 					}
 				}
 			}
 
-			query.append(ORDER_BY_CLAUSE);
+			sb.append(ORDER_BY_CLAUSE);
 
 			String[] orderByFields = orderByComparator.getOrderByFields();
 
 			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByFields[i]);
 
 				if ((i + 1) < orderByFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC_HAS_NEXT);
+						sb.append(ORDER_BY_ASC_HAS_NEXT);
 					}
 					else {
-						query.append(ORDER_BY_DESC_HAS_NEXT);
+						sb.append(ORDER_BY_DESC_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC);
+						sb.append(ORDER_BY_ASC);
 					}
 					else {
-						query.append(ORDER_BY_DESC);
+						sb.append(ORDER_BY_DESC);
 					}
 				}
 			}
 		}
 		else {
-			query.append(SMSModelImpl.ORDER_BY_JPQL);
+			sb.append(SMSModelImpl.ORDER_BY_JPQL);
 		}
 
-		String sql = query.toString();
+		String sql = sb.toString();
 
-		Query q = session.createQuery(sql);
+		Query query = session.createQuery(sql);
 
-		q.setFirstResult(0);
-		q.setMaxResults(2);
+		query.setFirstResult(0);
+		query.setMaxResults(2);
 
-		QueryPos qPos = QueryPos.getInstance(q);
+		QueryPos queryPos = QueryPos.getInstance(query);
 
 		if (bindTimestamp) {
-			qPos.add(timestamp);
+			queryPos.add(timestamp);
 		}
 
 		if (orderByComparator != null) {
 			for (Object orderByConditionValue :
 					orderByComparator.getOrderByConditionValues(sms)) {
 
-				qPos.add(orderByConditionValue);
+				queryPos.add(orderByConditionValue);
 			}
 		}
 
-		List<SMS> list = q.list();
+		List<SMS> list = query.list();
 
 		if (list.size() == 2) {
 			return list.get(1);
@@ -4108,44 +4025,42 @@ public class SMSPersistenceImpl
 		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
-			StringBundler query = new StringBundler(2);
+			StringBundler sb = new StringBundler(2);
 
-			query.append(_SQL_COUNT_SMS_WHERE);
+			sb.append(_SQL_COUNT_SMS_WHERE);
 
 			boolean bindTimestamp = false;
 
 			if (timestamp.isEmpty()) {
-				query.append(_FINDER_COLUMN_TIMESTAMP_TIMESTAMP_3);
+				sb.append(_FINDER_COLUMN_TIMESTAMP_TIMESTAMP_3);
 			}
 			else {
 				bindTimestamp = true;
 
-				query.append(_FINDER_COLUMN_TIMESTAMP_TIMESTAMP_2);
+				sb.append(_FINDER_COLUMN_TIMESTAMP_TIMESTAMP_2);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindTimestamp) {
-					qPos.add(timestamp);
+					queryPos.add(timestamp);
 				}
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
 				finderCache.putResult(finderPath, finderArgs, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -4162,25 +4077,18 @@ public class SMSPersistenceImpl
 		"(sms.timestamp IS NULL OR sms.timestamp = '')";
 
 	public SMSPersistenceImpl() {
-		setModelClass(SMS.class);
-
 		Map<String, String> dbColumnNames = new HashMap<String, String>();
 
 		dbColumnNames.put("id", "id_");
 
-		try {
-			Field field = BasePersistenceImpl.class.getDeclaredField(
-				"_dbColumnNames");
+		setDBColumnNames(dbColumnNames);
 
-			field.setAccessible(true);
+		setModelClass(SMS.class);
 
-			field.set(this, dbColumnNames);
-		}
-		catch (Exception e) {
-			if (_log.isDebugEnabled()) {
-				_log.debug(e, e);
-			}
-		}
+		setModelImplClass(SMSImpl.class);
+		setModelPKClass(long.class);
+
+		setTable(SMSTable.INSTANCE);
 	}
 
 	/**
@@ -4190,12 +4098,10 @@ public class SMSPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(SMS sms) {
-		entityCache.putResult(
-			SMSModelImpl.ENTITY_CACHE_ENABLED, SMSImpl.class,
-			sms.getPrimaryKey(), sms);
-
-		sms.resetOriginalValues();
+		entityCache.putResult(SMSImpl.class, sms.getPrimaryKey(), sms);
 	}
+
+	private int _valueObjectFinderCacheListThreshold;
 
 	/**
 	 * Caches the smses in the entity cache if it is enabled.
@@ -4204,15 +4110,18 @@ public class SMSPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(List<SMS> smses) {
+		if ((_valueObjectFinderCacheListThreshold == 0) ||
+			((_valueObjectFinderCacheListThreshold > 0) &&
+			 (smses.size() > _valueObjectFinderCacheListThreshold))) {
+
+			return;
+		}
+
 		for (SMS sms : smses) {
-			if (entityCache.getResult(
-					SMSModelImpl.ENTITY_CACHE_ENABLED, SMSImpl.class,
-					sms.getPrimaryKey()) == null) {
+			if (entityCache.getResult(SMSImpl.class, sms.getPrimaryKey()) ==
+					null) {
 
 				cacheResult(sms);
-			}
-			else {
-				sms.resetOriginalValues();
 			}
 		}
 	}
@@ -4228,9 +4137,7 @@ public class SMSPersistenceImpl
 	public void clearCache() {
 		entityCache.clearCache(SMSImpl.class);
 
-		finderCache.clearCache(FINDER_CLASS_NAME_ENTITY);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		finderCache.clearCache(SMSImpl.class);
 	}
 
 	/**
@@ -4242,23 +4149,22 @@ public class SMSPersistenceImpl
 	 */
 	@Override
 	public void clearCache(SMS sms) {
-		entityCache.removeResult(
-			SMSModelImpl.ENTITY_CACHE_ENABLED, SMSImpl.class,
-			sms.getPrimaryKey());
-
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		entityCache.removeResult(SMSImpl.class, sms);
 	}
 
 	@Override
 	public void clearCache(List<SMS> smses) {
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
-
 		for (SMS sms : smses) {
-			entityCache.removeResult(
-				SMSModelImpl.ENTITY_CACHE_ENABLED, SMSImpl.class,
-				sms.getPrimaryKey());
+			entityCache.removeResult(SMSImpl.class, sms);
+		}
+	}
+
+	@Override
+	public void clearCache(Set<Serializable> primaryKeys) {
+		finderCache.clearCache(SMSImpl.class);
+
+		for (Serializable primaryKey : primaryKeys) {
+			entityCache.removeResult(SMSImpl.class, primaryKey);
 		}
 	}
 
@@ -4317,11 +4223,11 @@ public class SMSPersistenceImpl
 
 			return remove(sms);
 		}
-		catch (NoSuchSMSException nsee) {
-			throw nsee;
+		catch (NoSuchSMSException noSuchEntityException) {
+			throw noSuchEntityException;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -4343,8 +4249,8 @@ public class SMSPersistenceImpl
 				session.delete(sms);
 			}
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -4384,233 +4290,25 @@ public class SMSPersistenceImpl
 		try {
 			session = openSession();
 
-			if (sms.isNew()) {
+			if (isNew) {
 				session.save(sms);
-
-				sms.setNew(false);
 			}
 			else {
 				sms = (SMS)session.merge(sms);
 			}
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
 		}
 
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		entityCache.putResult(SMSImpl.class, smsModelImpl, false, true);
 
-		if (!SMSModelImpl.COLUMN_BITMASK_ENABLED) {
-			finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		if (isNew) {
+			sms.setNew(false);
 		}
-		else if (isNew) {
-			Object[] args = new Object[] {smsModelImpl.getDestinatario()};
-
-			finderCache.removeResult(_finderPathCountByDestinatario, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByDestinatario, args);
-
-			args = new Object[] {smsModelImpl.getNumero()};
-
-			finderCache.removeResult(_finderPathCountByNumero, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByNumero, args);
-
-			args = new Object[] {
-				smsModelImpl.getNumero(), smsModelImpl.getDataAck()
-			};
-
-			finderCache.removeResult(_finderPathCountByNumeroDataAck, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByNumeroDataAck, args);
-
-			args = new Object[] {
-				smsModelImpl.getTipo(), smsModelImpl.getSottotipo(),
-				smsModelImpl.getParam()
-			};
-
-			finderCache.removeResult(_finderPathCountByInvio, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByInvio, args);
-
-			args = new Object[] {
-				smsModelImpl.getTipo(), smsModelImpl.getSottotipo()
-			};
-
-			finderCache.removeResult(_finderPathCountByTipoSottotipo, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByTipoSottotipo, args);
-
-			args = new Object[] {
-				smsModelImpl.getTipo(), smsModelImpl.getParam()
-			};
-
-			finderCache.removeResult(_finderPathCountByTipoParam, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByTipoParam, args);
-
-			args = new Object[] {smsModelImpl.getTimestamp()};
-
-			finderCache.removeResult(_finderPathCountByTimestamp, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByTimestamp, args);
-
-			finderCache.removeResult(_finderPathCountAll, FINDER_ARGS_EMPTY);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindAll, FINDER_ARGS_EMPTY);
-		}
-		else {
-			if ((smsModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByDestinatario.
-					 getColumnBitmask()) != 0) {
-
-				Object[] args = new Object[] {
-					smsModelImpl.getOriginalDestinatario()
-				};
-
-				finderCache.removeResult(_finderPathCountByDestinatario, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByDestinatario, args);
-
-				args = new Object[] {smsModelImpl.getDestinatario()};
-
-				finderCache.removeResult(_finderPathCountByDestinatario, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByDestinatario, args);
-			}
-
-			if ((smsModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByNumero.getColumnBitmask()) !=
-					 0) {
-
-				Object[] args = new Object[] {smsModelImpl.getOriginalNumero()};
-
-				finderCache.removeResult(_finderPathCountByNumero, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByNumero, args);
-
-				args = new Object[] {smsModelImpl.getNumero()};
-
-				finderCache.removeResult(_finderPathCountByNumero, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByNumero, args);
-			}
-
-			if ((smsModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByNumeroDataAck.
-					 getColumnBitmask()) != 0) {
-
-				Object[] args = new Object[] {
-					smsModelImpl.getOriginalNumero(),
-					smsModelImpl.getOriginalDataAck()
-				};
-
-				finderCache.removeResult(_finderPathCountByNumeroDataAck, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByNumeroDataAck, args);
-
-				args = new Object[] {
-					smsModelImpl.getNumero(), smsModelImpl.getDataAck()
-				};
-
-				finderCache.removeResult(_finderPathCountByNumeroDataAck, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByNumeroDataAck, args);
-			}
-
-			if ((smsModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByInvio.getColumnBitmask()) !=
-					 0) {
-
-				Object[] args = new Object[] {
-					smsModelImpl.getOriginalTipo(),
-					smsModelImpl.getOriginalSottotipo(),
-					smsModelImpl.getOriginalParam()
-				};
-
-				finderCache.removeResult(_finderPathCountByInvio, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByInvio, args);
-
-				args = new Object[] {
-					smsModelImpl.getTipo(), smsModelImpl.getSottotipo(),
-					smsModelImpl.getParam()
-				};
-
-				finderCache.removeResult(_finderPathCountByInvio, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByInvio, args);
-			}
-
-			if ((smsModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByTipoSottotipo.
-					 getColumnBitmask()) != 0) {
-
-				Object[] args = new Object[] {
-					smsModelImpl.getOriginalTipo(),
-					smsModelImpl.getOriginalSottotipo()
-				};
-
-				finderCache.removeResult(_finderPathCountByTipoSottotipo, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByTipoSottotipo, args);
-
-				args = new Object[] {
-					smsModelImpl.getTipo(), smsModelImpl.getSottotipo()
-				};
-
-				finderCache.removeResult(_finderPathCountByTipoSottotipo, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByTipoSottotipo, args);
-			}
-
-			if ((smsModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByTipoParam.
-					 getColumnBitmask()) != 0) {
-
-				Object[] args = new Object[] {
-					smsModelImpl.getOriginalTipo(),
-					smsModelImpl.getOriginalParam()
-				};
-
-				finderCache.removeResult(_finderPathCountByTipoParam, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByTipoParam, args);
-
-				args = new Object[] {
-					smsModelImpl.getTipo(), smsModelImpl.getParam()
-				};
-
-				finderCache.removeResult(_finderPathCountByTipoParam, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByTipoParam, args);
-			}
-
-			if ((smsModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByTimestamp.
-					 getColumnBitmask()) != 0) {
-
-				Object[] args = new Object[] {
-					smsModelImpl.getOriginalTimestamp()
-				};
-
-				finderCache.removeResult(_finderPathCountByTimestamp, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByTimestamp, args);
-
-				args = new Object[] {smsModelImpl.getTimestamp()};
-
-				finderCache.removeResult(_finderPathCountByTimestamp, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByTimestamp, args);
-			}
-		}
-
-		entityCache.putResult(
-			SMSModelImpl.ENTITY_CACHE_ENABLED, SMSImpl.class,
-			sms.getPrimaryKey(), sms, false);
 
 		sms.resetOriginalValues();
 
@@ -4657,157 +4355,12 @@ public class SMSPersistenceImpl
 	/**
 	 * Returns the sms with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the sms
-	 * @return the sms, or <code>null</code> if a sms with the primary key could not be found
-	 */
-	@Override
-	public SMS fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(
-			SMSModelImpl.ENTITY_CACHE_ENABLED, SMSImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		SMS sms = (SMS)serializable;
-
-		if (sms == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				sms = (SMS)session.get(SMSImpl.class, primaryKey);
-
-				if (sms != null) {
-					cacheResult(sms);
-				}
-				else {
-					entityCache.putResult(
-						SMSModelImpl.ENTITY_CACHE_ENABLED, SMSImpl.class,
-						primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(
-					SMSModelImpl.ENTITY_CACHE_ENABLED, SMSImpl.class,
-					primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return sms;
-	}
-
-	/**
-	 * Returns the sms with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param id the primary key of the sms
 	 * @return the sms, or <code>null</code> if a sms with the primary key could not be found
 	 */
 	@Override
 	public SMS fetchByPrimaryKey(long id) {
 		return fetchByPrimaryKey((Serializable)id);
-	}
-
-	@Override
-	public Map<Serializable, SMS> fetchByPrimaryKeys(
-		Set<Serializable> primaryKeys) {
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, SMS> map = new HashMap<Serializable, SMS>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			SMS sms = fetchByPrimaryKey(primaryKey);
-
-			if (sms != null) {
-				map.put(primaryKey, sms);
-			}
-
-			return map;
-		}
-
-		Set<Serializable> uncachedPrimaryKeys = null;
-
-		for (Serializable primaryKey : primaryKeys) {
-			Serializable serializable = entityCache.getResult(
-				SMSModelImpl.ENTITY_CACHE_ENABLED, SMSImpl.class, primaryKey);
-
-			if (serializable != nullModel) {
-				if (serializable == null) {
-					if (uncachedPrimaryKeys == null) {
-						uncachedPrimaryKeys = new HashSet<Serializable>();
-					}
-
-					uncachedPrimaryKeys.add(primaryKey);
-				}
-				else {
-					map.put(primaryKey, (SMS)serializable);
-				}
-			}
-		}
-
-		if (uncachedPrimaryKeys == null) {
-			return map;
-		}
-
-		StringBundler query = new StringBundler(
-			uncachedPrimaryKeys.size() * 2 + 1);
-
-		query.append(_SQL_SELECT_SMS_WHERE_PKS_IN);
-
-		for (Serializable primaryKey : uncachedPrimaryKeys) {
-			query.append((long)primaryKey);
-
-			query.append(",");
-		}
-
-		query.setIndex(query.index() - 1);
-
-		query.append(")");
-
-		String sql = query.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query q = session.createQuery(sql);
-
-			for (SMS sms : (List<SMS>)q.list()) {
-				map.put(sms.getPrimaryKeyObj(), sms);
-
-				cacheResult(sms);
-
-				uncachedPrimaryKeys.remove(sms.getPrimaryKeyObj());
-			}
-
-			for (Serializable primaryKey : uncachedPrimaryKeys) {
-				entityCache.putResult(
-					SMSModelImpl.ENTITY_CACHE_ENABLED, SMSImpl.class,
-					primaryKey, nullModel);
-			}
-		}
-		catch (Exception e) {
-			throw processException(e);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**
@@ -4824,7 +4377,7 @@ public class SMSPersistenceImpl
 	 * Returns a range of all the smses.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>SMSModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>SMSModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of smses
@@ -4840,7 +4393,7 @@ public class SMSPersistenceImpl
 	 * Returns an ordered range of all the smses.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>SMSModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>SMSModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of smses
@@ -4859,64 +4412,62 @@ public class SMSPersistenceImpl
 	 * Returns an ordered range of all the smses.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>SMSModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>SMSModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of smses
 	 * @param end the upper bound of the range of smses (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of smses
 	 */
 	@Override
 	public List<SMS> findAll(
 		int start, int end, OrderByComparator<SMS> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindAll;
-			finderArgs = FINDER_ARGS_EMPTY;
+			if (useFinderCache) {
+				finderPath = _finderPathWithoutPaginationFindAll;
+				finderArgs = FINDER_ARGS_EMPTY;
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
 			finderArgs = new Object[] {start, end, orderByComparator};
 		}
 
 		List<SMS> list = null;
 
-		if (retrieveFromCache) {
+		if (useFinderCache) {
 			list = (List<SMS>)finderCache.getResult(
 				finderPath, finderArgs, this);
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 			String sql = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					2 + (orderByComparator.getOrderByFields().length * 2));
 
-				query.append(_SQL_SELECT_SMS);
+				sb.append(_SQL_SELECT_SMS);
 
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 
-				sql = query.toString();
+				sql = sb.toString();
 			}
 			else {
 				sql = _SQL_SELECT_SMS;
 
-				if (pagination) {
-					sql = sql.concat(SMSModelImpl.ORDER_BY_JPQL);
-				}
+				sql = sql.concat(SMSModelImpl.ORDER_BY_JPQL);
 			}
 
 			Session session = null;
@@ -4924,29 +4475,19 @@ public class SMSPersistenceImpl
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				if (!pagination) {
-					list = (List<SMS>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<SMS>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<SMS>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					finderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -4983,18 +4524,15 @@ public class SMSPersistenceImpl
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(_SQL_COUNT_SMS);
+				Query query = session.createQuery(_SQL_COUNT_SMS);
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
 				finderCache.putResult(
 					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -5010,6 +4548,21 @@ public class SMSPersistenceImpl
 	}
 
 	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
+	}
+
+	@Override
+	protected String getPKDBName() {
+		return "id_";
+	}
+
+	@Override
+	protected String getSelectSQL() {
+		return _SQL_SELECT_SMS;
+	}
+
+	@Override
 	protected Map<String, Integer> getTableColumnsMap() {
 		return SMSModelImpl.TABLE_COLUMNS_MAP;
 	}
@@ -5017,208 +4570,202 @@ public class SMSPersistenceImpl
 	/**
 	 * Initializes the sms persistence.
 	 */
-	public void afterPropertiesSet() {
+	@Activate
+	public void activate() {
+		_valueObjectFinderCacheListThreshold = GetterUtil.getInteger(
+			PropsUtil.get(PropsKeys.VALUE_OBJECT_FINDER_CACHE_LIST_THRESHOLD));
+
 		_finderPathWithPaginationFindAll = new FinderPath(
-			SMSModelImpl.ENTITY_CACHE_ENABLED,
-			SMSModelImpl.FINDER_CACHE_ENABLED, SMSImpl.class,
-			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findAll", new String[0]);
+			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findAll", new String[0],
+			new String[0], true);
 
 		_finderPathWithoutPaginationFindAll = new FinderPath(
-			SMSModelImpl.ENTITY_CACHE_ENABLED,
-			SMSModelImpl.FINDER_CACHE_ENABLED, SMSImpl.class,
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findAll",
-			new String[0]);
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findAll", new String[0],
+			new String[0], true);
 
 		_finderPathCountAll = new FinderPath(
-			SMSModelImpl.ENTITY_CACHE_ENABLED,
-			SMSModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countAll",
-			new String[0]);
+			new String[0], new String[0], false);
 
 		_finderPathWithPaginationFindByDestinatario = new FinderPath(
-			SMSModelImpl.ENTITY_CACHE_ENABLED,
-			SMSModelImpl.FINDER_CACHE_ENABLED, SMSImpl.class,
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByDestinatario",
 			new String[] {
 				Long.class.getName(), Integer.class.getName(),
 				Integer.class.getName(), OrderByComparator.class.getName()
-			});
+			},
+			new String[] {"destinatario"}, true);
 
 		_finderPathWithoutPaginationFindByDestinatario = new FinderPath(
-			SMSModelImpl.ENTITY_CACHE_ENABLED,
-			SMSModelImpl.FINDER_CACHE_ENABLED, SMSImpl.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByDestinatario",
-			new String[] {Long.class.getName()},
-			SMSModelImpl.DESTINATARIO_COLUMN_BITMASK);
+			new String[] {Long.class.getName()}, new String[] {"destinatario"},
+			true);
 
 		_finderPathCountByDestinatario = new FinderPath(
-			SMSModelImpl.ENTITY_CACHE_ENABLED,
-			SMSModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByDestinatario",
-			new String[] {Long.class.getName()});
+			new String[] {Long.class.getName()}, new String[] {"destinatario"},
+			false);
 
 		_finderPathWithPaginationFindByNumero = new FinderPath(
-			SMSModelImpl.ENTITY_CACHE_ENABLED,
-			SMSModelImpl.FINDER_CACHE_ENABLED, SMSImpl.class,
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByNumero",
 			new String[] {
 				String.class.getName(), Integer.class.getName(),
 				Integer.class.getName(), OrderByComparator.class.getName()
-			});
+			},
+			new String[] {"numero"}, true);
 
 		_finderPathWithoutPaginationFindByNumero = new FinderPath(
-			SMSModelImpl.ENTITY_CACHE_ENABLED,
-			SMSModelImpl.FINDER_CACHE_ENABLED, SMSImpl.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByNumero",
-			new String[] {String.class.getName()},
-			SMSModelImpl.NUMERO_COLUMN_BITMASK);
+			new String[] {String.class.getName()}, new String[] {"numero"},
+			true);
 
 		_finderPathCountByNumero = new FinderPath(
-			SMSModelImpl.ENTITY_CACHE_ENABLED,
-			SMSModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByNumero",
-			new String[] {String.class.getName()});
+			new String[] {String.class.getName()}, new String[] {"numero"},
+			false);
 
 		_finderPathWithPaginationFindByNumeroDataAck = new FinderPath(
-			SMSModelImpl.ENTITY_CACHE_ENABLED,
-			SMSModelImpl.FINDER_CACHE_ENABLED, SMSImpl.class,
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByNumeroDataAck",
 			new String[] {
 				String.class.getName(), Date.class.getName(),
 				Integer.class.getName(), Integer.class.getName(),
 				OrderByComparator.class.getName()
-			});
+			},
+			new String[] {"numero", "dataAck"}, true);
 
 		_finderPathWithoutPaginationFindByNumeroDataAck = new FinderPath(
-			SMSModelImpl.ENTITY_CACHE_ENABLED,
-			SMSModelImpl.FINDER_CACHE_ENABLED, SMSImpl.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByNumeroDataAck",
 			new String[] {String.class.getName(), Date.class.getName()},
-			SMSModelImpl.NUMERO_COLUMN_BITMASK |
-			SMSModelImpl.DATAACK_COLUMN_BITMASK);
+			new String[] {"numero", "dataAck"}, true);
 
 		_finderPathCountByNumeroDataAck = new FinderPath(
-			SMSModelImpl.ENTITY_CACHE_ENABLED,
-			SMSModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByNumeroDataAck",
-			new String[] {String.class.getName(), Date.class.getName()});
+			new String[] {String.class.getName(), Date.class.getName()},
+			new String[] {"numero", "dataAck"}, false);
 
 		_finderPathWithPaginationFindByInvio = new FinderPath(
-			SMSModelImpl.ENTITY_CACHE_ENABLED,
-			SMSModelImpl.FINDER_CACHE_ENABLED, SMSImpl.class,
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByInvio",
 			new String[] {
 				String.class.getName(), String.class.getName(),
 				Long.class.getName(), Integer.class.getName(),
 				Integer.class.getName(), OrderByComparator.class.getName()
-			});
+			},
+			new String[] {"tipo", "sottotipo", "param"}, true);
 
 		_finderPathWithoutPaginationFindByInvio = new FinderPath(
-			SMSModelImpl.ENTITY_CACHE_ENABLED,
-			SMSModelImpl.FINDER_CACHE_ENABLED, SMSImpl.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByInvio",
 			new String[] {
 				String.class.getName(), String.class.getName(),
 				Long.class.getName()
 			},
-			SMSModelImpl.TIPO_COLUMN_BITMASK |
-			SMSModelImpl.SOTTOTIPO_COLUMN_BITMASK |
-			SMSModelImpl.PARAM_COLUMN_BITMASK);
+			new String[] {"tipo", "sottotipo", "param"}, true);
 
 		_finderPathCountByInvio = new FinderPath(
-			SMSModelImpl.ENTITY_CACHE_ENABLED,
-			SMSModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByInvio",
 			new String[] {
 				String.class.getName(), String.class.getName(),
 				Long.class.getName()
-			});
+			},
+			new String[] {"tipo", "sottotipo", "param"}, false);
 
 		_finderPathWithPaginationFindByTipoSottotipo = new FinderPath(
-			SMSModelImpl.ENTITY_CACHE_ENABLED,
-			SMSModelImpl.FINDER_CACHE_ENABLED, SMSImpl.class,
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByTipoSottotipo",
 			new String[] {
 				String.class.getName(), String.class.getName(),
 				Integer.class.getName(), Integer.class.getName(),
 				OrderByComparator.class.getName()
-			});
+			},
+			new String[] {"tipo", "sottotipo"}, true);
 
 		_finderPathWithoutPaginationFindByTipoSottotipo = new FinderPath(
-			SMSModelImpl.ENTITY_CACHE_ENABLED,
-			SMSModelImpl.FINDER_CACHE_ENABLED, SMSImpl.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByTipoSottotipo",
 			new String[] {String.class.getName(), String.class.getName()},
-			SMSModelImpl.TIPO_COLUMN_BITMASK |
-			SMSModelImpl.SOTTOTIPO_COLUMN_BITMASK);
+			new String[] {"tipo", "sottotipo"}, true);
 
 		_finderPathCountByTipoSottotipo = new FinderPath(
-			SMSModelImpl.ENTITY_CACHE_ENABLED,
-			SMSModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByTipoSottotipo",
-			new String[] {String.class.getName(), String.class.getName()});
+			new String[] {String.class.getName(), String.class.getName()},
+			new String[] {"tipo", "sottotipo"}, false);
 
 		_finderPathWithPaginationFindByTipoParam = new FinderPath(
-			SMSModelImpl.ENTITY_CACHE_ENABLED,
-			SMSModelImpl.FINDER_CACHE_ENABLED, SMSImpl.class,
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByTipoParam",
 			new String[] {
 				String.class.getName(), Long.class.getName(),
 				Integer.class.getName(), Integer.class.getName(),
 				OrderByComparator.class.getName()
-			});
+			},
+			new String[] {"tipo", "param"}, true);
 
 		_finderPathWithoutPaginationFindByTipoParam = new FinderPath(
-			SMSModelImpl.ENTITY_CACHE_ENABLED,
-			SMSModelImpl.FINDER_CACHE_ENABLED, SMSImpl.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByTipoParam",
 			new String[] {String.class.getName(), Long.class.getName()},
-			SMSModelImpl.TIPO_COLUMN_BITMASK |
-			SMSModelImpl.PARAM_COLUMN_BITMASK);
+			new String[] {"tipo", "param"}, true);
 
 		_finderPathCountByTipoParam = new FinderPath(
-			SMSModelImpl.ENTITY_CACHE_ENABLED,
-			SMSModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByTipoParam",
-			new String[] {String.class.getName(), Long.class.getName()});
+			new String[] {String.class.getName(), Long.class.getName()},
+			new String[] {"tipo", "param"}, false);
 
 		_finderPathWithPaginationFindByTimestamp = new FinderPath(
-			SMSModelImpl.ENTITY_CACHE_ENABLED,
-			SMSModelImpl.FINDER_CACHE_ENABLED, SMSImpl.class,
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByTimestamp",
 			new String[] {
 				String.class.getName(), Integer.class.getName(),
 				Integer.class.getName(), OrderByComparator.class.getName()
-			});
+			},
+			new String[] {"timestamp"}, true);
 
 		_finderPathWithoutPaginationFindByTimestamp = new FinderPath(
-			SMSModelImpl.ENTITY_CACHE_ENABLED,
-			SMSModelImpl.FINDER_CACHE_ENABLED, SMSImpl.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByTimestamp",
-			new String[] {String.class.getName()},
-			SMSModelImpl.TIMESTAMP_COLUMN_BITMASK);
+			new String[] {String.class.getName()}, new String[] {"timestamp"},
+			true);
 
 		_finderPathCountByTimestamp = new FinderPath(
-			SMSModelImpl.ENTITY_CACHE_ENABLED,
-			SMSModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByTimestamp",
-			new String[] {String.class.getName()});
+			new String[] {String.class.getName()}, new String[] {"timestamp"},
+			false);
+
+		SMSUtil.setPersistence(this);
 	}
 
-	public void destroy() {
+	@Deactivate
+	public void deactivate() {
+		SMSUtil.setPersistence(null);
+
 		entityCache.removeCache(SMSImpl.class.getName());
-		finderCache.removeCache(FINDER_CLASS_NAME_ENTITY);
-		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 	}
 
-	@ServiceReference(type = EntityCache.class)
+	@Override
+	@Reference(
+		target = ALLERTERPersistenceConstants.SERVICE_CONFIGURATION_FILTER,
+		unbind = "-"
+	)
+	public void setConfiguration(Configuration configuration) {
+	}
+
+	@Override
+	@Reference(
+		target = ALLERTERPersistenceConstants.ORIGIN_BUNDLE_SYMBOLIC_NAME_FILTER,
+		unbind = "-"
+	)
+	public void setDataSource(DataSource dataSource) {
+		super.setDataSource(dataSource);
+	}
+
+	@Override
+	@Reference(
+		target = ALLERTERPersistenceConstants.ORIGIN_BUNDLE_SYMBOLIC_NAME_FILTER,
+		unbind = "-"
+	)
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		super.setSessionFactory(sessionFactory);
+	}
+
+	@Reference
 	protected EntityCache entityCache;
 
-	@ServiceReference(type = FinderCache.class)
+	@Reference
 	protected FinderCache finderCache;
 
-	private Long _getTime(Date date) {
+	private static Long _getTime(Date date) {
 		if (date == null) {
 			return null;
 		}
@@ -5227,9 +4774,6 @@ public class SMSPersistenceImpl
 	}
 
 	private static final String _SQL_SELECT_SMS = "SELECT sms FROM SMS sms";
-
-	private static final String _SQL_SELECT_SMS_WHERE_PKS_IN =
-		"SELECT sms FROM SMS sms WHERE id_ IN (";
 
 	private static final String _SQL_SELECT_SMS_WHERE =
 		"SELECT sms FROM SMS sms WHERE ";
@@ -5253,5 +4797,10 @@ public class SMSPersistenceImpl
 
 	private static final Set<String> _badColumnNames = SetUtil.fromArray(
 		new String[] {"id"});
+
+	@Override
+	protected FinderCache getFinderCache() {
+		return finderCache;
+	}
 
 }

@@ -14,7 +14,7 @@ public class DettaglioHelper {
 		
 		end = 10000;
 		int num = end - start;
-		String q = "select * from (select * from sms_dettaglio_vw where id='" + displayTerms.getId() + "' offset 0) x where 1=1 ";
+		String q = "select * from (select * from sms_dettaglio2_vw where id='" + displayTerms.getId() + "' offset 0) x where 1=1 ";
 		
 		if( Validator.isNotNull( displayTerms.getFiltro())) {
 			

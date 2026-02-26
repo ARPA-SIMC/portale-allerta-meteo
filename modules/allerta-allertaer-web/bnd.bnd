@@ -1,5 +1,7 @@
 Bundle-Name: allerta-allertaer-web
 Bundle-SymbolicName: it.eng.allerta.allertaer.portlet
 Bundle-Version: 1.0.0
--metatype: *
-
+Export-Package: it.eng.allerta.allertaer.portlet.constants
+Provide-Capability:\
+	liferay.language.resources;\
+		resource.bundle.base.name="content.Language"

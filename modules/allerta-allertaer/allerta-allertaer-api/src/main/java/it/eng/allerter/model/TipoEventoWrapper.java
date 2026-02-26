@@ -1,32 +1,17 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerter.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.exportimport.kernel.lar.StagedModelType;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -37,21 +22,12 @@ import java.util.Objects;
  * @see TipoEvento
  * @generated
  */
-@ProviderType
-public class TipoEventoWrapper implements TipoEvento, ModelWrapper<TipoEvento> {
+public class TipoEventoWrapper
+	extends BaseModelWrapper<TipoEvento>
+	implements ModelWrapper<TipoEvento>, TipoEvento {
 
 	public TipoEventoWrapper(TipoEvento tipoEvento) {
-		_tipoEvento = tipoEvento;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return TipoEvento.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return TipoEvento.class.getName();
+		super(tipoEvento);
 	}
 
 	@Override
@@ -178,13 +154,8 @@ public class TipoEventoWrapper implements TipoEvento, ModelWrapper<TipoEvento> {
 	}
 
 	@Override
-	public Object clone() {
-		return new TipoEventoWrapper((TipoEvento)_tipoEvento.clone());
-	}
-
-	@Override
-	public int compareTo(it.eng.allerter.model.TipoEvento tipoEvento) {
-		return _tipoEvento.compareTo(tipoEvento);
+	public TipoEvento cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -194,7 +165,7 @@ public class TipoEventoWrapper implements TipoEvento, ModelWrapper<TipoEvento> {
 	 */
 	@Override
 	public long getCompanyId() {
-		return _tipoEvento.getCompanyId();
+		return model.getCompanyId();
 	}
 
 	/**
@@ -204,7 +175,7 @@ public class TipoEventoWrapper implements TipoEvento, ModelWrapper<TipoEvento> {
 	 */
 	@Override
 	public boolean getCostiero() {
-		return _tipoEvento.getCostiero();
+		return model.getCostiero();
 	}
 
 	/**
@@ -214,7 +185,7 @@ public class TipoEventoWrapper implements TipoEvento, ModelWrapper<TipoEvento> {
 	 */
 	@Override
 	public Date getCreateDate() {
-		return _tipoEvento.getCreateDate();
+		return model.getCreateDate();
 	}
 
 	/**
@@ -224,7 +195,7 @@ public class TipoEventoWrapper implements TipoEvento, ModelWrapper<TipoEvento> {
 	 */
 	@Override
 	public Date getDataFine() {
-		return _tipoEvento.getDataFine();
+		return model.getDataFine();
 	}
 
 	/**
@@ -234,7 +205,7 @@ public class TipoEventoWrapper implements TipoEvento, ModelWrapper<TipoEvento> {
 	 */
 	@Override
 	public Date getDataInizio() {
-		return _tipoEvento.getDataInizio();
+		return model.getDataInizio();
 	}
 
 	/**
@@ -244,12 +215,7 @@ public class TipoEventoWrapper implements TipoEvento, ModelWrapper<TipoEvento> {
 	 */
 	@Override
 	public long getEventoId() {
-		return _tipoEvento.getEventoId();
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _tipoEvento.getExpandoBridge();
+		return model.getEventoId();
 	}
 
 	/**
@@ -259,7 +225,7 @@ public class TipoEventoWrapper implements TipoEvento, ModelWrapper<TipoEvento> {
 	 */
 	@Override
 	public long getGroupId() {
-		return _tipoEvento.getGroupId();
+		return model.getGroupId();
 	}
 
 	/**
@@ -269,7 +235,7 @@ public class TipoEventoWrapper implements TipoEvento, ModelWrapper<TipoEvento> {
 	 */
 	@Override
 	public int getIndice() {
-		return _tipoEvento.getIndice();
+		return model.getIndice();
 	}
 
 	/**
@@ -279,7 +245,7 @@ public class TipoEventoWrapper implements TipoEvento, ModelWrapper<TipoEvento> {
 	 */
 	@Override
 	public Date getModifiedDate() {
-		return _tipoEvento.getModifiedDate();
+		return model.getModifiedDate();
 	}
 
 	/**
@@ -289,7 +255,7 @@ public class TipoEventoWrapper implements TipoEvento, ModelWrapper<TipoEvento> {
 	 */
 	@Override
 	public String getNome() {
-		return _tipoEvento.getNome();
+		return model.getNome();
 	}
 
 	/**
@@ -299,7 +265,7 @@ public class TipoEventoWrapper implements TipoEvento, ModelWrapper<TipoEvento> {
 	 */
 	@Override
 	public long getParentId() {
-		return _tipoEvento.getParentId();
+		return model.getParentId();
 	}
 
 	/**
@@ -309,12 +275,7 @@ public class TipoEventoWrapper implements TipoEvento, ModelWrapper<TipoEvento> {
 	 */
 	@Override
 	public long getPrimaryKey() {
-		return _tipoEvento.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _tipoEvento.getPrimaryKeyObj();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -324,7 +285,7 @@ public class TipoEventoWrapper implements TipoEvento, ModelWrapper<TipoEvento> {
 	 */
 	@Override
 	public boolean getSplit() {
-		return _tipoEvento.getSplit();
+		return model.getSplit();
 	}
 
 	/**
@@ -334,7 +295,7 @@ public class TipoEventoWrapper implements TipoEvento, ModelWrapper<TipoEvento> {
 	 */
 	@Override
 	public int getTabella() {
-		return _tipoEvento.getTabella();
+		return model.getTabella();
 	}
 
 	/**
@@ -344,7 +305,7 @@ public class TipoEventoWrapper implements TipoEvento, ModelWrapper<TipoEvento> {
 	 */
 	@Override
 	public long getUserId() {
-		return _tipoEvento.getUserId();
+		return model.getUserId();
 	}
 
 	/**
@@ -354,7 +315,7 @@ public class TipoEventoWrapper implements TipoEvento, ModelWrapper<TipoEvento> {
 	 */
 	@Override
 	public String getUserName() {
-		return _tipoEvento.getUserName();
+		return model.getUserName();
 	}
 
 	/**
@@ -364,7 +325,7 @@ public class TipoEventoWrapper implements TipoEvento, ModelWrapper<TipoEvento> {
 	 */
 	@Override
 	public String getUserUuid() {
-		return _tipoEvento.getUserUuid();
+		return model.getUserUuid();
 	}
 
 	/**
@@ -374,17 +335,7 @@ public class TipoEventoWrapper implements TipoEvento, ModelWrapper<TipoEvento> {
 	 */
 	@Override
 	public String getUuid() {
-		return _tipoEvento.getUuid();
-	}
-
-	@Override
-	public int hashCode() {
-		return _tipoEvento.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _tipoEvento.isCachedModel();
+		return model.getUuid();
 	}
 
 	/**
@@ -394,17 +345,7 @@ public class TipoEventoWrapper implements TipoEvento, ModelWrapper<TipoEvento> {
 	 */
 	@Override
 	public boolean isCostiero() {
-		return _tipoEvento.isCostiero();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _tipoEvento.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _tipoEvento.isNew();
+		return model.isCostiero();
 	}
 
 	/**
@@ -414,17 +355,12 @@ public class TipoEventoWrapper implements TipoEvento, ModelWrapper<TipoEvento> {
 	 */
 	@Override
 	public boolean isSplit() {
-		return _tipoEvento.isSplit();
+		return model.isSplit();
 	}
 
 	@Override
 	public void persist() {
-		_tipoEvento.persist();
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_tipoEvento.setCachedModel(cachedModel);
+		model.persist();
 	}
 
 	/**
@@ -434,7 +370,7 @@ public class TipoEventoWrapper implements TipoEvento, ModelWrapper<TipoEvento> {
 	 */
 	@Override
 	public void setCompanyId(long companyId) {
-		_tipoEvento.setCompanyId(companyId);
+		model.setCompanyId(companyId);
 	}
 
 	/**
@@ -444,7 +380,7 @@ public class TipoEventoWrapper implements TipoEvento, ModelWrapper<TipoEvento> {
 	 */
 	@Override
 	public void setCostiero(boolean costiero) {
-		_tipoEvento.setCostiero(costiero);
+		model.setCostiero(costiero);
 	}
 
 	/**
@@ -454,7 +390,7 @@ public class TipoEventoWrapper implements TipoEvento, ModelWrapper<TipoEvento> {
 	 */
 	@Override
 	public void setCreateDate(Date createDate) {
-		_tipoEvento.setCreateDate(createDate);
+		model.setCreateDate(createDate);
 	}
 
 	/**
@@ -464,7 +400,7 @@ public class TipoEventoWrapper implements TipoEvento, ModelWrapper<TipoEvento> {
 	 */
 	@Override
 	public void setDataFine(Date dataFine) {
-		_tipoEvento.setDataFine(dataFine);
+		model.setDataFine(dataFine);
 	}
 
 	/**
@@ -474,7 +410,7 @@ public class TipoEventoWrapper implements TipoEvento, ModelWrapper<TipoEvento> {
 	 */
 	@Override
 	public void setDataInizio(Date dataInizio) {
-		_tipoEvento.setDataInizio(dataInizio);
+		model.setDataInizio(dataInizio);
 	}
 
 	/**
@@ -484,24 +420,7 @@ public class TipoEventoWrapper implements TipoEvento, ModelWrapper<TipoEvento> {
 	 */
 	@Override
 	public void setEventoId(long eventoId) {
-		_tipoEvento.setEventoId(eventoId);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_tipoEvento.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_tipoEvento.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_tipoEvento.setExpandoBridgeAttributes(serviceContext);
+		model.setEventoId(eventoId);
 	}
 
 	/**
@@ -511,7 +430,7 @@ public class TipoEventoWrapper implements TipoEvento, ModelWrapper<TipoEvento> {
 	 */
 	@Override
 	public void setGroupId(long groupId) {
-		_tipoEvento.setGroupId(groupId);
+		model.setGroupId(groupId);
 	}
 
 	/**
@@ -521,7 +440,7 @@ public class TipoEventoWrapper implements TipoEvento, ModelWrapper<TipoEvento> {
 	 */
 	@Override
 	public void setIndice(int indice) {
-		_tipoEvento.setIndice(indice);
+		model.setIndice(indice);
 	}
 
 	/**
@@ -531,12 +450,7 @@ public class TipoEventoWrapper implements TipoEvento, ModelWrapper<TipoEvento> {
 	 */
 	@Override
 	public void setModifiedDate(Date modifiedDate) {
-		_tipoEvento.setModifiedDate(modifiedDate);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_tipoEvento.setNew(n);
+		model.setModifiedDate(modifiedDate);
 	}
 
 	/**
@@ -546,7 +460,7 @@ public class TipoEventoWrapper implements TipoEvento, ModelWrapper<TipoEvento> {
 	 */
 	@Override
 	public void setNome(String nome) {
-		_tipoEvento.setNome(nome);
+		model.setNome(nome);
 	}
 
 	/**
@@ -556,7 +470,7 @@ public class TipoEventoWrapper implements TipoEvento, ModelWrapper<TipoEvento> {
 	 */
 	@Override
 	public void setParentId(long parentId) {
-		_tipoEvento.setParentId(parentId);
+		model.setParentId(parentId);
 	}
 
 	/**
@@ -566,12 +480,7 @@ public class TipoEventoWrapper implements TipoEvento, ModelWrapper<TipoEvento> {
 	 */
 	@Override
 	public void setPrimaryKey(long primaryKey) {
-		_tipoEvento.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_tipoEvento.setPrimaryKeyObj(primaryKeyObj);
+		model.setPrimaryKey(primaryKey);
 	}
 
 	/**
@@ -581,7 +490,7 @@ public class TipoEventoWrapper implements TipoEvento, ModelWrapper<TipoEvento> {
 	 */
 	@Override
 	public void setSplit(boolean split) {
-		_tipoEvento.setSplit(split);
+		model.setSplit(split);
 	}
 
 	/**
@@ -591,7 +500,7 @@ public class TipoEventoWrapper implements TipoEvento, ModelWrapper<TipoEvento> {
 	 */
 	@Override
 	public void setTabella(int tabella) {
-		_tipoEvento.setTabella(tabella);
+		model.setTabella(tabella);
 	}
 
 	/**
@@ -601,7 +510,7 @@ public class TipoEventoWrapper implements TipoEvento, ModelWrapper<TipoEvento> {
 	 */
 	@Override
 	public void setUserId(long userId) {
-		_tipoEvento.setUserId(userId);
+		model.setUserId(userId);
 	}
 
 	/**
@@ -611,7 +520,7 @@ public class TipoEventoWrapper implements TipoEvento, ModelWrapper<TipoEvento> {
 	 */
 	@Override
 	public void setUserName(String userName) {
-		_tipoEvento.setUserName(userName);
+		model.setUserName(userName);
 	}
 
 	/**
@@ -621,7 +530,7 @@ public class TipoEventoWrapper implements TipoEvento, ModelWrapper<TipoEvento> {
 	 */
 	@Override
 	public void setUserUuid(String userUuid) {
-		_tipoEvento.setUserUuid(userUuid);
+		model.setUserUuid(userUuid);
 	}
 
 	/**
@@ -631,80 +540,22 @@ public class TipoEventoWrapper implements TipoEvento, ModelWrapper<TipoEvento> {
 	 */
 	@Override
 	public void setUuid(String uuid) {
-		_tipoEvento.setUuid(uuid);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<it.eng.allerter.model.TipoEvento> toCacheModel() {
-
-		return _tipoEvento.toCacheModel();
-	}
-
-	@Override
-	public it.eng.allerter.model.TipoEvento toEscapedModel() {
-		return new TipoEventoWrapper(_tipoEvento.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _tipoEvento.toString();
-	}
-
-	@Override
-	public it.eng.allerter.model.TipoEvento toUnescapedModel() {
-		return new TipoEventoWrapper(_tipoEvento.toUnescapedModel());
+		model.setUuid(uuid);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _tipoEvento.toXmlString();
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-
-		if (!(obj instanceof TipoEventoWrapper)) {
-			return false;
-		}
-
-		TipoEventoWrapper tipoEventoWrapper = (TipoEventoWrapper)obj;
-
-		if (Objects.equals(_tipoEvento, tipoEventoWrapper._tipoEvento)) {
-			return true;
-		}
-
-		return false;
+		return model.toXmlString();
 	}
 
 	@Override
 	public StagedModelType getStagedModelType() {
-		return _tipoEvento.getStagedModelType();
+		return model.getStagedModelType();
 	}
 
 	@Override
-	public TipoEvento getWrappedModel() {
-		return _tipoEvento;
+	protected TipoEventoWrapper wrap(TipoEvento tipoEvento) {
+		return new TipoEventoWrapper(tipoEvento);
 	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _tipoEvento.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _tipoEvento.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_tipoEvento.resetOriginalValues();
-	}
-
-	private final TipoEvento _tipoEvento;
 
 }

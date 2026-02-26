@@ -1,24 +1,23 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerter.service;
 
-import aQute.bnd.annotation.ProviderType;
+import com.liferay.petra.sql.dsl.query.DSLQuery;
+import com.liferay.portal.kernel.dao.orm.DynamicQuery;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.model.PersistedModel;
+import com.liferay.portal.kernel.module.service.Snapshot;
+import com.liferay.portal.kernel.util.OrderByComparator;
 
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.util.tracker.ServiceTracker;
+import it.eng.allerter.model.SMS;
+
+import java.io.Serializable;
+
+import java.util.List;
 
 /**
  * Provides the local service utility for SMS. This utility wraps
@@ -32,7 +31,6 @@ import org.osgi.util.tracker.ServiceTracker;
  * @see SMSLocalService
  * @generated
  */
-@ProviderType
 public class SMSLocalServiceUtil {
 
 	/*
@@ -44,12 +42,14 @@ public class SMSLocalServiceUtil {
 	/**
 	 * Adds the sms to the database. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect SMSLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param sms the sms
 	 * @return the sms that was added
 	 */
-	public static it.eng.allerter.model.SMS addSMS(
-		it.eng.allerter.model.SMS sms) {
-
+	public static SMS addSMS(SMS sms) {
 		return getService().addSMS(sms);
 	}
 
@@ -104,12 +104,12 @@ public class SMSLocalServiceUtil {
 	 * @param sottotipo   il sottotipo della notifica (secondo elemento della
 	 gerarchia tipo/sottotipo/param)
 	 * @param param       - il parametro della notifica (terzo elemento della
-	 gerarchia tipo/sottotipo/param. questo � un numero che pu�
+	 gerarchia tipo/sottotipo/param. questo è un numero che può
 	 funzionare da chiave esterna)
 	 * @param groupOwner  - l'id del proprietario della rubrica in cui cercare il
 	 gruppo
 	 * @param nomeGruppo  - il nome del gruppo da invocare
-	 * @param ricorsivo   - se true, l'invio � ricorsivo, cio� tutti i path non
+	 * @param ricorsivo   - se true, l'invio è ricorsivo, cioè tutti i path non
 	 specificati nel parametro successivo ricevono la notifica
 	 * @param sottogruppi - una mappa String che dice a quali sottogruppi (indicati
 	 con notazione "path/con/wildcard->TRUE" con wildcard e
@@ -124,7 +124,7 @@ public class SMSLocalServiceUtil {
 	public static int creaNotificaGruppoRubrica(
 			long[] canale, String from, String testo, String tipo,
 			String sottotipo, long param, long groupOwner, String nomeGruppo,
-			boolean ricorsivo, java.util.List<String> sottogruppi)
+			boolean ricorsivo, List<String> sottogruppi)
 		throws Exception {
 
 		return getService().creaNotificaGruppoRubrica(
@@ -170,7 +170,7 @@ public class SMSLocalServiceUtil {
 	public static int creaOnlySMSOrganization(
 			String from, String testo, String tipo, String sottotipo,
 			long param, long organizationId, long roleId,
-			java.util.List<String> gerarchiaOrg)
+			List<String> gerarchiaOrg)
 		throws Exception {
 
 		return getService().creaOnlySMSOrganization(
@@ -195,7 +195,7 @@ public class SMSLocalServiceUtil {
 		return getService().creaSMS(from, testo, tipo, sottotipo, param, u);
 	}
 
-	public static it.eng.allerter.model.SMS creaSMS(
+	public static SMS creaSMS(
 			String from, String to, String testo, String tipo, String sottotipo,
 			long param, long utente)
 		throws Exception {
@@ -204,7 +204,7 @@ public class SMSLocalServiceUtil {
 			from, to, testo, tipo, sottotipo, param, utente);
 	}
 
-	public static it.eng.allerter.model.SMS creaSMS(
+	public static SMS creaSMS(
 			String from, String to, String testo, String tipo, String sottotipo,
 			long param, long utente, String nomeUtente)
 		throws Exception {
@@ -243,7 +243,7 @@ public class SMSLocalServiceUtil {
 	public static int creaSMSOrganization(
 			String from, String testo, String tipo, String sottotipo,
 			long param, long organizationId, long roleId,
-			java.util.List<String> gerarchiaOrg)
+			List<String> gerarchiaOrg)
 		throws Exception {
 
 		return getService().creaSMSOrganization(
@@ -269,22 +269,31 @@ public class SMSLocalServiceUtil {
 	}
 
 	/**
+	 * @throws PortalException
+	 */
+	public static PersistedModel createPersistedModel(
+			Serializable primaryKeyObj)
+		throws PortalException {
+
+		return getService().createPersistedModel(primaryKeyObj);
+	}
+
+	/**
 	 * Creates a new sms with the primary key. Does not add the sms to the database.
 	 *
 	 * @param id the primary key for the new sms
 	 * @return the new sms
 	 */
-	public static it.eng.allerter.model.SMS createSMS(long id) {
+	public static SMS createSMS(long id) {
 		return getService().createSMS(id);
 	}
 
 	/**
 	 * @throws PortalException
 	 */
-	public static com.liferay.portal.kernel.model.PersistedModel
-			deletePersistedModel(
-				com.liferay.portal.kernel.model.PersistedModel persistedModel)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	public static PersistedModel deletePersistedModel(
+			PersistedModel persistedModel)
+		throws PortalException {
 
 		return getService().deletePersistedModel(persistedModel);
 	}
@@ -292,31 +301,41 @@ public class SMSLocalServiceUtil {
 	/**
 	 * Deletes the sms with the primary key from the database. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect SMSLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param id the primary key of the sms
 	 * @return the sms that was removed
 	 * @throws PortalException if a sms with the primary key could not be found
 	 */
-	public static it.eng.allerter.model.SMS deleteSMS(long id)
-		throws com.liferay.portal.kernel.exception.PortalException {
-
+	public static SMS deleteSMS(long id) throws PortalException {
 		return getService().deleteSMS(id);
 	}
 
 	/**
 	 * Deletes the sms from the database. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect SMSLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param sms the sms
 	 * @return the sms that was removed
 	 */
-	public static it.eng.allerter.model.SMS deleteSMS(
-		it.eng.allerter.model.SMS sms) {
-
+	public static SMS deleteSMS(SMS sms) {
 		return getService().deleteSMS(sms);
 	}
 
-	public static com.liferay.portal.kernel.dao.orm.DynamicQuery
-		dynamicQuery() {
+	public static <T> T dslQuery(DSLQuery dslQuery) {
+		return getService().dslQuery(dslQuery);
+	}
 
+	public static int dslQueryCount(DSLQuery dslQuery) {
+		return getService().dslQueryCount(dslQuery);
+	}
+
+	public static DynamicQuery dynamicQuery() {
 		return getService().dynamicQuery();
 	}
 
@@ -326,9 +345,7 @@ public class SMSLocalServiceUtil {
 	 * @param dynamicQuery the dynamic query
 	 * @return the matching rows
 	 */
-	public static <T> java.util.List<T> dynamicQuery(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery) {
-
+	public static <T> List<T> dynamicQuery(DynamicQuery dynamicQuery) {
 		return getService().dynamicQuery(dynamicQuery);
 	}
 
@@ -336,7 +353,7 @@ public class SMSLocalServiceUtil {
 	 * Performs a dynamic query on the database and returns a range of the matching rows.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>it.eng.allerter.model.impl.SMSModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>it.eng.allerter.model.impl.SMSModelImpl</code>.
 	 * </p>
 	 *
 	 * @param dynamicQuery the dynamic query
@@ -344,9 +361,8 @@ public class SMSLocalServiceUtil {
 	 * @param end the upper bound of the range of model instances (not inclusive)
 	 * @return the range of matching rows
 	 */
-	public static <T> java.util.List<T> dynamicQuery(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery, int start,
-		int end) {
+	public static <T> List<T> dynamicQuery(
+		DynamicQuery dynamicQuery, int start, int end) {
 
 		return getService().dynamicQuery(dynamicQuery, start, end);
 	}
@@ -355,7 +371,7 @@ public class SMSLocalServiceUtil {
 	 * Performs a dynamic query on the database and returns an ordered range of the matching rows.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>it.eng.allerter.model.impl.SMSModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>it.eng.allerter.model.impl.SMSModelImpl</code>.
 	 * </p>
 	 *
 	 * @param dynamicQuery the dynamic query
@@ -364,10 +380,9 @@ public class SMSLocalServiceUtil {
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching rows
 	 */
-	public static <T> java.util.List<T> dynamicQuery(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery, int start,
-		int end,
-		com.liferay.portal.kernel.util.OrderByComparator<T> orderByComparator) {
+	public static <T> List<T> dynamicQuery(
+		DynamicQuery dynamicQuery, int start, int end,
+		OrderByComparator<T> orderByComparator) {
 
 		return getService().dynamicQuery(
 			dynamicQuery, start, end, orderByComparator);
@@ -379,9 +394,7 @@ public class SMSLocalServiceUtil {
 	 * @param dynamicQuery the dynamic query
 	 * @return the number of rows matching the dynamic query
 	 */
-	public static long dynamicQueryCount(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery) {
-
+	public static long dynamicQueryCount(DynamicQuery dynamicQuery) {
 		return getService().dynamicQueryCount(dynamicQuery);
 	}
 
@@ -393,7 +406,7 @@ public class SMSLocalServiceUtil {
 	 * @return the number of rows matching the dynamic query
 	 */
 	public static long dynamicQueryCount(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery,
+		DynamicQuery dynamicQuery,
 		com.liferay.portal.kernel.dao.orm.Projection projection) {
 
 		return getService().dynamicQueryCount(dynamicQuery, projection);
@@ -411,20 +424,19 @@ public class SMSLocalServiceUtil {
 		return getService().eliminaDuplicatiEmail(tipo, sottotipo, param);
 	}
 
-	public static it.eng.allerter.model.SMS fetchSMS(long id) {
+	public static SMS fetchSMS(long id) {
 		return getService().fetchSMS(id);
 	}
 
-	public static java.util.List<it.eng.allerter.model.SMS> findByNumeroDataAck(
+	public static List<SMS> findByNumeroDataAck(
 			String numero, java.util.Date dataAck)
-		throws com.liferay.portal.kernel.exception.SystemException {
+		throws SystemException {
 
 		return getService().findByNumeroDataAck(numero, dataAck);
 	}
 
-	public static java.util.List<it.eng.allerter.model.SMS> findByTimestamp(
-			String numero)
-		throws com.liferay.portal.kernel.exception.SystemException {
+	public static List<SMS> findByTimestamp(String numero)
+		throws SystemException {
 
 		return getService().findByTimestamp(numero);
 	}
@@ -451,9 +463,11 @@ public class SMSLocalServiceUtil {
 		return getService().getOSGiServiceIdentifier();
 	}
 
-	public static com.liferay.portal.kernel.model.PersistedModel
-			getPersistedModel(java.io.Serializable primaryKeyObj)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	/**
+	 * @throws PortalException
+	 */
+	public static PersistedModel getPersistedModel(Serializable primaryKeyObj)
+		throws PortalException {
 
 		return getService().getPersistedModel(primaryKeyObj);
 	}
@@ -465,9 +479,7 @@ public class SMSLocalServiceUtil {
 	 * @return the sms
 	 * @throws PortalException if a sms with the primary key could not be found
 	 */
-	public static it.eng.allerter.model.SMS getSMS(long id)
-		throws com.liferay.portal.kernel.exception.PortalException {
-
+	public static SMS getSMS(long id) throws PortalException {
 		return getService().getSMS(id);
 	}
 
@@ -479,16 +491,14 @@ public class SMSLocalServiceUtil {
 	 * Returns a range of all the smses.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>it.eng.allerter.model.impl.SMSModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>it.eng.allerter.model.impl.SMSModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of smses
 	 * @param end the upper bound of the range of smses (not inclusive)
 	 * @return the range of smses
 	 */
-	public static java.util.List<it.eng.allerter.model.SMS> getSMSs(
-		int start, int end) {
-
+	public static List<SMS> getSMSs(int start, int end) {
 		return getService().getSMSs(start, end);
 	}
 
@@ -502,14 +512,14 @@ public class SMSLocalServiceUtil {
 	}
 
 	public static void inviaEmail(
-		java.util.List<String> indirizzi, String subject, String text,
+		List<String> indirizzi, String subject, String text,
 		javax.mail.internet.InternetAddress from) {
 
 		getService().inviaEmail(indirizzi, subject, text, from);
 	}
 
 	public static void inviaEmail(
-		java.util.List<String> indirizzi, String subject, String text,
+		List<String> indirizzi, String subject, String text,
 		javax.mail.internet.InternetAddress from, java.io.File attach,
 		String fileName) {
 
@@ -518,9 +528,9 @@ public class SMSLocalServiceUtil {
 	}
 
 	public static void inviaEmail(
-		java.util.List<String> indirizzi, String subject, String text,
-		javax.mail.internet.InternetAddress from,
-		java.util.List<java.io.File> attach, java.util.List<String> fileName) {
+		List<String> indirizzi, String subject, String text,
+		javax.mail.internet.InternetAddress from, List<java.io.File> attach,
+		List<String> fileName) {
 
 		getService().inviaEmail(
 			indirizzi, subject, text, from, attach, fileName);
@@ -545,15 +555,15 @@ public class SMSLocalServiceUtil {
 
 	public static void inviaEmail(
 			String tipo, String sottotipo, long param, String subject,
-			String text, String from, java.util.List<java.io.File> attach,
-			java.util.List<String> fileName)
+			String text, String from, List<java.io.File> attach,
+			List<String> fileName)
 		throws Exception {
 
 		getService().inviaEmail(
 			tipo, sottotipo, param, subject, text, from, attach, fileName);
 	}
 
-	public static void inviaListaSMS(java.util.List<Object[]> s) {
+	public static void inviaListaSMS(List<Object[]> s) {
 		getService().inviaListaSMS(s);
 	}
 
@@ -573,7 +583,7 @@ public class SMSLocalServiceUtil {
 		return getService().marcaMessaggiInTimeout();
 	}
 
-	public static java.util.List<Object[]> ottieniPerSpedizione(
+	public static List<Object[]> ottieniPerSpedizione(
 		String tipo, String sottotipo, long param, int currentStatus,
 		int newStatus, int limit) {
 
@@ -581,7 +591,7 @@ public class SMSLocalServiceUtil {
 			tipo, sottotipo, param, currentStatus, newStatus, limit);
 	}
 
-	public static java.util.List<it.eng.allerter.model.Email> searchEmail(
+	public static List<it.eng.allerter.model.Email> searchEmail(
 		String tipo, String sottotipo, String destinatario, String dataInvioDa,
 		String dataInvioA, int start, int end) {
 
@@ -589,7 +599,7 @@ public class SMSLocalServiceUtil {
 			tipo, sottotipo, destinatario, dataInvioDa, dataInvioA, start, end);
 	}
 
-	public static java.util.List<it.eng.allerter.model.Email> searchEmail(
+	public static List<it.eng.allerter.model.Email> searchEmail(
 		String tipo, String sottotipo, String destinatario, String email,
 		String dataInvioDa, String dataInvioA, int start, int end) {
 
@@ -614,7 +624,7 @@ public class SMSLocalServiceUtil {
 			tipo, sottotipo, destinatario, email, dataInvioDa, dataInvioA);
 	}
 
-	public static java.util.List<it.eng.allerter.model.SMS> searchSMS(
+	public static List<SMS> searchSMS(
 		String tipo, String sottoTipo, long stato, String numero,
 		String destinatario, String dataInvioDa, String dataInvioA, int start,
 		int end) {
@@ -636,32 +646,22 @@ public class SMSLocalServiceUtil {
 	/**
 	 * Updates the sms in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect SMSLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param sms the sms
 	 * @return the sms that was updated
 	 */
-	public static it.eng.allerter.model.SMS updateSMS(
-		it.eng.allerter.model.SMS sms) {
-
+	public static SMS updateSMS(SMS sms) {
 		return getService().updateSMS(sms);
 	}
 
 	public static SMSLocalService getService() {
-		return _serviceTracker.getService();
+		return _serviceSnapshot.get();
 	}
 
-	private static ServiceTracker<SMSLocalService, SMSLocalService>
-		_serviceTracker;
-
-	static {
-		Bundle bundle = FrameworkUtil.getBundle(SMSLocalService.class);
-
-		ServiceTracker<SMSLocalService, SMSLocalService> serviceTracker =
-			new ServiceTracker<SMSLocalService, SMSLocalService>(
-				bundle.getBundleContext(), SMSLocalService.class, null);
-
-		serviceTracker.open();
-
-		_serviceTracker = serviceTracker;
-	}
+	private static final Snapshot<SMSLocalService> _serviceSnapshot =
+		new Snapshot<>(SMSLocalServiceUtil.class, SMSLocalService.class);
 
 }

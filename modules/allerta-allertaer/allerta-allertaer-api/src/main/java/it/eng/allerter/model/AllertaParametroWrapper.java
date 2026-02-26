@@ -1,30 +1,15 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerter.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -35,22 +20,12 @@ import java.util.Objects;
  * @see AllertaParametro
  * @generated
  */
-@ProviderType
 public class AllertaParametroWrapper
+	extends BaseModelWrapper<AllertaParametro>
 	implements AllertaParametro, ModelWrapper<AllertaParametro> {
 
 	public AllertaParametroWrapper(AllertaParametro allertaParametro) {
-		_allertaParametro = allertaParametro;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return AllertaParametro.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return AllertaParametro.class.getName();
+		super(allertaParametro);
 	}
 
 	@Override
@@ -79,21 +54,8 @@ public class AllertaParametroWrapper
 	}
 
 	@Override
-	public Object clone() {
-		return new AllertaParametroWrapper(
-			(AllertaParametro)_allertaParametro.clone());
-	}
-
-	@Override
-	public int compareTo(
-		it.eng.allerter.model.AllertaParametro allertaParametro) {
-
-		return _allertaParametro.compareTo(allertaParametro);
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _allertaParametro.getExpandoBridge();
+	public AllertaParametro cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -103,7 +65,7 @@ public class AllertaParametroWrapper
 	 */
 	@Override
 	public String getParametroId() {
-		return _allertaParametro.getParametroId();
+		return model.getParametroId();
 	}
 
 	/**
@@ -113,12 +75,7 @@ public class AllertaParametroWrapper
 	 */
 	@Override
 	public String getPrimaryKey() {
-		return _allertaParametro.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _allertaParametro.getPrimaryKeyObj();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -128,59 +85,12 @@ public class AllertaParametroWrapper
 	 */
 	@Override
 	public String getValore() {
-		return _allertaParametro.getValore();
-	}
-
-	@Override
-	public int hashCode() {
-		return _allertaParametro.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _allertaParametro.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _allertaParametro.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _allertaParametro.isNew();
+		return model.getValore();
 	}
 
 	@Override
 	public void persist() {
-		_allertaParametro.persist();
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_allertaParametro.setCachedModel(cachedModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_allertaParametro.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_allertaParametro.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_allertaParametro.setExpandoBridgeAttributes(serviceContext);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_allertaParametro.setNew(n);
+		model.persist();
 	}
 
 	/**
@@ -190,7 +100,7 @@ public class AllertaParametroWrapper
 	 */
 	@Override
 	public void setParametroId(String parametroId) {
-		_allertaParametro.setParametroId(parametroId);
+		model.setParametroId(parametroId);
 	}
 
 	/**
@@ -200,12 +110,7 @@ public class AllertaParametroWrapper
 	 */
 	@Override
 	public void setPrimaryKey(String primaryKey) {
-		_allertaParametro.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_allertaParametro.setPrimaryKeyObj(primaryKeyObj);
+		model.setPrimaryKey(primaryKey);
 	}
 
 	/**
@@ -215,79 +120,17 @@ public class AllertaParametroWrapper
 	 */
 	@Override
 	public void setValore(String valore) {
-		_allertaParametro.setValore(valore);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<it.eng.allerter.model.AllertaParametro> toCacheModel() {
-
-		return _allertaParametro.toCacheModel();
-	}
-
-	@Override
-	public it.eng.allerter.model.AllertaParametro toEscapedModel() {
-		return new AllertaParametroWrapper(_allertaParametro.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _allertaParametro.toString();
-	}
-
-	@Override
-	public it.eng.allerter.model.AllertaParametro toUnescapedModel() {
-		return new AllertaParametroWrapper(
-			_allertaParametro.toUnescapedModel());
+		model.setValore(valore);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _allertaParametro.toXmlString();
+		return model.toXmlString();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-
-		if (!(obj instanceof AllertaParametroWrapper)) {
-			return false;
-		}
-
-		AllertaParametroWrapper allertaParametroWrapper =
-			(AllertaParametroWrapper)obj;
-
-		if (Objects.equals(
-				_allertaParametro, allertaParametroWrapper._allertaParametro)) {
-
-			return true;
-		}
-
-		return false;
+	protected AllertaParametroWrapper wrap(AllertaParametro allertaParametro) {
+		return new AllertaParametroWrapper(allertaParametro);
 	}
-
-	@Override
-	public AllertaParametro getWrappedModel() {
-		return _allertaParametro;
-	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _allertaParametro.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _allertaParametro.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_allertaParametro.resetOriginalValues();
-	}
-
-	private final AllertaParametro _allertaParametro;
 
 }

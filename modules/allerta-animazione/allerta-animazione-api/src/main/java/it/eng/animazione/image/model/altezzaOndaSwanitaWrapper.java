@@ -1,30 +1,15 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.animazione.image.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -35,22 +20,12 @@ import java.util.Objects;
  * @see altezzaOndaSwanita
  * @generated
  */
-@ProviderType
 public class altezzaOndaSwanitaWrapper
+	extends BaseModelWrapper<altezzaOndaSwanita>
 	implements altezzaOndaSwanita, ModelWrapper<altezzaOndaSwanita> {
 
 	public altezzaOndaSwanitaWrapper(altezzaOndaSwanita altezzaOndaSwanita) {
-		_altezzaOndaSwanita = altezzaOndaSwanita;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return altezzaOndaSwanita.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return altezzaOndaSwanita.class.getName();
+		super(altezzaOndaSwanita);
 	}
 
 	@Override
@@ -100,21 +75,8 @@ public class altezzaOndaSwanitaWrapper
 	}
 
 	@Override
-	public Object clone() {
-		return new altezzaOndaSwanitaWrapper(
-			(altezzaOndaSwanita)_altezzaOndaSwanita.clone());
-	}
-
-	@Override
-	public int compareTo(
-		it.eng.animazione.image.model.altezzaOndaSwanita altezzaOndaSwanita) {
-
-		return _altezzaOndaSwanita.compareTo(altezzaOndaSwanita);
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _altezzaOndaSwanita.getExpandoBridge();
+	public altezzaOndaSwanita cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -124,7 +86,7 @@ public class altezzaOndaSwanitaWrapper
 	 */
 	@Override
 	public long getId() {
-		return _altezzaOndaSwanita.getId();
+		return model.getId();
 	}
 
 	/**
@@ -134,7 +96,7 @@ public class altezzaOndaSwanitaWrapper
 	 */
 	@Override
 	public String getIm() {
-		return _altezzaOndaSwanita.getIm();
+		return model.getIm();
 	}
 
 	/**
@@ -144,7 +106,7 @@ public class altezzaOndaSwanitaWrapper
 	 */
 	@Override
 	public String getImgData() {
-		return _altezzaOndaSwanita.getImgData();
+		return model.getImgData();
 	}
 
 	/**
@@ -154,12 +116,7 @@ public class altezzaOndaSwanitaWrapper
 	 */
 	@Override
 	public long getPrimaryKey() {
-		return _altezzaOndaSwanita.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _altezzaOndaSwanita.getPrimaryKeyObj();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -169,7 +126,7 @@ public class altezzaOndaSwanitaWrapper
 	 */
 	@Override
 	public String getText_LOC() {
-		return _altezzaOndaSwanita.getText_LOC();
+		return model.getText_LOC();
 	}
 
 	/**
@@ -179,54 +136,12 @@ public class altezzaOndaSwanitaWrapper
 	 */
 	@Override
 	public long getTs_UTC() {
-		return _altezzaOndaSwanita.getTs_UTC();
-	}
-
-	@Override
-	public int hashCode() {
-		return _altezzaOndaSwanita.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _altezzaOndaSwanita.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _altezzaOndaSwanita.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _altezzaOndaSwanita.isNew();
+		return model.getTs_UTC();
 	}
 
 	@Override
 	public void persist() {
-		_altezzaOndaSwanita.persist();
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_altezzaOndaSwanita.setCachedModel(cachedModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_altezzaOndaSwanita.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_altezzaOndaSwanita.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_altezzaOndaSwanita.setExpandoBridgeAttributes(serviceContext);
+		model.persist();
 	}
 
 	/**
@@ -236,7 +151,7 @@ public class altezzaOndaSwanitaWrapper
 	 */
 	@Override
 	public void setId(long id) {
-		_altezzaOndaSwanita.setId(id);
+		model.setId(id);
 	}
 
 	/**
@@ -246,7 +161,7 @@ public class altezzaOndaSwanitaWrapper
 	 */
 	@Override
 	public void setIm(String im) {
-		_altezzaOndaSwanita.setIm(im);
+		model.setIm(im);
 	}
 
 	/**
@@ -256,12 +171,7 @@ public class altezzaOndaSwanitaWrapper
 	 */
 	@Override
 	public void setImgData(String imgData) {
-		_altezzaOndaSwanita.setImgData(imgData);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_altezzaOndaSwanita.setNew(n);
+		model.setImgData(imgData);
 	}
 
 	/**
@@ -271,12 +181,7 @@ public class altezzaOndaSwanitaWrapper
 	 */
 	@Override
 	public void setPrimaryKey(long primaryKey) {
-		_altezzaOndaSwanita.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_altezzaOndaSwanita.setPrimaryKeyObj(primaryKeyObj);
+		model.setPrimaryKey(primaryKey);
 	}
 
 	/**
@@ -286,7 +191,7 @@ public class altezzaOndaSwanitaWrapper
 	 */
 	@Override
 	public void setText_LOC(String text_LOC) {
-		_altezzaOndaSwanita.setText_LOC(text_LOC);
+		model.setText_LOC(text_LOC);
 	}
 
 	/**
@@ -296,81 +201,19 @@ public class altezzaOndaSwanitaWrapper
 	 */
 	@Override
 	public void setTs_UTC(long ts_UTC) {
-		_altezzaOndaSwanita.setTs_UTC(ts_UTC);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<it.eng.animazione.image.model.altezzaOndaSwanita> toCacheModel() {
-
-		return _altezzaOndaSwanita.toCacheModel();
-	}
-
-	@Override
-	public it.eng.animazione.image.model.altezzaOndaSwanita toEscapedModel() {
-		return new altezzaOndaSwanitaWrapper(
-			_altezzaOndaSwanita.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _altezzaOndaSwanita.toString();
-	}
-
-	@Override
-	public it.eng.animazione.image.model.altezzaOndaSwanita toUnescapedModel() {
-		return new altezzaOndaSwanitaWrapper(
-			_altezzaOndaSwanita.toUnescapedModel());
+		model.setTs_UTC(ts_UTC);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _altezzaOndaSwanita.toXmlString();
+		return model.toXmlString();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
+	protected altezzaOndaSwanitaWrapper wrap(
+		altezzaOndaSwanita altezzaOndaSwanita) {
 
-		if (!(obj instanceof altezzaOndaSwanitaWrapper)) {
-			return false;
-		}
-
-		altezzaOndaSwanitaWrapper altezzaOndaSwanitaWrapper =
-			(altezzaOndaSwanitaWrapper)obj;
-
-		if (Objects.equals(
-				_altezzaOndaSwanita,
-				altezzaOndaSwanitaWrapper._altezzaOndaSwanita)) {
-
-			return true;
-		}
-
-		return false;
+		return new altezzaOndaSwanitaWrapper(altezzaOndaSwanita);
 	}
-
-	@Override
-	public altezzaOndaSwanita getWrappedModel() {
-		return _altezzaOndaSwanita;
-	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _altezzaOndaSwanita.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _altezzaOndaSwanita.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_altezzaOndaSwanita.resetOriginalValues();
-	}
-
-	private final altezzaOndaSwanita _altezzaOndaSwanita;
 
 }

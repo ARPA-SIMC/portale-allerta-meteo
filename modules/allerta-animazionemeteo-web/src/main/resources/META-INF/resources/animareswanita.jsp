@@ -152,7 +152,7 @@
 							<div class="d-none d-md-flex d-print-flex flex-md-row">
 								<div class="map-legend--rtdata-legend">
 									<strong>Previsione altezza onda (m)</strong>
-									<div id="legenda" class="row" style="margin-left:0px;margin-right:0px"><div class="col s2 legendario truncate" style="background-color: #C0F0F8; color: #000000">0.0-0.1</div><div class="col s2 legendario truncate" style="background-color: #73A2FF; color: #000000">0.1-0.5</div><div class="col s2 legendario truncate" style="background-color: #0080FF; color: #ffffff">0.5-0.8</div><div class="col s2 legendario truncate" style="background-color: #42B5A6; color: #000000">0.8-1.25</div><div class="col s2 legendario truncate" style="background-color: #A2F190; color: #000000">1.25-1.8</div><div class="col s2 legendario truncate" style="background-color: #00FF00; color: #000000">1.8-2.5</div><div class="col s2 legendario truncate" style="background-color: #FFFF00; color: #000000">2.5-3.2</div><div class="col s2 legendario truncate" style="background-color: #FFAF00; color: #000000">3.2-4.0</div><div class="col s2 legendario truncate" style="background-color: #FF8000; color: #000000">4.0-5.0</div><div class="col s2 legendario truncate" style="background-color: #FF0014; color: #ffffff">5.0-6.0</div><div class="col s2 legendario truncate" style="background-color: #DB001E; color: #ffffff">6.0-7.0</div><div class="col s2 legendario truncate" style="background-color: #B80009; color: #ffffff">7.0-9.0</div><div class="col s2 legendario truncate" style="background-color: #9B0006; color: #ffffff">9.0-14.0</div></div>
+									<div id="legenda" class="row" style="margin-left:0px;margin-right:0px"><div class="col s2 legendario truncate" style="background-color: #3340EB; color: #ffffff">0.0-0.1</div><div class="col s2 legendario truncate" style="background-color: #3D6DFD; color: #ffffff">0.1-0.5</div><div class="col s2 legendario truncate" style="background-color: #3E89FC; color: #ffffff">0.5-0.8</div><div class="col s2 legendario truncate" style="background-color: #44C7FD; color: #000000">0.8-1.25</div><div class="col s2 legendario truncate" style="background-color: #4AFFFC; color: #000000">1.25-1.8</div><div class="col s2 legendario truncate" style="background-color: #72FF1D; color: #000000">1.8-2.5</div><div class="col s2 legendario truncate" style="background-color: #FAFF1F; color: #000000">2.5-3.2</div><div class="col s2 legendario truncate" style="background-color: #F9B31F; color: #000000">3.2-4.0</div><div class="col s2 legendario truncate" style="background-color: #F9881F; color: #ffffff">4.0-5.0</div><div class="col s2 legendario truncate" style="background-color: #F7561F; color: #ffffff">5.0-6.0</div><div class="col s2 legendario truncate" style="background-color: #FF0000; color: #ffffff">6.0-7.0</div><div class="col s2 legendario truncate" style="background-color: #F7008D; color: #ffffff">7.0-8.0</div><div class="col s2 legendario truncate" style="background-color: #F900C0; color: #ffffff">8.0-9.0</div><div class="col s2 legendario truncate" style="background-color: #990080; color: #ffffff">9.0-14.0</div></div>
 								</div>
 							</div>
 						</div>
@@ -184,7 +184,7 @@
 								<a href="#" class="d-block" data-toggle="modal"
 									data-target="#modal--guida-mappa-dato-osservato"> <span
 									class="icon i-info-circle" title="Info"></span> <span>
-										Guida alla mappa </span>
+										<liferay-ui:message key="allertaanimazionemeteo_guidaallamappa" /> </span>
 								</a>
 							</div>
 						</div>

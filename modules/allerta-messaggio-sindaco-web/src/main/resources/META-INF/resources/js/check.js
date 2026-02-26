@@ -24,7 +24,7 @@ $( document ).ready(function() {
 		      if (window.location.href.lastIndexOf("messaggio")!=-1) {
 		    	console.log("Mando heartbeat");
 		    	$.ajax({
-			      url: '/o/api/heartbeat/'+new Date().getTime(),
+			      url: '/o/heartbeat/'+new Date().getTime(),
 			      method: 'GET',
 			    }).then(function (resp) {
 		   

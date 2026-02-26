@@ -1,27 +1,21 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package allerta.verifica.service.persistence.impl;
 
-import aQute.bnd.annotation.ProviderType;
-
 import allerta.verifica.exception.NoSuchVerificaDatoException;
 import allerta.verifica.model.VerificaDato;
+import allerta.verifica.model.VerificaDatoTable;
 import allerta.verifica.model.impl.VerificaDatoImpl;
 import allerta.verifica.model.impl.VerificaDatoModelImpl;
 import allerta.verifica.service.persistence.VerificaDatoPersistence;
+import allerta.verifica.service.persistence.VerificaDatoUtil;
+import allerta.verifica.service.persistence.impl.constants.VERIFICAPersistenceConstants;
 
+import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
@@ -29,31 +23,36 @@ import com.liferay.portal.kernel.dao.orm.Query;
 import com.liferay.portal.kernel.dao.orm.QueryPos;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
+import com.liferay.portal.kernel.dao.orm.SessionFactory;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.kernel.util.PropsKeys;
+import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.SetUtil;
-import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.spring.extender.service.ServiceReference;
 
 import java.io.Serializable;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 
 import java.sql.Timestamp;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+
+import javax.sql.DataSource;
+
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The persistence implementation for the verifica dato service.
@@ -65,7 +64,7 @@ import java.util.Set;
  * @author Brian Wing Shun Chan
  * @generated
  */
-@ProviderType
+@Component(service = VerificaDatoPersistence.class)
 public class VerificaDatoPersistenceImpl
 	extends BasePersistenceImpl<VerificaDato>
 	implements VerificaDatoPersistence {
@@ -107,7 +106,7 @@ public class VerificaDatoPersistenceImpl
 	 * Returns a range of all the verifica datos where documento = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param documento the documento
@@ -126,7 +125,7 @@ public class VerificaDatoPersistenceImpl
 	 * Returns an ordered range of all the verifica datos where documento = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param documento the documento
@@ -147,34 +146,34 @@ public class VerificaDatoPersistenceImpl
 	 * Returns an ordered range of all the verifica datos where documento = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param documento the documento
 	 * @param start the lower bound of the range of verifica datos
 	 * @param end the upper bound of the range of verifica datos (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching verifica datos
 	 */
 	@Override
 	public List<VerificaDato> findByDocumento(
 		long documento, int start, int end,
 		OrderByComparator<VerificaDato> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindByDocumento;
-			finderArgs = new Object[] {documento};
+			if (useFinderCache) {
+				finderPath = _finderPathWithoutPaginationFindByDocumento;
+				finderArgs = new Object[] {documento};
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByDocumento;
 			finderArgs = new Object[] {
 				documento, start, end, orderByComparator
@@ -183,13 +182,13 @@ public class VerificaDatoPersistenceImpl
 
 		List<VerificaDato> list = null;
 
-		if (retrieveFromCache) {
+		if (useFinderCache) {
 			list = (List<VerificaDato>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (VerificaDato verificaDato : list) {
-					if ((documento != verificaDato.getDocumento())) {
+					if (documento != verificaDato.getDocumento()) {
 						list = null;
 
 						break;
@@ -199,62 +198,52 @@ public class VerificaDatoPersistenceImpl
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					3 + (orderByComparator.getOrderByFields().length * 2));
 			}
 			else {
-				query = new StringBundler(3);
+				sb = new StringBundler(3);
 			}
 
-			query.append(_SQL_SELECT_VERIFICADATO_WHERE);
+			sb.append(_SQL_SELECT_VERIFICADATO_WHERE);
 
-			query.append(_FINDER_COLUMN_DOCUMENTO_DOCUMENTO_2);
+			sb.append(_FINDER_COLUMN_DOCUMENTO_DOCUMENTO_2);
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 			}
-			else if (pagination) {
-				query.append(VerificaDatoModelImpl.ORDER_BY_JPQL);
+			else {
+				sb.append(VerificaDatoModelImpl.ORDER_BY_JPQL);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
-				qPos.add(documento);
+				queryPos.add(documento);
 
-				if (!pagination) {
-					list = (List<VerificaDato>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<VerificaDato>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<VerificaDato>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					finderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -284,16 +273,16 @@ public class VerificaDatoPersistenceImpl
 			return verificaDato;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("documento=");
-		msg.append(documento);
+		sb.append("documento=");
+		sb.append(documento);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchVerificaDatoException(msg.toString());
+		throw new NoSuchVerificaDatoException(sb.toString());
 	}
 
 	/**
@@ -337,16 +326,16 @@ public class VerificaDatoPersistenceImpl
 			return verificaDato;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("documento=");
-		msg.append(documento);
+		sb.append("documento=");
+		sb.append(documento);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchVerificaDatoException(msg.toString());
+		throw new NoSuchVerificaDatoException(sb.toString());
 	}
 
 	/**
@@ -410,8 +399,8 @@ public class VerificaDatoPersistenceImpl
 
 			return array;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -422,101 +411,101 @@ public class VerificaDatoPersistenceImpl
 		Session session, VerificaDato verificaDato, long documento,
 		OrderByComparator<VerificaDato> orderByComparator, boolean previous) {
 
-		StringBundler query = null;
+		StringBundler sb = null;
 
 		if (orderByComparator != null) {
-			query = new StringBundler(
+			sb = new StringBundler(
 				4 + (orderByComparator.getOrderByConditionFields().length * 3) +
 					(orderByComparator.getOrderByFields().length * 3));
 		}
 		else {
-			query = new StringBundler(3);
+			sb = new StringBundler(3);
 		}
 
-		query.append(_SQL_SELECT_VERIFICADATO_WHERE);
+		sb.append(_SQL_SELECT_VERIFICADATO_WHERE);
 
-		query.append(_FINDER_COLUMN_DOCUMENTO_DOCUMENTO_2);
+		sb.append(_FINDER_COLUMN_DOCUMENTO_DOCUMENTO_2);
 
 		if (orderByComparator != null) {
 			String[] orderByConditionFields =
 				orderByComparator.getOrderByConditionFields();
 
 			if (orderByConditionFields.length > 0) {
-				query.append(WHERE_AND);
+				sb.append(WHERE_AND);
 			}
 
 			for (int i = 0; i < orderByConditionFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByConditionFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByConditionFields[i]);
 
 				if ((i + 1) < orderByConditionFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+						sb.append(WHERE_GREATER_THAN_HAS_NEXT);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+						sb.append(WHERE_LESSER_THAN_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN);
+						sb.append(WHERE_GREATER_THAN);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN);
+						sb.append(WHERE_LESSER_THAN);
 					}
 				}
 			}
 
-			query.append(ORDER_BY_CLAUSE);
+			sb.append(ORDER_BY_CLAUSE);
 
 			String[] orderByFields = orderByComparator.getOrderByFields();
 
 			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByFields[i]);
 
 				if ((i + 1) < orderByFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC_HAS_NEXT);
+						sb.append(ORDER_BY_ASC_HAS_NEXT);
 					}
 					else {
-						query.append(ORDER_BY_DESC_HAS_NEXT);
+						sb.append(ORDER_BY_DESC_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC);
+						sb.append(ORDER_BY_ASC);
 					}
 					else {
-						query.append(ORDER_BY_DESC);
+						sb.append(ORDER_BY_DESC);
 					}
 				}
 			}
 		}
 		else {
-			query.append(VerificaDatoModelImpl.ORDER_BY_JPQL);
+			sb.append(VerificaDatoModelImpl.ORDER_BY_JPQL);
 		}
 
-		String sql = query.toString();
+		String sql = sb.toString();
 
-		Query q = session.createQuery(sql);
+		Query query = session.createQuery(sql);
 
-		q.setFirstResult(0);
-		q.setMaxResults(2);
+		query.setFirstResult(0);
+		query.setMaxResults(2);
 
-		QueryPos qPos = QueryPos.getInstance(q);
+		QueryPos queryPos = QueryPos.getInstance(query);
 
-		qPos.add(documento);
+		queryPos.add(documento);
 
 		if (orderByComparator != null) {
 			for (Object orderByConditionValue :
 					orderByComparator.getOrderByConditionValues(verificaDato)) {
 
-				qPos.add(orderByConditionValue);
+				queryPos.add(orderByConditionValue);
 			}
 		}
 
-		List<VerificaDato> list = q.list();
+		List<VerificaDato> list = query.list();
 
 		if (list.size() == 2) {
 			return list.get(1);
@@ -556,33 +545,31 @@ public class VerificaDatoPersistenceImpl
 		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
-			StringBundler query = new StringBundler(2);
+			StringBundler sb = new StringBundler(2);
 
-			query.append(_SQL_COUNT_VERIFICADATO_WHERE);
+			sb.append(_SQL_COUNT_VERIFICADATO_WHERE);
 
-			query.append(_FINDER_COLUMN_DOCUMENTO_DOCUMENTO_2);
+			sb.append(_FINDER_COLUMN_DOCUMENTO_DOCUMENTO_2);
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
-				qPos.add(documento);
+				queryPos.add(documento);
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
 				finderCache.putResult(finderPath, finderArgs, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -618,7 +605,7 @@ public class VerificaDatoPersistenceImpl
 	 * Returns a range of all the verifica datos where documento = &#63; and giorno = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param documento the documento
@@ -638,7 +625,7 @@ public class VerificaDatoPersistenceImpl
 	 * Returns an ordered range of all the verifica datos where documento = &#63; and giorno = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param documento the documento
@@ -661,7 +648,7 @@ public class VerificaDatoPersistenceImpl
 	 * Returns an ordered range of all the verifica datos where documento = &#63; and giorno = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param documento the documento
@@ -669,27 +656,27 @@ public class VerificaDatoPersistenceImpl
 	 * @param start the lower bound of the range of verifica datos
 	 * @param end the upper bound of the range of verifica datos (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching verifica datos
 	 */
 	@Override
 	public List<VerificaDato> findByDocumentoGiorno(
 		long documento, Date giorno, int start, int end,
 		OrderByComparator<VerificaDato> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindByDocumentoGiorno;
-			finderArgs = new Object[] {documento, _getTime(giorno)};
+			if (useFinderCache) {
+				finderPath = _finderPathWithoutPaginationFindByDocumentoGiorno;
+				finderArgs = new Object[] {documento, _getTime(giorno)};
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByDocumentoGiorno;
 			finderArgs = new Object[] {
 				documento, _getTime(giorno), start, end, orderByComparator
@@ -698,7 +685,7 @@ public class VerificaDatoPersistenceImpl
 
 		List<VerificaDato> list = null;
 
-		if (retrieveFromCache) {
+		if (useFinderCache) {
 			list = (List<VerificaDato>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
@@ -716,77 +703,67 @@ public class VerificaDatoPersistenceImpl
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					4 + (orderByComparator.getOrderByFields().length * 2));
 			}
 			else {
-				query = new StringBundler(4);
+				sb = new StringBundler(4);
 			}
 
-			query.append(_SQL_SELECT_VERIFICADATO_WHERE);
+			sb.append(_SQL_SELECT_VERIFICADATO_WHERE);
 
-			query.append(_FINDER_COLUMN_DOCUMENTOGIORNO_DOCUMENTO_2);
+			sb.append(_FINDER_COLUMN_DOCUMENTOGIORNO_DOCUMENTO_2);
 
 			boolean bindGiorno = false;
 
 			if (giorno == null) {
-				query.append(_FINDER_COLUMN_DOCUMENTOGIORNO_GIORNO_1);
+				sb.append(_FINDER_COLUMN_DOCUMENTOGIORNO_GIORNO_1);
 			}
 			else {
 				bindGiorno = true;
 
-				query.append(_FINDER_COLUMN_DOCUMENTOGIORNO_GIORNO_2);
+				sb.append(_FINDER_COLUMN_DOCUMENTOGIORNO_GIORNO_2);
 			}
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 			}
-			else if (pagination) {
-				query.append(VerificaDatoModelImpl.ORDER_BY_JPQL);
+			else {
+				sb.append(VerificaDatoModelImpl.ORDER_BY_JPQL);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
-				qPos.add(documento);
+				queryPos.add(documento);
 
 				if (bindGiorno) {
-					qPos.add(new Timestamp(giorno.getTime()));
+					queryPos.add(new Timestamp(giorno.getTime()));
 				}
 
-				if (!pagination) {
-					list = (List<VerificaDato>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<VerificaDato>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<VerificaDato>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					finderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -818,19 +795,19 @@ public class VerificaDatoPersistenceImpl
 			return verificaDato;
 		}
 
-		StringBundler msg = new StringBundler(6);
+		StringBundler sb = new StringBundler(6);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("documento=");
-		msg.append(documento);
+		sb.append("documento=");
+		sb.append(documento);
 
-		msg.append(", giorno=");
-		msg.append(giorno);
+		sb.append(", giorno=");
+		sb.append(giorno);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchVerificaDatoException(msg.toString());
+		throw new NoSuchVerificaDatoException(sb.toString());
 	}
 
 	/**
@@ -878,19 +855,19 @@ public class VerificaDatoPersistenceImpl
 			return verificaDato;
 		}
 
-		StringBundler msg = new StringBundler(6);
+		StringBundler sb = new StringBundler(6);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("documento=");
-		msg.append(documento);
+		sb.append("documento=");
+		sb.append(documento);
 
-		msg.append(", giorno=");
-		msg.append(giorno);
+		sb.append(", giorno=");
+		sb.append(giorno);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchVerificaDatoException(msg.toString());
+		throw new NoSuchVerificaDatoException(sb.toString());
 	}
 
 	/**
@@ -959,8 +936,8 @@ public class VerificaDatoPersistenceImpl
 
 			return array;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -971,30 +948,30 @@ public class VerificaDatoPersistenceImpl
 		Session session, VerificaDato verificaDato, long documento, Date giorno,
 		OrderByComparator<VerificaDato> orderByComparator, boolean previous) {
 
-		StringBundler query = null;
+		StringBundler sb = null;
 
 		if (orderByComparator != null) {
-			query = new StringBundler(
+			sb = new StringBundler(
 				5 + (orderByComparator.getOrderByConditionFields().length * 3) +
 					(orderByComparator.getOrderByFields().length * 3));
 		}
 		else {
-			query = new StringBundler(4);
+			sb = new StringBundler(4);
 		}
 
-		query.append(_SQL_SELECT_VERIFICADATO_WHERE);
+		sb.append(_SQL_SELECT_VERIFICADATO_WHERE);
 
-		query.append(_FINDER_COLUMN_DOCUMENTOGIORNO_DOCUMENTO_2);
+		sb.append(_FINDER_COLUMN_DOCUMENTOGIORNO_DOCUMENTO_2);
 
 		boolean bindGiorno = false;
 
 		if (giorno == null) {
-			query.append(_FINDER_COLUMN_DOCUMENTOGIORNO_GIORNO_1);
+			sb.append(_FINDER_COLUMN_DOCUMENTOGIORNO_GIORNO_1);
 		}
 		else {
 			bindGiorno = true;
 
-			query.append(_FINDER_COLUMN_DOCUMENTOGIORNO_GIORNO_2);
+			sb.append(_FINDER_COLUMN_DOCUMENTOGIORNO_GIORNO_2);
 		}
 
 		if (orderByComparator != null) {
@@ -1002,85 +979,85 @@ public class VerificaDatoPersistenceImpl
 				orderByComparator.getOrderByConditionFields();
 
 			if (orderByConditionFields.length > 0) {
-				query.append(WHERE_AND);
+				sb.append(WHERE_AND);
 			}
 
 			for (int i = 0; i < orderByConditionFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByConditionFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByConditionFields[i]);
 
 				if ((i + 1) < orderByConditionFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+						sb.append(WHERE_GREATER_THAN_HAS_NEXT);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+						sb.append(WHERE_LESSER_THAN_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN);
+						sb.append(WHERE_GREATER_THAN);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN);
+						sb.append(WHERE_LESSER_THAN);
 					}
 				}
 			}
 
-			query.append(ORDER_BY_CLAUSE);
+			sb.append(ORDER_BY_CLAUSE);
 
 			String[] orderByFields = orderByComparator.getOrderByFields();
 
 			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByFields[i]);
 
 				if ((i + 1) < orderByFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC_HAS_NEXT);
+						sb.append(ORDER_BY_ASC_HAS_NEXT);
 					}
 					else {
-						query.append(ORDER_BY_DESC_HAS_NEXT);
+						sb.append(ORDER_BY_DESC_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC);
+						sb.append(ORDER_BY_ASC);
 					}
 					else {
-						query.append(ORDER_BY_DESC);
+						sb.append(ORDER_BY_DESC);
 					}
 				}
 			}
 		}
 		else {
-			query.append(VerificaDatoModelImpl.ORDER_BY_JPQL);
+			sb.append(VerificaDatoModelImpl.ORDER_BY_JPQL);
 		}
 
-		String sql = query.toString();
+		String sql = sb.toString();
 
-		Query q = session.createQuery(sql);
+		Query query = session.createQuery(sql);
 
-		q.setFirstResult(0);
-		q.setMaxResults(2);
+		query.setFirstResult(0);
+		query.setMaxResults(2);
 
-		QueryPos qPos = QueryPos.getInstance(q);
+		QueryPos queryPos = QueryPos.getInstance(query);
 
-		qPos.add(documento);
+		queryPos.add(documento);
 
 		if (bindGiorno) {
-			qPos.add(new Timestamp(giorno.getTime()));
+			queryPos.add(new Timestamp(giorno.getTime()));
 		}
 
 		if (orderByComparator != null) {
 			for (Object orderByConditionValue :
 					orderByComparator.getOrderByConditionValues(verificaDato)) {
 
-				qPos.add(orderByConditionValue);
+				queryPos.add(orderByConditionValue);
 			}
 		}
 
-		List<VerificaDato> list = q.list();
+		List<VerificaDato> list = query.list();
 
 		if (list.size() == 2) {
 			return list.get(1);
@@ -1123,48 +1100,46 @@ public class VerificaDatoPersistenceImpl
 		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
-			StringBundler query = new StringBundler(3);
+			StringBundler sb = new StringBundler(3);
 
-			query.append(_SQL_COUNT_VERIFICADATO_WHERE);
+			sb.append(_SQL_COUNT_VERIFICADATO_WHERE);
 
-			query.append(_FINDER_COLUMN_DOCUMENTOGIORNO_DOCUMENTO_2);
+			sb.append(_FINDER_COLUMN_DOCUMENTOGIORNO_DOCUMENTO_2);
 
 			boolean bindGiorno = false;
 
 			if (giorno == null) {
-				query.append(_FINDER_COLUMN_DOCUMENTOGIORNO_GIORNO_1);
+				sb.append(_FINDER_COLUMN_DOCUMENTOGIORNO_GIORNO_1);
 			}
 			else {
 				bindGiorno = true;
 
-				query.append(_FINDER_COLUMN_DOCUMENTOGIORNO_GIORNO_2);
+				sb.append(_FINDER_COLUMN_DOCUMENTOGIORNO_GIORNO_2);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
-				qPos.add(documento);
+				queryPos.add(documento);
 
 				if (bindGiorno) {
-					qPos.add(new Timestamp(giorno.getTime()));
+					queryPos.add(new Timestamp(giorno.getTime()));
 				}
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
 				finderCache.putResult(finderPath, finderArgs, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -1208,7 +1183,7 @@ public class VerificaDatoPersistenceImpl
 	 * Returns a range of all the verifica datos where documento = &#63; and giorno = &#63; and evento = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param documento the documento
@@ -1230,7 +1205,7 @@ public class VerificaDatoPersistenceImpl
 	 * Returns an ordered range of all the verifica datos where documento = &#63; and giorno = &#63; and evento = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param documento the documento
@@ -1254,7 +1229,7 @@ public class VerificaDatoPersistenceImpl
 	 * Returns an ordered range of all the verifica datos where documento = &#63; and giorno = &#63; and evento = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param documento the documento
@@ -1263,28 +1238,28 @@ public class VerificaDatoPersistenceImpl
 	 * @param start the lower bound of the range of verifica datos
 	 * @param end the upper bound of the range of verifica datos (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching verifica datos
 	 */
 	@Override
 	public List<VerificaDato> findByDocumentoGiornoEvento(
 		long documento, Date giorno, long evento, int start, int end,
 		OrderByComparator<VerificaDato> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath =
-				_finderPathWithoutPaginationFindByDocumentoGiornoEvento;
-			finderArgs = new Object[] {documento, _getTime(giorno), evento};
+			if (useFinderCache) {
+				finderPath =
+					_finderPathWithoutPaginationFindByDocumentoGiornoEvento;
+				finderArgs = new Object[] {documento, _getTime(giorno), evento};
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByDocumentoGiornoEvento;
 			finderArgs = new Object[] {
 				documento, _getTime(giorno), evento, start, end,
@@ -1294,7 +1269,7 @@ public class VerificaDatoPersistenceImpl
 
 		List<VerificaDato> list = null;
 
-		if (retrieveFromCache) {
+		if (useFinderCache) {
 			list = (List<VerificaDato>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
@@ -1313,81 +1288,71 @@ public class VerificaDatoPersistenceImpl
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					5 + (orderByComparator.getOrderByFields().length * 2));
 			}
 			else {
-				query = new StringBundler(5);
+				sb = new StringBundler(5);
 			}
 
-			query.append(_SQL_SELECT_VERIFICADATO_WHERE);
+			sb.append(_SQL_SELECT_VERIFICADATO_WHERE);
 
-			query.append(_FINDER_COLUMN_DOCUMENTOGIORNOEVENTO_DOCUMENTO_2);
+			sb.append(_FINDER_COLUMN_DOCUMENTOGIORNOEVENTO_DOCUMENTO_2);
 
 			boolean bindGiorno = false;
 
 			if (giorno == null) {
-				query.append(_FINDER_COLUMN_DOCUMENTOGIORNOEVENTO_GIORNO_1);
+				sb.append(_FINDER_COLUMN_DOCUMENTOGIORNOEVENTO_GIORNO_1);
 			}
 			else {
 				bindGiorno = true;
 
-				query.append(_FINDER_COLUMN_DOCUMENTOGIORNOEVENTO_GIORNO_2);
+				sb.append(_FINDER_COLUMN_DOCUMENTOGIORNOEVENTO_GIORNO_2);
 			}
 
-			query.append(_FINDER_COLUMN_DOCUMENTOGIORNOEVENTO_EVENTO_2);
+			sb.append(_FINDER_COLUMN_DOCUMENTOGIORNOEVENTO_EVENTO_2);
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 			}
-			else if (pagination) {
-				query.append(VerificaDatoModelImpl.ORDER_BY_JPQL);
+			else {
+				sb.append(VerificaDatoModelImpl.ORDER_BY_JPQL);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
-				qPos.add(documento);
+				queryPos.add(documento);
 
 				if (bindGiorno) {
-					qPos.add(new Timestamp(giorno.getTime()));
+					queryPos.add(new Timestamp(giorno.getTime()));
 				}
 
-				qPos.add(evento);
+				queryPos.add(evento);
 
-				if (!pagination) {
-					list = (List<VerificaDato>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<VerificaDato>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<VerificaDato>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					finderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -1420,22 +1385,22 @@ public class VerificaDatoPersistenceImpl
 			return verificaDato;
 		}
 
-		StringBundler msg = new StringBundler(8);
+		StringBundler sb = new StringBundler(8);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("documento=");
-		msg.append(documento);
+		sb.append("documento=");
+		sb.append(documento);
 
-		msg.append(", giorno=");
-		msg.append(giorno);
+		sb.append(", giorno=");
+		sb.append(giorno);
 
-		msg.append(", evento=");
-		msg.append(evento);
+		sb.append(", evento=");
+		sb.append(evento);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchVerificaDatoException(msg.toString());
+		throw new NoSuchVerificaDatoException(sb.toString());
 	}
 
 	/**
@@ -1485,22 +1450,22 @@ public class VerificaDatoPersistenceImpl
 			return verificaDato;
 		}
 
-		StringBundler msg = new StringBundler(8);
+		StringBundler sb = new StringBundler(8);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("documento=");
-		msg.append(documento);
+		sb.append("documento=");
+		sb.append(documento);
 
-		msg.append(", giorno=");
-		msg.append(giorno);
+		sb.append(", giorno=");
+		sb.append(giorno);
 
-		msg.append(", evento=");
-		msg.append(evento);
+		sb.append(", evento=");
+		sb.append(evento);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchVerificaDatoException(msg.toString());
+		throw new NoSuchVerificaDatoException(sb.toString());
 	}
 
 	/**
@@ -1571,8 +1536,8 @@ public class VerificaDatoPersistenceImpl
 
 			return array;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -1584,120 +1549,120 @@ public class VerificaDatoPersistenceImpl
 		long evento, OrderByComparator<VerificaDato> orderByComparator,
 		boolean previous) {
 
-		StringBundler query = null;
+		StringBundler sb = null;
 
 		if (orderByComparator != null) {
-			query = new StringBundler(
+			sb = new StringBundler(
 				6 + (orderByComparator.getOrderByConditionFields().length * 3) +
 					(orderByComparator.getOrderByFields().length * 3));
 		}
 		else {
-			query = new StringBundler(5);
+			sb = new StringBundler(5);
 		}
 
-		query.append(_SQL_SELECT_VERIFICADATO_WHERE);
+		sb.append(_SQL_SELECT_VERIFICADATO_WHERE);
 
-		query.append(_FINDER_COLUMN_DOCUMENTOGIORNOEVENTO_DOCUMENTO_2);
+		sb.append(_FINDER_COLUMN_DOCUMENTOGIORNOEVENTO_DOCUMENTO_2);
 
 		boolean bindGiorno = false;
 
 		if (giorno == null) {
-			query.append(_FINDER_COLUMN_DOCUMENTOGIORNOEVENTO_GIORNO_1);
+			sb.append(_FINDER_COLUMN_DOCUMENTOGIORNOEVENTO_GIORNO_1);
 		}
 		else {
 			bindGiorno = true;
 
-			query.append(_FINDER_COLUMN_DOCUMENTOGIORNOEVENTO_GIORNO_2);
+			sb.append(_FINDER_COLUMN_DOCUMENTOGIORNOEVENTO_GIORNO_2);
 		}
 
-		query.append(_FINDER_COLUMN_DOCUMENTOGIORNOEVENTO_EVENTO_2);
+		sb.append(_FINDER_COLUMN_DOCUMENTOGIORNOEVENTO_EVENTO_2);
 
 		if (orderByComparator != null) {
 			String[] orderByConditionFields =
 				orderByComparator.getOrderByConditionFields();
 
 			if (orderByConditionFields.length > 0) {
-				query.append(WHERE_AND);
+				sb.append(WHERE_AND);
 			}
 
 			for (int i = 0; i < orderByConditionFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByConditionFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByConditionFields[i]);
 
 				if ((i + 1) < orderByConditionFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+						sb.append(WHERE_GREATER_THAN_HAS_NEXT);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+						sb.append(WHERE_LESSER_THAN_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN);
+						sb.append(WHERE_GREATER_THAN);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN);
+						sb.append(WHERE_LESSER_THAN);
 					}
 				}
 			}
 
-			query.append(ORDER_BY_CLAUSE);
+			sb.append(ORDER_BY_CLAUSE);
 
 			String[] orderByFields = orderByComparator.getOrderByFields();
 
 			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByFields[i]);
 
 				if ((i + 1) < orderByFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC_HAS_NEXT);
+						sb.append(ORDER_BY_ASC_HAS_NEXT);
 					}
 					else {
-						query.append(ORDER_BY_DESC_HAS_NEXT);
+						sb.append(ORDER_BY_DESC_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC);
+						sb.append(ORDER_BY_ASC);
 					}
 					else {
-						query.append(ORDER_BY_DESC);
+						sb.append(ORDER_BY_DESC);
 					}
 				}
 			}
 		}
 		else {
-			query.append(VerificaDatoModelImpl.ORDER_BY_JPQL);
+			sb.append(VerificaDatoModelImpl.ORDER_BY_JPQL);
 		}
 
-		String sql = query.toString();
+		String sql = sb.toString();
 
-		Query q = session.createQuery(sql);
+		Query query = session.createQuery(sql);
 
-		q.setFirstResult(0);
-		q.setMaxResults(2);
+		query.setFirstResult(0);
+		query.setMaxResults(2);
 
-		QueryPos qPos = QueryPos.getInstance(q);
+		QueryPos queryPos = QueryPos.getInstance(query);
 
-		qPos.add(documento);
+		queryPos.add(documento);
 
 		if (bindGiorno) {
-			qPos.add(new Timestamp(giorno.getTime()));
+			queryPos.add(new Timestamp(giorno.getTime()));
 		}
 
-		qPos.add(evento);
+		queryPos.add(evento);
 
 		if (orderByComparator != null) {
 			for (Object orderByConditionValue :
 					orderByComparator.getOrderByConditionValues(verificaDato)) {
 
-				qPos.add(orderByConditionValue);
+				queryPos.add(orderByConditionValue);
 			}
 		}
 
-		List<VerificaDato> list = q.list();
+		List<VerificaDato> list = query.list();
 
 		if (list.size() == 2) {
 			return list.get(1);
@@ -1748,52 +1713,50 @@ public class VerificaDatoPersistenceImpl
 		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
-			StringBundler query = new StringBundler(4);
+			StringBundler sb = new StringBundler(4);
 
-			query.append(_SQL_COUNT_VERIFICADATO_WHERE);
+			sb.append(_SQL_COUNT_VERIFICADATO_WHERE);
 
-			query.append(_FINDER_COLUMN_DOCUMENTOGIORNOEVENTO_DOCUMENTO_2);
+			sb.append(_FINDER_COLUMN_DOCUMENTOGIORNOEVENTO_DOCUMENTO_2);
 
 			boolean bindGiorno = false;
 
 			if (giorno == null) {
-				query.append(_FINDER_COLUMN_DOCUMENTOGIORNOEVENTO_GIORNO_1);
+				sb.append(_FINDER_COLUMN_DOCUMENTOGIORNOEVENTO_GIORNO_1);
 			}
 			else {
 				bindGiorno = true;
 
-				query.append(_FINDER_COLUMN_DOCUMENTOGIORNOEVENTO_GIORNO_2);
+				sb.append(_FINDER_COLUMN_DOCUMENTOGIORNOEVENTO_GIORNO_2);
 			}
 
-			query.append(_FINDER_COLUMN_DOCUMENTOGIORNOEVENTO_EVENTO_2);
+			sb.append(_FINDER_COLUMN_DOCUMENTOGIORNOEVENTO_EVENTO_2);
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
-				qPos.add(documento);
+				queryPos.add(documento);
 
 				if (bindGiorno) {
-					qPos.add(new Timestamp(giorno.getTime()));
+					queryPos.add(new Timestamp(giorno.getTime()));
 				}
 
-				qPos.add(evento);
+				queryPos.add(evento);
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
 				finderCache.putResult(finderPath, finderArgs, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -1841,7 +1804,7 @@ public class VerificaDatoPersistenceImpl
 	 * Returns a range of all the verifica datos where documento = &#63; and giorno = &#63; and zona = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param documento the documento
@@ -1863,7 +1826,7 @@ public class VerificaDatoPersistenceImpl
 	 * Returns an ordered range of all the verifica datos where documento = &#63; and giorno = &#63; and zona = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param documento the documento
@@ -1887,7 +1850,7 @@ public class VerificaDatoPersistenceImpl
 	 * Returns an ordered range of all the verifica datos where documento = &#63; and giorno = &#63; and zona = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param documento the documento
@@ -1896,29 +1859,30 @@ public class VerificaDatoPersistenceImpl
 	 * @param start the lower bound of the range of verifica datos
 	 * @param end the upper bound of the range of verifica datos (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching verifica datos
 	 */
 	@Override
 	public List<VerificaDato> findByDocumentoGiornoZona(
 		long documento, Date giorno, String zona, int start, int end,
 		OrderByComparator<VerificaDato> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
 		zona = Objects.toString(zona, "");
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindByDocumentoGiornoZona;
-			finderArgs = new Object[] {documento, _getTime(giorno), zona};
+			if (useFinderCache) {
+				finderPath =
+					_finderPathWithoutPaginationFindByDocumentoGiornoZona;
+				finderArgs = new Object[] {documento, _getTime(giorno), zona};
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByDocumentoGiornoZona;
 			finderArgs = new Object[] {
 				documento, _getTime(giorno), zona, start, end, orderByComparator
@@ -1927,7 +1891,7 @@ public class VerificaDatoPersistenceImpl
 
 		List<VerificaDato> list = null;
 
-		if (retrieveFromCache) {
+		if (useFinderCache) {
 			list = (List<VerificaDato>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
@@ -1946,92 +1910,82 @@ public class VerificaDatoPersistenceImpl
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					5 + (orderByComparator.getOrderByFields().length * 2));
 			}
 			else {
-				query = new StringBundler(5);
+				sb = new StringBundler(5);
 			}
 
-			query.append(_SQL_SELECT_VERIFICADATO_WHERE);
+			sb.append(_SQL_SELECT_VERIFICADATO_WHERE);
 
-			query.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONA_DOCUMENTO_2);
+			sb.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONA_DOCUMENTO_2);
 
 			boolean bindGiorno = false;
 
 			if (giorno == null) {
-				query.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONA_GIORNO_1);
+				sb.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONA_GIORNO_1);
 			}
 			else {
 				bindGiorno = true;
 
-				query.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONA_GIORNO_2);
+				sb.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONA_GIORNO_2);
 			}
 
 			boolean bindZona = false;
 
 			if (zona.isEmpty()) {
-				query.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONA_ZONA_3);
+				sb.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONA_ZONA_3);
 			}
 			else {
 				bindZona = true;
 
-				query.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONA_ZONA_2);
+				sb.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONA_ZONA_2);
 			}
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 			}
-			else if (pagination) {
-				query.append(VerificaDatoModelImpl.ORDER_BY_JPQL);
+			else {
+				sb.append(VerificaDatoModelImpl.ORDER_BY_JPQL);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
-				qPos.add(documento);
+				queryPos.add(documento);
 
 				if (bindGiorno) {
-					qPos.add(new Timestamp(giorno.getTime()));
+					queryPos.add(new Timestamp(giorno.getTime()));
 				}
 
 				if (bindZona) {
-					qPos.add(zona);
+					queryPos.add(zona);
 				}
 
-				if (!pagination) {
-					list = (List<VerificaDato>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<VerificaDato>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<VerificaDato>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					finderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -2064,22 +2018,22 @@ public class VerificaDatoPersistenceImpl
 			return verificaDato;
 		}
 
-		StringBundler msg = new StringBundler(8);
+		StringBundler sb = new StringBundler(8);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("documento=");
-		msg.append(documento);
+		sb.append("documento=");
+		sb.append(documento);
 
-		msg.append(", giorno=");
-		msg.append(giorno);
+		sb.append(", giorno=");
+		sb.append(giorno);
 
-		msg.append(", zona=");
-		msg.append(zona);
+		sb.append(", zona=");
+		sb.append(zona);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchVerificaDatoException(msg.toString());
+		throw new NoSuchVerificaDatoException(sb.toString());
 	}
 
 	/**
@@ -2129,22 +2083,22 @@ public class VerificaDatoPersistenceImpl
 			return verificaDato;
 		}
 
-		StringBundler msg = new StringBundler(8);
+		StringBundler sb = new StringBundler(8);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("documento=");
-		msg.append(documento);
+		sb.append("documento=");
+		sb.append(documento);
 
-		msg.append(", giorno=");
-		msg.append(giorno);
+		sb.append(", giorno=");
+		sb.append(giorno);
 
-		msg.append(", zona=");
-		msg.append(zona);
+		sb.append(", zona=");
+		sb.append(zona);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchVerificaDatoException(msg.toString());
+		throw new NoSuchVerificaDatoException(sb.toString());
 	}
 
 	/**
@@ -2217,8 +2171,8 @@ public class VerificaDatoPersistenceImpl
 
 			return array;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -2230,41 +2184,41 @@ public class VerificaDatoPersistenceImpl
 		String zona, OrderByComparator<VerificaDato> orderByComparator,
 		boolean previous) {
 
-		StringBundler query = null;
+		StringBundler sb = null;
 
 		if (orderByComparator != null) {
-			query = new StringBundler(
+			sb = new StringBundler(
 				6 + (orderByComparator.getOrderByConditionFields().length * 3) +
 					(orderByComparator.getOrderByFields().length * 3));
 		}
 		else {
-			query = new StringBundler(5);
+			sb = new StringBundler(5);
 		}
 
-		query.append(_SQL_SELECT_VERIFICADATO_WHERE);
+		sb.append(_SQL_SELECT_VERIFICADATO_WHERE);
 
-		query.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONA_DOCUMENTO_2);
+		sb.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONA_DOCUMENTO_2);
 
 		boolean bindGiorno = false;
 
 		if (giorno == null) {
-			query.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONA_GIORNO_1);
+			sb.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONA_GIORNO_1);
 		}
 		else {
 			bindGiorno = true;
 
-			query.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONA_GIORNO_2);
+			sb.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONA_GIORNO_2);
 		}
 
 		boolean bindZona = false;
 
 		if (zona.isEmpty()) {
-			query.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONA_ZONA_3);
+			sb.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONA_ZONA_3);
 		}
 		else {
 			bindZona = true;
 
-			query.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONA_ZONA_2);
+			sb.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONA_ZONA_2);
 		}
 
 		if (orderByComparator != null) {
@@ -2272,89 +2226,89 @@ public class VerificaDatoPersistenceImpl
 				orderByComparator.getOrderByConditionFields();
 
 			if (orderByConditionFields.length > 0) {
-				query.append(WHERE_AND);
+				sb.append(WHERE_AND);
 			}
 
 			for (int i = 0; i < orderByConditionFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByConditionFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByConditionFields[i]);
 
 				if ((i + 1) < orderByConditionFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+						sb.append(WHERE_GREATER_THAN_HAS_NEXT);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+						sb.append(WHERE_LESSER_THAN_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN);
+						sb.append(WHERE_GREATER_THAN);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN);
+						sb.append(WHERE_LESSER_THAN);
 					}
 				}
 			}
 
-			query.append(ORDER_BY_CLAUSE);
+			sb.append(ORDER_BY_CLAUSE);
 
 			String[] orderByFields = orderByComparator.getOrderByFields();
 
 			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByFields[i]);
 
 				if ((i + 1) < orderByFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC_HAS_NEXT);
+						sb.append(ORDER_BY_ASC_HAS_NEXT);
 					}
 					else {
-						query.append(ORDER_BY_DESC_HAS_NEXT);
+						sb.append(ORDER_BY_DESC_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC);
+						sb.append(ORDER_BY_ASC);
 					}
 					else {
-						query.append(ORDER_BY_DESC);
+						sb.append(ORDER_BY_DESC);
 					}
 				}
 			}
 		}
 		else {
-			query.append(VerificaDatoModelImpl.ORDER_BY_JPQL);
+			sb.append(VerificaDatoModelImpl.ORDER_BY_JPQL);
 		}
 
-		String sql = query.toString();
+		String sql = sb.toString();
 
-		Query q = session.createQuery(sql);
+		Query query = session.createQuery(sql);
 
-		q.setFirstResult(0);
-		q.setMaxResults(2);
+		query.setFirstResult(0);
+		query.setMaxResults(2);
 
-		QueryPos qPos = QueryPos.getInstance(q);
+		QueryPos queryPos = QueryPos.getInstance(query);
 
-		qPos.add(documento);
+		queryPos.add(documento);
 
 		if (bindGiorno) {
-			qPos.add(new Timestamp(giorno.getTime()));
+			queryPos.add(new Timestamp(giorno.getTime()));
 		}
 
 		if (bindZona) {
-			qPos.add(zona);
+			queryPos.add(zona);
 		}
 
 		if (orderByComparator != null) {
 			for (Object orderByConditionValue :
 					orderByComparator.getOrderByConditionValues(verificaDato)) {
 
-				qPos.add(orderByConditionValue);
+				queryPos.add(orderByConditionValue);
 			}
 		}
 
-		List<VerificaDato> list = q.list();
+		List<VerificaDato> list = query.list();
 
 		if (list.size() == 2) {
 			return list.get(1);
@@ -2405,63 +2359,61 @@ public class VerificaDatoPersistenceImpl
 		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
-			StringBundler query = new StringBundler(4);
+			StringBundler sb = new StringBundler(4);
 
-			query.append(_SQL_COUNT_VERIFICADATO_WHERE);
+			sb.append(_SQL_COUNT_VERIFICADATO_WHERE);
 
-			query.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONA_DOCUMENTO_2);
+			sb.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONA_DOCUMENTO_2);
 
 			boolean bindGiorno = false;
 
 			if (giorno == null) {
-				query.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONA_GIORNO_1);
+				sb.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONA_GIORNO_1);
 			}
 			else {
 				bindGiorno = true;
 
-				query.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONA_GIORNO_2);
+				sb.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONA_GIORNO_2);
 			}
 
 			boolean bindZona = false;
 
 			if (zona.isEmpty()) {
-				query.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONA_ZONA_3);
+				sb.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONA_ZONA_3);
 			}
 			else {
 				bindZona = true;
 
-				query.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONA_ZONA_2);
+				sb.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONA_ZONA_2);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
-				qPos.add(documento);
+				queryPos.add(documento);
 
 				if (bindGiorno) {
-					qPos.add(new Timestamp(giorno.getTime()));
+					queryPos.add(new Timestamp(giorno.getTime()));
 				}
 
 				if (bindZona) {
-					qPos.add(zona);
+					queryPos.add(zona);
 				}
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
 				finderCache.putResult(finderPath, finderArgs, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -2513,7 +2465,7 @@ public class VerificaDatoPersistenceImpl
 	 * Returns a range of all the verifica datos where documento = &#63; and giorno = &#63; and zona = &#63; and evento = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param documento the documento
@@ -2537,7 +2489,7 @@ public class VerificaDatoPersistenceImpl
 	 * Returns an ordered range of all the verifica datos where documento = &#63; and giorno = &#63; and zona = &#63; and evento = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param documento the documento
@@ -2563,7 +2515,7 @@ public class VerificaDatoPersistenceImpl
 	 * Returns an ordered range of all the verifica datos where documento = &#63; and giorno = &#63; and zona = &#63; and evento = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param documento the documento
@@ -2573,32 +2525,32 @@ public class VerificaDatoPersistenceImpl
 	 * @param start the lower bound of the range of verifica datos
 	 * @param end the upper bound of the range of verifica datos (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching verifica datos
 	 */
 	@Override
 	public List<VerificaDato> findByDocumentoGiornoZonaEvento(
 		long documento, Date giorno, String zona, long evento, int start,
 		int end, OrderByComparator<VerificaDato> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
 		zona = Objects.toString(zona, "");
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath =
-				_finderPathWithoutPaginationFindByDocumentoGiornoZonaEvento;
-			finderArgs = new Object[] {
-				documento, _getTime(giorno), zona, evento
-			};
+			if (useFinderCache) {
+				finderPath =
+					_finderPathWithoutPaginationFindByDocumentoGiornoZonaEvento;
+				finderArgs = new Object[] {
+					documento, _getTime(giorno), zona, evento
+				};
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath =
 				_finderPathWithPaginationFindByDocumentoGiornoZonaEvento;
 			finderArgs = new Object[] {
@@ -2609,7 +2561,7 @@ public class VerificaDatoPersistenceImpl
 
 		List<VerificaDato> list = null;
 
-		if (retrieveFromCache) {
+		if (useFinderCache) {
 			list = (List<VerificaDato>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
@@ -2629,96 +2581,86 @@ public class VerificaDatoPersistenceImpl
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					6 + (orderByComparator.getOrderByFields().length * 2));
 			}
 			else {
-				query = new StringBundler(6);
+				sb = new StringBundler(6);
 			}
 
-			query.append(_SQL_SELECT_VERIFICADATO_WHERE);
+			sb.append(_SQL_SELECT_VERIFICADATO_WHERE);
 
-			query.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONAEVENTO_DOCUMENTO_2);
+			sb.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONAEVENTO_DOCUMENTO_2);
 
 			boolean bindGiorno = false;
 
 			if (giorno == null) {
-				query.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONAEVENTO_GIORNO_1);
+				sb.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONAEVENTO_GIORNO_1);
 			}
 			else {
 				bindGiorno = true;
 
-				query.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONAEVENTO_GIORNO_2);
+				sb.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONAEVENTO_GIORNO_2);
 			}
 
 			boolean bindZona = false;
 
 			if (zona.isEmpty()) {
-				query.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONAEVENTO_ZONA_3);
+				sb.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONAEVENTO_ZONA_3);
 			}
 			else {
 				bindZona = true;
 
-				query.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONAEVENTO_ZONA_2);
+				sb.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONAEVENTO_ZONA_2);
 			}
 
-			query.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONAEVENTO_EVENTO_2);
+			sb.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONAEVENTO_EVENTO_2);
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 			}
-			else if (pagination) {
-				query.append(VerificaDatoModelImpl.ORDER_BY_JPQL);
+			else {
+				sb.append(VerificaDatoModelImpl.ORDER_BY_JPQL);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
-				qPos.add(documento);
+				queryPos.add(documento);
 
 				if (bindGiorno) {
-					qPos.add(new Timestamp(giorno.getTime()));
+					queryPos.add(new Timestamp(giorno.getTime()));
 				}
 
 				if (bindZona) {
-					qPos.add(zona);
+					queryPos.add(zona);
 				}
 
-				qPos.add(evento);
+				queryPos.add(evento);
 
-				if (!pagination) {
-					list = (List<VerificaDato>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<VerificaDato>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<VerificaDato>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					finderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -2752,25 +2694,25 @@ public class VerificaDatoPersistenceImpl
 			return verificaDato;
 		}
 
-		StringBundler msg = new StringBundler(10);
+		StringBundler sb = new StringBundler(10);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("documento=");
-		msg.append(documento);
+		sb.append("documento=");
+		sb.append(documento);
 
-		msg.append(", giorno=");
-		msg.append(giorno);
+		sb.append(", giorno=");
+		sb.append(giorno);
 
-		msg.append(", zona=");
-		msg.append(zona);
+		sb.append(", zona=");
+		sb.append(zona);
 
-		msg.append(", evento=");
-		msg.append(evento);
+		sb.append(", evento=");
+		sb.append(evento);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchVerificaDatoException(msg.toString());
+		throw new NoSuchVerificaDatoException(sb.toString());
 	}
 
 	/**
@@ -2822,25 +2764,25 @@ public class VerificaDatoPersistenceImpl
 			return verificaDato;
 		}
 
-		StringBundler msg = new StringBundler(10);
+		StringBundler sb = new StringBundler(10);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("documento=");
-		msg.append(documento);
+		sb.append("documento=");
+		sb.append(documento);
 
-		msg.append(", giorno=");
-		msg.append(giorno);
+		sb.append(", giorno=");
+		sb.append(giorno);
 
-		msg.append(", zona=");
-		msg.append(zona);
+		sb.append(", zona=");
+		sb.append(zona);
 
-		msg.append(", evento=");
-		msg.append(evento);
+		sb.append(", evento=");
+		sb.append(evento);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchVerificaDatoException(msg.toString());
+		throw new NoSuchVerificaDatoException(sb.toString());
 	}
 
 	/**
@@ -2917,8 +2859,8 @@ public class VerificaDatoPersistenceImpl
 
 			return array;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -2930,135 +2872,135 @@ public class VerificaDatoPersistenceImpl
 		String zona, long evento,
 		OrderByComparator<VerificaDato> orderByComparator, boolean previous) {
 
-		StringBundler query = null;
+		StringBundler sb = null;
 
 		if (orderByComparator != null) {
-			query = new StringBundler(
+			sb = new StringBundler(
 				7 + (orderByComparator.getOrderByConditionFields().length * 3) +
 					(orderByComparator.getOrderByFields().length * 3));
 		}
 		else {
-			query = new StringBundler(6);
+			sb = new StringBundler(6);
 		}
 
-		query.append(_SQL_SELECT_VERIFICADATO_WHERE);
+		sb.append(_SQL_SELECT_VERIFICADATO_WHERE);
 
-		query.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONAEVENTO_DOCUMENTO_2);
+		sb.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONAEVENTO_DOCUMENTO_2);
 
 		boolean bindGiorno = false;
 
 		if (giorno == null) {
-			query.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONAEVENTO_GIORNO_1);
+			sb.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONAEVENTO_GIORNO_1);
 		}
 		else {
 			bindGiorno = true;
 
-			query.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONAEVENTO_GIORNO_2);
+			sb.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONAEVENTO_GIORNO_2);
 		}
 
 		boolean bindZona = false;
 
 		if (zona.isEmpty()) {
-			query.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONAEVENTO_ZONA_3);
+			sb.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONAEVENTO_ZONA_3);
 		}
 		else {
 			bindZona = true;
 
-			query.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONAEVENTO_ZONA_2);
+			sb.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONAEVENTO_ZONA_2);
 		}
 
-		query.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONAEVENTO_EVENTO_2);
+		sb.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONAEVENTO_EVENTO_2);
 
 		if (orderByComparator != null) {
 			String[] orderByConditionFields =
 				orderByComparator.getOrderByConditionFields();
 
 			if (orderByConditionFields.length > 0) {
-				query.append(WHERE_AND);
+				sb.append(WHERE_AND);
 			}
 
 			for (int i = 0; i < orderByConditionFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByConditionFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByConditionFields[i]);
 
 				if ((i + 1) < orderByConditionFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+						sb.append(WHERE_GREATER_THAN_HAS_NEXT);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+						sb.append(WHERE_LESSER_THAN_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN);
+						sb.append(WHERE_GREATER_THAN);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN);
+						sb.append(WHERE_LESSER_THAN);
 					}
 				}
 			}
 
-			query.append(ORDER_BY_CLAUSE);
+			sb.append(ORDER_BY_CLAUSE);
 
 			String[] orderByFields = orderByComparator.getOrderByFields();
 
 			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByFields[i]);
 
 				if ((i + 1) < orderByFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC_HAS_NEXT);
+						sb.append(ORDER_BY_ASC_HAS_NEXT);
 					}
 					else {
-						query.append(ORDER_BY_DESC_HAS_NEXT);
+						sb.append(ORDER_BY_DESC_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC);
+						sb.append(ORDER_BY_ASC);
 					}
 					else {
-						query.append(ORDER_BY_DESC);
+						sb.append(ORDER_BY_DESC);
 					}
 				}
 			}
 		}
 		else {
-			query.append(VerificaDatoModelImpl.ORDER_BY_JPQL);
+			sb.append(VerificaDatoModelImpl.ORDER_BY_JPQL);
 		}
 
-		String sql = query.toString();
+		String sql = sb.toString();
 
-		Query q = session.createQuery(sql);
+		Query query = session.createQuery(sql);
 
-		q.setFirstResult(0);
-		q.setMaxResults(2);
+		query.setFirstResult(0);
+		query.setMaxResults(2);
 
-		QueryPos qPos = QueryPos.getInstance(q);
+		QueryPos queryPos = QueryPos.getInstance(query);
 
-		qPos.add(documento);
+		queryPos.add(documento);
 
 		if (bindGiorno) {
-			qPos.add(new Timestamp(giorno.getTime()));
+			queryPos.add(new Timestamp(giorno.getTime()));
 		}
 
 		if (bindZona) {
-			qPos.add(zona);
+			queryPos.add(zona);
 		}
 
-		qPos.add(evento);
+		queryPos.add(evento);
 
 		if (orderByComparator != null) {
 			for (Object orderByConditionValue :
 					orderByComparator.getOrderByConditionValues(verificaDato)) {
 
-				qPos.add(orderByConditionValue);
+				queryPos.add(orderByConditionValue);
 			}
 		}
 
-		List<VerificaDato> list = q.list();
+		List<VerificaDato> list = query.list();
 
 		if (list.size() == 2) {
 			return list.get(1);
@@ -3113,67 +3055,65 @@ public class VerificaDatoPersistenceImpl
 		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
-			StringBundler query = new StringBundler(5);
+			StringBundler sb = new StringBundler(5);
 
-			query.append(_SQL_COUNT_VERIFICADATO_WHERE);
+			sb.append(_SQL_COUNT_VERIFICADATO_WHERE);
 
-			query.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONAEVENTO_DOCUMENTO_2);
+			sb.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONAEVENTO_DOCUMENTO_2);
 
 			boolean bindGiorno = false;
 
 			if (giorno == null) {
-				query.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONAEVENTO_GIORNO_1);
+				sb.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONAEVENTO_GIORNO_1);
 			}
 			else {
 				bindGiorno = true;
 
-				query.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONAEVENTO_GIORNO_2);
+				sb.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONAEVENTO_GIORNO_2);
 			}
 
 			boolean bindZona = false;
 
 			if (zona.isEmpty()) {
-				query.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONAEVENTO_ZONA_3);
+				sb.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONAEVENTO_ZONA_3);
 			}
 			else {
 				bindZona = true;
 
-				query.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONAEVENTO_ZONA_2);
+				sb.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONAEVENTO_ZONA_2);
 			}
 
-			query.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONAEVENTO_EVENTO_2);
+			sb.append(_FINDER_COLUMN_DOCUMENTOGIORNOZONAEVENTO_EVENTO_2);
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
-				qPos.add(documento);
+				queryPos.add(documento);
 
 				if (bindGiorno) {
-					qPos.add(new Timestamp(giorno.getTime()));
+					queryPos.add(new Timestamp(giorno.getTime()));
 				}
 
 				if (bindZona) {
-					qPos.add(zona);
+					queryPos.add(zona);
 				}
 
-				qPos.add(evento);
+				queryPos.add(evento);
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
 				finderCache.putResult(finderPath, finderArgs, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -3226,7 +3166,7 @@ public class VerificaDatoPersistenceImpl
 	 * Returns a range of all the verifica datos where giorno = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param giorno the giorno
@@ -3243,7 +3183,7 @@ public class VerificaDatoPersistenceImpl
 	 * Returns an ordered range of all the verifica datos where giorno = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param giorno the giorno
@@ -3264,34 +3204,34 @@ public class VerificaDatoPersistenceImpl
 	 * Returns an ordered range of all the verifica datos where giorno = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param giorno the giorno
 	 * @param start the lower bound of the range of verifica datos
 	 * @param end the upper bound of the range of verifica datos (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching verifica datos
 	 */
 	@Override
 	public List<VerificaDato> findByGiorno(
 		Date giorno, int start, int end,
 		OrderByComparator<VerificaDato> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindByGiorno;
-			finderArgs = new Object[] {_getTime(giorno)};
+			if (useFinderCache) {
+				finderPath = _finderPathWithoutPaginationFindByGiorno;
+				finderArgs = new Object[] {_getTime(giorno)};
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByGiorno;
 			finderArgs = new Object[] {
 				_getTime(giorno), start, end, orderByComparator
@@ -3300,7 +3240,7 @@ public class VerificaDatoPersistenceImpl
 
 		List<VerificaDato> list = null;
 
-		if (retrieveFromCache) {
+		if (useFinderCache) {
 			list = (List<VerificaDato>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
@@ -3316,73 +3256,63 @@ public class VerificaDatoPersistenceImpl
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					3 + (orderByComparator.getOrderByFields().length * 2));
 			}
 			else {
-				query = new StringBundler(3);
+				sb = new StringBundler(3);
 			}
 
-			query.append(_SQL_SELECT_VERIFICADATO_WHERE);
+			sb.append(_SQL_SELECT_VERIFICADATO_WHERE);
 
 			boolean bindGiorno = false;
 
 			if (giorno == null) {
-				query.append(_FINDER_COLUMN_GIORNO_GIORNO_1);
+				sb.append(_FINDER_COLUMN_GIORNO_GIORNO_1);
 			}
 			else {
 				bindGiorno = true;
 
-				query.append(_FINDER_COLUMN_GIORNO_GIORNO_2);
+				sb.append(_FINDER_COLUMN_GIORNO_GIORNO_2);
 			}
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 			}
-			else if (pagination) {
-				query.append(VerificaDatoModelImpl.ORDER_BY_JPQL);
+			else {
+				sb.append(VerificaDatoModelImpl.ORDER_BY_JPQL);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindGiorno) {
-					qPos.add(new Timestamp(giorno.getTime()));
+					queryPos.add(new Timestamp(giorno.getTime()));
 				}
 
-				if (!pagination) {
-					list = (List<VerificaDato>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<VerificaDato>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<VerificaDato>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					finderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -3412,16 +3342,16 @@ public class VerificaDatoPersistenceImpl
 			return verificaDato;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("giorno=");
-		msg.append(giorno);
+		sb.append("giorno=");
+		sb.append(giorno);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchVerificaDatoException(msg.toString());
+		throw new NoSuchVerificaDatoException(sb.toString());
 	}
 
 	/**
@@ -3464,16 +3394,16 @@ public class VerificaDatoPersistenceImpl
 			return verificaDato;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("giorno=");
-		msg.append(giorno);
+		sb.append("giorno=");
+		sb.append(giorno);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchVerificaDatoException(msg.toString());
+		throw new NoSuchVerificaDatoException(sb.toString());
 	}
 
 	/**
@@ -3537,8 +3467,8 @@ public class VerificaDatoPersistenceImpl
 
 			return array;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -3549,28 +3479,28 @@ public class VerificaDatoPersistenceImpl
 		Session session, VerificaDato verificaDato, Date giorno,
 		OrderByComparator<VerificaDato> orderByComparator, boolean previous) {
 
-		StringBundler query = null;
+		StringBundler sb = null;
 
 		if (orderByComparator != null) {
-			query = new StringBundler(
+			sb = new StringBundler(
 				4 + (orderByComparator.getOrderByConditionFields().length * 3) +
 					(orderByComparator.getOrderByFields().length * 3));
 		}
 		else {
-			query = new StringBundler(3);
+			sb = new StringBundler(3);
 		}
 
-		query.append(_SQL_SELECT_VERIFICADATO_WHERE);
+		sb.append(_SQL_SELECT_VERIFICADATO_WHERE);
 
 		boolean bindGiorno = false;
 
 		if (giorno == null) {
-			query.append(_FINDER_COLUMN_GIORNO_GIORNO_1);
+			sb.append(_FINDER_COLUMN_GIORNO_GIORNO_1);
 		}
 		else {
 			bindGiorno = true;
 
-			query.append(_FINDER_COLUMN_GIORNO_GIORNO_2);
+			sb.append(_FINDER_COLUMN_GIORNO_GIORNO_2);
 		}
 
 		if (orderByComparator != null) {
@@ -3578,83 +3508,83 @@ public class VerificaDatoPersistenceImpl
 				orderByComparator.getOrderByConditionFields();
 
 			if (orderByConditionFields.length > 0) {
-				query.append(WHERE_AND);
+				sb.append(WHERE_AND);
 			}
 
 			for (int i = 0; i < orderByConditionFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByConditionFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByConditionFields[i]);
 
 				if ((i + 1) < orderByConditionFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+						sb.append(WHERE_GREATER_THAN_HAS_NEXT);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+						sb.append(WHERE_LESSER_THAN_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN);
+						sb.append(WHERE_GREATER_THAN);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN);
+						sb.append(WHERE_LESSER_THAN);
 					}
 				}
 			}
 
-			query.append(ORDER_BY_CLAUSE);
+			sb.append(ORDER_BY_CLAUSE);
 
 			String[] orderByFields = orderByComparator.getOrderByFields();
 
 			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByFields[i]);
 
 				if ((i + 1) < orderByFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC_HAS_NEXT);
+						sb.append(ORDER_BY_ASC_HAS_NEXT);
 					}
 					else {
-						query.append(ORDER_BY_DESC_HAS_NEXT);
+						sb.append(ORDER_BY_DESC_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC);
+						sb.append(ORDER_BY_ASC);
 					}
 					else {
-						query.append(ORDER_BY_DESC);
+						sb.append(ORDER_BY_DESC);
 					}
 				}
 			}
 		}
 		else {
-			query.append(VerificaDatoModelImpl.ORDER_BY_JPQL);
+			sb.append(VerificaDatoModelImpl.ORDER_BY_JPQL);
 		}
 
-		String sql = query.toString();
+		String sql = sb.toString();
 
-		Query q = session.createQuery(sql);
+		Query query = session.createQuery(sql);
 
-		q.setFirstResult(0);
-		q.setMaxResults(2);
+		query.setFirstResult(0);
+		query.setMaxResults(2);
 
-		QueryPos qPos = QueryPos.getInstance(q);
+		QueryPos queryPos = QueryPos.getInstance(query);
 
 		if (bindGiorno) {
-			qPos.add(new Timestamp(giorno.getTime()));
+			queryPos.add(new Timestamp(giorno.getTime()));
 		}
 
 		if (orderByComparator != null) {
 			for (Object orderByConditionValue :
 					orderByComparator.getOrderByConditionValues(verificaDato)) {
 
-				qPos.add(orderByConditionValue);
+				queryPos.add(orderByConditionValue);
 			}
 		}
 
-		List<VerificaDato> list = q.list();
+		List<VerificaDato> list = query.list();
 
 		if (list.size() == 2) {
 			return list.get(1);
@@ -3694,44 +3624,42 @@ public class VerificaDatoPersistenceImpl
 		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
-			StringBundler query = new StringBundler(2);
+			StringBundler sb = new StringBundler(2);
 
-			query.append(_SQL_COUNT_VERIFICADATO_WHERE);
+			sb.append(_SQL_COUNT_VERIFICADATO_WHERE);
 
 			boolean bindGiorno = false;
 
 			if (giorno == null) {
-				query.append(_FINDER_COLUMN_GIORNO_GIORNO_1);
+				sb.append(_FINDER_COLUMN_GIORNO_GIORNO_1);
 			}
 			else {
 				bindGiorno = true;
 
-				query.append(_FINDER_COLUMN_GIORNO_GIORNO_2);
+				sb.append(_FINDER_COLUMN_GIORNO_GIORNO_2);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindGiorno) {
-					qPos.add(new Timestamp(giorno.getTime()));
+					queryPos.add(new Timestamp(giorno.getTime()));
 				}
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
 				finderCache.putResult(finderPath, finderArgs, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -3768,7 +3696,7 @@ public class VerificaDatoPersistenceImpl
 	 * Returns a range of all the verifica datos where giorno = &#63; and zona = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param giorno the giorno
@@ -3788,7 +3716,7 @@ public class VerificaDatoPersistenceImpl
 	 * Returns an ordered range of all the verifica datos where giorno = &#63; and zona = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param giorno the giorno
@@ -3811,7 +3739,7 @@ public class VerificaDatoPersistenceImpl
 	 * Returns an ordered range of all the verifica datos where giorno = &#63; and zona = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param giorno the giorno
@@ -3819,29 +3747,29 @@ public class VerificaDatoPersistenceImpl
 	 * @param start the lower bound of the range of verifica datos
 	 * @param end the upper bound of the range of verifica datos (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching verifica datos
 	 */
 	@Override
 	public List<VerificaDato> findByGiornoZona(
 		Date giorno, String zona, int start, int end,
 		OrderByComparator<VerificaDato> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
 		zona = Objects.toString(zona, "");
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindByGiornoZona;
-			finderArgs = new Object[] {_getTime(giorno), zona};
+			if (useFinderCache) {
+				finderPath = _finderPathWithoutPaginationFindByGiornoZona;
+				finderArgs = new Object[] {_getTime(giorno), zona};
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByGiornoZona;
 			finderArgs = new Object[] {
 				_getTime(giorno), zona, start, end, orderByComparator
@@ -3850,7 +3778,7 @@ public class VerificaDatoPersistenceImpl
 
 		List<VerificaDato> list = null;
 
-		if (retrieveFromCache) {
+		if (useFinderCache) {
 			list = (List<VerificaDato>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
@@ -3868,88 +3796,78 @@ public class VerificaDatoPersistenceImpl
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					4 + (orderByComparator.getOrderByFields().length * 2));
 			}
 			else {
-				query = new StringBundler(4);
+				sb = new StringBundler(4);
 			}
 
-			query.append(_SQL_SELECT_VERIFICADATO_WHERE);
+			sb.append(_SQL_SELECT_VERIFICADATO_WHERE);
 
 			boolean bindGiorno = false;
 
 			if (giorno == null) {
-				query.append(_FINDER_COLUMN_GIORNOZONA_GIORNO_1);
+				sb.append(_FINDER_COLUMN_GIORNOZONA_GIORNO_1);
 			}
 			else {
 				bindGiorno = true;
 
-				query.append(_FINDER_COLUMN_GIORNOZONA_GIORNO_2);
+				sb.append(_FINDER_COLUMN_GIORNOZONA_GIORNO_2);
 			}
 
 			boolean bindZona = false;
 
 			if (zona.isEmpty()) {
-				query.append(_FINDER_COLUMN_GIORNOZONA_ZONA_3);
+				sb.append(_FINDER_COLUMN_GIORNOZONA_ZONA_3);
 			}
 			else {
 				bindZona = true;
 
-				query.append(_FINDER_COLUMN_GIORNOZONA_ZONA_2);
+				sb.append(_FINDER_COLUMN_GIORNOZONA_ZONA_2);
 			}
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 			}
-			else if (pagination) {
-				query.append(VerificaDatoModelImpl.ORDER_BY_JPQL);
+			else {
+				sb.append(VerificaDatoModelImpl.ORDER_BY_JPQL);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindGiorno) {
-					qPos.add(new Timestamp(giorno.getTime()));
+					queryPos.add(new Timestamp(giorno.getTime()));
 				}
 
 				if (bindZona) {
-					qPos.add(zona);
+					queryPos.add(zona);
 				}
 
-				if (!pagination) {
-					list = (List<VerificaDato>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<VerificaDato>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<VerificaDato>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					finderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -3981,19 +3899,19 @@ public class VerificaDatoPersistenceImpl
 			return verificaDato;
 		}
 
-		StringBundler msg = new StringBundler(6);
+		StringBundler sb = new StringBundler(6);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("giorno=");
-		msg.append(giorno);
+		sb.append("giorno=");
+		sb.append(giorno);
 
-		msg.append(", zona=");
-		msg.append(zona);
+		sb.append(", zona=");
+		sb.append(zona);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchVerificaDatoException(msg.toString());
+		throw new NoSuchVerificaDatoException(sb.toString());
 	}
 
 	/**
@@ -4041,19 +3959,19 @@ public class VerificaDatoPersistenceImpl
 			return verificaDato;
 		}
 
-		StringBundler msg = new StringBundler(6);
+		StringBundler sb = new StringBundler(6);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("giorno=");
-		msg.append(giorno);
+		sb.append("giorno=");
+		sb.append(giorno);
 
-		msg.append(", zona=");
-		msg.append(zona);
+		sb.append(", zona=");
+		sb.append(zona);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchVerificaDatoException(msg.toString());
+		throw new NoSuchVerificaDatoException(sb.toString());
 	}
 
 	/**
@@ -4122,8 +4040,8 @@ public class VerificaDatoPersistenceImpl
 
 			return array;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -4134,39 +4052,39 @@ public class VerificaDatoPersistenceImpl
 		Session session, VerificaDato verificaDato, Date giorno, String zona,
 		OrderByComparator<VerificaDato> orderByComparator, boolean previous) {
 
-		StringBundler query = null;
+		StringBundler sb = null;
 
 		if (orderByComparator != null) {
-			query = new StringBundler(
+			sb = new StringBundler(
 				5 + (orderByComparator.getOrderByConditionFields().length * 3) +
 					(orderByComparator.getOrderByFields().length * 3));
 		}
 		else {
-			query = new StringBundler(4);
+			sb = new StringBundler(4);
 		}
 
-		query.append(_SQL_SELECT_VERIFICADATO_WHERE);
+		sb.append(_SQL_SELECT_VERIFICADATO_WHERE);
 
 		boolean bindGiorno = false;
 
 		if (giorno == null) {
-			query.append(_FINDER_COLUMN_GIORNOZONA_GIORNO_1);
+			sb.append(_FINDER_COLUMN_GIORNOZONA_GIORNO_1);
 		}
 		else {
 			bindGiorno = true;
 
-			query.append(_FINDER_COLUMN_GIORNOZONA_GIORNO_2);
+			sb.append(_FINDER_COLUMN_GIORNOZONA_GIORNO_2);
 		}
 
 		boolean bindZona = false;
 
 		if (zona.isEmpty()) {
-			query.append(_FINDER_COLUMN_GIORNOZONA_ZONA_3);
+			sb.append(_FINDER_COLUMN_GIORNOZONA_ZONA_3);
 		}
 		else {
 			bindZona = true;
 
-			query.append(_FINDER_COLUMN_GIORNOZONA_ZONA_2);
+			sb.append(_FINDER_COLUMN_GIORNOZONA_ZONA_2);
 		}
 
 		if (orderByComparator != null) {
@@ -4174,87 +4092,87 @@ public class VerificaDatoPersistenceImpl
 				orderByComparator.getOrderByConditionFields();
 
 			if (orderByConditionFields.length > 0) {
-				query.append(WHERE_AND);
+				sb.append(WHERE_AND);
 			}
 
 			for (int i = 0; i < orderByConditionFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByConditionFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByConditionFields[i]);
 
 				if ((i + 1) < orderByConditionFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+						sb.append(WHERE_GREATER_THAN_HAS_NEXT);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+						sb.append(WHERE_LESSER_THAN_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN);
+						sb.append(WHERE_GREATER_THAN);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN);
+						sb.append(WHERE_LESSER_THAN);
 					}
 				}
 			}
 
-			query.append(ORDER_BY_CLAUSE);
+			sb.append(ORDER_BY_CLAUSE);
 
 			String[] orderByFields = orderByComparator.getOrderByFields();
 
 			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByFields[i]);
 
 				if ((i + 1) < orderByFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC_HAS_NEXT);
+						sb.append(ORDER_BY_ASC_HAS_NEXT);
 					}
 					else {
-						query.append(ORDER_BY_DESC_HAS_NEXT);
+						sb.append(ORDER_BY_DESC_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC);
+						sb.append(ORDER_BY_ASC);
 					}
 					else {
-						query.append(ORDER_BY_DESC);
+						sb.append(ORDER_BY_DESC);
 					}
 				}
 			}
 		}
 		else {
-			query.append(VerificaDatoModelImpl.ORDER_BY_JPQL);
+			sb.append(VerificaDatoModelImpl.ORDER_BY_JPQL);
 		}
 
-		String sql = query.toString();
+		String sql = sb.toString();
 
-		Query q = session.createQuery(sql);
+		Query query = session.createQuery(sql);
 
-		q.setFirstResult(0);
-		q.setMaxResults(2);
+		query.setFirstResult(0);
+		query.setMaxResults(2);
 
-		QueryPos qPos = QueryPos.getInstance(q);
+		QueryPos queryPos = QueryPos.getInstance(query);
 
 		if (bindGiorno) {
-			qPos.add(new Timestamp(giorno.getTime()));
+			queryPos.add(new Timestamp(giorno.getTime()));
 		}
 
 		if (bindZona) {
-			qPos.add(zona);
+			queryPos.add(zona);
 		}
 
 		if (orderByComparator != null) {
 			for (Object orderByConditionValue :
 					orderByComparator.getOrderByConditionValues(verificaDato)) {
 
-				qPos.add(orderByConditionValue);
+				queryPos.add(orderByConditionValue);
 			}
 		}
 
-		List<VerificaDato> list = q.list();
+		List<VerificaDato> list = query.list();
 
 		if (list.size() == 2) {
 			return list.get(1);
@@ -4298,59 +4216,57 @@ public class VerificaDatoPersistenceImpl
 		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
-			StringBundler query = new StringBundler(3);
+			StringBundler sb = new StringBundler(3);
 
-			query.append(_SQL_COUNT_VERIFICADATO_WHERE);
+			sb.append(_SQL_COUNT_VERIFICADATO_WHERE);
 
 			boolean bindGiorno = false;
 
 			if (giorno == null) {
-				query.append(_FINDER_COLUMN_GIORNOZONA_GIORNO_1);
+				sb.append(_FINDER_COLUMN_GIORNOZONA_GIORNO_1);
 			}
 			else {
 				bindGiorno = true;
 
-				query.append(_FINDER_COLUMN_GIORNOZONA_GIORNO_2);
+				sb.append(_FINDER_COLUMN_GIORNOZONA_GIORNO_2);
 			}
 
 			boolean bindZona = false;
 
 			if (zona.isEmpty()) {
-				query.append(_FINDER_COLUMN_GIORNOZONA_ZONA_3);
+				sb.append(_FINDER_COLUMN_GIORNOZONA_ZONA_3);
 			}
 			else {
 				bindZona = true;
 
-				query.append(_FINDER_COLUMN_GIORNOZONA_ZONA_2);
+				sb.append(_FINDER_COLUMN_GIORNOZONA_ZONA_2);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindGiorno) {
-					qPos.add(new Timestamp(giorno.getTime()));
+					queryPos.add(new Timestamp(giorno.getTime()));
 				}
 
 				if (bindZona) {
-					qPos.add(zona);
+					queryPos.add(zona);
 				}
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
 				finderCache.putResult(finderPath, finderArgs, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -4393,7 +4309,7 @@ public class VerificaDatoPersistenceImpl
 	 * Returns a range of all the verifica datos where giorno = &#63; and evento = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param giorno the giorno
@@ -4413,7 +4329,7 @@ public class VerificaDatoPersistenceImpl
 	 * Returns an ordered range of all the verifica datos where giorno = &#63; and evento = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param giorno the giorno
@@ -4436,7 +4352,7 @@ public class VerificaDatoPersistenceImpl
 	 * Returns an ordered range of all the verifica datos where giorno = &#63; and evento = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param giorno the giorno
@@ -4444,27 +4360,27 @@ public class VerificaDatoPersistenceImpl
 	 * @param start the lower bound of the range of verifica datos
 	 * @param end the upper bound of the range of verifica datos (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching verifica datos
 	 */
 	@Override
 	public List<VerificaDato> findByGiornoEvento(
 		Date giorno, long evento, int start, int end,
 		OrderByComparator<VerificaDato> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindByGiornoEvento;
-			finderArgs = new Object[] {_getTime(giorno), evento};
+			if (useFinderCache) {
+				finderPath = _finderPathWithoutPaginationFindByGiornoEvento;
+				finderArgs = new Object[] {_getTime(giorno), evento};
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByGiornoEvento;
 			finderArgs = new Object[] {
 				_getTime(giorno), evento, start, end, orderByComparator
@@ -4473,7 +4389,7 @@ public class VerificaDatoPersistenceImpl
 
 		List<VerificaDato> list = null;
 
-		if (retrieveFromCache) {
+		if (useFinderCache) {
 			list = (List<VerificaDato>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
@@ -4491,77 +4407,67 @@ public class VerificaDatoPersistenceImpl
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					4 + (orderByComparator.getOrderByFields().length * 2));
 			}
 			else {
-				query = new StringBundler(4);
+				sb = new StringBundler(4);
 			}
 
-			query.append(_SQL_SELECT_VERIFICADATO_WHERE);
+			sb.append(_SQL_SELECT_VERIFICADATO_WHERE);
 
 			boolean bindGiorno = false;
 
 			if (giorno == null) {
-				query.append(_FINDER_COLUMN_GIORNOEVENTO_GIORNO_1);
+				sb.append(_FINDER_COLUMN_GIORNOEVENTO_GIORNO_1);
 			}
 			else {
 				bindGiorno = true;
 
-				query.append(_FINDER_COLUMN_GIORNOEVENTO_GIORNO_2);
+				sb.append(_FINDER_COLUMN_GIORNOEVENTO_GIORNO_2);
 			}
 
-			query.append(_FINDER_COLUMN_GIORNOEVENTO_EVENTO_2);
+			sb.append(_FINDER_COLUMN_GIORNOEVENTO_EVENTO_2);
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 			}
-			else if (pagination) {
-				query.append(VerificaDatoModelImpl.ORDER_BY_JPQL);
+			else {
+				sb.append(VerificaDatoModelImpl.ORDER_BY_JPQL);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindGiorno) {
-					qPos.add(new Timestamp(giorno.getTime()));
+					queryPos.add(new Timestamp(giorno.getTime()));
 				}
 
-				qPos.add(evento);
+				queryPos.add(evento);
 
-				if (!pagination) {
-					list = (List<VerificaDato>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<VerificaDato>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<VerificaDato>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					finderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -4593,19 +4499,19 @@ public class VerificaDatoPersistenceImpl
 			return verificaDato;
 		}
 
-		StringBundler msg = new StringBundler(6);
+		StringBundler sb = new StringBundler(6);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("giorno=");
-		msg.append(giorno);
+		sb.append("giorno=");
+		sb.append(giorno);
 
-		msg.append(", evento=");
-		msg.append(evento);
+		sb.append(", evento=");
+		sb.append(evento);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchVerificaDatoException(msg.toString());
+		throw new NoSuchVerificaDatoException(sb.toString());
 	}
 
 	/**
@@ -4653,19 +4559,19 @@ public class VerificaDatoPersistenceImpl
 			return verificaDato;
 		}
 
-		StringBundler msg = new StringBundler(6);
+		StringBundler sb = new StringBundler(6);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("giorno=");
-		msg.append(giorno);
+		sb.append("giorno=");
+		sb.append(giorno);
 
-		msg.append(", evento=");
-		msg.append(evento);
+		sb.append(", evento=");
+		sb.append(evento);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchVerificaDatoException(msg.toString());
+		throw new NoSuchVerificaDatoException(sb.toString());
 	}
 
 	/**
@@ -4733,8 +4639,8 @@ public class VerificaDatoPersistenceImpl
 
 			return array;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -4745,116 +4651,116 @@ public class VerificaDatoPersistenceImpl
 		Session session, VerificaDato verificaDato, Date giorno, long evento,
 		OrderByComparator<VerificaDato> orderByComparator, boolean previous) {
 
-		StringBundler query = null;
+		StringBundler sb = null;
 
 		if (orderByComparator != null) {
-			query = new StringBundler(
+			sb = new StringBundler(
 				5 + (orderByComparator.getOrderByConditionFields().length * 3) +
 					(orderByComparator.getOrderByFields().length * 3));
 		}
 		else {
-			query = new StringBundler(4);
+			sb = new StringBundler(4);
 		}
 
-		query.append(_SQL_SELECT_VERIFICADATO_WHERE);
+		sb.append(_SQL_SELECT_VERIFICADATO_WHERE);
 
 		boolean bindGiorno = false;
 
 		if (giorno == null) {
-			query.append(_FINDER_COLUMN_GIORNOEVENTO_GIORNO_1);
+			sb.append(_FINDER_COLUMN_GIORNOEVENTO_GIORNO_1);
 		}
 		else {
 			bindGiorno = true;
 
-			query.append(_FINDER_COLUMN_GIORNOEVENTO_GIORNO_2);
+			sb.append(_FINDER_COLUMN_GIORNOEVENTO_GIORNO_2);
 		}
 
-		query.append(_FINDER_COLUMN_GIORNOEVENTO_EVENTO_2);
+		sb.append(_FINDER_COLUMN_GIORNOEVENTO_EVENTO_2);
 
 		if (orderByComparator != null) {
 			String[] orderByConditionFields =
 				orderByComparator.getOrderByConditionFields();
 
 			if (orderByConditionFields.length > 0) {
-				query.append(WHERE_AND);
+				sb.append(WHERE_AND);
 			}
 
 			for (int i = 0; i < orderByConditionFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByConditionFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByConditionFields[i]);
 
 				if ((i + 1) < orderByConditionFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+						sb.append(WHERE_GREATER_THAN_HAS_NEXT);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+						sb.append(WHERE_LESSER_THAN_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN);
+						sb.append(WHERE_GREATER_THAN);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN);
+						sb.append(WHERE_LESSER_THAN);
 					}
 				}
 			}
 
-			query.append(ORDER_BY_CLAUSE);
+			sb.append(ORDER_BY_CLAUSE);
 
 			String[] orderByFields = orderByComparator.getOrderByFields();
 
 			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByFields[i]);
 
 				if ((i + 1) < orderByFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC_HAS_NEXT);
+						sb.append(ORDER_BY_ASC_HAS_NEXT);
 					}
 					else {
-						query.append(ORDER_BY_DESC_HAS_NEXT);
+						sb.append(ORDER_BY_DESC_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC);
+						sb.append(ORDER_BY_ASC);
 					}
 					else {
-						query.append(ORDER_BY_DESC);
+						sb.append(ORDER_BY_DESC);
 					}
 				}
 			}
 		}
 		else {
-			query.append(VerificaDatoModelImpl.ORDER_BY_JPQL);
+			sb.append(VerificaDatoModelImpl.ORDER_BY_JPQL);
 		}
 
-		String sql = query.toString();
+		String sql = sb.toString();
 
-		Query q = session.createQuery(sql);
+		Query query = session.createQuery(sql);
 
-		q.setFirstResult(0);
-		q.setMaxResults(2);
+		query.setFirstResult(0);
+		query.setMaxResults(2);
 
-		QueryPos qPos = QueryPos.getInstance(q);
+		QueryPos queryPos = QueryPos.getInstance(query);
 
 		if (bindGiorno) {
-			qPos.add(new Timestamp(giorno.getTime()));
+			queryPos.add(new Timestamp(giorno.getTime()));
 		}
 
-		qPos.add(evento);
+		queryPos.add(evento);
 
 		if (orderByComparator != null) {
 			for (Object orderByConditionValue :
 					orderByComparator.getOrderByConditionValues(verificaDato)) {
 
-				qPos.add(orderByConditionValue);
+				queryPos.add(orderByConditionValue);
 			}
 		}
 
-		List<VerificaDato> list = q.list();
+		List<VerificaDato> list = query.list();
 
 		if (list.size() == 2) {
 			return list.get(1);
@@ -4897,48 +4803,46 @@ public class VerificaDatoPersistenceImpl
 		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
-			StringBundler query = new StringBundler(3);
+			StringBundler sb = new StringBundler(3);
 
-			query.append(_SQL_COUNT_VERIFICADATO_WHERE);
+			sb.append(_SQL_COUNT_VERIFICADATO_WHERE);
 
 			boolean bindGiorno = false;
 
 			if (giorno == null) {
-				query.append(_FINDER_COLUMN_GIORNOEVENTO_GIORNO_1);
+				sb.append(_FINDER_COLUMN_GIORNOEVENTO_GIORNO_1);
 			}
 			else {
 				bindGiorno = true;
 
-				query.append(_FINDER_COLUMN_GIORNOEVENTO_GIORNO_2);
+				sb.append(_FINDER_COLUMN_GIORNOEVENTO_GIORNO_2);
 			}
 
-			query.append(_FINDER_COLUMN_GIORNOEVENTO_EVENTO_2);
+			sb.append(_FINDER_COLUMN_GIORNOEVENTO_EVENTO_2);
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindGiorno) {
-					qPos.add(new Timestamp(giorno.getTime()));
+					queryPos.add(new Timestamp(giorno.getTime()));
 				}
 
-				qPos.add(evento);
+				queryPos.add(evento);
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
 				finderCache.putResult(finderPath, finderArgs, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -4981,7 +4885,7 @@ public class VerificaDatoPersistenceImpl
 	 * Returns a range of all the verifica datos where giorno = &#63; and zona = &#63; and evento = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param giorno the giorno
@@ -5002,7 +4906,7 @@ public class VerificaDatoPersistenceImpl
 	 * Returns an ordered range of all the verifica datos where giorno = &#63; and zona = &#63; and evento = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param giorno the giorno
@@ -5026,7 +4930,7 @@ public class VerificaDatoPersistenceImpl
 	 * Returns an ordered range of all the verifica datos where giorno = &#63; and zona = &#63; and evento = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param giorno the giorno
@@ -5035,29 +4939,29 @@ public class VerificaDatoPersistenceImpl
 	 * @param start the lower bound of the range of verifica datos
 	 * @param end the upper bound of the range of verifica datos (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching verifica datos
 	 */
 	@Override
 	public List<VerificaDato> findByGiornoZonaEvento(
 		Date giorno, String zona, long evento, int start, int end,
 		OrderByComparator<VerificaDato> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
 		zona = Objects.toString(zona, "");
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindByGiornoZonaEvento;
-			finderArgs = new Object[] {_getTime(giorno), zona, evento};
+			if (useFinderCache) {
+				finderPath = _finderPathWithoutPaginationFindByGiornoZonaEvento;
+				finderArgs = new Object[] {_getTime(giorno), zona, evento};
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByGiornoZonaEvento;
 			finderArgs = new Object[] {
 				_getTime(giorno), zona, evento, start, end, orderByComparator
@@ -5066,7 +4970,7 @@ public class VerificaDatoPersistenceImpl
 
 		List<VerificaDato> list = null;
 
-		if (retrieveFromCache) {
+		if (useFinderCache) {
 			list = (List<VerificaDato>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
@@ -5085,92 +4989,82 @@ public class VerificaDatoPersistenceImpl
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					5 + (orderByComparator.getOrderByFields().length * 2));
 			}
 			else {
-				query = new StringBundler(5);
+				sb = new StringBundler(5);
 			}
 
-			query.append(_SQL_SELECT_VERIFICADATO_WHERE);
+			sb.append(_SQL_SELECT_VERIFICADATO_WHERE);
 
 			boolean bindGiorno = false;
 
 			if (giorno == null) {
-				query.append(_FINDER_COLUMN_GIORNOZONAEVENTO_GIORNO_1);
+				sb.append(_FINDER_COLUMN_GIORNOZONAEVENTO_GIORNO_1);
 			}
 			else {
 				bindGiorno = true;
 
-				query.append(_FINDER_COLUMN_GIORNOZONAEVENTO_GIORNO_2);
+				sb.append(_FINDER_COLUMN_GIORNOZONAEVENTO_GIORNO_2);
 			}
 
 			boolean bindZona = false;
 
 			if (zona.isEmpty()) {
-				query.append(_FINDER_COLUMN_GIORNOZONAEVENTO_ZONA_3);
+				sb.append(_FINDER_COLUMN_GIORNOZONAEVENTO_ZONA_3);
 			}
 			else {
 				bindZona = true;
 
-				query.append(_FINDER_COLUMN_GIORNOZONAEVENTO_ZONA_2);
+				sb.append(_FINDER_COLUMN_GIORNOZONAEVENTO_ZONA_2);
 			}
 
-			query.append(_FINDER_COLUMN_GIORNOZONAEVENTO_EVENTO_2);
+			sb.append(_FINDER_COLUMN_GIORNOZONAEVENTO_EVENTO_2);
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 			}
-			else if (pagination) {
-				query.append(VerificaDatoModelImpl.ORDER_BY_JPQL);
+			else {
+				sb.append(VerificaDatoModelImpl.ORDER_BY_JPQL);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindGiorno) {
-					qPos.add(new Timestamp(giorno.getTime()));
+					queryPos.add(new Timestamp(giorno.getTime()));
 				}
 
 				if (bindZona) {
-					qPos.add(zona);
+					queryPos.add(zona);
 				}
 
-				qPos.add(evento);
+				queryPos.add(evento);
 
-				if (!pagination) {
-					list = (List<VerificaDato>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<VerificaDato>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<VerificaDato>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					finderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -5203,22 +5097,22 @@ public class VerificaDatoPersistenceImpl
 			return verificaDato;
 		}
 
-		StringBundler msg = new StringBundler(8);
+		StringBundler sb = new StringBundler(8);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("giorno=");
-		msg.append(giorno);
+		sb.append("giorno=");
+		sb.append(giorno);
 
-		msg.append(", zona=");
-		msg.append(zona);
+		sb.append(", zona=");
+		sb.append(zona);
 
-		msg.append(", evento=");
-		msg.append(evento);
+		sb.append(", evento=");
+		sb.append(evento);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchVerificaDatoException(msg.toString());
+		throw new NoSuchVerificaDatoException(sb.toString());
 	}
 
 	/**
@@ -5268,22 +5162,22 @@ public class VerificaDatoPersistenceImpl
 			return verificaDato;
 		}
 
-		StringBundler msg = new StringBundler(8);
+		StringBundler sb = new StringBundler(8);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("giorno=");
-		msg.append(giorno);
+		sb.append("giorno=");
+		sb.append(giorno);
 
-		msg.append(", zona=");
-		msg.append(zona);
+		sb.append(", zona=");
+		sb.append(zona);
 
-		msg.append(", evento=");
-		msg.append(evento);
+		sb.append(", evento=");
+		sb.append(evento);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchVerificaDatoException(msg.toString());
+		throw new NoSuchVerificaDatoException(sb.toString());
 	}
 
 	/**
@@ -5356,8 +5250,8 @@ public class VerificaDatoPersistenceImpl
 
 			return array;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -5369,131 +5263,131 @@ public class VerificaDatoPersistenceImpl
 		long evento, OrderByComparator<VerificaDato> orderByComparator,
 		boolean previous) {
 
-		StringBundler query = null;
+		StringBundler sb = null;
 
 		if (orderByComparator != null) {
-			query = new StringBundler(
+			sb = new StringBundler(
 				6 + (orderByComparator.getOrderByConditionFields().length * 3) +
 					(orderByComparator.getOrderByFields().length * 3));
 		}
 		else {
-			query = new StringBundler(5);
+			sb = new StringBundler(5);
 		}
 
-		query.append(_SQL_SELECT_VERIFICADATO_WHERE);
+		sb.append(_SQL_SELECT_VERIFICADATO_WHERE);
 
 		boolean bindGiorno = false;
 
 		if (giorno == null) {
-			query.append(_FINDER_COLUMN_GIORNOZONAEVENTO_GIORNO_1);
+			sb.append(_FINDER_COLUMN_GIORNOZONAEVENTO_GIORNO_1);
 		}
 		else {
 			bindGiorno = true;
 
-			query.append(_FINDER_COLUMN_GIORNOZONAEVENTO_GIORNO_2);
+			sb.append(_FINDER_COLUMN_GIORNOZONAEVENTO_GIORNO_2);
 		}
 
 		boolean bindZona = false;
 
 		if (zona.isEmpty()) {
-			query.append(_FINDER_COLUMN_GIORNOZONAEVENTO_ZONA_3);
+			sb.append(_FINDER_COLUMN_GIORNOZONAEVENTO_ZONA_3);
 		}
 		else {
 			bindZona = true;
 
-			query.append(_FINDER_COLUMN_GIORNOZONAEVENTO_ZONA_2);
+			sb.append(_FINDER_COLUMN_GIORNOZONAEVENTO_ZONA_2);
 		}
 
-		query.append(_FINDER_COLUMN_GIORNOZONAEVENTO_EVENTO_2);
+		sb.append(_FINDER_COLUMN_GIORNOZONAEVENTO_EVENTO_2);
 
 		if (orderByComparator != null) {
 			String[] orderByConditionFields =
 				orderByComparator.getOrderByConditionFields();
 
 			if (orderByConditionFields.length > 0) {
-				query.append(WHERE_AND);
+				sb.append(WHERE_AND);
 			}
 
 			for (int i = 0; i < orderByConditionFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByConditionFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByConditionFields[i]);
 
 				if ((i + 1) < orderByConditionFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+						sb.append(WHERE_GREATER_THAN_HAS_NEXT);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+						sb.append(WHERE_LESSER_THAN_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN);
+						sb.append(WHERE_GREATER_THAN);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN);
+						sb.append(WHERE_LESSER_THAN);
 					}
 				}
 			}
 
-			query.append(ORDER_BY_CLAUSE);
+			sb.append(ORDER_BY_CLAUSE);
 
 			String[] orderByFields = orderByComparator.getOrderByFields();
 
 			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByFields[i]);
 
 				if ((i + 1) < orderByFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC_HAS_NEXT);
+						sb.append(ORDER_BY_ASC_HAS_NEXT);
 					}
 					else {
-						query.append(ORDER_BY_DESC_HAS_NEXT);
+						sb.append(ORDER_BY_DESC_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC);
+						sb.append(ORDER_BY_ASC);
 					}
 					else {
-						query.append(ORDER_BY_DESC);
+						sb.append(ORDER_BY_DESC);
 					}
 				}
 			}
 		}
 		else {
-			query.append(VerificaDatoModelImpl.ORDER_BY_JPQL);
+			sb.append(VerificaDatoModelImpl.ORDER_BY_JPQL);
 		}
 
-		String sql = query.toString();
+		String sql = sb.toString();
 
-		Query q = session.createQuery(sql);
+		Query query = session.createQuery(sql);
 
-		q.setFirstResult(0);
-		q.setMaxResults(2);
+		query.setFirstResult(0);
+		query.setMaxResults(2);
 
-		QueryPos qPos = QueryPos.getInstance(q);
+		QueryPos queryPos = QueryPos.getInstance(query);
 
 		if (bindGiorno) {
-			qPos.add(new Timestamp(giorno.getTime()));
+			queryPos.add(new Timestamp(giorno.getTime()));
 		}
 
 		if (bindZona) {
-			qPos.add(zona);
+			queryPos.add(zona);
 		}
 
-		qPos.add(evento);
+		queryPos.add(evento);
 
 		if (orderByComparator != null) {
 			for (Object orderByConditionValue :
 					orderByComparator.getOrderByConditionValues(verificaDato)) {
 
-				qPos.add(orderByConditionValue);
+				queryPos.add(orderByConditionValue);
 			}
 		}
 
-		List<VerificaDato> list = q.list();
+		List<VerificaDato> list = query.list();
 
 		if (list.size() == 2) {
 			return list.get(1);
@@ -5542,63 +5436,61 @@ public class VerificaDatoPersistenceImpl
 		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
-			StringBundler query = new StringBundler(4);
+			StringBundler sb = new StringBundler(4);
 
-			query.append(_SQL_COUNT_VERIFICADATO_WHERE);
+			sb.append(_SQL_COUNT_VERIFICADATO_WHERE);
 
 			boolean bindGiorno = false;
 
 			if (giorno == null) {
-				query.append(_FINDER_COLUMN_GIORNOZONAEVENTO_GIORNO_1);
+				sb.append(_FINDER_COLUMN_GIORNOZONAEVENTO_GIORNO_1);
 			}
 			else {
 				bindGiorno = true;
 
-				query.append(_FINDER_COLUMN_GIORNOZONAEVENTO_GIORNO_2);
+				sb.append(_FINDER_COLUMN_GIORNOZONAEVENTO_GIORNO_2);
 			}
 
 			boolean bindZona = false;
 
 			if (zona.isEmpty()) {
-				query.append(_FINDER_COLUMN_GIORNOZONAEVENTO_ZONA_3);
+				sb.append(_FINDER_COLUMN_GIORNOZONAEVENTO_ZONA_3);
 			}
 			else {
 				bindZona = true;
 
-				query.append(_FINDER_COLUMN_GIORNOZONAEVENTO_ZONA_2);
+				sb.append(_FINDER_COLUMN_GIORNOZONAEVENTO_ZONA_2);
 			}
 
-			query.append(_FINDER_COLUMN_GIORNOZONAEVENTO_EVENTO_2);
+			sb.append(_FINDER_COLUMN_GIORNOZONAEVENTO_EVENTO_2);
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindGiorno) {
-					qPos.add(new Timestamp(giorno.getTime()));
+					queryPos.add(new Timestamp(giorno.getTime()));
 				}
 
 				if (bindZona) {
-					qPos.add(zona);
+					queryPos.add(zona);
 				}
 
-				qPos.add(evento);
+				queryPos.add(evento);
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
 				finderCache.putResult(finderPath, finderArgs, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -5624,25 +5516,18 @@ public class VerificaDatoPersistenceImpl
 		"verificaDato.evento = ?";
 
 	public VerificaDatoPersistenceImpl() {
-		setModelClass(VerificaDato.class);
-
 		Map<String, String> dbColumnNames = new HashMap<String, String>();
 
 		dbColumnNames.put("id", "id_");
 
-		try {
-			Field field = BasePersistenceImpl.class.getDeclaredField(
-				"_dbColumnNames");
+		setDBColumnNames(dbColumnNames);
 
-			field.setAccessible(true);
+		setModelClass(VerificaDato.class);
 
-			field.set(this, dbColumnNames);
-		}
-		catch (Exception e) {
-			if (_log.isDebugEnabled()) {
-				_log.debug(e, e);
-			}
-		}
+		setModelImplClass(VerificaDatoImpl.class);
+		setModelPKClass(long.class);
+
+		setTable(VerificaDatoTable.INSTANCE);
 	}
 
 	/**
@@ -5653,11 +5538,10 @@ public class VerificaDatoPersistenceImpl
 	@Override
 	public void cacheResult(VerificaDato verificaDato) {
 		entityCache.putResult(
-			VerificaDatoModelImpl.ENTITY_CACHE_ENABLED, VerificaDatoImpl.class,
-			verificaDato.getPrimaryKey(), verificaDato);
-
-		verificaDato.resetOriginalValues();
+			VerificaDatoImpl.class, verificaDato.getPrimaryKey(), verificaDato);
 	}
+
+	private int _valueObjectFinderCacheListThreshold;
 
 	/**
 	 * Caches the verifica datos in the entity cache if it is enabled.
@@ -5666,16 +5550,19 @@ public class VerificaDatoPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(List<VerificaDato> verificaDatos) {
+		if ((_valueObjectFinderCacheListThreshold == 0) ||
+			((_valueObjectFinderCacheListThreshold > 0) &&
+			 (verificaDatos.size() > _valueObjectFinderCacheListThreshold))) {
+
+			return;
+		}
+
 		for (VerificaDato verificaDato : verificaDatos) {
 			if (entityCache.getResult(
-					VerificaDatoModelImpl.ENTITY_CACHE_ENABLED,
 					VerificaDatoImpl.class, verificaDato.getPrimaryKey()) ==
 						null) {
 
 				cacheResult(verificaDato);
-			}
-			else {
-				verificaDato.resetOriginalValues();
 			}
 		}
 	}
@@ -5691,9 +5578,7 @@ public class VerificaDatoPersistenceImpl
 	public void clearCache() {
 		entityCache.clearCache(VerificaDatoImpl.class);
 
-		finderCache.clearCache(FINDER_CLASS_NAME_ENTITY);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		finderCache.clearCache(VerificaDatoImpl.class);
 	}
 
 	/**
@@ -5705,23 +5590,22 @@ public class VerificaDatoPersistenceImpl
 	 */
 	@Override
 	public void clearCache(VerificaDato verificaDato) {
-		entityCache.removeResult(
-			VerificaDatoModelImpl.ENTITY_CACHE_ENABLED, VerificaDatoImpl.class,
-			verificaDato.getPrimaryKey());
-
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		entityCache.removeResult(VerificaDatoImpl.class, verificaDato);
 	}
 
 	@Override
 	public void clearCache(List<VerificaDato> verificaDatos) {
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
-
 		for (VerificaDato verificaDato : verificaDatos) {
-			entityCache.removeResult(
-				VerificaDatoModelImpl.ENTITY_CACHE_ENABLED,
-				VerificaDatoImpl.class, verificaDato.getPrimaryKey());
+			entityCache.removeResult(VerificaDatoImpl.class, verificaDato);
+		}
+	}
+
+	@Override
+	public void clearCache(Set<Serializable> primaryKeys) {
+		finderCache.clearCache(VerificaDatoImpl.class);
+
+		for (Serializable primaryKey : primaryKeys) {
+			entityCache.removeResult(VerificaDatoImpl.class, primaryKey);
 		}
 	}
 
@@ -5783,11 +5667,11 @@ public class VerificaDatoPersistenceImpl
 
 			return remove(verificaDato);
 		}
-		catch (NoSuchVerificaDatoException nsee) {
-			throw nsee;
+		catch (NoSuchVerificaDatoException noSuchEntityException) {
+			throw noSuchEntityException;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -5810,8 +5694,8 @@ public class VerificaDatoPersistenceImpl
 				session.delete(verificaDato);
 			}
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -5853,346 +5737,26 @@ public class VerificaDatoPersistenceImpl
 		try {
 			session = openSession();
 
-			if (verificaDato.isNew()) {
+			if (isNew) {
 				session.save(verificaDato);
-
-				verificaDato.setNew(false);
 			}
 			else {
 				verificaDato = (VerificaDato)session.merge(verificaDato);
 			}
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
 		}
 
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-
-		if (!VerificaDatoModelImpl.COLUMN_BITMASK_ENABLED) {
-			finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
-		}
-		else if (isNew) {
-			Object[] args = new Object[] {verificaDatoModelImpl.getDocumento()};
-
-			finderCache.removeResult(_finderPathCountByDocumento, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByDocumento, args);
-
-			args = new Object[] {
-				verificaDatoModelImpl.getDocumento(),
-				verificaDatoModelImpl.getGiorno()
-			};
-
-			finderCache.removeResult(_finderPathCountByDocumentoGiorno, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByDocumentoGiorno, args);
-
-			args = new Object[] {
-				verificaDatoModelImpl.getDocumento(),
-				verificaDatoModelImpl.getGiorno(),
-				verificaDatoModelImpl.getEvento()
-			};
-
-			finderCache.removeResult(
-				_finderPathCountByDocumentoGiornoEvento, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByDocumentoGiornoEvento, args);
-
-			args = new Object[] {
-				verificaDatoModelImpl.getDocumento(),
-				verificaDatoModelImpl.getGiorno(),
-				verificaDatoModelImpl.getZona()
-			};
-
-			finderCache.removeResult(
-				_finderPathCountByDocumentoGiornoZona, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByDocumentoGiornoZona, args);
-
-			args = new Object[] {
-				verificaDatoModelImpl.getDocumento(),
-				verificaDatoModelImpl.getGiorno(),
-				verificaDatoModelImpl.getZona(),
-				verificaDatoModelImpl.getEvento()
-			};
-
-			finderCache.removeResult(
-				_finderPathCountByDocumentoGiornoZonaEvento, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByDocumentoGiornoZonaEvento,
-				args);
-
-			args = new Object[] {verificaDatoModelImpl.getGiorno()};
-
-			finderCache.removeResult(_finderPathCountByGiorno, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByGiorno, args);
-
-			args = new Object[] {
-				verificaDatoModelImpl.getGiorno(),
-				verificaDatoModelImpl.getZona()
-			};
-
-			finderCache.removeResult(_finderPathCountByGiornoZona, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByGiornoZona, args);
-
-			args = new Object[] {
-				verificaDatoModelImpl.getGiorno(),
-				verificaDatoModelImpl.getEvento()
-			};
-
-			finderCache.removeResult(_finderPathCountByGiornoEvento, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByGiornoEvento, args);
-
-			args = new Object[] {
-				verificaDatoModelImpl.getGiorno(),
-				verificaDatoModelImpl.getZona(),
-				verificaDatoModelImpl.getEvento()
-			};
-
-			finderCache.removeResult(_finderPathCountByGiornoZonaEvento, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByGiornoZonaEvento, args);
-
-			finderCache.removeResult(_finderPathCountAll, FINDER_ARGS_EMPTY);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindAll, FINDER_ARGS_EMPTY);
-		}
-		else {
-			if ((verificaDatoModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByDocumento.
-					 getColumnBitmask()) != 0) {
-
-				Object[] args = new Object[] {
-					verificaDatoModelImpl.getOriginalDocumento()
-				};
-
-				finderCache.removeResult(_finderPathCountByDocumento, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByDocumento, args);
-
-				args = new Object[] {verificaDatoModelImpl.getDocumento()};
-
-				finderCache.removeResult(_finderPathCountByDocumento, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByDocumento, args);
-			}
-
-			if ((verificaDatoModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByDocumentoGiorno.
-					 getColumnBitmask()) != 0) {
-
-				Object[] args = new Object[] {
-					verificaDatoModelImpl.getOriginalDocumento(),
-					verificaDatoModelImpl.getOriginalGiorno()
-				};
-
-				finderCache.removeResult(
-					_finderPathCountByDocumentoGiorno, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByDocumentoGiorno, args);
-
-				args = new Object[] {
-					verificaDatoModelImpl.getDocumento(),
-					verificaDatoModelImpl.getGiorno()
-				};
-
-				finderCache.removeResult(
-					_finderPathCountByDocumentoGiorno, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByDocumentoGiorno, args);
-			}
-
-			if ((verificaDatoModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByDocumentoGiornoEvento.
-					 getColumnBitmask()) != 0) {
-
-				Object[] args = new Object[] {
-					verificaDatoModelImpl.getOriginalDocumento(),
-					verificaDatoModelImpl.getOriginalGiorno(),
-					verificaDatoModelImpl.getOriginalEvento()
-				};
-
-				finderCache.removeResult(
-					_finderPathCountByDocumentoGiornoEvento, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByDocumentoGiornoEvento,
-					args);
-
-				args = new Object[] {
-					verificaDatoModelImpl.getDocumento(),
-					verificaDatoModelImpl.getGiorno(),
-					verificaDatoModelImpl.getEvento()
-				};
-
-				finderCache.removeResult(
-					_finderPathCountByDocumentoGiornoEvento, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByDocumentoGiornoEvento,
-					args);
-			}
-
-			if ((verificaDatoModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByDocumentoGiornoZona.
-					 getColumnBitmask()) != 0) {
-
-				Object[] args = new Object[] {
-					verificaDatoModelImpl.getOriginalDocumento(),
-					verificaDatoModelImpl.getOriginalGiorno(),
-					verificaDatoModelImpl.getOriginalZona()
-				};
-
-				finderCache.removeResult(
-					_finderPathCountByDocumentoGiornoZona, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByDocumentoGiornoZona,
-					args);
-
-				args = new Object[] {
-					verificaDatoModelImpl.getDocumento(),
-					verificaDatoModelImpl.getGiorno(),
-					verificaDatoModelImpl.getZona()
-				};
-
-				finderCache.removeResult(
-					_finderPathCountByDocumentoGiornoZona, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByDocumentoGiornoZona,
-					args);
-			}
-
-			if ((verificaDatoModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByDocumentoGiornoZonaEvento.
-					 getColumnBitmask()) != 0) {
-
-				Object[] args = new Object[] {
-					verificaDatoModelImpl.getOriginalDocumento(),
-					verificaDatoModelImpl.getOriginalGiorno(),
-					verificaDatoModelImpl.getOriginalZona(),
-					verificaDatoModelImpl.getOriginalEvento()
-				};
-
-				finderCache.removeResult(
-					_finderPathCountByDocumentoGiornoZonaEvento, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByDocumentoGiornoZonaEvento,
-					args);
-
-				args = new Object[] {
-					verificaDatoModelImpl.getDocumento(),
-					verificaDatoModelImpl.getGiorno(),
-					verificaDatoModelImpl.getZona(),
-					verificaDatoModelImpl.getEvento()
-				};
-
-				finderCache.removeResult(
-					_finderPathCountByDocumentoGiornoZonaEvento, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByDocumentoGiornoZonaEvento,
-					args);
-			}
-
-			if ((verificaDatoModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByGiorno.getColumnBitmask()) !=
-					 0) {
-
-				Object[] args = new Object[] {
-					verificaDatoModelImpl.getOriginalGiorno()
-				};
-
-				finderCache.removeResult(_finderPathCountByGiorno, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByGiorno, args);
-
-				args = new Object[] {verificaDatoModelImpl.getGiorno()};
-
-				finderCache.removeResult(_finderPathCountByGiorno, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByGiorno, args);
-			}
-
-			if ((verificaDatoModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByGiornoZona.
-					 getColumnBitmask()) != 0) {
-
-				Object[] args = new Object[] {
-					verificaDatoModelImpl.getOriginalGiorno(),
-					verificaDatoModelImpl.getOriginalZona()
-				};
-
-				finderCache.removeResult(_finderPathCountByGiornoZona, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByGiornoZona, args);
-
-				args = new Object[] {
-					verificaDatoModelImpl.getGiorno(),
-					verificaDatoModelImpl.getZona()
-				};
-
-				finderCache.removeResult(_finderPathCountByGiornoZona, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByGiornoZona, args);
-			}
-
-			if ((verificaDatoModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByGiornoEvento.
-					 getColumnBitmask()) != 0) {
-
-				Object[] args = new Object[] {
-					verificaDatoModelImpl.getOriginalGiorno(),
-					verificaDatoModelImpl.getOriginalEvento()
-				};
-
-				finderCache.removeResult(_finderPathCountByGiornoEvento, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByGiornoEvento, args);
-
-				args = new Object[] {
-					verificaDatoModelImpl.getGiorno(),
-					verificaDatoModelImpl.getEvento()
-				};
-
-				finderCache.removeResult(_finderPathCountByGiornoEvento, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByGiornoEvento, args);
-			}
-
-			if ((verificaDatoModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByGiornoZonaEvento.
-					 getColumnBitmask()) != 0) {
-
-				Object[] args = new Object[] {
-					verificaDatoModelImpl.getOriginalGiorno(),
-					verificaDatoModelImpl.getOriginalZona(),
-					verificaDatoModelImpl.getOriginalEvento()
-				};
-
-				finderCache.removeResult(
-					_finderPathCountByGiornoZonaEvento, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByGiornoZonaEvento, args);
-
-				args = new Object[] {
-					verificaDatoModelImpl.getGiorno(),
-					verificaDatoModelImpl.getZona(),
-					verificaDatoModelImpl.getEvento()
-				};
-
-				finderCache.removeResult(
-					_finderPathCountByGiornoZonaEvento, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByGiornoZonaEvento, args);
-			}
-		}
-
 		entityCache.putResult(
-			VerificaDatoModelImpl.ENTITY_CACHE_ENABLED, VerificaDatoImpl.class,
-			verificaDato.getPrimaryKey(), verificaDato, false);
+			VerificaDatoImpl.class, verificaDatoModelImpl, false, true);
+
+		if (isNew) {
+			verificaDato.setNew(false);
+		}
 
 		verificaDato.resetOriginalValues();
 
@@ -6241,161 +5805,12 @@ public class VerificaDatoPersistenceImpl
 	/**
 	 * Returns the verifica dato with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the verifica dato
-	 * @return the verifica dato, or <code>null</code> if a verifica dato with the primary key could not be found
-	 */
-	@Override
-	public VerificaDato fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(
-			VerificaDatoModelImpl.ENTITY_CACHE_ENABLED, VerificaDatoImpl.class,
-			primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		VerificaDato verificaDato = (VerificaDato)serializable;
-
-		if (verificaDato == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				verificaDato = (VerificaDato)session.get(
-					VerificaDatoImpl.class, primaryKey);
-
-				if (verificaDato != null) {
-					cacheResult(verificaDato);
-				}
-				else {
-					entityCache.putResult(
-						VerificaDatoModelImpl.ENTITY_CACHE_ENABLED,
-						VerificaDatoImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(
-					VerificaDatoModelImpl.ENTITY_CACHE_ENABLED,
-					VerificaDatoImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return verificaDato;
-	}
-
-	/**
-	 * Returns the verifica dato with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param id the primary key of the verifica dato
 	 * @return the verifica dato, or <code>null</code> if a verifica dato with the primary key could not be found
 	 */
 	@Override
 	public VerificaDato fetchByPrimaryKey(long id) {
 		return fetchByPrimaryKey((Serializable)id);
-	}
-
-	@Override
-	public Map<Serializable, VerificaDato> fetchByPrimaryKeys(
-		Set<Serializable> primaryKeys) {
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, VerificaDato> map =
-			new HashMap<Serializable, VerificaDato>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			VerificaDato verificaDato = fetchByPrimaryKey(primaryKey);
-
-			if (verificaDato != null) {
-				map.put(primaryKey, verificaDato);
-			}
-
-			return map;
-		}
-
-		Set<Serializable> uncachedPrimaryKeys = null;
-
-		for (Serializable primaryKey : primaryKeys) {
-			Serializable serializable = entityCache.getResult(
-				VerificaDatoModelImpl.ENTITY_CACHE_ENABLED,
-				VerificaDatoImpl.class, primaryKey);
-
-			if (serializable != nullModel) {
-				if (serializable == null) {
-					if (uncachedPrimaryKeys == null) {
-						uncachedPrimaryKeys = new HashSet<Serializable>();
-					}
-
-					uncachedPrimaryKeys.add(primaryKey);
-				}
-				else {
-					map.put(primaryKey, (VerificaDato)serializable);
-				}
-			}
-		}
-
-		if (uncachedPrimaryKeys == null) {
-			return map;
-		}
-
-		StringBundler query = new StringBundler(
-			uncachedPrimaryKeys.size() * 2 + 1);
-
-		query.append(_SQL_SELECT_VERIFICADATO_WHERE_PKS_IN);
-
-		for (Serializable primaryKey : uncachedPrimaryKeys) {
-			query.append((long)primaryKey);
-
-			query.append(",");
-		}
-
-		query.setIndex(query.index() - 1);
-
-		query.append(")");
-
-		String sql = query.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query q = session.createQuery(sql);
-
-			for (VerificaDato verificaDato : (List<VerificaDato>)q.list()) {
-				map.put(verificaDato.getPrimaryKeyObj(), verificaDato);
-
-				cacheResult(verificaDato);
-
-				uncachedPrimaryKeys.remove(verificaDato.getPrimaryKeyObj());
-			}
-
-			for (Serializable primaryKey : uncachedPrimaryKeys) {
-				entityCache.putResult(
-					VerificaDatoModelImpl.ENTITY_CACHE_ENABLED,
-					VerificaDatoImpl.class, primaryKey, nullModel);
-			}
-		}
-		catch (Exception e) {
-			throw processException(e);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**
@@ -6412,7 +5827,7 @@ public class VerificaDatoPersistenceImpl
 	 * Returns a range of all the verifica datos.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of verifica datos
@@ -6428,7 +5843,7 @@ public class VerificaDatoPersistenceImpl
 	 * Returns an ordered range of all the verifica datos.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of verifica datos
@@ -6447,64 +5862,62 @@ public class VerificaDatoPersistenceImpl
 	 * Returns an ordered range of all the verifica datos.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>VerificaDatoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of verifica datos
 	 * @param end the upper bound of the range of verifica datos (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of verifica datos
 	 */
 	@Override
 	public List<VerificaDato> findAll(
 		int start, int end, OrderByComparator<VerificaDato> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindAll;
-			finderArgs = FINDER_ARGS_EMPTY;
+			if (useFinderCache) {
+				finderPath = _finderPathWithoutPaginationFindAll;
+				finderArgs = FINDER_ARGS_EMPTY;
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
 			finderArgs = new Object[] {start, end, orderByComparator};
 		}
 
 		List<VerificaDato> list = null;
 
-		if (retrieveFromCache) {
+		if (useFinderCache) {
 			list = (List<VerificaDato>)finderCache.getResult(
 				finderPath, finderArgs, this);
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 			String sql = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					2 + (orderByComparator.getOrderByFields().length * 2));
 
-				query.append(_SQL_SELECT_VERIFICADATO);
+				sb.append(_SQL_SELECT_VERIFICADATO);
 
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 
-				sql = query.toString();
+				sql = sb.toString();
 			}
 			else {
 				sql = _SQL_SELECT_VERIFICADATO;
 
-				if (pagination) {
-					sql = sql.concat(VerificaDatoModelImpl.ORDER_BY_JPQL);
-				}
+				sql = sql.concat(VerificaDatoModelImpl.ORDER_BY_JPQL);
 			}
 
 			Session session = null;
@@ -6512,29 +5925,19 @@ public class VerificaDatoPersistenceImpl
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				if (!pagination) {
-					list = (List<VerificaDato>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<VerificaDato>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<VerificaDato>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					finderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -6571,18 +5974,15 @@ public class VerificaDatoPersistenceImpl
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(_SQL_COUNT_VERIFICADATO);
+				Query query = session.createQuery(_SQL_COUNT_VERIFICADATO);
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
 				finderCache.putResult(
 					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -6598,6 +5998,21 @@ public class VerificaDatoPersistenceImpl
 	}
 
 	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
+	}
+
+	@Override
+	protected String getPKDBName() {
+		return "id_";
+	}
+
+	@Override
+	protected String getSelectSQL() {
+		return _SQL_SELECT_VERIFICADATO;
+	}
+
+	@Override
 	protected Map<String, Integer> getTableColumnsMap() {
 		return VerificaDatoModelImpl.TABLE_COLUMNS_MAP;
 	}
@@ -6605,327 +6020,270 @@ public class VerificaDatoPersistenceImpl
 	/**
 	 * Initializes the verifica dato persistence.
 	 */
-	public void afterPropertiesSet() {
+	@Activate
+	public void activate() {
+		_valueObjectFinderCacheListThreshold = GetterUtil.getInteger(
+			PropsUtil.get(PropsKeys.VALUE_OBJECT_FINDER_CACHE_LIST_THRESHOLD));
+
 		_finderPathWithPaginationFindAll = new FinderPath(
-			VerificaDatoModelImpl.ENTITY_CACHE_ENABLED,
-			VerificaDatoModelImpl.FINDER_CACHE_ENABLED, VerificaDatoImpl.class,
-			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findAll", new String[0]);
+			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findAll", new String[0],
+			new String[0], true);
 
 		_finderPathWithoutPaginationFindAll = new FinderPath(
-			VerificaDatoModelImpl.ENTITY_CACHE_ENABLED,
-			VerificaDatoModelImpl.FINDER_CACHE_ENABLED, VerificaDatoImpl.class,
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findAll",
-			new String[0]);
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findAll", new String[0],
+			new String[0], true);
 
 		_finderPathCountAll = new FinderPath(
-			VerificaDatoModelImpl.ENTITY_CACHE_ENABLED,
-			VerificaDatoModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countAll",
-			new String[0]);
+			new String[0], new String[0], false);
 
 		_finderPathWithPaginationFindByDocumento = new FinderPath(
-			VerificaDatoModelImpl.ENTITY_CACHE_ENABLED,
-			VerificaDatoModelImpl.FINDER_CACHE_ENABLED, VerificaDatoImpl.class,
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByDocumento",
 			new String[] {
 				Long.class.getName(), Integer.class.getName(),
 				Integer.class.getName(), OrderByComparator.class.getName()
-			});
+			},
+			new String[] {"documento"}, true);
 
 		_finderPathWithoutPaginationFindByDocumento = new FinderPath(
-			VerificaDatoModelImpl.ENTITY_CACHE_ENABLED,
-			VerificaDatoModelImpl.FINDER_CACHE_ENABLED, VerificaDatoImpl.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByDocumento",
-			new String[] {Long.class.getName()},
-			VerificaDatoModelImpl.DOCUMENTO_COLUMN_BITMASK |
-			VerificaDatoModelImpl.GIORNO_COLUMN_BITMASK |
-			VerificaDatoModelImpl.ZONA_COLUMN_BITMASK |
-			VerificaDatoModelImpl.EVENTO_COLUMN_BITMASK |
-			VerificaDatoModelImpl.NOMEDATO_COLUMN_BITMASK |
-			VerificaDatoModelImpl.PROGRESSIVO_COLUMN_BITMASK);
+			new String[] {Long.class.getName()}, new String[] {"documento"},
+			true);
 
 		_finderPathCountByDocumento = new FinderPath(
-			VerificaDatoModelImpl.ENTITY_CACHE_ENABLED,
-			VerificaDatoModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByDocumento",
-			new String[] {Long.class.getName()});
+			new String[] {Long.class.getName()}, new String[] {"documento"},
+			false);
 
 		_finderPathWithPaginationFindByDocumentoGiorno = new FinderPath(
-			VerificaDatoModelImpl.ENTITY_CACHE_ENABLED,
-			VerificaDatoModelImpl.FINDER_CACHE_ENABLED, VerificaDatoImpl.class,
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByDocumentoGiorno",
 			new String[] {
 				Long.class.getName(), Date.class.getName(),
 				Integer.class.getName(), Integer.class.getName(),
 				OrderByComparator.class.getName()
-			});
+			},
+			new String[] {"documento", "giorno"}, true);
 
 		_finderPathWithoutPaginationFindByDocumentoGiorno = new FinderPath(
-			VerificaDatoModelImpl.ENTITY_CACHE_ENABLED,
-			VerificaDatoModelImpl.FINDER_CACHE_ENABLED, VerificaDatoImpl.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByDocumentoGiorno",
 			new String[] {Long.class.getName(), Date.class.getName()},
-			VerificaDatoModelImpl.DOCUMENTO_COLUMN_BITMASK |
-			VerificaDatoModelImpl.GIORNO_COLUMN_BITMASK |
-			VerificaDatoModelImpl.ZONA_COLUMN_BITMASK |
-			VerificaDatoModelImpl.EVENTO_COLUMN_BITMASK |
-			VerificaDatoModelImpl.NOMEDATO_COLUMN_BITMASK |
-			VerificaDatoModelImpl.PROGRESSIVO_COLUMN_BITMASK);
+			new String[] {"documento", "giorno"}, true);
 
 		_finderPathCountByDocumentoGiorno = new FinderPath(
-			VerificaDatoModelImpl.ENTITY_CACHE_ENABLED,
-			VerificaDatoModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByDocumentoGiorno",
-			new String[] {Long.class.getName(), Date.class.getName()});
+			new String[] {Long.class.getName(), Date.class.getName()},
+			new String[] {"documento", "giorno"}, false);
 
 		_finderPathWithPaginationFindByDocumentoGiornoEvento = new FinderPath(
-			VerificaDatoModelImpl.ENTITY_CACHE_ENABLED,
-			VerificaDatoModelImpl.FINDER_CACHE_ENABLED, VerificaDatoImpl.class,
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION,
 			"findByDocumentoGiornoEvento",
 			new String[] {
 				Long.class.getName(), Date.class.getName(),
 				Long.class.getName(), Integer.class.getName(),
 				Integer.class.getName(), OrderByComparator.class.getName()
-			});
+			},
+			new String[] {"documento", "giorno", "evento"}, true);
 
 		_finderPathWithoutPaginationFindByDocumentoGiornoEvento =
 			new FinderPath(
-				VerificaDatoModelImpl.ENTITY_CACHE_ENABLED,
-				VerificaDatoModelImpl.FINDER_CACHE_ENABLED,
-				VerificaDatoImpl.class,
 				FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
 				"findByDocumentoGiornoEvento",
 				new String[] {
 					Long.class.getName(), Date.class.getName(),
 					Long.class.getName()
 				},
-				VerificaDatoModelImpl.DOCUMENTO_COLUMN_BITMASK |
-				VerificaDatoModelImpl.GIORNO_COLUMN_BITMASK |
-				VerificaDatoModelImpl.EVENTO_COLUMN_BITMASK |
-				VerificaDatoModelImpl.ZONA_COLUMN_BITMASK |
-				VerificaDatoModelImpl.NOMEDATO_COLUMN_BITMASK |
-				VerificaDatoModelImpl.PROGRESSIVO_COLUMN_BITMASK);
+				new String[] {"documento", "giorno", "evento"}, true);
 
 		_finderPathCountByDocumentoGiornoEvento = new FinderPath(
-			VerificaDatoModelImpl.ENTITY_CACHE_ENABLED,
-			VerificaDatoModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
 			"countByDocumentoGiornoEvento",
 			new String[] {
 				Long.class.getName(), Date.class.getName(), Long.class.getName()
-			});
+			},
+			new String[] {"documento", "giorno", "evento"}, false);
 
 		_finderPathWithPaginationFindByDocumentoGiornoZona = new FinderPath(
-			VerificaDatoModelImpl.ENTITY_CACHE_ENABLED,
-			VerificaDatoModelImpl.FINDER_CACHE_ENABLED, VerificaDatoImpl.class,
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByDocumentoGiornoZona",
 			new String[] {
 				Long.class.getName(), Date.class.getName(),
 				String.class.getName(), Integer.class.getName(),
 				Integer.class.getName(), OrderByComparator.class.getName()
-			});
+			},
+			new String[] {"documento", "giorno", "zona"}, true);
 
 		_finderPathWithoutPaginationFindByDocumentoGiornoZona = new FinderPath(
-			VerificaDatoModelImpl.ENTITY_CACHE_ENABLED,
-			VerificaDatoModelImpl.FINDER_CACHE_ENABLED, VerificaDatoImpl.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
 			"findByDocumentoGiornoZona",
 			new String[] {
 				Long.class.getName(), Date.class.getName(),
 				String.class.getName()
 			},
-			VerificaDatoModelImpl.DOCUMENTO_COLUMN_BITMASK |
-			VerificaDatoModelImpl.GIORNO_COLUMN_BITMASK |
-			VerificaDatoModelImpl.ZONA_COLUMN_BITMASK |
-			VerificaDatoModelImpl.EVENTO_COLUMN_BITMASK |
-			VerificaDatoModelImpl.NOMEDATO_COLUMN_BITMASK |
-			VerificaDatoModelImpl.PROGRESSIVO_COLUMN_BITMASK);
+			new String[] {"documento", "giorno", "zona"}, true);
 
 		_finderPathCountByDocumentoGiornoZona = new FinderPath(
-			VerificaDatoModelImpl.ENTITY_CACHE_ENABLED,
-			VerificaDatoModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
 			"countByDocumentoGiornoZona",
 			new String[] {
 				Long.class.getName(), Date.class.getName(),
 				String.class.getName()
-			});
+			},
+			new String[] {"documento", "giorno", "zona"}, false);
 
 		_finderPathWithPaginationFindByDocumentoGiornoZonaEvento =
 			new FinderPath(
-				VerificaDatoModelImpl.ENTITY_CACHE_ENABLED,
-				VerificaDatoModelImpl.FINDER_CACHE_ENABLED,
-				VerificaDatoImpl.class, FINDER_CLASS_NAME_LIST_WITH_PAGINATION,
+				FINDER_CLASS_NAME_LIST_WITH_PAGINATION,
 				"findByDocumentoGiornoZonaEvento",
 				new String[] {
 					Long.class.getName(), Date.class.getName(),
 					String.class.getName(), Long.class.getName(),
 					Integer.class.getName(), Integer.class.getName(),
 					OrderByComparator.class.getName()
-				});
+				},
+				new String[] {"documento", "giorno", "zona", "evento"}, true);
 
 		_finderPathWithoutPaginationFindByDocumentoGiornoZonaEvento =
 			new FinderPath(
-				VerificaDatoModelImpl.ENTITY_CACHE_ENABLED,
-				VerificaDatoModelImpl.FINDER_CACHE_ENABLED,
-				VerificaDatoImpl.class,
 				FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
 				"findByDocumentoGiornoZonaEvento",
 				new String[] {
 					Long.class.getName(), Date.class.getName(),
 					String.class.getName(), Long.class.getName()
 				},
-				VerificaDatoModelImpl.DOCUMENTO_COLUMN_BITMASK |
-				VerificaDatoModelImpl.GIORNO_COLUMN_BITMASK |
-				VerificaDatoModelImpl.ZONA_COLUMN_BITMASK |
-				VerificaDatoModelImpl.EVENTO_COLUMN_BITMASK |
-				VerificaDatoModelImpl.NOMEDATO_COLUMN_BITMASK |
-				VerificaDatoModelImpl.PROGRESSIVO_COLUMN_BITMASK);
+				new String[] {"documento", "giorno", "zona", "evento"}, true);
 
 		_finderPathCountByDocumentoGiornoZonaEvento = new FinderPath(
-			VerificaDatoModelImpl.ENTITY_CACHE_ENABLED,
-			VerificaDatoModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
 			"countByDocumentoGiornoZonaEvento",
 			new String[] {
 				Long.class.getName(), Date.class.getName(),
 				String.class.getName(), Long.class.getName()
-			});
+			},
+			new String[] {"documento", "giorno", "zona", "evento"}, false);
 
 		_finderPathWithPaginationFindByGiorno = new FinderPath(
-			VerificaDatoModelImpl.ENTITY_CACHE_ENABLED,
-			VerificaDatoModelImpl.FINDER_CACHE_ENABLED, VerificaDatoImpl.class,
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByGiorno",
 			new String[] {
 				Date.class.getName(), Integer.class.getName(),
 				Integer.class.getName(), OrderByComparator.class.getName()
-			});
+			},
+			new String[] {"giorno"}, true);
 
 		_finderPathWithoutPaginationFindByGiorno = new FinderPath(
-			VerificaDatoModelImpl.ENTITY_CACHE_ENABLED,
-			VerificaDatoModelImpl.FINDER_CACHE_ENABLED, VerificaDatoImpl.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByGiorno",
-			new String[] {Date.class.getName()},
-			VerificaDatoModelImpl.GIORNO_COLUMN_BITMASK |
-			VerificaDatoModelImpl.DOCUMENTO_COLUMN_BITMASK |
-			VerificaDatoModelImpl.ZONA_COLUMN_BITMASK |
-			VerificaDatoModelImpl.EVENTO_COLUMN_BITMASK |
-			VerificaDatoModelImpl.NOMEDATO_COLUMN_BITMASK |
-			VerificaDatoModelImpl.PROGRESSIVO_COLUMN_BITMASK);
+			new String[] {Date.class.getName()}, new String[] {"giorno"}, true);
 
 		_finderPathCountByGiorno = new FinderPath(
-			VerificaDatoModelImpl.ENTITY_CACHE_ENABLED,
-			VerificaDatoModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByGiorno",
-			new String[] {Date.class.getName()});
+			new String[] {Date.class.getName()}, new String[] {"giorno"},
+			false);
 
 		_finderPathWithPaginationFindByGiornoZona = new FinderPath(
-			VerificaDatoModelImpl.ENTITY_CACHE_ENABLED,
-			VerificaDatoModelImpl.FINDER_CACHE_ENABLED, VerificaDatoImpl.class,
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByGiornoZona",
 			new String[] {
 				Date.class.getName(), String.class.getName(),
 				Integer.class.getName(), Integer.class.getName(),
 				OrderByComparator.class.getName()
-			});
+			},
+			new String[] {"giorno", "zona"}, true);
 
 		_finderPathWithoutPaginationFindByGiornoZona = new FinderPath(
-			VerificaDatoModelImpl.ENTITY_CACHE_ENABLED,
-			VerificaDatoModelImpl.FINDER_CACHE_ENABLED, VerificaDatoImpl.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByGiornoZona",
 			new String[] {Date.class.getName(), String.class.getName()},
-			VerificaDatoModelImpl.GIORNO_COLUMN_BITMASK |
-			VerificaDatoModelImpl.ZONA_COLUMN_BITMASK |
-			VerificaDatoModelImpl.DOCUMENTO_COLUMN_BITMASK |
-			VerificaDatoModelImpl.EVENTO_COLUMN_BITMASK |
-			VerificaDatoModelImpl.NOMEDATO_COLUMN_BITMASK |
-			VerificaDatoModelImpl.PROGRESSIVO_COLUMN_BITMASK);
+			new String[] {"giorno", "zona"}, true);
 
 		_finderPathCountByGiornoZona = new FinderPath(
-			VerificaDatoModelImpl.ENTITY_CACHE_ENABLED,
-			VerificaDatoModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByGiornoZona",
-			new String[] {Date.class.getName(), String.class.getName()});
+			new String[] {Date.class.getName(), String.class.getName()},
+			new String[] {"giorno", "zona"}, false);
 
 		_finderPathWithPaginationFindByGiornoEvento = new FinderPath(
-			VerificaDatoModelImpl.ENTITY_CACHE_ENABLED,
-			VerificaDatoModelImpl.FINDER_CACHE_ENABLED, VerificaDatoImpl.class,
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByGiornoEvento",
 			new String[] {
 				Date.class.getName(), Long.class.getName(),
 				Integer.class.getName(), Integer.class.getName(),
 				OrderByComparator.class.getName()
-			});
+			},
+			new String[] {"giorno", "evento"}, true);
 
 		_finderPathWithoutPaginationFindByGiornoEvento = new FinderPath(
-			VerificaDatoModelImpl.ENTITY_CACHE_ENABLED,
-			VerificaDatoModelImpl.FINDER_CACHE_ENABLED, VerificaDatoImpl.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByGiornoEvento",
 			new String[] {Date.class.getName(), Long.class.getName()},
-			VerificaDatoModelImpl.GIORNO_COLUMN_BITMASK |
-			VerificaDatoModelImpl.EVENTO_COLUMN_BITMASK |
-			VerificaDatoModelImpl.DOCUMENTO_COLUMN_BITMASK |
-			VerificaDatoModelImpl.ZONA_COLUMN_BITMASK |
-			VerificaDatoModelImpl.NOMEDATO_COLUMN_BITMASK |
-			VerificaDatoModelImpl.PROGRESSIVO_COLUMN_BITMASK);
+			new String[] {"giorno", "evento"}, true);
 
 		_finderPathCountByGiornoEvento = new FinderPath(
-			VerificaDatoModelImpl.ENTITY_CACHE_ENABLED,
-			VerificaDatoModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByGiornoEvento",
-			new String[] {Date.class.getName(), Long.class.getName()});
+			new String[] {Date.class.getName(), Long.class.getName()},
+			new String[] {"giorno", "evento"}, false);
 
 		_finderPathWithPaginationFindByGiornoZonaEvento = new FinderPath(
-			VerificaDatoModelImpl.ENTITY_CACHE_ENABLED,
-			VerificaDatoModelImpl.FINDER_CACHE_ENABLED, VerificaDatoImpl.class,
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByGiornoZonaEvento",
 			new String[] {
 				Date.class.getName(), String.class.getName(),
 				Long.class.getName(), Integer.class.getName(),
 				Integer.class.getName(), OrderByComparator.class.getName()
-			});
+			},
+			new String[] {"giorno", "zona", "evento"}, true);
 
 		_finderPathWithoutPaginationFindByGiornoZonaEvento = new FinderPath(
-			VerificaDatoModelImpl.ENTITY_CACHE_ENABLED,
-			VerificaDatoModelImpl.FINDER_CACHE_ENABLED, VerificaDatoImpl.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByGiornoZonaEvento",
 			new String[] {
 				Date.class.getName(), String.class.getName(),
 				Long.class.getName()
 			},
-			VerificaDatoModelImpl.GIORNO_COLUMN_BITMASK |
-			VerificaDatoModelImpl.ZONA_COLUMN_BITMASK |
-			VerificaDatoModelImpl.EVENTO_COLUMN_BITMASK |
-			VerificaDatoModelImpl.DOCUMENTO_COLUMN_BITMASK |
-			VerificaDatoModelImpl.NOMEDATO_COLUMN_BITMASK |
-			VerificaDatoModelImpl.PROGRESSIVO_COLUMN_BITMASK);
+			new String[] {"giorno", "zona", "evento"}, true);
 
 		_finderPathCountByGiornoZonaEvento = new FinderPath(
-			VerificaDatoModelImpl.ENTITY_CACHE_ENABLED,
-			VerificaDatoModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
 			"countByGiornoZonaEvento",
 			new String[] {
 				Date.class.getName(), String.class.getName(),
 				Long.class.getName()
-			});
+			},
+			new String[] {"giorno", "zona", "evento"}, false);
+
+		VerificaDatoUtil.setPersistence(this);
 	}
 
-	public void destroy() {
+	@Deactivate
+	public void deactivate() {
+		VerificaDatoUtil.setPersistence(null);
+
 		entityCache.removeCache(VerificaDatoImpl.class.getName());
-		finderCache.removeCache(FINDER_CLASS_NAME_ENTITY);
-		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 	}
 
-	@ServiceReference(type = EntityCache.class)
+	@Override
+	@Reference(
+		target = VERIFICAPersistenceConstants.SERVICE_CONFIGURATION_FILTER,
+		unbind = "-"
+	)
+	public void setConfiguration(Configuration configuration) {
+	}
+
+	@Override
+	@Reference(
+		target = VERIFICAPersistenceConstants.ORIGIN_BUNDLE_SYMBOLIC_NAME_FILTER,
+		unbind = "-"
+	)
+	public void setDataSource(DataSource dataSource) {
+		super.setDataSource(dataSource);
+	}
+
+	@Override
+	@Reference(
+		target = VERIFICAPersistenceConstants.ORIGIN_BUNDLE_SYMBOLIC_NAME_FILTER,
+		unbind = "-"
+	)
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		super.setSessionFactory(sessionFactory);
+	}
+
+	@Reference
 	protected EntityCache entityCache;
 
-	@ServiceReference(type = FinderCache.class)
+	@Reference
 	protected FinderCache finderCache;
 
-	private Long _getTime(Date date) {
+	private static Long _getTime(Date date) {
 		if (date == null) {
 			return null;
 		}
@@ -6935,9 +6293,6 @@ public class VerificaDatoPersistenceImpl
 
 	private static final String _SQL_SELECT_VERIFICADATO =
 		"SELECT verificaDato FROM VerificaDato verificaDato";
-
-	private static final String _SQL_SELECT_VERIFICADATO_WHERE_PKS_IN =
-		"SELECT verificaDato FROM VerificaDato verificaDato WHERE id_ IN (";
 
 	private static final String _SQL_SELECT_VERIFICADATO_WHERE =
 		"SELECT verificaDato FROM VerificaDato verificaDato WHERE ";
@@ -6961,5 +6316,10 @@ public class VerificaDatoPersistenceImpl
 
 	private static final Set<String> _badColumnNames = SetUtil.fromArray(
 		new String[] {"id"});
+
+	@Override
+	protected FinderCache getFinderCache() {
+		return finderCache;
+	}
 
 }

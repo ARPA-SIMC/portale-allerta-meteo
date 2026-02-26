@@ -1,18 +1,11 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.radarMeteo.service.impl;
+
+import com.liferay.portal.aop.AopService;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -29,20 +22,20 @@ import com.liferay.portal.kernel.security.access.control.AccessControlled;
 import it.eng.radarMeteo.model.Img;
 import it.eng.radarMeteo.service.base.ImgServiceBaseImpl;
 
+import org.osgi.service.component.annotations.Component;
+
 /**
- * The implementation of the img remote service.
- *
- * <p>
- * All custom service methods should be put in this class. Whenever methods are added, rerun ServiceBuilder to copy their definitions into the <code>it.eng.radarMeteo.service.ImgService</code> interface.
- *
- * <p>
- * This is a remote service. Methods of this service are expected to have security checks based on the propagated JAAS credentials because this service can be accessed remotely.
- * </p>
- *
  * @author Francesco
- * @see ImgServiceBaseImpl
  */
+@Component(
+	property = {
+		"json.web.service.context.name=rt_portlet",
+		"json.web.service.context.path=Img"
+	},
+	service = AopService.class
+)
 public class ImgServiceImpl extends ImgServiceBaseImpl {
+	
 
 	/*
 	 * NOTE FOR DEVELOPERS:
@@ -92,12 +85,15 @@ public class ImgServiceImpl extends ImgServiceBaseImpl {
 			mappa.put("lon",(Long)objects[3]);
 			mappa.put("nomestaz",(String)objects[4]);
 			mappa.put("ordinamento", (Integer)objects[5]);
-			if(variabile.equals("1,0,3600/1,-,-,-/B13011"))
+			if(variabile.equals("1,0,3600/1,-,-,-/B13011")) {
 				mappa.put("idvariabile",(String)objects[6]);
+				if (objects.length>=9) mappa.put("precedente",(String)objects[8]);
+			}
 			else{
 				mappa.put("soglia1", (Double)objects[6]);
 				mappa.put("soglia2", (Double)objects[7]);
 				mappa.put("soglia3", (Double)objects[8]);
+				if (objects.length>=10) mappa.put("precedente", (String)objects[9]);
 			}
 			result.add(mappa);
 		}
@@ -107,7 +103,7 @@ public class ImgServiceImpl extends ImgServiceBaseImpl {
 	@Override
 	@AccessControlled(guestAccessEnabled=true)
 	public ArrayList<Map<String, Object>> getSensorValues(String variabile, Long time){
-		
+
 		if (TimeZone.getDefault().getRawOffset()>0) {
 			time += TimeZone.getDefault().getRawOffset();
 			//if (TimeZone.getDefault().inDaylightTime(new Date())) time += 3600000;
@@ -134,18 +130,22 @@ public class ImgServiceImpl extends ImgServiceBaseImpl {
 			mappa.put("lon",(Long)objects[3]);
 			mappa.put("nomestaz",(String)objects[4]);
 			mappa.put("ordinamento", (Integer)objects[5]);
-			if(variabile.equals("1,0,3600/1,-,-,-/B13011"))
+			if(variabile.equals("1,0,3600/1,-,-,-/B13011")) {
 				mappa.put("idvariabile",(String)objects[6]);
+				if (objects.length>=9) mappa.put("precedente",(String)objects[8]);
+			}
 			else{
 				mappa.put("soglia1", (Double)objects[6]);
 				mappa.put("soglia2", (Double)objects[7]);
 				mappa.put("soglia3", (Double)objects[8]);
+				if (objects.length>=10) mappa.put("precedente", (String)objects[9]);
 			}
 
 			result.add(mappa);
 		}
 
 		return result;
+
 	}
 	@Override
 	@AccessControlled(guestAccessEnabled=true)
@@ -282,4 +282,5 @@ public class ImgServiceImpl extends ImgServiceBaseImpl {
 		}
 		return null;
 	}
+	
 }

@@ -1,31 +1,16 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package allerta.verifica.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -36,22 +21,12 @@ import java.util.Objects;
  * @see VerificaDato
  * @generated
  */
-@ProviderType
 public class VerificaDatoWrapper
-	implements VerificaDato, ModelWrapper<VerificaDato> {
+	extends BaseModelWrapper<VerificaDato>
+	implements ModelWrapper<VerificaDato>, VerificaDato {
 
 	public VerificaDatoWrapper(VerificaDato verificaDato) {
-		_verificaDato = verificaDato;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return VerificaDato.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return VerificaDato.class.getName();
+		super(verificaDato);
 	}
 
 	@Override
@@ -129,13 +104,8 @@ public class VerificaDatoWrapper
 	}
 
 	@Override
-	public Object clone() {
-		return new VerificaDatoWrapper((VerificaDato)_verificaDato.clone());
-	}
-
-	@Override
-	public int compareTo(allerta.verifica.model.VerificaDato verificaDato) {
-		return _verificaDato.compareTo(verificaDato);
+	public VerificaDato cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -145,7 +115,7 @@ public class VerificaDatoWrapper
 	 */
 	@Override
 	public String getDatoCalcolato() {
-		return _verificaDato.getDatoCalcolato();
+		return model.getDatoCalcolato();
 	}
 
 	/**
@@ -155,7 +125,7 @@ public class VerificaDatoWrapper
 	 */
 	@Override
 	public String getDatoInserito() {
-		return _verificaDato.getDatoInserito();
+		return model.getDatoInserito();
 	}
 
 	/**
@@ -165,7 +135,7 @@ public class VerificaDatoWrapper
 	 */
 	@Override
 	public long getDocumento() {
-		return _verificaDato.getDocumento();
+		return model.getDocumento();
 	}
 
 	/**
@@ -175,12 +145,7 @@ public class VerificaDatoWrapper
 	 */
 	@Override
 	public long getEvento() {
-		return _verificaDato.getEvento();
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _verificaDato.getExpandoBridge();
+		return model.getEvento();
 	}
 
 	/**
@@ -190,7 +155,7 @@ public class VerificaDatoWrapper
 	 */
 	@Override
 	public Date getGiorno() {
-		return _verificaDato.getGiorno();
+		return model.getGiorno();
 	}
 
 	/**
@@ -200,7 +165,7 @@ public class VerificaDatoWrapper
 	 */
 	@Override
 	public long getId() {
-		return _verificaDato.getId();
+		return model.getId();
 	}
 
 	/**
@@ -210,7 +175,7 @@ public class VerificaDatoWrapper
 	 */
 	@Override
 	public String getNomeDato() {
-		return _verificaDato.getNomeDato();
+		return model.getNomeDato();
 	}
 
 	/**
@@ -220,12 +185,7 @@ public class VerificaDatoWrapper
 	 */
 	@Override
 	public long getPrimaryKey() {
-		return _verificaDato.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _verificaDato.getPrimaryKeyObj();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -235,7 +195,7 @@ public class VerificaDatoWrapper
 	 */
 	@Override
 	public int getProgressivo() {
-		return _verificaDato.getProgressivo();
+		return model.getProgressivo();
 	}
 
 	/**
@@ -245,37 +205,12 @@ public class VerificaDatoWrapper
 	 */
 	@Override
 	public String getZona() {
-		return _verificaDato.getZona();
-	}
-
-	@Override
-	public int hashCode() {
-		return _verificaDato.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _verificaDato.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _verificaDato.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _verificaDato.isNew();
+		return model.getZona();
 	}
 
 	@Override
 	public void persist() {
-		_verificaDato.persist();
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_verificaDato.setCachedModel(cachedModel);
+		model.persist();
 	}
 
 	/**
@@ -285,7 +220,7 @@ public class VerificaDatoWrapper
 	 */
 	@Override
 	public void setDatoCalcolato(String datoCalcolato) {
-		_verificaDato.setDatoCalcolato(datoCalcolato);
+		model.setDatoCalcolato(datoCalcolato);
 	}
 
 	/**
@@ -295,7 +230,7 @@ public class VerificaDatoWrapper
 	 */
 	@Override
 	public void setDatoInserito(String datoInserito) {
-		_verificaDato.setDatoInserito(datoInserito);
+		model.setDatoInserito(datoInserito);
 	}
 
 	/**
@@ -305,7 +240,7 @@ public class VerificaDatoWrapper
 	 */
 	@Override
 	public void setDocumento(long documento) {
-		_verificaDato.setDocumento(documento);
+		model.setDocumento(documento);
 	}
 
 	/**
@@ -315,24 +250,7 @@ public class VerificaDatoWrapper
 	 */
 	@Override
 	public void setEvento(long evento) {
-		_verificaDato.setEvento(evento);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_verificaDato.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_verificaDato.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_verificaDato.setExpandoBridgeAttributes(serviceContext);
+		model.setEvento(evento);
 	}
 
 	/**
@@ -342,7 +260,7 @@ public class VerificaDatoWrapper
 	 */
 	@Override
 	public void setGiorno(Date giorno) {
-		_verificaDato.setGiorno(giorno);
+		model.setGiorno(giorno);
 	}
 
 	/**
@@ -352,12 +270,7 @@ public class VerificaDatoWrapper
 	 */
 	@Override
 	public void setId(long id) {
-		_verificaDato.setId(id);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_verificaDato.setNew(n);
+		model.setId(id);
 	}
 
 	/**
@@ -367,7 +280,7 @@ public class VerificaDatoWrapper
 	 */
 	@Override
 	public void setNomeDato(String nomeDato) {
-		_verificaDato.setNomeDato(nomeDato);
+		model.setNomeDato(nomeDato);
 	}
 
 	/**
@@ -377,12 +290,7 @@ public class VerificaDatoWrapper
 	 */
 	@Override
 	public void setPrimaryKey(long primaryKey) {
-		_verificaDato.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_verificaDato.setPrimaryKeyObj(primaryKeyObj);
+		model.setPrimaryKey(primaryKey);
 	}
 
 	/**
@@ -392,7 +300,7 @@ public class VerificaDatoWrapper
 	 */
 	@Override
 	public void setProgressivo(int progressivo) {
-		_verificaDato.setProgressivo(progressivo);
+		model.setProgressivo(progressivo);
 	}
 
 	/**
@@ -402,75 +310,17 @@ public class VerificaDatoWrapper
 	 */
 	@Override
 	public void setZona(String zona) {
-		_verificaDato.setZona(zona);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<allerta.verifica.model.VerificaDato> toCacheModel() {
-
-		return _verificaDato.toCacheModel();
-	}
-
-	@Override
-	public allerta.verifica.model.VerificaDato toEscapedModel() {
-		return new VerificaDatoWrapper(_verificaDato.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _verificaDato.toString();
-	}
-
-	@Override
-	public allerta.verifica.model.VerificaDato toUnescapedModel() {
-		return new VerificaDatoWrapper(_verificaDato.toUnescapedModel());
+		model.setZona(zona);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _verificaDato.toXmlString();
+		return model.toXmlString();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-
-		if (!(obj instanceof VerificaDatoWrapper)) {
-			return false;
-		}
-
-		VerificaDatoWrapper verificaDatoWrapper = (VerificaDatoWrapper)obj;
-
-		if (Objects.equals(_verificaDato, verificaDatoWrapper._verificaDato)) {
-			return true;
-		}
-
-		return false;
+	protected VerificaDatoWrapper wrap(VerificaDato verificaDato) {
+		return new VerificaDatoWrapper(verificaDato);
 	}
-
-	@Override
-	public VerificaDato getWrappedModel() {
-		return _verificaDato;
-	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _verificaDato.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _verificaDato.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_verificaDato.resetOriginalValues();
-	}
-
-	private final VerificaDato _verificaDato;
 
 }

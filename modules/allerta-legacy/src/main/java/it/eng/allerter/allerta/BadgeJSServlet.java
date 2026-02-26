@@ -15,11 +15,7 @@ import org.osgi.service.component.annotations.Component;
 import it.eng.bollettino.service.BollettinoLocalServiceUtil;
 
 @Component(
-	    immediate = true,
-	    property = {
-	        "osgi.http.whiteboard.context.path=/",
-	        "osgi.http.whiteboard.servlet.pattern=/badge.js"
-	    },
+	    property = "osgi.http.whiteboard.servlet.pattern=/badge.js",
 	    service = Servlet.class
 	)
 public class BadgeJSServlet  extends HttpServlet {

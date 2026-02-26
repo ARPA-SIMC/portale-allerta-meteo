@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.security.MessageDigest;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -19,6 +20,7 @@ import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.liferay.asset.entry.rel.service.AssetEntryAssetCategoryRelLocalServiceUtil;
 import com.liferay.asset.kernel.model.AssetCategory;
 import com.liferay.asset.kernel.model.AssetEntry;
 import com.liferay.asset.kernel.service.AssetCategoryLocalServiceUtil;
@@ -108,13 +110,81 @@ public class BollettinoBean implements Serializable {
 			"where bs2.idstazione=bs.idstazione and bs2.idbollettino=IDB limit 1) " + 
 			"			   where bs.idbollettino=IDN and exists(select * from bollettino_bollettinosensore bs2 " + 
 			"where bs2.idstazione=bs.idstazione and bs2.idbollettino=IDB limit 1)";
+	
+	
+	/*String queryCopiaColmiOsservati2 = "update bollettino_bollettinosensore set osservato=subquery.osservato,\r\n" + 
+			"colmoprevisto=subquery.colmoprevisto,oraprevista=subquery.oraprevista,\r\n" + 
+			"giornoprevisto=subquery.giornoprevisto,tendenza=subquery.tendenza from \r\n" + 
+			"(select bs2.id_ as idnew, bs.* from (select x.*,b2.bollettinoid,b2.numero from (select idbacino,nomebacino,idbbollettinobacino,max(b.dataapprovazione) as app from bollettino_bollettino b join\r\n" + 
+			"bollettino_bacinoincluso bi on b.bollettinoid = bi.idbollettino\r\n" + 
+			"where b.numero like '_IDEVENTO_%' and stato=0 and dataapprovazione<'_DATAAPPROV_'\r\n" + 
+			"group by idbacino,nomebacino,idbbollettinobacino) x join bollettino_bollettino b2 on b2.dataapprovazione=app) y\r\n" + 
+			"join bollettino_bollettinosensore bs on bs.idbollettinobacino=y.idbbollettinobacino\r\n" + 
+			"join bollettino_bollettinosensore bs2 on bs2.idbollettino=IDN and bs2.idstazione=bs.idstazione)\r\n" + 
+			"subquery where bollettino_bollettinosensore.id_=subquery.idnew";*/
+
+	String queryCopiaColmiOsservati2 = "update bollettino_bollettinosensore set osservato=subquery.osservato,\r\n" + 
+			"colmoprevisto=subquery.colmoprevisto,oraprevista=subquery.oraprevista,\r\n" + 
+			"giornoprevisto=subquery.giornoprevisto,tendenza=subquery.tendenza from \r\n" + 
+			"(select app,bs2.id_ as idnew,bs.* from (select distinct on(idbacino) idbacino,last_value(nomebacino) over wmd as nomebacino,\r\n" + 
+			"last_value(idbbollettinobacino) over wmd as idbbollettinobacino,\r\n" + 
+			"last_value(app) over wmd as app,\r\n" + 
+			"last_value(bollettinoid) over wmd as bollettinoid,\r\n" + 
+			"last_value(numero) over wmd as numero\r\n" + 
+			"from (select x.*,b2.bollettinoid,b2.numero from (select idbacino,nomebacino,idbbollettinobacino,max(b.dataapprovazione) as app from bollettino_bollettino b join \r\n" + 
+			"bollettino_bacinoincluso bi on b.bollettinoid = bi.idbollettino\r\n" + 
+			"where b.numero like '_IDEVENTO_%' and stato=0 and dataapprovazione<'_DATAAPPROV_'\r\n" + 
+			"group by idbacino,nomebacino,idbbollettinobacino) x join bollettino_bollettino b2 on b2.dataapprovazione=app) y\r\n" + 
+			"WINDOW wmd AS (PARTITION BY y.idbacino ORDER BY app ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)) z\r\n" + 
+			"join bollettino_bollettinosensore bs on bs.idbollettinobacino=z.idbbollettinobacino\r\n" + 
+			"join bollettino_bollettinosensore bs2 on bs2.idbollettino=IDN and bs2.idstazione=bs.idstazione)\r\n" + 
+			"subquery where bollettino_bollettinosensore.id_=subquery.idnew";
+	
+	
+	String queryUltimoBollettinoPerBacino = "select x.*, b2.numero from (select idbacino,nomebacino,max(b.dataapprovazione) as app from bollettino_bollettino b join \r\n" + 
+			"bollettino_bacinoincluso bi on b.bollettinoid = bi.idbollettino\r\n" + 
+			"where b.numero like '_IDEVENTO_%' and stato=0 and dataapprovazione<'_DATAAPPROV_'\r\n" + 
+			"group by idbacino,nomebacino) x join bollettino_bollettino b2 on b2.dataapprovazione=app";
+	List<Object[]> ultimoBollettinoBacino;
+	
 	String queryCopiaNote = "update bollettino_bollettinobacino bb set note = (select note from bollettino_bollettinobacino bb2 where bb2.idbacino=bb.idbacino and bb2.idbollettino=IDB limit 1) where bb.idbollettino=IDN and exists(select * from bollettino_bollettinobacino bb2 where bb2.idbacino=bb.idbacino and bb2.idbollettino=IDB limit 1)";
+	
+	String queryCopiaNote2 = "update bollettino_bollettinobacino set note = subquery.note from (select b2.id_,x.idbbollettinobacino,b3.note from (select idbacino,nomebacino,idbbollettinobacino,max(b.dataapprovazione) as app from bollettino_bollettino b join " + 
+			"bollettino_bacinoincluso bi on b.bollettinoid = bi.idbollettino " + 
+			"where b.numero like '_IDEVENTO_%' and stato=0 and dataapprovazione<'_DATAAPPROV_' " + 
+			"group by idbacino,nomebacino,idbbollettinobacino) x join bollettino_bollettinobacino b2 " + 
+			"on b2.idbollettino=IDN and b2.idbacino=x.idbacino join bollettino_bollettinobacino b3 " + 
+			"on b3.id_=idbbollettinobacino) subquery where bollettino_bollettinobacino.id_=subquery.id_";
+	
+	/*String queryTrovaBollettinoRecente = "insert into bollettino_stazioneinclusa (select IDN as idbollettino, si.idstazione from (select x.*,b2.bollettinoid,b2.numero from (select idbacino,nomebacino,idbbollettinobacino,max(b.dataapprovazione) as app from bollettino_bollettino b join " + 
+			"bollettino_bacinoincluso bi on b.bollettinoid = bi.idbollettino "+ 
+			"where b.numero like '_IDEVENTO_%' and stato=0 and dataapprovazione<'_DATAAPPROV_' " + 
+			"group by idbacino,nomebacino,idbbollettinobacino) x join bollettino_bollettino b2 on b2.dataapprovazione=app) y " + 
+			"join bollettino_bollettinosensore bs on bs.idbollettinobacino=y.idbbollettinobacino " + 
+			"join bollettino_stazionevariabile sv on sv.id_=bs.idstazione " + 
+			"join bollettino_stazioneinclusa si on si.idbollettino=y.bollettinoid " + 
+			"and si.idstazione=sv.idstazione)";*/
+	
+	String queryTrovaBollettinoRecente = "insert into bollettino_stazioneinclusa (select IDN as idbollettino, si.idstazione from " + 
+	"(select x.*,b2.bollettinoid,b2.numero from (select idbacino,nomebacino, " + 
+	"max(b.dataapprovazione) as app from bollettino_bollettino b join " + 
+	"bollettino_bacinoincluso bi on b.bollettinoid = bi.idbollettino " + 
+	"where b.numero like '_IDEVENTO_%' and stato=0 and dataapprovazione<'_DATAAPPROV_' " + 
+	"group by idbacino,nomebacino) x join bollettino_bollettino b2 " + 
+	" on b2.dataapprovazione=app) y " + 
+	"join bollettino_bollettino bb on bb.dataapprovazione=y.app " + 
+	"join bollettino_bollettinobacino ba on ba.idbollettino=bb.bollettinoid and ba.nomebacino=y.nomebacino " + 
+	"join bollettino_bollettinosensore bs on bs.idbollettinobacino=ba.id_ " + 
+	"join bollettino_stazionevariabile sv on sv.id_=bs.idstazione " + 
+	"join bollettino_stazioneinclusa si on si.idbollettino=y.bollettinoid " + 
+	"and si.idstazione=sv.idstazione)";
+	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -6066789871362224379L;
 	
-	boolean dryRun = false; //se true, non crea veramente gli oggetti in db.
+
 	public boolean creaRep = true;
 	public boolean ignoraSensori = false;
 
@@ -128,6 +198,9 @@ public class BollettinoBean implements Serializable {
 	Date dataFine = null;
 	private boolean ultimo = false;
 	private long bollettinoId = 0;
+	
+	Bollettino ultimoCopiabile = null;
+	String baciniUltimoBollettino = "";
 
 
 	private List<SelectItem> listaApprovatoriArpae;
@@ -153,10 +226,7 @@ public class BollettinoBean implements Serializable {
 		
 		this.bollettinoId = bollettinoId;
 		this.request = request;
-		
-		if (bollettinoId>0 && BollettinoLocalServiceUtil.fetchBollettino(bollettinoId)==null) {
-			dryRun = false;
-		}
+
 		
 		initBean();
 	}
@@ -217,9 +287,29 @@ public class BollettinoBean implements Serializable {
 		
 	}
 	
+	public Bollettino getUltimoCopiabile(Bollettino daChi) {
+		
+		if (daChi==null) return null;
+		
+		//trova il monitoraggio dello stesso evento (primi 8 caratteri del numero)
+		//approvato (stato=0)
+		//approvato prima della creazione di questo monitoraggio
+		DynamicQuery dyn2 = BollettinoLocalServiceUtil.dynamicQuery()
+				.add(PropertyFactoryUtil.forName("numero").like(daChi.getNumero().substring(0, 8)+"%"))
+				.add(PropertyFactoryUtil.forName("stato").eq(0))
+				.add(PropertyFactoryUtil.forName("dataApprovazione").le(daChi.getCreateDate()))
+				.addOrder(OrderFactoryUtil.desc("dataApprovazione"));
+		
+		List<Bollettino> bb = BollettinoLocalServiceUtil.dynamicQuery(dyn2);
+		if (bb!=null && bb.size()>0) return bb.get(0);
+		
+		return null;
+	}
+	
 	public void initGriglia() {
 		
 		String baciniInput =  ParamUtil.getString(this.request, "bacini_selected", null);
+		String baciniInput2[] = baciniInput.split("_");
 		
 		//if( Validator.isNotNull(baciniInput)) {
 			
@@ -243,10 +333,15 @@ public class BollettinoBean implements Serializable {
 				for (BacinoManager bb : this.bacini) {
 
 					bb.selezionato = false;
-					for (StazioneManager sm : bb.stazioni) {
+					/*for (StazioneManager sm : bb.stazioni) {
 						if (sm.selezionata)
 							bb.selezionato = true;
-					}
+					}*/
+					for (String bacSel : baciniInput2)
+						if (bacSel.equals(""+bb.getBac().getId())) {
+							System.out.println("INITGRIGLIA -> ATTIVO "+bacSel);
+							bb.selezionato=true;
+						}
 
 					// genera automaticamente l'ora di osservazione
 					if (bb.selezionato && bb.getOre() == null) {
@@ -259,7 +354,7 @@ public class BollettinoBean implements Serializable {
 					bb.setNote(bb.getNote());
 					bb.bacino.setOreOsservazione(bb.getOre());
 					bb.bacino.setIdBollettino(bollettino.getBollettinoId());
-					if (!dryRun) BollettinoBacinoLocalServiceUtil.updateBollettinoBacino(bb.bacino);
+					BollettinoBacinoLocalServiceUtil.updateBollettinoBacino(bb.bacino);
 
 					for (StazioneManager sm : bb.stazioni) {
 
@@ -277,7 +372,7 @@ public class BollettinoBean implements Serializable {
 						sm.sensore.setOreOsservazione(sm.oraUltimoLivello);
 						
 						int tendenza = -100;
-						if (sm.isSelezionata()) {
+						//if (sm.isSelezionata()) {
 							String ten = sm.getTendenza();
 							if (ten.equals("+"))
 								tendenza = 1;
@@ -287,12 +382,12 @@ public class BollettinoBean implements Serializable {
 								tendenza = 0;
 							else
 								tendenza = 2;
-						}
+						//}
 
 						sm.sensore.setTendenza(tendenza);
 						
 
-						if (!dryRun) BollettinoSensoreLocalServiceUtil.updateBollettinoSensore(sm.sensore);
+						BollettinoSensoreLocalServiceUtil.updateBollettinoSensore(sm.sensore);
 						return;
 					}
 				}
@@ -301,6 +396,21 @@ public class BollettinoBean implements Serializable {
 			
 			if (bollettino == null || ignoraSensori)
 				return;
+			
+			
+			/*String queryBaciniSelezionati = "select idbacino,nomebacino from bollettino_bacinoincluso where idbollettino="+bollettinoId;
+			List<Object[]> baciniSel = BollettinoLocalServiceUtil.eseguiQueryGenericaLista(queryBaciniSelezionati);
+			for (Object[] bs: baciniSel) {
+				System.out.println("BACINO CARICATO 1: "+bs[0]+" - "+bs[1]);
+			}
+			
+			String queryStazioniSelezionate = "select idstazione,idbollettino from bollettino_stazioneinclusa where idbollettino="+bollettinoId;
+			List<Object[]> stazioniSel = BollettinoLocalServiceUtil.eseguiQueryGenericaLista(queryStazioniSelezionate);
+			for (Object[] bs: stazioniSel) {
+				System.out.println("STAZIONE CARICATA 1: "+bs[0]+" - "+bs[1]);
+			}*/
+			
+
 
 			List<BollettinoBacino> bb = bollettino.getBacini();
 			
@@ -323,6 +433,21 @@ public class BollettinoBean implements Serializable {
 					bm.note = xyz;
 					bm.getBacino().setNote(xyz);
 				}
+				
+				/*for (Object[] bacSel : baciniSel) {
+					if (bacSel!=null && bacSel[0]!=null && bacSel[0].toString().equals(bbb.getIdBacino())) {
+						bm.selezionato=true;
+						System.out.println("Attivo bacino "+bacSel[1].toString());
+					}
+						
+					
+				}*/
+				
+				for (String bacSel : baciniInput2)
+					if (bacSel.equals(""+bm.getBac().getId())) {
+						System.out.println("INITGRIGLIA -> ATTIVO "+bacSel);
+						bm.selezionato=true;
+					}
 
 				DynamicQuery dyn2 = BollettinoSensoreLocalServiceUtil.dynamicQuery()
 						.add(PropertyFactoryUtil.forName("idBollettinoBacino").eq(bbb.getId()))
@@ -353,15 +478,21 @@ public class BollettinoBean implements Serializable {
 
 						if (ssvv.size() > 0)
 							sm.stazioneVariabile = ssvv.get(0);
+						
+						if (ParamUtil.getString(this.request, "stazionesel_" + sm.stazione.getId(), null)!=null) {
+							sm.selezionata=true;
+							System.out.println("Attivo stazione "+sm.stazione.getId());
+						}
+
 					}
 
 					sm.livelloPrevisto = "";
 					sm.oraPrevista = "";
 					sm.giornoPrevisto = "";
 					sm.setTendenza("=");
-					sss.setTendenza(-100);
+					//sss.setTendenza(-100);
 					
-					if( Validator.isNotNull(baciniInput) && baciniInput.indexOf( "_" + bbb.getIdBacino()) >= 0 ) {
+					if( /*Validator.isNotNull(baciniInput) && baciniInput.indexOf( "_" + bbb.getIdBacino()) >= 0 */ true) {
 						
 						String stazioneInput =  ParamUtil.getString(this.request, "stazionesel_" + sm.stazione.getId(), null);
 						
@@ -369,7 +500,7 @@ public class BollettinoBean implements Serializable {
 							
 							String note = ParamUtil.getString(this.request, "note_" + bbb.getIdBacino(), null);
 							
-							sm.selezionata = true;
+							//sm.selezionata = true;
 							sm.livelloPrevisto = sss.getColmoPrevisto();
 							sm.oraPrevista = sss.getOraPrevista();
 							sm.giornoPrevisto = sss.getGiornoPrevisto();
@@ -399,12 +530,12 @@ public class BollettinoBean implements Serializable {
 							sss.setOsservato(ParamUtil.getBoolean(this.request, "osserv_" + sm.stazione.getId()));
 							
 						} else {
-							sm.selezionata = false;
+							//sm.selezionata = false;
 
 						}
 						
-					} else 
-						sm.selezionata = false;
+					} //else 
+						//sm.selezionata = false;
 						
 
 				}
@@ -488,7 +619,9 @@ public class BollettinoBean implements Serializable {
 			bollettino = BollettinoLocalServiceUtil.fetchBollettino(bollettinoId);
 			if (bollettino == null)
 				return;
-
+			
+			ultimoCopiabile = getUltimoCopiabile(bollettino);
+			
 			this.dataInizio = bollettino.getDataInizio();
 			this.dataFine = bollettino.getDataFine();
 			this.numero = bollettino.getNumero();
@@ -505,7 +638,28 @@ public class BollettinoBean implements Serializable {
 				bacini = new ArrayList<BacinoManager>();
 			else
 				bacini.clear();
-
+			
+			
+			String queryBaciniSelezionati = "select idbacino,nomebacino from bollettino_bacinoincluso where idbollettino="+bollettinoId;
+			List<Object[]> baciniSel = BollettinoLocalServiceUtil.eseguiQueryGenericaLista(queryBaciniSelezionati);
+			for (Object[] bs: baciniSel) {
+				System.out.println("BACINO CARICATO 2: "+bs[0]+" - "+bs[1]);
+			}
+			
+			String queryStazioniSelezionate = "select idstazione,idbollettino from bollettino_stazioneinclusa where idbollettino="+bollettinoId;
+			List<Object[]> stazioniSel = BollettinoLocalServiceUtil.eseguiQueryGenericaLista(queryStazioniSelezionate);
+			for (Object[] bs: stazioniSel) {
+				System.out.println("STAZIONE CARICATA 2: "+bs[0]+" - "+bs[1]);
+			}
+			
+			String q = queryUltimoBollettinoPerBacino;
+			q = q.replaceAll("_IDEVENTO_", numero.substring(0, 8));
+			SimpleDateFormat forma = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			String dt = forma.format(bollettino.getCreateDate());
+			q = q.replaceAll("_DATAAPPROV_", dt);
+			ultimoBollettinoBacino = BollettinoLocalServiceUtil.eseguiQueryGenericaLista(q);
+			
+			
 			for (BollettinoBacino bbb : bb) {
 
 				BacinoManager bm = new BacinoManager();
@@ -514,6 +668,22 @@ public class BollettinoBean implements Serializable {
 				bm.bac = BacinoLocalServiceUtil.fetchBacino(bbb.getIdBacino());
 				bm.note = bbb.getNote();
 				bm.ore = bbb.getOreOsservazione();
+				bm.ultimoBollettino = "";
+				for (Object[] ulti : ultimoBollettinoBacino) {
+					if (ulti[1].toString().equals(bm.bac.getNome())) {
+						bm.ultimoBollettino = "("+ulti[3].toString()+")";
+						System.out.println("TROVATO BACINO "+ulti[3].toString());
+					}
+				}
+				System.out.println("Confronto "+bbb.getIdBacino());
+				for (Object[] bacSel : baciniSel) {
+					if (bacSel!=null && bacSel[0]!=null && bacSel[0].toString().equals(bbb.getIdBacino())) {
+						bm.selezionato=true;
+						System.out.println("Attivo bacino "+bacSel[1].toString());
+					}
+						
+					
+				}
 
 				DynamicQuery dyn2 = BollettinoSensoreLocalServiceUtil.dynamicQuery()
 						.add(PropertyFactoryUtil.forName("idBollettinoBacino").eq(bbb.getId()))
@@ -528,10 +698,12 @@ public class BollettinoBean implements Serializable {
 					sm.sensore = sss;
 					sm.parent = bm;
 					
-					if (sss.getTendenza() != -100) {
+
+					
+					/*if (sss.getTendenza() != -100) {
 						sm.selezionata = true;
 						bm.selezionato = true;
-					}
+					}*/
 
 					DynamicQuery dyn3 = StazioneLocalServiceUtil.dynamicQuery()
 							.add(PropertyFactoryUtil.forName("name").eq(sss.getNomeStazione()))
@@ -548,6 +720,17 @@ public class BollettinoBean implements Serializable {
 
 						if (ssvv.size() > 0)
 							sm.stazioneVariabile = ssvv.get(0);
+						
+						
+						for (Object[] sSel : stazioniSel) {
+							if (sSel!=null && sSel[0]!=null && sSel[0].toString().equals(sm.stazione.getId())) {
+								sm.selezionata=true;
+								System.out.println("Attivo stazione "+sSel[0].toString());
+							}
+								
+							
+						}
+						
 					}
 
 					sm.livelloPrevisto = sss.getColmoPrevisto();
@@ -568,17 +751,28 @@ public class BollettinoBean implements Serializable {
 							.add(PropertyFactoryUtil.forName("idVariabile").eq("254,0,0/1,-,-,-/B13215"))
 							.addOrder(OrderFactoryUtil.desc("datetime"));
 					List<ValoreSensore> sv = ValoreSensoreLocalServiceUtil.dynamicQuery(dyn, 0, 2);
-					if (sss.getTendenza()==-100) {
+					/*if (sss.getTendenza()==-100) {
 					if (sv.size() > 0)
 						sm.ultimoLivello = sv.get(0).getValue();
 					if (sv.size() > 1)
 						sm.penultimoLivello = sv.get(1).getValue();
 					sm.setTendenza(sm.calcolaTendenza());
-					}
+					}*/
 					
 					bm.stazioni.add(sm);
 				}
 
+			}
+			
+			baciniUltimoBollettino = "";
+			System.out.println("Aggiungo bacini ultimo bollettino");
+			for (BacinoManager bm : bacini) {
+				if (ultimoCopiabile!=null && bm.ultimoBollettino!=null && bm.ultimoBollettino.contains(ultimoCopiabile.getNumero())) {
+					if (!baciniUltimoBollettino.equals(""))
+						baciniUltimoBollettino+=",";
+					baciniUltimoBollettino+="'"+bm.bac.getId()+"'";
+					System.out.println("Aggiungo "+bm.bac.getId());
+				}
 			}
 
 			//ricaricaLivelliOsservati();
@@ -764,8 +958,6 @@ public class BollettinoBean implements Serializable {
 	}
 
 	public void inviaApprovazione() {
-		
-		dryRun = false;
 
 		if (bollettino == null)
 			return;
@@ -1015,7 +1207,8 @@ public class BollettinoBean implements Serializable {
 			this.stringaMeteo = ParamUtil.getString(request, "testoMeteo");
 			this.bollettinoId = ParamUtil.getLong(request, "bollettinoId");
 			this.approvatoreArpae = ParamUtil.getString(request, "elencoApprovatori");
-			
+			System.out.println("Approvatore arpae: "+this.approvatoreArpae);
+			System.out.println("Numero: "+this.numero);
 			initGriglia();
 		}
 		
@@ -1036,14 +1229,15 @@ public class BollettinoBean implements Serializable {
 	}
 
 	public void salvaBollettino( boolean readFromRequest) {
-		
-		dryRun = false; 
+
 		if( readFromRequest)
 			initFromRequest();
 		
 		salvaBollettino();
 		
 	}
+	
+	
 	
 	public void createBollettino( ThemeDisplay themeDisplay, ServiceContext sc ) {
 		
@@ -1063,9 +1257,9 @@ public class BollettinoBean implements Serializable {
 		
 		bollettino.setNumero(numero);
 		
-		if (!dryRun) BollettinoLocalServiceUtil.updateBollettino(bollettino);
+		BollettinoLocalServiceUtil.updateBollettino(bollettino);
 
-		if (!dryRun) createFolder("bollettino-" + inc, "File per bollettino " + inc, sc);
+		createFolder("bollettino-" + inc, "File per bollettino " + inc, sc);
 		
 		if( this.bacini.size() == 0)
 			this.riempiBollettino();
@@ -1082,7 +1276,7 @@ public class BollettinoBean implements Serializable {
 			bb.bacino.setNomeBacino(bb.bac.getNome());
 			bb.bacino.setProgressivo(bb.bac.getProgressivo());
 			
-			if (!dryRun) BollettinoBacinoLocalServiceUtil.updateBollettinoBacino(bb.bacino);
+			BollettinoBacinoLocalServiceUtil.updateBollettinoBacino(bb.bacino);
 
 			for (StazioneManager sm : bb.stazioni) {
 				
@@ -1101,7 +1295,7 @@ public class BollettinoBean implements Serializable {
 				sm.sensore.setSoglia3(sm.stazioneVariabile.getSoglia3());
 				sm.sensore.setOraPrevista(null);
 				sm.sensore.setGiornoPrevisto(null);
-				sm.sensore.setTendenza(-100);
+				sm.sensore.setTendenza(0);
 				sm.selezionata = false;
 				
 				// ricarica gli ultimi due valori osservati (il penultimo serve per la tendenza)
@@ -1121,7 +1315,7 @@ public class BollettinoBean implements Serializable {
 					sm.penultimoLivello = sv.get(1).getValue();
 				sm.setTendenza(sm.calcolaTendenza());
 				String ten = sm.getTendenza();
-				int tendenza = -100;
+				int tendenza = -0;
 				if (ten.equals("+"))
 					tendenza = 1;
 				else if (ten.equals("-"))
@@ -1132,13 +1326,13 @@ public class BollettinoBean implements Serializable {
 					tendenza = 2;
 				sm.sensore.setTendenza(tendenza);
 				
-				if (!dryRun) BollettinoSensoreLocalServiceUtil.updateBollettinoSensore(sm.sensore);
+				BollettinoSensoreLocalServiceUtil.updateBollettinoSensore(sm.sensore);
 
 			}
 
 		}
 		
-		if (!dryRun) copiaColmiOsservati();
+		copiaColmiOsservati();
 
 	}
 	
@@ -1171,6 +1365,8 @@ public class BollettinoBean implements Serializable {
 		bollettino.setIdApprovatore(20198);
 		
 		BollettinoLocalServiceUtil.updateBollettino(bollettino);
+		
+		ultimoCopiabile = getUltimoCopiabile(bollettino);
 
 		createFolder("bollettino-" + inc, "File per bollettino " + inc, sc);
 		
@@ -1208,7 +1404,7 @@ public class BollettinoBean implements Serializable {
 				sm.sensore.setSoglia3(sm.stazioneVariabile.getSoglia3());
 				sm.sensore.setOraPrevista(null);
 				sm.sensore.setGiornoPrevisto(null);
-				sm.sensore.setTendenza(-100);
+				sm.sensore.setTendenza(0);
 				sm.selezionata = false;
 				
 				// ricarica gli ultimi due valori osservati (il penultimo serve per la tendenza)
@@ -1227,8 +1423,8 @@ public class BollettinoBean implements Serializable {
 				if (sv.size() > 1)
 					sm.penultimoLivello = sv.get(1).getValue();
 				sm.setTendenza(sm.calcolaTendenza());
-				/*String ten = sm.getTendenza();
-				int tendenza = -100;
+				String ten = sm.getTendenza();
+				int tendenza = 0;
 				if (ten.equals("+"))
 					tendenza = 1;
 				else if (ten.equals("-"))
@@ -1236,8 +1432,9 @@ public class BollettinoBean implements Serializable {
 				else if (ten.equals("="))
 					tendenza = 0;
 				else
-					tendenza = 0;*/
-				sm.sensore.setTendenza(-100);
+					tendenza = 0;
+				sm.sensore.setTendenza(tendenza);
+				
 				
 				BollettinoSensoreLocalServiceUtil.updateBollettinoSensore(sm.sensore);
 
@@ -1245,6 +1442,7 @@ public class BollettinoBean implements Serializable {
 
 		}
 		
+
 		List<Object> l = BollettinoLocalServiceUtil.eseguiQueryGenericaLista(queryUltimoPubblicato);
 		if (l!=null && l.size()>0) {
 			Object[] o = (Object[])l.get(0);
@@ -1253,15 +1451,74 @@ public class BollettinoBean implements Serializable {
 			if (nome.endsWith("U") || nome.endsWith("ULTIMO")) {
 				return;
 			}
-			String q = queryCopiaColmiOsservati.replaceAll("IDB", o[0].toString());
+			
+			String nuovaQuery = queryTrovaBollettinoRecente;
+			SimpleDateFormat forma = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			String dt = forma.format(bollettino.getCreateDate());
+			nuovaQuery = nuovaQuery.replaceAll("IDN", ""+bollettino.getBollettinoId());
+			nuovaQuery = nuovaQuery.replaceAll("_IDEVENTO_", numero.substring(0, 8));
+			nuovaQuery = nuovaQuery.replaceAll("_DATAAPPROV_", dt);
+			BollettinoLocalServiceUtil.eseguiQueryGenerica(nuovaQuery); //riempi stazioneinclusa
+			
+			
+			/*String q = queryCopiaColmiOsservati.replaceAll("IDB", o[0].toString());
 			q = q.replaceAll("IDN", ""+bollettino.getBollettinoId());
+			BollettinoLocalServiceUtil.eseguiQueryGenerica(q);*/
+			
+			String q = queryCopiaColmiOsservati2;
+			q = q.replaceAll("IDN", ""+bollettino.getBollettinoId());
+			q = q.replaceAll("_IDEVENTO_", numero.substring(0, 8));
+			q = q.replaceAll("_DATAAPPROV_", dt);
 			BollettinoLocalServiceUtil.eseguiQueryGenerica(q);
 			
-			q = queryCopiaNote.replaceAll("IDB", o[0].toString());
+			/*q = queryCopiaNote.replaceAll("IDB", o[0].toString());
 			q = q.replaceAll("IDN", ""+bollettino.getBollettinoId());
+			BollettinoLocalServiceUtil.eseguiQueryGenerica(q);*/
+			q = queryCopiaNote2;
+			q = q.replaceAll("IDN", ""+bollettino.getBollettinoId());
+			q = q.replaceAll("_IDEVENTO_", numero.substring(0, 8));
+			q = q.replaceAll("_DATAAPPROV_", dt);
 			BollettinoLocalServiceUtil.eseguiQueryGenerica(q);
+			
+
 		}
 
+	}
+	
+	public void salvaBaciniInclusi() {
+		
+		System.out.println("SALVABACINIINCLUSI");
+		
+		String q1 = "delete from bollettino_bacinoincluso where idbollettino="+bollettino.getBollettinoId();
+		BollettinoLocalServiceUtil.eseguiQueryGenerica(q1);
+		String q3 = "delete from bollettino_stazioneinclusa where idbollettino="+bollettino.getBollettinoId();
+		BollettinoLocalServiceUtil.eseguiQueryGenerica(q3);
+		
+		for (BacinoManager bm : bacini) {
+			if (bm.selezionato) {
+				System.out.println("INSERT BACINO "+bm.getBac().getId());
+				String q2 = "insert into bollettino_bacinoincluso (idbollettino,idbacino,nomebacino,idbbollettinobacino,numero) values (";
+				q2+=bollettino.getBollettinoId()+",'";
+				q2+=bm.getBac().getId()+"','";
+				q2+=bm.getBac().getNome()+"',";
+				q2+=bm.getBacino().getId()+",'";
+				q2+=bollettino.getNumero()+"')";
+				BollettinoLocalServiceUtil.eseguiQueryGenerica(q2);
+			}
+				for (StazioneManager sm : bm.stazioni) {
+					if (sm.selezionata) {
+						System.out.println("INSERT STAZIONE "+sm.getStazione().getId());
+						String q4 = "insert into bollettino_stazioneinclusa (idbollettino,idstazione) values (";
+						q4+=bollettino.getBollettinoId()+",'";
+						q4+=sm.getStazione().getId()+"')";
+						BollettinoLocalServiceUtil.eseguiQueryGenerica(q4);
+					}
+						
+				}
+			
+		}
+		
+		
 	}
 	
 	public void salvaBollettino() {
@@ -1291,19 +1548,22 @@ public class BollettinoBean implements Serializable {
 			bollettino.setDataFine(dataFine);
 			bollettino.setStringaMeteo(stringaMeteo);
 			bollettino.setUltimo(ultimo);
-			bollettino.setIdApprovatore(Long.parseLong(approvatoreArpae));
-
+			try {
+				bollettino.setIdApprovatore(Long.parseLong(approvatoreArpae));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			bollettino.setUserId(themeDisplay.getRealUserId());
 			bollettino.setGroupId(themeDisplay.getScopeGroupId());
 			bollettino.setUserName(themeDisplay.getRealUser().getFullName());
 			bollettino.setCompanyId(themeDisplay.getCompanyId());
 			bollettino.setModifiedDate(new Date());
 
-			if (!dryRun) BollettinoLocalServiceUtil.updateBollettino(bollettino);
+			BollettinoLocalServiceUtil.updateBollettino(bollettino);
 
 			// if (nuovo) {
 
-			if (bollettino != null && !dryRun) {
+			if (bollettino != null) {
 				
 				this.bollettinoId = bollettino.getBollettinoId();
 				
@@ -1331,7 +1591,9 @@ public class BollettinoBean implements Serializable {
 					List<AssetCategory> c = AssetCategoryLocalServiceUtil.getCategories();
 					for (AssetCategory ac : c) {
 						if (ac.getName().equals("monitoraggio-lavorazione")) {
-							AssetCategoryLocalServiceUtil.addAssetEntryAssetCategory(id, ac);
+							AssetEntryAssetCategoryRelLocalServiceUtil.addAssetEntryAssetCategoryRel(id, ac.getCategoryId());
+
+							//AssetCategoryLocalServiceUtil.addAssetEntryAssetCategory(id, ac);
 							break;
 						}
 					}
@@ -1348,11 +1610,11 @@ public class BollettinoBean implements Serializable {
 			
 			for (BacinoManager bb : this.bacini) {
 
-				bb.selezionato = false;
+				/*bb.selezionato = false;
 				for (StazioneManager sm : bb.stazioni) {
 					if (sm.selezionata)
 						bb.selezionato = true;
-				}
+				}*/
 
 				// genera automaticamente l'ora di osservazione
 				if (bb.selezionato && bb.getOre() == null) {
@@ -1365,8 +1627,9 @@ public class BollettinoBean implements Serializable {
 				bb.bacino.setNote(bb.getNote());
 				bb.bacino.setOreOsservazione(bb.getOre());
 				bb.bacino.setIdBollettino(bollettino.getBollettinoId());
-				if (!dryRun) BollettinoBacinoLocalServiceUtil.updateBollettinoBacino(bb.bacino);
-
+				BollettinoBacinoLocalServiceUtil.updateBollettinoBacino(bb.bacino);
+				
+				
 				for (StazioneManager sm : bb.stazioni) {
 
 					sm.sensore.setIdBollettino(bollettino.getBollettinoId());
@@ -1399,58 +1662,33 @@ public class BollettinoBean implements Serializable {
 						}
 					}
 					
-					if( !sm.selezionata) {
-						
-						sm.sensore.setOraPrevista("");
-						sm.sensore.setGiornoPrevisto("");
-						sm.sensore.setColmoPrevisto("");
-						sm.sensore.setOsservato(false);
-						sm.sensore.setTendenza(-100);
-					}
+
 					
-					/*
-					li leggo dalla Request - sempre
-					sm.sensore.setColmoPrevisto(sm.getLivelloPrevisto());
-					sm.sensore.setOraPrevista(sm.oraPrevista);
-					sm.sensore.setGiornoPrevisto(sm.giornoPrevisto);
-					sm.sensore.setOsservazione(sm.ultimoLivello != null ? sm.ultimoLivello.getValue() : 0.0);
-					sm.sensore.setOreOsservazione(sm.ultimoLivello != null
-							? AllertaKeys.TimeFormat.format(processDate(sm.ultimoLivello.getDatetime()))
-							: null);
 
-					int tendenza = -100;
-					if (sm.isSelezionata()) {
-						String ten = sm.getTendenza();
-						if (ten.equals("+"))
-							tendenza = 1;
-						else if (ten.equals("-"))
-							tendenza = -1;
-						else if (ten.equals("="))
-							tendenza = 0;
-						else
-							tendenza = 2;
-					}
-
-					sm.sensore.setTendenza(tendenza);
-					*/
-
-					if (!dryRun) BollettinoSensoreLocalServiceUtil.updateBollettinoSensore(sm.sensore);
+					BollettinoSensoreLocalServiceUtil.updateBollettinoSensore(sm.sensore);
 
 				}
 			}
 
-			
+			salvaBaciniInclusi();
 			creaReport(nuovo);
 
 		} catch (Exception ex) {
 			_log.error(ex);
+			ex.printStackTrace();
 			//LogInternoLocalServiceUtil.log("BollettinoBean", "salvaBollettino", ex, "");
 		}
 	}
 	
-	public void creaReport(boolean nuovo) {
+	public String creaReport(boolean nuovo) {
+		return creaReport(nuovo, true);
+	}
+	
+	public String creaReport(boolean nuovo, boolean salva) {
 		
-		if (dryRun || !creaRep) return;
+		String hash = "";
+		
+		if (!creaRep) return "";
 		
 		try {
 			ServiceContext serviceContext;
@@ -1514,6 +1752,9 @@ public class BollettinoBean implements Serializable {
 			System.out.println("REPORT: " + (report != null ? report.length : 0));
 			if (report != null && report.length > 0) {
 				File f2 = FileUtil.createTempFile(report);
+				File f4 = new File(f2.getParent(), f2.getName()+".pdf");
+				f2.renameTo(f4);
+				f2 = f4;
 
 				// FileUtils.writeByteArrayToFile(f2, data);
 				String idm = "";
@@ -1528,7 +1769,7 @@ public class BollettinoBean implements Serializable {
 				System.out.println("LINK PDF: " + pdfLink);
 
 				bollettino.setLink(pdfLink);
-				BollettinoLocalServiceUtil.updateBollettino(bollettino);
+				if (salva) BollettinoLocalServiceUtil.updateBollettino(bollettino);
 
 				FileUtil.delete(f2);
 			}
@@ -1539,6 +1780,8 @@ public class BollettinoBean implements Serializable {
 			_log.error(e);
 			//LogInternoLocalServiceUtil.log("BollettinoBean", "creaReport", e, "");
 		}
+		
+		return hash;
 	}
 
 	public Bollettino getBollettino() {
@@ -1648,7 +1891,7 @@ public class BollettinoBean implements Serializable {
 		try {
 			ServiceContext dlServiceContext = ServiceContextFactory.getInstance(
 					DLFolder.class.getName(), request);
-			Folder folder = DLAppServiceUtil.addFolder(repositoryId, parentFolderId, name, 
+			Folder folder = DLAppServiceUtil.addFolder("MonitoraggioFolder_"+name,repositoryId, parentFolderId, name, 
 					description, dlServiceContext);
 
 			Role guestRole = RoleLocalServiceUtil.getRole(serviceContext.getCompanyId(), 
@@ -2057,6 +2300,28 @@ public class BollettinoBean implements Serializable {
 			}
 		}
 	}
+	
+	
+
+	public Bollettino getUltimoCopiabile() {
+		return ultimoCopiabile;
+	}
+
+	public void setUltimoCopiabile(Bollettino ultimoCopiabile) {
+		this.ultimoCopiabile = ultimoCopiabile;
+	}
+
+	public String getBaciniUltimoBollettino() {
+		return baciniUltimoBollettino;
+	}
+
+	public void setBaciniUltimoBollettino(String baciniUltimoBollettino) {
+		this.baciniUltimoBollettino = baciniUltimoBollettino;
+	}
+
+
+
+
 
 	private Log _log = LogFactoryUtil.getLog(BollettinoBean.class);
 }

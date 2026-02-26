@@ -1,0 +1,15 @@
+Bundle-Name: allerta-short-messages-services-service
+Bundle-SymbolicName: it.eng.allerta.messages.services.service
+Bundle-Version: 1.0.0
+Liferay-Require-SchemaVersion: 1.0.0
+Liferay-Service: true
+-fixupmessages "Classes found in the wrong directory"; restrict:=error; is:=warning
+-dsannotations-options: inherit
+Export-Package:\
+	it.eng.allerta.messages.services,\
+	it.eng.allerta.messages.services.service.impl,\
+	it.eng.allerta.messages.services.model.impl,\
+	it.eng.allerta.messages.services.action,\
+	it.eng.allerta.messages.services.bean,\
+	it.eng.allerta.messages.services.scheduler,\
+	it.eng.allerta.messages.services.servletWS

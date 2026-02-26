@@ -4,8 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.osgi.service.component.annotations.Component;
+
 import com.liferay.portal.dao.orm.custom.sql.CustomSQLUtil;
-import com.liferay.portal.kernel.dao.orm.QueryPos;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.SQLQuery;
 import com.liferay.portal.kernel.dao.orm.Session;
@@ -15,6 +16,7 @@ import it.eng.allerter.model.Allerta;
 import it.eng.allerter.model.impl.AllertaImpl;
 import it.eng.allerter.service.persistence.AllertaFinder;
 
+@Component(service = AllertaFinder.class)
 public class AllertaFinderImpl extends AllertaFinderBaseImpl implements AllertaFinder {
 	
 	private static final String FIND_ALL_ALLERTA_ORDERED = AllertaFinder.class.getName() + ".getAllertasOrdered";

@@ -63,7 +63,7 @@ public class AllertaSearchable extends Searchable {
 		mf.addOption("6", "Neve");
 		mf.addOption("7", "Pioggia che gela");
 		mf.addOption("8", "Stato del mare");
-		mf.addOption("9", "Criticità costiera");
+		mf.addOption("9", "CriticitÃ  costiera");
 		
 		filters.add(mf);
 		
@@ -110,7 +110,7 @@ public class AllertaSearchable extends Searchable {
 		
 		
 			
-		String tuple = "and (select max(statoid) from allerter_allertastato y where y.allertaid=x.allertaid and y.statoid in (1,2,3) %ZONE% %EVENTO% %COMUNE%)%COLORE%";
+		String tuple = " and (select max(statoid) from allerter_allertastato y where y.allertaid=x.allertaid and y.statoid in (1,2,3) %ZONE% %EVENTO% %COMUNE%)%COLORE%";
 		if (tupleQuery) {
 			if (criteria.containsKey("colore")) tuple = tuple.replace("%COLORE%", "="+criteria.get("colore"));
 			else tuple = tuple.replace("%COLORE%", ">0"); //qualunque

@@ -1,18 +1,11 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.parer.service.impl;
+
+import com.liferay.portal.aop.AopService;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,29 +37,27 @@ import com.liferay.portal.kernel.util.Validator;
 import it.eng.parer.model.ComponentiInvio;
 import it.eng.parer.model.DatiSpecificiInvio;
 import it.eng.parer.model.DocumentiCollegati;
+import it.eng.parer.service.ComponentiInvioLocalServiceUtil;
 import it.eng.parer.service.DatiSpecificiInvioServiceUtil;
+import it.eng.parer.service.DocumentiCollegatiLocalServiceUtil;
 import it.eng.parer.service.base.DatiSpecificiInvioLocalServiceBaseImpl;
 import it.eng.parer.xmlGen.serviziVersamento.wsEsitoUnico.ECEsitoGeneraleType;
 import it.eng.parer.xmlGen.serviziVersamento.wsEsitoUnico.EsitoVersamentoType;
 import it.eng.parer.xmlGen.util.InvioDatiParer;
 import it.eng.parer.xmlGen.util.JavaToXMLParer;
 import it.eng.parer.xmlGen.util.TipoDatoDaInviare;
+import org.osgi.service.component.annotations.Component;
 
 /**
- * The implementation of the dati specifici invio local service.
- *
- * <p>
- * All custom service methods should be put in this class. Whenever methods are added, rerun ServiceBuilder to copy their definitions into the <code>it.eng.parer.service.DatiSpecificiInvioLocalService</code> interface.
- *
- * <p>
- * This is a local service. Methods of this service will not have security checks based on the propagated JAAS credentials because this service can only be accessed from within the same VM.
- * </p>
- *
  * @author Pratola_L
- * @see DatiSpecificiInvioLocalServiceBaseImpl
  */
+@Component(
+	property = "model.class.name=it.eng.parer.model.DatiSpecificiInvio",
+	service = AopService.class
+)
 public class DatiSpecificiInvioLocalServiceImpl
 	extends DatiSpecificiInvioLocalServiceBaseImpl {
+	
 
 	/*
 	 * NOTE FOR DEVELOPERS:
@@ -592,7 +583,7 @@ public class DatiSpecificiInvioLocalServiceImpl
 	@Transactional(isolation = Isolation.PORTAL, propagation = Propagation.REQUIRED)
 	private Long insertDatiSpecificiInvio(DatiSpecificiInvio datiSpecifici, List<DocumentiCollegati> documentiCollegati, List<ComponentiInvio> componentiInvio, String codiceTipoInvio) throws SystemException {
 
-		//Se ho già valorizzato l'id (caso di reinvii con batch) non ne stacco uno nuovo ma aggiorno su quello esistente
+		//Se ho giÃ  valorizzato l'id (caso di reinvii con batch) non ne stacco uno nuovo ma aggiorno su quello esistente
 		if(datiSpecifici.getID_INVIO() > 0) {
 			//Aggiorno il vecchio con il codice esito "REINVIATO"
 			datiSpecifici.setESITO_INVIO(ESITO_INVIO_RE_INVIO);
@@ -616,7 +607,7 @@ public class DatiSpecificiInvioLocalServiceImpl
 			for(DocumentiCollegati docCollegati : documentiCollegati) {
 				if(null != docCollegati && Validator.isNotNull(docCollegati.getDOC_COLLEGATO_NUMERO())) {
 					docCollegati.setID_INVIO(datiSpecifici.getID_INVIO());
-					documentiCollegatiLocalService.updateDocumentiCollegati(docCollegati);
+					DocumentiCollegatiLocalServiceUtil.updateDocumentiCollegati(docCollegati);
 				}
 			}
 		}
@@ -624,7 +615,7 @@ public class DatiSpecificiInvioLocalServiceImpl
 		for(ComponentiInvio compInvio : componentiInvio) {
 			if(null != compInvio) {
 				compInvio.setID_INVIO(datiSpecifici.getID_INVIO());
-				componentiInvioLocalService.updateComponentiInvio(compInvio);
+				ComponentiInvioLocalServiceUtil.updateComponentiInvio(compInvio);
 			}
 		}
 		
@@ -658,6 +649,4 @@ public class DatiSpecificiInvioLocalServiceImpl
 		return findByesitoInvio;
 
 	}
-
-
 }

@@ -12,19 +12,11 @@ import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.workflow.WorkflowLog;
-import com.liferay.portal.kernel.workflow.WorkflowLogManagerUtil;
 import com.liferay.portal.kernel.workflow.WorkflowTask;
 import com.liferay.portal.kernel.workflow.WorkflowTaskManagerUtil;
-import com.liferay.portal.kernel.workflow.comparator.WorkflowComparatorFactoryUtil;
+import com.liferay.portal.kernel.workflow.comparator.WorkflowLogCreateDateComparator;
 import com.liferay.portal.kernel.workflow.permission.WorkflowPermissionUtil;
-
-import it.eng.allerta.utils.AllertaKeys;
-import it.eng.allerter.allerta.AllertaBean;
-import it.eng.allerter.allerta.AllertaValangheBean;
-import it.eng.allerter.model.Allerta;
-import it.eng.allerter.model.AllertaValanghe;
-import it.eng.allerter.service.AllertaLocalServiceUtil;
-import it.eng.allerter.service.AllertaValangheLocalServiceUtil;
+import com.liferay.portal.workflow.manager.WorkflowLogManager;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -41,6 +33,12 @@ import javax.portlet.ResourceResponse;
 import javax.servlet.http.HttpServletRequest;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
+import it.eng.allerta.utils.AllertaKeys;
+import it.eng.allerter.allerta.AllertaValangheBean;
+import it.eng.allerter.model.AllertaValanghe;
+import it.eng.allerter.service.AllertaValangheLocalServiceUtil;
 
 /**
  * @author VLPMRC80B
@@ -101,13 +99,14 @@ public class ValangheCompilaSbWebPortlet extends MVCPortlet {
 			            logTypes_assign.add(WorkflowLog.TASK_ASSIGN);
 			            
 			            List<WorkflowLog> workflowLogs_assign = 
-			            		WorkflowLogManagerUtil.getWorkflowLogsByWorkflowInstance(
+			            		_workflowLogManager.getWorkflowLogsByWorkflowInstance(
 			            					themeDisplay.getCompanyId(), 
 			            					wil.getWorkflowInstanceId(), 
 			            					logTypes_assign, 
 			            					QueryUtil.ALL_POS, 
-			            					QueryUtil.ALL_POS, 
-			            					WorkflowComparatorFactoryUtil.getLogCreateDateComparator(true));
+			            					QueryUtil.ALL_POS,
+			            					new WorkflowLogCreateDateComparator(true,null,null,null));
+			            					//WorkflowComparatorFactoryUtil.getLogCreateDateComparator(true));
 			            
 			            if (workflowLogs_assign.size() > 0) {			            	
 			                long taskId = workflowLogs_assign.get(workflowLogs_assign.size()-1).getWorkflowTaskId();			                
@@ -121,9 +120,9 @@ public class ValangheCompilaSbWebPortlet extends MVCPortlet {
 							                		task.getName());
 			                
 			                //WorkflowTask nextTask = WorkflowTaskManagerUtil.assignWorkflowTaskToUser(companyId, userId, task.getWorkflowTaskId(), userId, "auto assign", task.getDueDate(), workflowContext);
-			                _log.debug("task : "+task.getName());
-			                _log.debug("task Permission: "+taskPerm);
-			                _log.debug("task : "+task.getWorkflowTaskId());
+			                System.out.println("task : "+task.getName());
+			                System.out.println("task Permission: "+taskPerm);
+			                System.out.println("task : "+task.getWorkflowTaskId());
 			                if( taskPerm!=null && taskPerm && !task.getName().equals("update"))
 			                	taskIds.put(String.valueOf(a.getAllertaValangheId()), String.valueOf(taskId));
 			                else 
@@ -168,6 +167,9 @@ public class ValangheCompilaSbWebPortlet extends MVCPortlet {
 			writer.println(allertaBean.getNumeroDefault(i));
 		
 	}
+	
+	@Reference
+	private WorkflowLogManager _workflowLogManager;
 	
 	private Log _log = LogFactoryUtil.getLog(ValangheCompilaSbWebPortlet.class);
 	

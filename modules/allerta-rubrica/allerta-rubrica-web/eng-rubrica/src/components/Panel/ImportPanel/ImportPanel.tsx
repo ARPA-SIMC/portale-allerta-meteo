@@ -128,7 +128,7 @@ export class ImportPanel extends PureComponent<any, any> {
          }
         {this.state.warning && this.state.warning.length>0 &&
              
-           <div><b>Attenzione: il file contiene modifiche ai seguenti nominativi ripetuti in righe diverse. Se si sceglie 'Cambia ovunque' su più di una riga, solo l'ultima sarà presa in considerazione.</b>
+           <div><b>Attenzione: il file contiene modifiche ai seguenti nominativi ripetuti in righe diverse. Se si sceglie 'Cambia ovunque' su piÃ¹ di una riga, solo l'ultima sarÃ  presa in considerazione.</b>
            <ul>
                {this.state.warning.map(item => <li>{item}</li>)}
            </ul>
@@ -168,8 +168,8 @@ export class ImportPanel extends PureComponent<any, any> {
                <td>
                   {cmd.contatti.map(cont => <div>
                          <span>{cont.nomeCanale} {cont.oldContatto} {cont.decisione!='NOTHING' && <span className={`${this.stileDecisione(cont.decisione)}` }> {cont.decisione} 
-{cont.nomeCanale=='EMAIL' && cont.oldContatto && !cont.oldContatto.includes('@') && cont.decisione!='DELETE' && <span className={`${this.stileDecisione('DELETE')}` }>NON SEMBRA UNA EMAIL</span>}
-{cont.nomeCanale!='EMAIL' && cont.oldContatto && cont.oldContatto.includes('@') && cont.decisione!='DELETE' && <span className={`${this.stileDecisione('DELETE')}` }>NON SEMBRA UN TELEFONO</span>}
+{cont.nomeCanale=='EMAIL' && cont.oldContatto && (!cont.oldContatto.includes('@') || !cont.oldContatto.includes('.') || cont.oldContatto.includes(' ')) && cont.decisione!='DELETE' && <span className={`${this.stileDecisione('DELETE')}` }>STRINGA EMAIL CON PROBLEMI</span>}
+{cont.nomeCanale!='EMAIL' && cont.oldContatto && (cont.oldContatto.includes('@') || cont.oldContatto.includes(' ') || cont.oldContatto.includes('-') || cont.oldContatto.includes('+') || cont.oldContatto.includes('.')) && cont.decisione!='DELETE' && <span className={`${this.stileDecisione('DELETE')}` }>STRINGA TELEFONO CON PROBLEMI</span>}
 </span>}</span>
                          <br/>
                      </div> )}

@@ -1,18 +1,12 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerter.service.impl;
+
+import com.liferay.portal.aop.AopService;
+
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -24,27 +18,24 @@ import com.liferay.portal.kernel.jsonwebservice.JSONWebService;
 import com.liferay.portal.kernel.security.access.control.AccessControlled;
 
 import it.eng.allerter.model.AllertaParametro;
+import it.eng.allerter.service.AllertaParametroLocalServiceUtil;
 import it.eng.allerter.service.AllertaValangheLocalServiceUtil;
 import it.eng.allerter.service.base.AllertaServiceBaseImpl;
 
+import org.osgi.service.component.annotations.Component;
+
 /**
- * The implementation of the allerta remote service.
- *
- * <p>
- * All custom service methods should be put in this class. Whenever methods are
- * added, rerun ServiceBuilder to copy their definitions into the
- * <code>it.eng.allerter.service.AllertaService</code> interface.
- *
- * <p>
- * This is a remote service. Methods of this service are expected to have
- * security checks based on the propagated JAAS credentials because this service
- * can be accessed remotely.
- * </p>
- *
  * @author GFAVINI
- * @see AllertaServiceBaseImpl
  */
+@Component(
+	property = {
+		"json.web.service.context.name=allerter",
+		"json.web.service.context.path=Allerta"
+	},
+	service = AopService.class
+)
 public class AllertaServiceImpl extends AllertaServiceBaseImpl {
+	
 
 	/*
 	 * NOTE FOR DEVELOPERS:
@@ -291,7 +282,7 @@ public class AllertaServiceImpl extends AllertaServiceBaseImpl {
 		Map<String, Object> m = new HashMap<String, Object>();
 
 		try {
-			AllertaParametro ap = allertaParametroLocalService.getAllertaParametro("URL_PRIMES");
+			AllertaParametro ap = AllertaParametroLocalServiceUtil.getAllertaParametro("URL_PRIMES");
 			if (ap != null)
 				m.put("url", ap.getValore());
 		} catch (Exception e) {
@@ -310,7 +301,7 @@ public class AllertaServiceImpl extends AllertaServiceBaseImpl {
 		Map<String, Object> m = new HashMap<String, Object>();
 
 		try {
-			AllertaParametro ap = allertaParametroLocalService.getAllertaParametro("URL_PRIMES");
+			AllertaParametro ap = AllertaParametroLocalServiceUtil.getAllertaParametro("URL_PRIMES");
 			if (ap != null)
 				m.put("url", ap.getValore());
 		} catch (Exception e) {
@@ -338,6 +329,4 @@ public class AllertaServiceImpl extends AllertaServiceBaseImpl {
 		return allertaFinder.getUtenteApprovatore(id);
 	}
 
-
-	
 }

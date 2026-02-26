@@ -1,31 +1,16 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.bollettino.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -36,22 +21,12 @@ import java.util.Objects;
  * @see ValoreSensore
  * @generated
  */
-@ProviderType
 public class ValoreSensoreWrapper
-	implements ValoreSensore, ModelWrapper<ValoreSensore> {
+	extends BaseModelWrapper<ValoreSensore>
+	implements ModelWrapper<ValoreSensore>, ValoreSensore {
 
 	public ValoreSensoreWrapper(ValoreSensore valoreSensore) {
-		_valoreSensore = valoreSensore;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return ValoreSensore.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return ValoreSensore.class.getName();
+		super(valoreSensore);
 	}
 
 	@Override
@@ -108,13 +83,8 @@ public class ValoreSensoreWrapper
 	}
 
 	@Override
-	public Object clone() {
-		return new ValoreSensoreWrapper((ValoreSensore)_valoreSensore.clone());
-	}
-
-	@Override
-	public int compareTo(it.eng.bollettino.model.ValoreSensore valoreSensore) {
-		return _valoreSensore.compareTo(valoreSensore);
+	public ValoreSensore cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -124,12 +94,7 @@ public class ValoreSensoreWrapper
 	 */
 	@Override
 	public Date getDatetime() {
-		return _valoreSensore.getDatetime();
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _valoreSensore.getExpandoBridge();
+		return model.getDatetime();
 	}
 
 	/**
@@ -139,7 +104,7 @@ public class ValoreSensoreWrapper
 	 */
 	@Override
 	public long getId() {
-		return _valoreSensore.getId();
+		return model.getId();
 	}
 
 	/**
@@ -149,7 +114,7 @@ public class ValoreSensoreWrapper
 	 */
 	@Override
 	public String getIdStazione() {
-		return _valoreSensore.getIdStazione();
+		return model.getIdStazione();
 	}
 
 	/**
@@ -159,7 +124,7 @@ public class ValoreSensoreWrapper
 	 */
 	@Override
 	public String getIdVariabile() {
-		return _valoreSensore.getIdVariabile();
+		return model.getIdVariabile();
 	}
 
 	/**
@@ -169,12 +134,7 @@ public class ValoreSensoreWrapper
 	 */
 	@Override
 	public long getPrimaryKey() {
-		return _valoreSensore.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _valoreSensore.getPrimaryKeyObj();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -184,7 +144,7 @@ public class ValoreSensoreWrapper
 	 */
 	@Override
 	public String getUuid() {
-		return _valoreSensore.getUuid();
+		return model.getUuid();
 	}
 
 	/**
@@ -194,37 +154,12 @@ public class ValoreSensoreWrapper
 	 */
 	@Override
 	public double getValue() {
-		return _valoreSensore.getValue();
-	}
-
-	@Override
-	public int hashCode() {
-		return _valoreSensore.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _valoreSensore.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _valoreSensore.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _valoreSensore.isNew();
+		return model.getValue();
 	}
 
 	@Override
 	public void persist() {
-		_valoreSensore.persist();
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_valoreSensore.setCachedModel(cachedModel);
+		model.persist();
 	}
 
 	/**
@@ -234,24 +169,7 @@ public class ValoreSensoreWrapper
 	 */
 	@Override
 	public void setDatetime(Date datetime) {
-		_valoreSensore.setDatetime(datetime);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_valoreSensore.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_valoreSensore.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_valoreSensore.setExpandoBridgeAttributes(serviceContext);
+		model.setDatetime(datetime);
 	}
 
 	/**
@@ -261,7 +179,7 @@ public class ValoreSensoreWrapper
 	 */
 	@Override
 	public void setId(long id) {
-		_valoreSensore.setId(id);
+		model.setId(id);
 	}
 
 	/**
@@ -271,7 +189,7 @@ public class ValoreSensoreWrapper
 	 */
 	@Override
 	public void setIdStazione(String idStazione) {
-		_valoreSensore.setIdStazione(idStazione);
+		model.setIdStazione(idStazione);
 	}
 
 	/**
@@ -281,12 +199,7 @@ public class ValoreSensoreWrapper
 	 */
 	@Override
 	public void setIdVariabile(String idVariabile) {
-		_valoreSensore.setIdVariabile(idVariabile);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_valoreSensore.setNew(n);
+		model.setIdVariabile(idVariabile);
 	}
 
 	/**
@@ -296,12 +209,7 @@ public class ValoreSensoreWrapper
 	 */
 	@Override
 	public void setPrimaryKey(long primaryKey) {
-		_valoreSensore.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_valoreSensore.setPrimaryKeyObj(primaryKeyObj);
+		model.setPrimaryKey(primaryKey);
 	}
 
 	/**
@@ -311,7 +219,7 @@ public class ValoreSensoreWrapper
 	 */
 	@Override
 	public void setUuid(String uuid) {
-		_valoreSensore.setUuid(uuid);
+		model.setUuid(uuid);
 	}
 
 	/**
@@ -321,77 +229,17 @@ public class ValoreSensoreWrapper
 	 */
 	@Override
 	public void setValue(double value) {
-		_valoreSensore.setValue(value);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<it.eng.bollettino.model.ValoreSensore> toCacheModel() {
-
-		return _valoreSensore.toCacheModel();
-	}
-
-	@Override
-	public it.eng.bollettino.model.ValoreSensore toEscapedModel() {
-		return new ValoreSensoreWrapper(_valoreSensore.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _valoreSensore.toString();
-	}
-
-	@Override
-	public it.eng.bollettino.model.ValoreSensore toUnescapedModel() {
-		return new ValoreSensoreWrapper(_valoreSensore.toUnescapedModel());
+		model.setValue(value);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _valoreSensore.toXmlString();
+		return model.toXmlString();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-
-		if (!(obj instanceof ValoreSensoreWrapper)) {
-			return false;
-		}
-
-		ValoreSensoreWrapper valoreSensoreWrapper = (ValoreSensoreWrapper)obj;
-
-		if (Objects.equals(
-				_valoreSensore, valoreSensoreWrapper._valoreSensore)) {
-
-			return true;
-		}
-
-		return false;
+	protected ValoreSensoreWrapper wrap(ValoreSensore valoreSensore) {
+		return new ValoreSensoreWrapper(valoreSensore);
 	}
-
-	@Override
-	public ValoreSensore getWrappedModel() {
-		return _valoreSensore;
-	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _valoreSensore.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _valoreSensore.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_valoreSensore.resetOriginalValues();
-	}
-
-	private final ValoreSensore _valoreSensore;
 
 }

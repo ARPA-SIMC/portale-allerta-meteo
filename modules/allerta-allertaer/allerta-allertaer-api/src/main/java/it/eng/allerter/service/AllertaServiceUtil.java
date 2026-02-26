@@ -1,24 +1,13 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerter.service;
 
-import aQute.bnd.annotation.ProviderType;
+import com.liferay.portal.kernel.module.service.Snapshot;
 
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.util.tracker.ServiceTracker;
+import java.util.Map;
 
 /**
  * Provides the remote service utility for Allerta. This utility wraps
@@ -32,7 +21,6 @@ import org.osgi.util.tracker.ServiceTracker;
  * @see AllertaService
  * @generated
  */
-@ProviderType
 public class AllertaServiceUtil {
 
 	/*
@@ -44,11 +32,11 @@ public class AllertaServiceUtil {
 		return getService().getIdApprovatore(id);
 	}
 
-	public static java.util.Map<String, Object> getInfoAllerta() {
+	public static Map<String, Object> getInfoAllerta() {
 		return getService().getInfoAllerta();
 	}
 
-	public static java.util.Map<String, Object> getInfoAllertaDomani() {
+	public static Map<String, Object> getInfoAllertaDomani() {
 		return getService().getInfoAllertaDomani();
 	}
 
@@ -61,49 +49,35 @@ public class AllertaServiceUtil {
 		return getService().getOSGiServiceIdentifier();
 	}
 
-	public static java.util.ArrayList<java.util.Map<String, String>>
-		getStatoAllerta() {
-
+	public static java.util.ArrayList<Map<String, String>> getStatoAllerta() {
 		return getService().getStatoAllerta();
 	}
 
-	public static java.util.ArrayList<java.util.Map<String, String>>
-		getStatoAllertaDays(int giorni) {
+	public static java.util.ArrayList<Map<String, String>> getStatoAllertaDays(
+		int giorni) {
 
 		return getService().getStatoAllertaDays(giorni);
 	}
 
-	public static java.util.ArrayList<java.util.Map<String, String>>
+	public static java.util.ArrayList<Map<String, String>>
 		getStatoAllertaDomani() {
 
 		return getService().getStatoAllertaDomani();
 	}
 
-	public static java.util.Map<String, Object> getStatoAllertaPrimes() {
+	public static Map<String, Object> getStatoAllertaPrimes() {
 		return getService().getStatoAllertaPrimes();
 	}
 
-	public static java.util.Map<String, Object> getStatoAllertaPrimesDomani() {
+	public static Map<String, Object> getStatoAllertaPrimesDomani() {
 		return getService().getStatoAllertaPrimesDomani();
 	}
 
 	public static AllertaService getService() {
-		return _serviceTracker.getService();
+		return _serviceSnapshot.get();
 	}
 
-	private static ServiceTracker<AllertaService, AllertaService>
-		_serviceTracker;
-
-	static {
-		Bundle bundle = FrameworkUtil.getBundle(AllertaService.class);
-
-		ServiceTracker<AllertaService, AllertaService> serviceTracker =
-			new ServiceTracker<AllertaService, AllertaService>(
-				bundle.getBundleContext(), AllertaService.class, null);
-
-		serviceTracker.open();
-
-		_serviceTracker = serviceTracker;
-	}
+	private static final Snapshot<AllertaService> _serviceSnapshot =
+		new Snapshot<>(AllertaServiceUtil.class, AllertaService.class);
 
 }

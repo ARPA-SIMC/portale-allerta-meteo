@@ -1,5 +1,16 @@
 package it.eng.Allarme.workflow;
 
+import com.liferay.asset.kernel.model.AssetCategory;
+import com.liferay.asset.kernel.service.AssetEntryLocalServiceUtil;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.model.Organization;
+import com.liferay.portal.kernel.search.IndexerRegistryUtil;
+import com.liferay.portal.kernel.service.OrganizationLocalServiceUtil;
+import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.workflow.BaseWorkflowHandler;
+import com.liferay.portal.kernel.workflow.WorkflowConstants;
+import com.liferay.portal.kernel.workflow.WorkflowHandler;
+
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -11,21 +22,6 @@ import java.util.TimeZone;
 
 import org.osgi.service.component.annotations.Component;
 
-import com.liferay.asset.kernel.model.AssetCategory;
-import com.liferay.asset.kernel.service.AssetEntryLocalServiceUtil;
-import com.liferay.portal.kernel.dao.orm.DynamicQuery;
-import com.liferay.portal.kernel.dao.orm.DynamicQueryFactoryUtil;
-import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
-import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.model.Organization;
-import com.liferay.portal.kernel.search.IndexerRegistryUtil;
-import com.liferay.portal.kernel.service.OrganizationLocalServiceUtil;
-import com.liferay.portal.kernel.util.GetterUtil;
-import com.liferay.portal.kernel.workflow.BaseWorkflowHandler;
-import com.liferay.portal.kernel.workflow.WorkflowConstants;
-import com.liferay.portal.kernel.workflow.WorkflowHandler;
-
-import it.eng.allerter.service.LogInternoLocalServiceUtil;
 import it.eng.allerter.service.SMSLocalServiceUtil;
 import it.eng.bollettino.model.Allarme;
 import it.eng.bollettino.model.AttivazioneFiume;
@@ -305,7 +301,12 @@ public class AllarmeWorkflowHandler extends BaseWorkflowHandler<Allarme>  {
 					
 						
 					Pluviometro p = PluviometroLocalServiceUtil.fetchPluviometro(id);
-					if (p!=null) {
+					
+					//controlliamo che non siano passate piï¿½ di 2 ore dal superamento
+					boolean troppoTardi = false;
+					if (new Date().getTime() - a.getCreateDate().getTime() > 7200000) troppoTardi = true;
+					
+					if (p!=null && !troppoTardi) {
 						if (nuovaRubrica) {
 							SMSLocalServiceUtil.creaNotificaGruppoRubrica(null, from, descNormale, "superamento", p.getNomeRubrica(), a.getAllarmeId(), 20181, p.getNomeRubrica(), true, null);
 
@@ -321,21 +322,40 @@ public class AllarmeWorkflowHandler extends BaseWorkflowHandler<Allarme>  {
 					if (nuovaRubrica) {
 						List<String> regole = new ArrayList<String>();
 						regole.add("@PLUVIOMETRI.*@->false"); 
-						SMSLocalServiceUtil.creaNotificaGruppoRubrica(null, from, descNormale, "superamento", p.getNomeRubrica(), a.getAllarmeId(), 20181, "Pluviometri", true, regole);
+						if (!troppoTardi) SMSLocalServiceUtil.creaNotificaGruppoRubrica(null, from, descNormale, "superamento", p.getNomeRubrica(), a.getAllarmeId(), 20181, "Pluviometri", true, regole);
 
 					} else {
 						Organization o = OrganizationLocalServiceUtil.fetchOrganization(20154, "Pluviometri");
 						if (o!=null) {
 							List<String> ls = new ArrayList<String>();
-							ls.add("§§§§xxx"); 
-							SMSLocalServiceUtil.creaSMSOrganization(from, descNormale, "superamento", p.getNomeRubrica(), a.getAllarmeId(), o.getOrganizationId(),0,ls);
+							ls.add("%%%"); 
+							if (!troppoTardi) SMSLocalServiceUtil.creaSMSOrganization(from, descNormale, "superamento", p.getNomeRubrica(), a.getAllarmeId(), o.getOrganizationId(),0,ls);
 						}
 					}
 					
-		    		SMSLocalServiceUtil.inviaSMS("superamento", null, a.getAllarmeId());
-	    			SMSLocalServiceUtil.inviaEmail("superamento", null, a.getAllarmeId(), "ALLERTAER - Superata soglia "+sog+" nel pluviometro "+s.getName()+" ("+getProvincia(s)+")", emailNormale, ff);    		
+					if (!troppoTardi) SMSLocalServiceUtil.inviaSMS("superamento", null, a.getAllarmeId());
+					if (!troppoTardi) SMSLocalServiceUtil.inviaEmail("superamento", null, a.getAllarmeId(), "ALLERTAER - Superata soglia "+sog+" nel pluviometro "+s.getName()+" ("+getProvincia(s)+")", emailNormale, ff);    		
 
+					if (troppoTardi) {
+						//manda una mail agli admin
+						BollettinoParametro gruppo = BollettinoParametroLocalServiceUtil.fetchBollettinoParametro("GRUPPO_ACCENSIONE_MAPPA");
+						if (gruppo!=null) {
+							try {
+								String testo = "Notifica superamento pluviometrico "+s.getName()+" non inviata per troppo ritardo";
+								String testoMail = emailNormale;
+								testoMail = testoMail.replaceFirst("<body>","<body>Si comunica che la seguente notifica di superamento pluviometrico NON viene spedita ai destinatari per troppo ritardo:<br/>");
+							
+								long ts = new Date().getTime();
+								long canaleMail[] = new long[1];
+								canaleMail[0] = 1;
+								SMSLocalServiceUtil.creaNotificaGruppoRubrica(canaleMail, "AllerteER", testo, "automatismo", "pluviometroTroppoTardi", ts, 20181, gruppo.getValore(), true, null);
+								SMSLocalServiceUtil.eliminaDuplicatiEmail("automatismo", "pluviometroTroppoTardi", ts);
+								SMSLocalServiceUtil.inviaEmail("automatismo", "pluviometroTroppoTardi", ts,
+										testo, testoMail, "no-reply@regione.emilia-romagna.it");
+							} catch (Exception e) { e.printStackTrace(); }
 					
+						}
+					}
 					//gerarchia.add("Pluviometri");
 					//gerarchia.add("PLUVIOMETRI "+s.getNameProvince());
 					//gerarchia.add("PLUVIOMETRO "+s.getName().toUpperCase());
@@ -464,62 +484,42 @@ public class AllarmeWorkflowHandler extends BaseWorkflowHandler<Allarme>  {
 							af.setAttivo(false);
 						}
 						bacinoAttivo = af.getAttivo();
-						/*AttivazioneFiume af2 = null;
-						if (doppioLivello) {
-							af2 = AttivazioneFiumeLocalServiceUtil.fetchAttivazioneFiume(sottobacino);
-							if (af2==null) {
-								af2 = AttivazioneFiumeLocalServiceUtil.createAttivazioneFiume(sottobacino);
-								af2.setAttivo(false);
-							}
-							sottobacinoAttivo = af2.getAttivo();
-						}*/
+
 						
 						
 						//DESTINATARI SEMPRE - TUTTI
 						Organization o = null;
 						
 						if (nuovaRubrica) {
-							SMSLocalServiceUtil.creaNotificaGruppoRubrica(null, from, descNormale, "superamento", sempreTutti, a.getAllarmeId(), 20181, sempreTutti, true, null);
+							//SMSLocalServiceUtil.creaNotificaGruppoRubrica(null, from, descNormale, "superamento", sempreTutti, a.getAllarmeId(), 20181, sempreTutti, true, null);
+							SMSLocalServiceUtil.creaNotificaGruppoRubrica(null, from, descNormale, "superamento", "TT", a.getAllarmeId(), 20181, sempreTutti, true, null);
 
 						} else {
-							o = getOrganization(sempreTutti);
-							if (o!=null) {
-								SMSLocalServiceUtil.creaSMSOrganization(from, descNormale, "superamento", o.getName(), a.getAllarmeId(), o.getOrganizationId());
-							}
 						}
 						
 						//DESTINATARI SEMPRE - PRIMO
 						if (!bacinoAttivo) {
 							if (nuovaRubrica) {
-								SMSLocalServiceUtil.creaNotificaGruppoRubrica(null, from, descNonTecnica, "superamento", semprePrimo, a.getAllarmeId(), 20181, semprePrimo, true, null);
+								//SMSLocalServiceUtil.creaNotificaGruppoRubrica(null, from, descNonTecnica, "superamento", semprePrimo, a.getAllarmeId(), 20181, semprePrimo, true, null);
+								SMSLocalServiceUtil.creaNotificaGruppoRubrica(null, from, descNonTecnica, "superamento", "NT", a.getAllarmeId(), 20181, semprePrimo, true, null);
 
 							} else {
-								o = getOrganization(semprePrimo);
-								if (o!=null) {
-									SMSLocalServiceUtil.creaSMSOrganization(from, descNonTecnica, "superamento", o.getName(), a.getAllarmeId(), o.getOrganizationId());
-								}
 							}
 						}
 						//DESTINATARI BACINO - TUTTI
 						if (nuovaRubrica) {
-							SMSLocalServiceUtil.creaNotificaGruppoRubrica(null, from, descNormale, "superamento", bacinoTutti, a.getAllarmeId(), 20181, bacinoTutti, true, null);
-
+							//SMSLocalServiceUtil.creaNotificaGruppoRubrica(null, from, descNormale, "superamento", bacinoTutti, a.getAllarmeId(), 20181, bacinoTutti, true, null);
+							SMSLocalServiceUtil.creaNotificaGruppoRubrica(null, from, descNormale, "superamento", "TT", a.getAllarmeId(), 20181, bacinoTutti, true, null);
 						} else {
-							o = getOrganization(bacinoTutti);
-							if (o!=null) {
-								SMSLocalServiceUtil.creaSMSOrganization(from, descNormale, "superamento", o.getName(), a.getAllarmeId(), o.getOrganizationId());
-							}
+
 						}
 						//DESTINATARI BACINO - PRIMO
 						if (!bacinoAttivo) {
 							if (nuovaRubrica) {
-								SMSLocalServiceUtil.creaNotificaGruppoRubrica(null, from, descNonTecnica, "superamento", bacinoPrimo, a.getAllarmeId(), 20181, bacinoPrimo, true, null);
+								//SMSLocalServiceUtil.creaNotificaGruppoRubrica(null, from, descNonTecnica, "superamento", bacinoPrimo, a.getAllarmeId(), 20181, bacinoPrimo, true, null);
+								SMSLocalServiceUtil.creaNotificaGruppoRubrica(null, from, descNonTecnica, "superamento", "NT", a.getAllarmeId(), 20181, bacinoPrimo, true, null);
 
 							} else {
-								o = getOrganization(bacinoPrimo);
-								if (o!=null) {
-									SMSLocalServiceUtil.creaSMSOrganization(from, descNonTecnica, "superamento", o.getName(), a.getAllarmeId(), o.getOrganizationId());
-								}
 							}
 						}
 						//DESTINATARI SOTTOBACINI
@@ -527,24 +527,20 @@ public class AllarmeWorkflowHandler extends BaseWorkflowHandler<Allarme>  {
 							for (int k=0; k<sottobacini.length; k++) {
 								//SOTTOBACINO - TUTTI
 								if (nuovaRubrica) {
-									SMSLocalServiceUtil.creaNotificaGruppoRubrica(null, from, descNormale, "superamento", sottobaciniTutti[k], a.getAllarmeId(), 20181, sottobaciniTutti[k], true, null);
+									//SMSLocalServiceUtil.creaNotificaGruppoRubrica(null, from, descNormale, "superamento", sottobaciniTutti[k], a.getAllarmeId(), 20181, sottobaciniTutti[k], true, null);
+									SMSLocalServiceUtil.creaNotificaGruppoRubrica(null, from, descNormale, "superamento", "TT", a.getAllarmeId(), 20181, sottobaciniTutti[k], true, null);
 
 								} else {
-									o = getOrganization(sottobaciniTutti[k]);
-									if (o!=null) {
-										SMSLocalServiceUtil.creaSMSOrganization(from, descNormale, "superamento", o.getName(), a.getAllarmeId(), o.getOrganizationId());
-									}
+
 								}
 								//SOTTOBACINO - PRIMO
 								if (!sottobaciniAttivi[k].getAttivo()) {
 									if (nuovaRubrica) {
-										SMSLocalServiceUtil.creaNotificaGruppoRubrica(null, from, descNonTecnica, "superamento", sottobaciniPrimo[k], a.getAllarmeId(), 20181, sottobaciniPrimo[k], true, null);
+										//SMSLocalServiceUtil.creaNotificaGruppoRubrica(null, from, descNonTecnica, "superamento", sottobaciniPrimo[k], a.getAllarmeId(), 20181, sottobaciniPrimo[k], true, null);
+										SMSLocalServiceUtil.creaNotificaGruppoRubrica(null, from, descNonTecnica, "superamento", "NT", a.getAllarmeId(), 20181, sottobaciniPrimo[k], true, null);
 
 									} else {
-										o = getOrganization(sottobaciniPrimo[k]);
-										if (o!=null) {
-											SMSLocalServiceUtil.creaSMSOrganization(from, descNonTecnica, "superamento", o.getName(), a.getAllarmeId(), o.getOrganizationId());
-										}
+
 									}
 								}
 							}
@@ -552,13 +548,10 @@ public class AllarmeWorkflowHandler extends BaseWorkflowHandler<Allarme>  {
 						
 						//DESTINATARI SPECIFICO IDROMETRO
 						if (nuovaRubrica) {
-							SMSLocalServiceUtil.creaNotificaGruppoRubrica(null, from, descNormale, "superamento", rubrica, a.getAllarmeId(), 20181, rubrica, true, null);
+							//SMSLocalServiceUtil.creaNotificaGruppoRubrica(null, from, descNormale, "superamento", rubrica, a.getAllarmeId(), 20181, rubrica, true, null);
+							SMSLocalServiceUtil.creaNotificaGruppoRubrica(null, from, descNormale, "superamento", "TT", a.getAllarmeId(), 20181, rubrica, true, null);
 
 						} else {
-							o = getOrganization(rubrica);
-							if (o!=null) {
-								SMSLocalServiceUtil.creaSMSOrganization(from, descNormale, "superamento", o.getName(), a.getAllarmeId(), o.getOrganizationId());
-							}
 						}
 						
 						//aggiorna le attivazioni
@@ -579,7 +572,10 @@ public class AllarmeWorkflowHandler extends BaseWorkflowHandler<Allarme>  {
 						SMSLocalServiceUtil.inviaSMS("superamento", null, a.getAllarmeId());
 						
 						//INVIO MAIL NON TECNICHE
-		    			SMSLocalServiceUtil.inviaEmail("superamento", semprePrimo, a.getAllarmeId(), (soglia==2?"ALLERTAER - Innalzamento del livello idrometrico al di sopra della soglia 2 sul fiume "+bac:
+						SMSLocalServiceUtil.inviaEmail("superamento", "NT", a.getAllarmeId(), (soglia==2?"ALLERTAER - Innalzamento del livello idrometrico al di sopra della soglia 2 sul fiume "+bac:
+    						"ALLERTAER - Evento di piena in corso sul fiume "+bac), emailNonTecnica, ff);    
+						
+		    			/*SMSLocalServiceUtil.inviaEmail("superamento", semprePrimo, a.getAllarmeId(), (soglia==2?"ALLERTAER - Innalzamento del livello idrometrico al di sopra della soglia 2 sul fiume "+bac:
     						"ALLERTAER - Evento di piena in corso sul fiume "+bac), emailNonTecnica, ff);    		
 		    			SMSLocalServiceUtil.inviaEmail("superamento", bacinoPrimo, a.getAllarmeId(), (soglia==2?"ALLERTAER - Innalzamento del livello idrometrico al di sopra della soglia 2 sul fiume "+bac:
     						"ALLERTAER - Evento di piena in corso sul fiume "+bac), emailNonTecnica, ff);    		
@@ -589,7 +585,7 @@ public class AllarmeWorkflowHandler extends BaseWorkflowHandler<Allarme>  {
 				    					(soglia==2?"ALLERTAER - Innalzamento del livello idrometrico al di sopra della soglia 2 sul fiume "+bac:
 				    						"ALLERTAER - Evento di piena in corso sul fiume "+bac), emailNonTecnica, ff);    						
 		    				}
-		    			}
+		    			}*/
 		    			
 		    			//INVIO TUTTE LE ALTRE MAIL
 		    			SMSLocalServiceUtil.inviaEmail("superamento", null, a.getAllarmeId(), "ALLERTAER - Superata soglia "+soglia+" nell'idrometro di "+s.getName()+" sul fiume "+bac, emailNormale, ff);    		

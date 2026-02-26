@@ -15,9 +15,12 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Scanner;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
+import com.liferay.asset.entry.rel.service.AssetEntryAssetCategoryRelLocalServiceUtil;
 import com.liferay.asset.kernel.model.AssetCategory;
 import com.liferay.asset.kernel.service.AssetCategoryLocalService;
 import com.liferay.asset.kernel.service.AssetEntryLocalService;
@@ -37,6 +40,7 @@ import com.liferay.portal.kernel.repository.model.Folder;
 import com.liferay.portal.kernel.search.IndexerRegistry;
 import com.liferay.portal.kernel.service.OrganizationLocalService;
 import com.liferay.portal.kernel.service.UserLocalService;
+import com.liferay.portal.kernel.transaction.TransactionCommitCallbackUtil;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Portal;
@@ -47,12 +51,16 @@ import com.liferay.portal.kernel.workflow.WorkflowHandler;
 import it.eng.allerta.configuration.AllertaBaseConfiguration;
 import it.eng.allerta.utils.AllertaTracker;
 import it.eng.allerta.utils.AllertaUtilsInterface;
+import it.eng.allerter.allerta.AllertaBean;
 import it.eng.allerter.model.Allerta;
 import it.eng.allerter.model.AllertaParametro;
 import it.eng.allerter.model.AllertaStato;
+import it.eng.allerter.model.AllertaValanghe;
 import it.eng.allerter.model.Email;
 import it.eng.allerter.service.AllertaLocalService;
+import it.eng.allerter.service.AllertaLocalServiceUtil;
 import it.eng.allerter.service.AllertaParametroLocalService;
+import it.eng.allerter.service.AllertaParametroLocalServiceUtil;
 import it.eng.allerter.service.AllertaStatoLocalService;
 import it.eng.allerter.service.EmailLocalService;
 import it.eng.allerter.service.LogInternoLocalService;
@@ -143,13 +151,13 @@ public class AllertaWorkflowHandler extends BaseWorkflowHandler<Allerta> {
 			/*
 			 * mandaNotifica(feedback.getUtenteFirmaArpaId(),"Il documento "+feedback.
 			 * getNumero()
-			 * +" è in attesa di approvazione: https://allertameteo.regione.emilia-romagna.it"
+			 * +" ï¿½ in attesa di approvazione: https://allertameteo.regione.emilia-romagna.it"
 			 * ,feedback,tipo,sottotipo,l);
 			 * 
 			 * text = "<html><head></head><body>Il documento "+feedback.getNumero()
 			 * +" e' in attesa di approvazione su <a href=\"https://allertameteo.regione.emilia-romagna.it\">https://allertameteo.regione.emilia-romagna.it</a></body></html>"
 			 * ; subject =
-			 * "Il documento "+feedback.getNumero()+" è in attesa di approvazione";
+			 * "Il documento "+feedback.getNumero()+" ï¿½ in attesa di approvazione";
 			 * 
 			 * spedisciNotifiche(tipo, sottotipo, l, subject, text, feedback);
 			 */
@@ -158,6 +166,7 @@ public class AllertaWorkflowHandler extends BaseWorkflowHandler<Allerta> {
 		}
 
 		feedback.setStato(status);
+		String approvalUrl = getAllertaApprovalUrl(feedback);
 
 		boolean rigenera = false;
 
@@ -171,12 +180,12 @@ public class AllertaWorkflowHandler extends BaseWorkflowHandler<Allerta> {
 					mandaNotificaSoloEmail(feedback.getUtenteFirmaArpaId(), tipo, sottotipo, l + 1);
 					mandaNotifica(feedback.getUtenteFirmaProtId(),
 							"Il documento " + feedback.getNumero()
-									+ " è in attesa di approvazione su https://allertameteo.regione.emilia-romagna.it",
+									+ " e' in attesa di approvazione su https://allertameteo-utenti.regione.emilia-romagna.it",
 							feedback, tipo, sottotipo, l);
 
 					text = "<html><head></head><body>Il documento " + feedback.getNumero()
-							+ " e' in attesa di approvazione su <a href=\"https://allertameteo.regione.emilia-romagna.it\">https://allertameteo.regione.emilia-romagna.it</a></body></html>";
-					subject = "Il documento " + feedback.getNumero() + " è in attesa di approvazione";
+							+ " e' in attesa di approvazione sul <a href=\"" + approvalUrl + "\">Portale Allerta Meteo</a></body></html>";
+					subject = "Il documento " + feedback.getNumero() + " e' in attesa di approvazione";
 
 					textPlusOne = "<html><head></head><body>Hai approvato il documento " + feedback.getNumero()
 							+ ".</body></html>";
@@ -228,35 +237,43 @@ public class AllertaWorkflowHandler extends BaseWorkflowHandler<Allerta> {
 			// mandaMessaggioRifiuto(feedback);
 			long id = assetEntryLocalService.getEntry(Allerta.class.getName(), feedback.getAllertaId())
 					.getEntryId();
-			assetCategoryLocalService.clearAssetEntryAssetCategories(id);
-			
-			assetCategoryLocalService.addAssetEntryAssetCategory(id, lavorazione);
+			AssetEntryAssetCategoryRelLocalServiceUtil.deleteAssetEntryAssetCategoryRelByAssetEntryId(id);
+			//assetCategoryLocalService.clearAssetEntryAssetCategories(id);
+			AssetEntryAssetCategoryRelLocalServiceUtil.addAssetEntryAssetCategoryRel(id, lavorazione);
+			//assetCategoryLocalService.addAssetEntryAssetCategory(id, lavorazione);
 		}
 
 		if (status == WorkflowConstants.STATUS_PENDING) {
 
 			mandaNotifica(feedback.getUtenteFirmaArpaId(),
 					"Il documento " + feedback.getNumero()
-							+ " è in attesa di approvazione: https://allertameteo.regione.emilia-romagna.it",
+							+ " e' in attesa di approvazione su https://allertameteo-utenti.regione.emilia-romagna.it",
 					feedback, tipo, sottotipo, l);
 
 			text = "<html><head></head><body>Il documento " + feedback.getNumero()
-					+ " e' in attesa di approvazione su <a href=\"https://allertameteo.regione.emilia-romagna.it\">https://allertameteo.regione.emilia-romagna.it</a></body></html>";
-			subject = "Il documento " + feedback.getNumero() + " è in attesa di approvazione";
+					+ " e' in attesa di approvazione sul <a href=\"" + approvalUrl + "\">Portale Allerta Meteo</a></body></html>";
+			subject = "Il documento " + feedback.getNumero() + " e' in attesa di approvazione";
 
 			long id = assetEntryLocalService.getEntry(Allerta.class.getName(), feedback.getAllertaId())
 					.getEntryId();
 
 			
-			assetCategoryLocalService.addAssetEntryAssetCategory(id, revisione);
+			//assetCategoryLocalService.addAssetEntryAssetCategory(id, revisione);
+			AssetEntryAssetCategoryRelLocalServiceUtil.addAssetEntryAssetCategoryRel(id, revisione);
 
 			if (feedback.isTipoAllerta())
-				assetCategoryLocalService.addAssetEntryAssetCategory(id, allerta);
+				AssetEntryAssetCategoryRelLocalServiceUtil.addAssetEntryAssetCategoryRel(id, allerta);
+
+				//assetCategoryLocalService.addAssetEntryAssetCategory(id, allerta);
 			if (!feedback.isTipoAllerta())
-				assetCategoryLocalService.addAssetEntryAssetCategory(id, bollettino);
+				AssetEntryAssetCategoryRelLocalServiceUtil.addAssetEntryAssetCategoryRel(id, bollettino);
+
+				//assetCategoryLocalService.addAssetEntryAssetCategory(id, bollettino);
 
 			try {
-				assetCategoryLocalService.deleteAssetEntryAssetCategory(id, lavorazione);
+				AssetEntryAssetCategoryRelLocalServiceUtil.deleteAssetEntryAssetCategoryRel(id, lavorazione);
+
+				//assetCategoryLocalService.deleteAssetEntryAssetCategory(id, lavorazione);
 			} catch (Exception e) {
 
 				logger.error(e);
@@ -266,16 +283,27 @@ public class AllertaWorkflowHandler extends BaseWorkflowHandler<Allerta> {
 		if (status == WorkflowConstants.STATUS_DRAFT)
 			feedback.setStato(WorkflowConstants.STATUS_PENDING);
 		feedback = allertaLocalService.updateAllerta(feedback);
+		
+		
+		final boolean rigenera2 = rigenera;
+		final Allerta feedback2 = feedback;
+		final String text2 = text;
+		final String subject2 = subject;
+		final String textPlusOne2 = textPlusOne;
+		final String subjectPlusOne2 = subjectPlusOne;
+		
+		
+		TransactionCommitCallbackUtil.registerCallback(()->{ 
 
-		if (rigenera)
-			rigeneraPdf(feedback, feedback.getGroupId());
+		if (rigenera2)
+			rigeneraPdf(feedback2, feedback2.getGroupId());
 
-		if (text != null) {
-			spedisciNotifiche(tipo, sottotipo, l, subject, text, feedback);
+		if (text2 != null) {
+			spedisciNotifiche(tipo, sottotipo, l, subject2, text2, feedback2);
 		}
 
-		if (textPlusOne != null) {
-			spedisciNotifiche(tipo, sottotipo, l + 1, subjectPlusOne, textPlusOne, feedback);
+		if (textPlusOne2 != null) {
+			spedisciNotifiche(tipo, sottotipo, l + 1, subjectPlusOne2, textPlusOne2, feedback2);
 		}
 
 		if (status == WorkflowConstants.STATUS_APPROVED) {
@@ -283,36 +311,36 @@ public class AllertaWorkflowHandler extends BaseWorkflowHandler<Allerta> {
 			// PARER
 			try {
 				if (!AllertaTracker.getAllertaBaseConfiguration().disableParer()) {
-					User arpa = userLocalService.getUser(feedback.getUtenteFirmaArpaId());
-					User pc = userLocalService.getUser(feedback.getUtenteFirmaProtId());
+					User arpa = userLocalService.getUser(feedback2.getUtenteFirmaArpaId());
+					User pc = userLocalService.getUser(feedback2.getUtenteFirmaProtId());
 	
 					DatiSpecificiInvio dsi = datiSpecificiInvioLocalService.createDatiSpecificiInvio(0);
-					dsi.setCHIAVE_NUMERO(feedback.getNumero().split("/")[0]);
-					dsi.setCHIAVE_ANNO(Long.parseLong(feedback.getNumero().split("/")[1]));
-					dsi.setDATA_UNITA_DOCUMENTARIA(feedback.getDataEmissione());
-					dsi.setIDENTIFICATIVO_DATO_SPECIFICO("" + feedback.getAllertaId());
-					dsi.setDATA_GENERAZIONE(feedback.getCreateDate());
+					dsi.setCHIAVE_NUMERO(feedback2.getNumero().split("/")[0]);
+					dsi.setCHIAVE_ANNO(Long.parseLong(feedback2.getNumero().split("/")[1]));
+					dsi.setDATA_UNITA_DOCUMENTARIA(feedback2.getDataEmissione());
+					dsi.setIDENTIFICATIVO_DATO_SPECIFICO("" + feedback2.getAllertaId());
+					dsi.setDATA_GENERAZIONE(feedback2.getCreateDate());
 					dsi.setDENOMINAZIONE_APPLICATIVO("AllertaMeteoER");
-					dsi.setCOMPILATORE_ARPAE(feedback.getCreatorName());
-					dsi.setCOMPILATORE_PROTEZIONE_CIVILE(feedback.getUserName());
+					dsi.setCOMPILATORE_ARPAE(feedback2.getCreatorName());
+					dsi.setCOMPILATORE_PROTEZIONE_CIVILE(feedback2.getUserName());
 					dsi.setAPPROVATORE_ARPAE(arpa.getFullName());
 					dsi.setAPPROVATORE_PROTEZIONE_CIVILE(pc.getFullName());
-					dsi.setDATA_INIZIO_VALIDITA(feedback.getDataInizio());
-					dsi.setDATA_FINE_VALIDITA(feedback.getDataFine());
-					dsi.setDATA_FIRMA_ARPAE(feedback.getDataFirmaArpa());
-					dsi.setDATA_FIRMA_PROTEZIONE_CIVILE(feedback.getDataFirmaProt());
+					dsi.setDATA_INIZIO_VALIDITA(feedback2.getDataInizio());
+					dsi.setDATA_FINE_VALIDITA(feedback2.getDataFine());
+					dsi.setDATA_FIRMA_ARPAE(feedback2.getDataFirmaArpa());
+					dsi.setDATA_FIRMA_PROTEZIONE_CIVILE(feedback2.getDataFirmaProt());
 	
 					ArrayList<DocumentiCollegati> documentiCollegati = new ArrayList<DocumentiCollegati>();
 					ArrayList<ComponentiInvio> componentiInvio = new ArrayList<ComponentiInvio>();
 	
 					ComponentiInvio c = componentiInvioLocalService.getNuovoComponenteInvio();
-					c.setHASH_VERSATO(feedback.getHash());
-					c.setID_COMPONENTE_VERSATO(getReportId(feedback));
+					c.setHASH_VERSATO(feedback2.getHash());
+					c.setID_COMPONENTE_VERSATO(getReportId(feedback2));
 					c.setNOME_COMPONENTE(nomeFile);
-					c.setURN_VERSATO("https://allertameteo.regione.emilia-romagna.it" + feedback.getLink());
+					c.setURN_VERSATO("https://allertameteo.regione.emilia-romagna.it" + feedback2.getLink());
 					c.setFORMATO_FILE_VERSATO("PDF");
 					componentiInvio.add(c);
-					if (feedback.getTipoAllerta())
+					if (feedback2.getTipoAllerta())
 						datiSpecificiInvioLocalService.comunicaDatiSpecificiInvioAllerta(dsi, documentiCollegati,
 								componentiInvio);
 					else
@@ -335,34 +363,40 @@ public class AllertaWorkflowHandler extends BaseWorkflowHandler<Allerta> {
 			}
 			
 			try {
-				String titolo = feedback.getTitolo();
-				String colore = getColore(feedback);
+				String titolo = feedback2.getTitolo();
+				String colore = getColore(feedback2);
 				if (!"".equals(colore))
 					titolo = titolo.replace("Allerta", "Allerta "+colore);
-				sendToChannel(titolo + " - " + url + feedback.getLink());
+				sendToChannel(titolo + " - " + url + feedback2.getLink());
 			} catch (Exception e) {
 				logger.error(e);
 			}
 			//if (pubblicato == null || revisione == null)
 			//	caricaPubblicatoTag();
 
-			long id = assetEntryLocalService.getEntry(Allerta.class.getName(), feedback.getAllertaId())
+			long id = assetEntryLocalService.getEntry(Allerta.class.getName(), feedback2.getAllertaId())
 					.getEntryId();
 
 			try {
-				assetCategoryLocalService.deleteAssetEntryAssetCategory(id, lavorazione);
+				AssetEntryAssetCategoryRelLocalServiceUtil.deleteAssetEntryAssetCategoryRel(id, lavorazione);
+
+				//assetCategoryLocalService.deleteAssetEntryAssetCategory(id, lavorazione);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			try {
-					assetCategoryLocalService.deleteAssetEntryAssetCategory(id, revisione);
+				AssetEntryAssetCategoryRelLocalServiceUtil.deleteAssetEntryAssetCategoryRel(id, revisione);
+
+					//assetCategoryLocalService.deleteAssetEntryAssetCategory(id, revisione);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			assetCategoryLocalService.addAssetEntryAssetCategory(id, pubblicato);
-			assetCategoryLocalService.addAssetEntryAssetCategory(id, homepage);
-
-			if (isIdrogeologica(feedback)) {
+			//assetCategoryLocalService.addAssetEntryAssetCategory(id, pubblicato);
+			//assetCategoryLocalService.addAssetEntryAssetCategory(id, homepage);
+			AssetEntryAssetCategoryRelLocalServiceUtil.addAssetEntryAssetCategoryRel(id, pubblicato);
+			AssetEntryAssetCategoryRelLocalServiceUtil.addAssetEntryAssetCategoryRel(id, homepage);
+			
+			if (isIdrogeologica(feedback2)) {
 				// attiva il controllo del monitoraggio
 				BollettinoParametro bp = bollettinoParametroLocalService
 						.fetchBollettinoParametro("CONTROLLO_MONITORAGGIO");
@@ -377,13 +411,13 @@ public class AllertaWorkflowHandler extends BaseWorkflowHandler<Allerta> {
 			// assetCategoryLocalService.deleteAssetEntryAssetCategory(id, revisione);
 
 			assetEntryLocalService.updateVisible(Allerta.class.getName(), resourcePrimKey, true);
-			indexerRegistry.nullSafeGetIndexer(Allerta.class).reindex(feedback);
+			indexerRegistry.nullSafeGetIndexer(Allerta.class).reindex(feedback2);
 
 			try {
 				// manda notifiche e genera report di invio solo per le allerte, non i
 				// bollettini
-				if (feedback.getTipoAllerta()) {
-					sendSms(feedback);
+				if (feedback2.getTipoAllerta()) {
+					sendSms(feedback2);
 					// scheduleReports(feedback);
 				}
 			} catch (Exception mail) {
@@ -393,6 +427,8 @@ public class AllertaWorkflowHandler extends BaseWorkflowHandler<Allerta> {
 		} else {
 			assetEntryLocalService.updateVisible(Allerta.class.getName(), resourcePrimKey, true);
 		}
+		
+		return null;});
 		return feedback;
 	}
 	
@@ -515,6 +551,17 @@ public class AllertaWorkflowHandler extends BaseWorkflowHandler<Allerta> {
 		} catch (Exception e) {
 			logger.error(e);
 			//logInternoLocalService.log("AllertaWorkflow", "spedisciNotifiche", e, "");
+		}
+	}
+
+	private String getAllertaApprovalUrl(Allerta allerta) {
+		String portalBaseUrl = "https://allertameteo-utenti.regione.emilia-romagna.it";
+		try {
+			long entryId = assetEntryLocalService.getEntry(Allerta.class.getName(), allerta.getAllertaId()).getEntryId();
+			return portalBaseUrl + "/web/guest/approvazione-allerta/-/asset_publisher/FZPQSb6AzKtJ/Allerta-Bollettino/id/" + entryId;
+		} catch (Exception e) {
+			logger.warn("Cannot build specific approval URL for allertaId=" + allerta.getAllertaId(), e);
+			return portalBaseUrl;
 		}
 	}
 
@@ -837,11 +884,11 @@ public class AllertaWorkflowHandler extends BaseWorkflowHandler<Allerta> {
 					String gx = new SimpleDateFormat("dd-MM-yyyy").format(d);
 					String ux = new SimpleDateFormat("u").format(d);
 					String giorno = " ";
-					if ("1".equals(ux)) giorno = " lunedì ";
-					if ("2".equals(ux)) giorno = " martedì ";
-					if ("3".equals(ux)) giorno = " mercoledì ";
-					if ("4".equals(ux)) giorno = " giovedì ";
-					if ("5".equals(ux)) giorno = " venerdì ";
+					if ("1".equals(ux)) giorno = " lunedï¿½ ";
+					if ("2".equals(ux)) giorno = " martedï¿½ ";
+					if ("3".equals(ux)) giorno = " mercoledï¿½ ";
+					if ("4".equals(ux)) giorno = " giovedï¿½ ";
+					if ("5".equals(ux)) giorno = " venerdï¿½ ";
 					if ("6".equals(ux)) giorno = " sabato ";
 					if ("7".equals(ux)) giorno = " domenica ";
 					testoAllerta += "<br/><b>Dalle "+ox+" di"+giorno+gx+"</b><br/>";
@@ -1063,11 +1110,43 @@ public class AllertaWorkflowHandler extends BaseWorkflowHandler<Allerta> {
 		}
 	}
 
+	/*private void rigeneraPdf(Allerta a, long scope) {
+
+		try {
+			
+			//allertaUtils.invocaServizioRefreshAllerta(a.getAllertaId());
+			AllertaBean ab = new AllertaBean(a.getAllertaId(), (HttpServletRequest)null);
+			ab.setThreadUserPermission();
+			
+			ab.creaReport();
+			
+			
+		} catch (Exception e) {
+			logger.error(e);
+		}
+
+	}*/
+	
 	private void rigeneraPdf(Allerta a, long scope) {
 
 		try {
 			
-			allertaUtils.invocaServizioRefreshAllerta(a.getAllertaId());
+			AllertaParametro ap = AllertaParametroLocalServiceUtil.fetchAllertaParametro("URL_REFRESH");
+			String url = "";
+			try {
+				if (ap!=null) {
+					url = ap.getValore()+"?tipo=allerta&scope=20154&id="+a.getAllertaId();
+					String str = new URL(url).openConnection().getContent().toString();
+					if (str!=null && !str.equals(""))
+					{
+						//a.setHash(str);
+						//AllertaLocalServiceUtil.updateAllerta(a);
+					}
+				}
+			} catch (Exception e) { e.printStackTrace(); }
+			finally {
+				Thread.sleep(2000);
+			}
 			
 		} catch (Exception e) {
 			logger.error(e);
@@ -1169,7 +1248,7 @@ public class AllertaWorkflowHandler extends BaseWorkflowHandler<Allerta> {
 			return;
 		}
 		
-		String urlTest = "https://api.telegram.org/bot524869072:AAEvFLpoFBHJUMNLhWn1aOvAPdZYPvkHBhM/sendMessage?chat_id=@AllertaMeteoEMR&text=";
+		String urlTest = "";
 
 		try {
 			AllertaParametro ap = allertaParametroLocalService.fetchAllertaParametro("ALLERTA_TELEGRAM_URL");

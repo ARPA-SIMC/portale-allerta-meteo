@@ -1,30 +1,15 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.bollettino.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -35,21 +20,12 @@ import java.util.Objects;
  * @see Stazione
  * @generated
  */
-@ProviderType
-public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
+public class StazioneWrapper
+	extends BaseModelWrapper<Stazione>
+	implements ModelWrapper<Stazione>, Stazione {
 
 	public StazioneWrapper(Stazione stazione) {
-		_stazione = stazione;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return Stazione.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return Stazione.class.getName();
+		super(stazione);
 	}
 
 	@Override
@@ -239,13 +215,8 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	}
 
 	@Override
-	public Object clone() {
-		return new StazioneWrapper((Stazione)_stazione.clone());
-	}
-
-	@Override
-	public int compareTo(it.eng.bollettino.model.Stazione stazione) {
-		return _stazione.compareTo(stazione);
+	public Stazione cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -255,12 +226,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public boolean getAttivo() {
-		return _stazione.getAttivo();
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _stazione.getExpandoBridge();
+		return model.getAttivo();
 	}
 
 	/**
@@ -270,7 +236,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public double getHeight() {
-		return _stazione.getHeight();
+		return model.getHeight();
 	}
 
 	/**
@@ -280,7 +246,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public String getId() {
-		return _stazione.getId();
+		return model.getId();
 	}
 
 	/**
@@ -290,7 +256,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public String getIdBasin() {
-		return _stazione.getIdBasin();
+		return model.getIdBasin();
 	}
 
 	/**
@@ -300,7 +266,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public String getIdCountry() {
-		return _stazione.getIdCountry();
+		return model.getIdCountry();
 	}
 
 	/**
@@ -310,7 +276,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public String getIdent() {
-		return _stazione.getIdent();
+		return model.getIdent();
 	}
 
 	/**
@@ -320,7 +286,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public String getIdMacroarea() {
-		return _stazione.getIdMacroarea();
+		return model.getIdMacroarea();
 	}
 
 	/**
@@ -330,7 +296,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public String getIdMunicipality() {
-		return _stazione.getIdMunicipality();
+		return model.getIdMunicipality();
 	}
 
 	/**
@@ -340,7 +306,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public String getIdProvince() {
-		return _stazione.getIdProvince();
+		return model.getIdProvince();
 	}
 
 	/**
@@ -350,7 +316,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public String getIdRegion() {
-		return _stazione.getIdRegion();
+		return model.getIdRegion();
 	}
 
 	/**
@@ -360,7 +326,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public String getIdSubbasin() {
-		return _stazione.getIdSubbasin();
+		return model.getIdSubbasin();
 	}
 
 	/**
@@ -370,7 +336,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public boolean getIncluso() {
-		return _stazione.getIncluso();
+		return model.getIncluso();
 	}
 
 	/**
@@ -380,7 +346,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public long getLat() {
-		return _stazione.getLat();
+		return model.getLat();
 	}
 
 	/**
@@ -390,7 +356,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public long getLon() {
-		return _stazione.getLon();
+		return model.getLon();
 	}
 
 	/**
@@ -400,7 +366,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public String getName() {
-		return _stazione.getName();
+		return model.getName();
 	}
 
 	/**
@@ -410,7 +376,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public String getNameBasin() {
-		return _stazione.getNameBasin();
+		return model.getNameBasin();
 	}
 
 	/**
@@ -420,7 +386,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public String getNameCountry() {
-		return _stazione.getNameCountry();
+		return model.getNameCountry();
 	}
 
 	/**
@@ -430,7 +396,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public String getNameMacroarea() {
-		return _stazione.getNameMacroarea();
+		return model.getNameMacroarea();
 	}
 
 	/**
@@ -440,7 +406,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public String getNameMunicipality() {
-		return _stazione.getNameMunicipality();
+		return model.getNameMunicipality();
 	}
 
 	/**
@@ -450,7 +416,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public String getNameProvince() {
-		return _stazione.getNameProvince();
+		return model.getNameProvince();
 	}
 
 	/**
@@ -460,7 +426,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public String getNameRegion() {
-		return _stazione.getNameRegion();
+		return model.getNameRegion();
 	}
 
 	/**
@@ -470,7 +436,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public String getNameSubbasin() {
-		return _stazione.getNameSubbasin();
+		return model.getNameSubbasin();
 	}
 
 	/**
@@ -480,7 +446,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public String getNetwork() {
-		return _stazione.getNetwork();
+		return model.getNetwork();
 	}
 
 	/**
@@ -490,12 +456,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public String getPrimaryKey() {
-		return _stazione.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _stazione.getPrimaryKeyObj();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -505,7 +466,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public int getProgressivo() {
-		return _stazione.getProgressivo();
+		return model.getProgressivo();
 	}
 
 	/**
@@ -515,12 +476,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public String getUuid() {
-		return _stazione.getUuid();
-	}
-
-	@Override
-	public int hashCode() {
-		return _stazione.hashCode();
+		return model.getUuid();
 	}
 
 	/**
@@ -530,17 +486,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public boolean isAttivo() {
-		return _stazione.isAttivo();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _stazione.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _stazione.isEscapedModel();
+		return model.isAttivo();
 	}
 
 	/**
@@ -550,17 +496,12 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public boolean isIncluso() {
-		return _stazione.isIncluso();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _stazione.isNew();
+		return model.isIncluso();
 	}
 
 	@Override
 	public void persist() {
-		_stazione.persist();
+		model.persist();
 	}
 
 	/**
@@ -570,29 +511,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public void setAttivo(boolean attivo) {
-		_stazione.setAttivo(attivo);
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_stazione.setCachedModel(cachedModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_stazione.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_stazione.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_stazione.setExpandoBridgeAttributes(serviceContext);
+		model.setAttivo(attivo);
 	}
 
 	/**
@@ -602,7 +521,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public void setHeight(double height) {
-		_stazione.setHeight(height);
+		model.setHeight(height);
 	}
 
 	/**
@@ -612,7 +531,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public void setId(String id) {
-		_stazione.setId(id);
+		model.setId(id);
 	}
 
 	/**
@@ -622,7 +541,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public void setIdBasin(String idBasin) {
-		_stazione.setIdBasin(idBasin);
+		model.setIdBasin(idBasin);
 	}
 
 	/**
@@ -632,7 +551,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public void setIdCountry(String idCountry) {
-		_stazione.setIdCountry(idCountry);
+		model.setIdCountry(idCountry);
 	}
 
 	/**
@@ -642,7 +561,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public void setIdent(String ident) {
-		_stazione.setIdent(ident);
+		model.setIdent(ident);
 	}
 
 	/**
@@ -652,7 +571,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public void setIdMacroarea(String idMacroarea) {
-		_stazione.setIdMacroarea(idMacroarea);
+		model.setIdMacroarea(idMacroarea);
 	}
 
 	/**
@@ -662,7 +581,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public void setIdMunicipality(String idMunicipality) {
-		_stazione.setIdMunicipality(idMunicipality);
+		model.setIdMunicipality(idMunicipality);
 	}
 
 	/**
@@ -672,7 +591,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public void setIdProvince(String idProvince) {
-		_stazione.setIdProvince(idProvince);
+		model.setIdProvince(idProvince);
 	}
 
 	/**
@@ -682,7 +601,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public void setIdRegion(String idRegion) {
-		_stazione.setIdRegion(idRegion);
+		model.setIdRegion(idRegion);
 	}
 
 	/**
@@ -692,7 +611,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public void setIdSubbasin(String idSubbasin) {
-		_stazione.setIdSubbasin(idSubbasin);
+		model.setIdSubbasin(idSubbasin);
 	}
 
 	/**
@@ -702,7 +621,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public void setIncluso(boolean incluso) {
-		_stazione.setIncluso(incluso);
+		model.setIncluso(incluso);
 	}
 
 	/**
@@ -712,7 +631,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public void setLat(long lat) {
-		_stazione.setLat(lat);
+		model.setLat(lat);
 	}
 
 	/**
@@ -722,7 +641,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public void setLon(long lon) {
-		_stazione.setLon(lon);
+		model.setLon(lon);
 	}
 
 	/**
@@ -732,7 +651,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public void setName(String name) {
-		_stazione.setName(name);
+		model.setName(name);
 	}
 
 	/**
@@ -742,7 +661,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public void setNameBasin(String nameBasin) {
-		_stazione.setNameBasin(nameBasin);
+		model.setNameBasin(nameBasin);
 	}
 
 	/**
@@ -752,7 +671,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public void setNameCountry(String nameCountry) {
-		_stazione.setNameCountry(nameCountry);
+		model.setNameCountry(nameCountry);
 	}
 
 	/**
@@ -762,7 +681,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public void setNameMacroarea(String nameMacroarea) {
-		_stazione.setNameMacroarea(nameMacroarea);
+		model.setNameMacroarea(nameMacroarea);
 	}
 
 	/**
@@ -772,7 +691,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public void setNameMunicipality(String nameMunicipality) {
-		_stazione.setNameMunicipality(nameMunicipality);
+		model.setNameMunicipality(nameMunicipality);
 	}
 
 	/**
@@ -782,7 +701,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public void setNameProvince(String nameProvince) {
-		_stazione.setNameProvince(nameProvince);
+		model.setNameProvince(nameProvince);
 	}
 
 	/**
@@ -792,7 +711,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public void setNameRegion(String nameRegion) {
-		_stazione.setNameRegion(nameRegion);
+		model.setNameRegion(nameRegion);
 	}
 
 	/**
@@ -802,7 +721,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public void setNameSubbasin(String nameSubbasin) {
-		_stazione.setNameSubbasin(nameSubbasin);
+		model.setNameSubbasin(nameSubbasin);
 	}
 
 	/**
@@ -812,12 +731,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public void setNetwork(String network) {
-		_stazione.setNetwork(network);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_stazione.setNew(n);
+		model.setNetwork(network);
 	}
 
 	/**
@@ -827,12 +741,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public void setPrimaryKey(String primaryKey) {
-		_stazione.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_stazione.setPrimaryKeyObj(primaryKeyObj);
+		model.setPrimaryKey(primaryKey);
 	}
 
 	/**
@@ -842,7 +751,7 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public void setProgressivo(int progressivo) {
-		_stazione.setProgressivo(progressivo);
+		model.setProgressivo(progressivo);
 	}
 
 	/**
@@ -852,75 +761,17 @@ public class StazioneWrapper implements Stazione, ModelWrapper<Stazione> {
 	 */
 	@Override
 	public void setUuid(String uuid) {
-		_stazione.setUuid(uuid);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<it.eng.bollettino.model.Stazione> toCacheModel() {
-
-		return _stazione.toCacheModel();
-	}
-
-	@Override
-	public it.eng.bollettino.model.Stazione toEscapedModel() {
-		return new StazioneWrapper(_stazione.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _stazione.toString();
-	}
-
-	@Override
-	public it.eng.bollettino.model.Stazione toUnescapedModel() {
-		return new StazioneWrapper(_stazione.toUnescapedModel());
+		model.setUuid(uuid);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _stazione.toXmlString();
+		return model.toXmlString();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-
-		if (!(obj instanceof StazioneWrapper)) {
-			return false;
-		}
-
-		StazioneWrapper stazioneWrapper = (StazioneWrapper)obj;
-
-		if (Objects.equals(_stazione, stazioneWrapper._stazione)) {
-			return true;
-		}
-
-		return false;
+	protected StazioneWrapper wrap(Stazione stazione) {
+		return new StazioneWrapper(stazione);
 	}
-
-	@Override
-	public Stazione getWrappedModel() {
-		return _stazione;
-	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _stazione.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _stazione.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_stazione.resetOriginalValues();
-	}
-
-	private final Stazione _stazione;
 
 }

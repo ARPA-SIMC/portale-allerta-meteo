@@ -1,7 +1,7 @@
 Bundle-Name: allerta-bollettino-api
 Bundle-SymbolicName: allerta.bollettino.api
 Bundle-Version: 1.0.0
-Export-Package: \
+Export-Package:\
 	it.eng.bollettino.exception,\
 	it.eng.bollettino.model,\
 	it.eng.bollettino.service,\

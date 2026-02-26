@@ -1,31 +1,16 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerte.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -36,22 +21,12 @@ import java.util.Objects;
  * @see RubricaGruppo
  * @generated
  */
-@ProviderType
 public class RubricaGruppoWrapper
-	implements RubricaGruppo, ModelWrapper<RubricaGruppo> {
+	extends BaseModelWrapper<RubricaGruppo>
+	implements ModelWrapper<RubricaGruppo>, RubricaGruppo {
 
 	public RubricaGruppoWrapper(RubricaGruppo rubricaGruppo) {
-		_rubricaGruppo = rubricaGruppo;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return RubricaGruppo.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return RubricaGruppo.class.getName();
+		super(rubricaGruppo);
 	}
 
 	@Override
@@ -137,13 +112,8 @@ public class RubricaGruppoWrapper
 	}
 
 	@Override
-	public Object clone() {
-		return new RubricaGruppoWrapper((RubricaGruppo)_rubricaGruppo.clone());
-	}
-
-	@Override
-	public int compareTo(it.eng.allerte.model.RubricaGruppo rubricaGruppo) {
-		return _rubricaGruppo.compareTo(rubricaGruppo);
+	public RubricaGruppo cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -153,7 +123,7 @@ public class RubricaGruppoWrapper
 	 */
 	@Override
 	public Date getDATA_CREAZIONE() {
-		return _rubricaGruppo.getDATA_CREAZIONE();
+		return model.getDATA_CREAZIONE();
 	}
 
 	/**
@@ -163,7 +133,7 @@ public class RubricaGruppoWrapper
 	 */
 	@Override
 	public Date getDATA_MODIFICA() {
-		return _rubricaGruppo.getDATA_MODIFICA();
+		return model.getDATA_MODIFICA();
 	}
 
 	/**
@@ -173,12 +143,7 @@ public class RubricaGruppoWrapper
 	 */
 	@Override
 	public boolean getDISABLED() {
-		return _rubricaGruppo.getDISABLED();
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _rubricaGruppo.getExpandoBridge();
+		return model.getDISABLED();
 	}
 
 	/**
@@ -188,7 +153,7 @@ public class RubricaGruppoWrapper
 	 */
 	@Override
 	public long getFK_CATEGORIA() {
-		return _rubricaGruppo.getFK_CATEGORIA();
+		return model.getFK_CATEGORIA();
 	}
 
 	/**
@@ -198,7 +163,7 @@ public class RubricaGruppoWrapper
 	 */
 	@Override
 	public long getFK_SITO_PROPRIETARIO() {
-		return _rubricaGruppo.getFK_SITO_PROPRIETARIO();
+		return model.getFK_SITO_PROPRIETARIO();
 	}
 
 	/**
@@ -208,7 +173,7 @@ public class RubricaGruppoWrapper
 	 */
 	@Override
 	public long getFK_UTENTE_CREAZIONE() {
-		return _rubricaGruppo.getFK_UTENTE_CREAZIONE();
+		return model.getFK_UTENTE_CREAZIONE();
 	}
 
 	/**
@@ -218,7 +183,7 @@ public class RubricaGruppoWrapper
 	 */
 	@Override
 	public long getFK_UTENTE_MODIFICA() {
-		return _rubricaGruppo.getFK_UTENTE_MODIFICA();
+		return model.getFK_UTENTE_MODIFICA();
 	}
 
 	/**
@@ -228,7 +193,7 @@ public class RubricaGruppoWrapper
 	 */
 	@Override
 	public long getID_GRUPPO() {
-		return _rubricaGruppo.getID_GRUPPO();
+		return model.getID_GRUPPO();
 	}
 
 	/**
@@ -238,7 +203,7 @@ public class RubricaGruppoWrapper
 	 */
 	@Override
 	public String getNOME() {
-		return _rubricaGruppo.getNOME();
+		return model.getNOME();
 	}
 
 	/**
@@ -248,7 +213,7 @@ public class RubricaGruppoWrapper
 	 */
 	@Override
 	public String getNOTE() {
-		return _rubricaGruppo.getNOTE();
+		return model.getNOTE();
 	}
 
 	/**
@@ -258,22 +223,7 @@ public class RubricaGruppoWrapper
 	 */
 	@Override
 	public long getPrimaryKey() {
-		return _rubricaGruppo.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _rubricaGruppo.getPrimaryKeyObj();
-	}
-
-	@Override
-	public int hashCode() {
-		return _rubricaGruppo.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _rubricaGruppo.isCachedModel();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -283,27 +233,12 @@ public class RubricaGruppoWrapper
 	 */
 	@Override
 	public boolean isDISABLED() {
-		return _rubricaGruppo.isDISABLED();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _rubricaGruppo.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _rubricaGruppo.isNew();
+		return model.isDISABLED();
 	}
 
 	@Override
 	public void persist() {
-		_rubricaGruppo.persist();
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_rubricaGruppo.setCachedModel(cachedModel);
+		model.persist();
 	}
 
 	/**
@@ -313,7 +248,7 @@ public class RubricaGruppoWrapper
 	 */
 	@Override
 	public void setDATA_CREAZIONE(Date DATA_CREAZIONE) {
-		_rubricaGruppo.setDATA_CREAZIONE(DATA_CREAZIONE);
+		model.setDATA_CREAZIONE(DATA_CREAZIONE);
 	}
 
 	/**
@@ -323,7 +258,7 @@ public class RubricaGruppoWrapper
 	 */
 	@Override
 	public void setDATA_MODIFICA(Date DATA_MODIFICA) {
-		_rubricaGruppo.setDATA_MODIFICA(DATA_MODIFICA);
+		model.setDATA_MODIFICA(DATA_MODIFICA);
 	}
 
 	/**
@@ -333,24 +268,7 @@ public class RubricaGruppoWrapper
 	 */
 	@Override
 	public void setDISABLED(boolean DISABLED) {
-		_rubricaGruppo.setDISABLED(DISABLED);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_rubricaGruppo.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_rubricaGruppo.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_rubricaGruppo.setExpandoBridgeAttributes(serviceContext);
+		model.setDISABLED(DISABLED);
 	}
 
 	/**
@@ -360,7 +278,7 @@ public class RubricaGruppoWrapper
 	 */
 	@Override
 	public void setFK_CATEGORIA(long FK_CATEGORIA) {
-		_rubricaGruppo.setFK_CATEGORIA(FK_CATEGORIA);
+		model.setFK_CATEGORIA(FK_CATEGORIA);
 	}
 
 	/**
@@ -370,7 +288,7 @@ public class RubricaGruppoWrapper
 	 */
 	@Override
 	public void setFK_SITO_PROPRIETARIO(long FK_SITO_PROPRIETARIO) {
-		_rubricaGruppo.setFK_SITO_PROPRIETARIO(FK_SITO_PROPRIETARIO);
+		model.setFK_SITO_PROPRIETARIO(FK_SITO_PROPRIETARIO);
 	}
 
 	/**
@@ -380,7 +298,7 @@ public class RubricaGruppoWrapper
 	 */
 	@Override
 	public void setFK_UTENTE_CREAZIONE(long FK_UTENTE_CREAZIONE) {
-		_rubricaGruppo.setFK_UTENTE_CREAZIONE(FK_UTENTE_CREAZIONE);
+		model.setFK_UTENTE_CREAZIONE(FK_UTENTE_CREAZIONE);
 	}
 
 	/**
@@ -390,7 +308,7 @@ public class RubricaGruppoWrapper
 	 */
 	@Override
 	public void setFK_UTENTE_MODIFICA(long FK_UTENTE_MODIFICA) {
-		_rubricaGruppo.setFK_UTENTE_MODIFICA(FK_UTENTE_MODIFICA);
+		model.setFK_UTENTE_MODIFICA(FK_UTENTE_MODIFICA);
 	}
 
 	/**
@@ -400,12 +318,7 @@ public class RubricaGruppoWrapper
 	 */
 	@Override
 	public void setID_GRUPPO(long ID_GRUPPO) {
-		_rubricaGruppo.setID_GRUPPO(ID_GRUPPO);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_rubricaGruppo.setNew(n);
+		model.setID_GRUPPO(ID_GRUPPO);
 	}
 
 	/**
@@ -415,7 +328,7 @@ public class RubricaGruppoWrapper
 	 */
 	@Override
 	public void setNOME(String NOME) {
-		_rubricaGruppo.setNOME(NOME);
+		model.setNOME(NOME);
 	}
 
 	/**
@@ -425,7 +338,7 @@ public class RubricaGruppoWrapper
 	 */
 	@Override
 	public void setNOTE(String NOTE) {
-		_rubricaGruppo.setNOTE(NOTE);
+		model.setNOTE(NOTE);
 	}
 
 	/**
@@ -435,82 +348,17 @@ public class RubricaGruppoWrapper
 	 */
 	@Override
 	public void setPrimaryKey(long primaryKey) {
-		_rubricaGruppo.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_rubricaGruppo.setPrimaryKeyObj(primaryKeyObj);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<it.eng.allerte.model.RubricaGruppo> toCacheModel() {
-
-		return _rubricaGruppo.toCacheModel();
-	}
-
-	@Override
-	public it.eng.allerte.model.RubricaGruppo toEscapedModel() {
-		return new RubricaGruppoWrapper(_rubricaGruppo.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _rubricaGruppo.toString();
-	}
-
-	@Override
-	public it.eng.allerte.model.RubricaGruppo toUnescapedModel() {
-		return new RubricaGruppoWrapper(_rubricaGruppo.toUnescapedModel());
+		model.setPrimaryKey(primaryKey);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _rubricaGruppo.toXmlString();
+		return model.toXmlString();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-
-		if (!(obj instanceof RubricaGruppoWrapper)) {
-			return false;
-		}
-
-		RubricaGruppoWrapper rubricaGruppoWrapper = (RubricaGruppoWrapper)obj;
-
-		if (Objects.equals(
-				_rubricaGruppo, rubricaGruppoWrapper._rubricaGruppo)) {
-
-			return true;
-		}
-
-		return false;
+	protected RubricaGruppoWrapper wrap(RubricaGruppo rubricaGruppo) {
+		return new RubricaGruppoWrapper(rubricaGruppo);
 	}
-
-	@Override
-	public RubricaGruppo getWrappedModel() {
-		return _rubricaGruppo;
-	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _rubricaGruppo.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _rubricaGruppo.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_rubricaGruppo.resetOriginalValues();
-	}
-
-	private final RubricaGruppo _rubricaGruppo;
 
 }

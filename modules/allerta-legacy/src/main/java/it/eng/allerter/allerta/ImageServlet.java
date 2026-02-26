@@ -14,11 +14,7 @@ import org.osgi.service.component.annotations.Component;
 
 
 @Component(
-	    immediate = true,
-	    property = {
-	        "osgi.http.whiteboard.context.path=/",
-	        "osgi.http.whiteboard.servlet.pattern=/allerta-img"
-	    },
+	    property = "osgi.http.whiteboard.servlet.pattern=/allerta-img",
 	    service = Servlet.class
 	)
 public class ImageServlet extends HttpServlet {

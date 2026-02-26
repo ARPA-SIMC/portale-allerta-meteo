@@ -1,7 +1,7 @@
 Bundle-Name: allerta-radarmeteo-api
 Bundle-SymbolicName: it.eng.radarMeteo.api
 Bundle-Version: 1.0.0
-Export-Package: \
+Export-Package:\
 	it.eng.radarMeteo.exception,\
 	it.eng.radarMeteo.model,\
 	it.eng.radarMeteo.service,\

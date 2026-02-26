@@ -1,7 +1,7 @@
 Bundle-Name: allerta-animazionemeteo-api
 Bundle-SymbolicName: it.eng.allerta.animazionemeteo.api
 Bundle-Version: 1.0.0
-Export-Package: \
+Export-Package:\
 	it.eng.animaeteo.exception,\
 	it.eng.animaeteo.model,\
 	it.eng.animaeteo.service,\

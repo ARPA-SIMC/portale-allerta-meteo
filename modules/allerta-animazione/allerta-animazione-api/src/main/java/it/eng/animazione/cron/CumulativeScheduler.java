@@ -15,6 +15,10 @@ import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 
+import com.liferay.dispatch.executor.BaseDispatchTaskExecutor;
+import com.liferay.dispatch.executor.DispatchTaskExecutor;
+import com.liferay.dispatch.executor.DispatchTaskExecutorOutput;
+import com.liferay.dispatch.model.DispatchTrigger;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.json.JSONArray;
@@ -35,8 +39,6 @@ import com.liferay.portal.kernel.scheduler.TriggerFactory;
 import com.liferay.portal.kernel.util.Base64;
 import com.liferay.portal.kernel.util.StreamUtil;
 
-import it.eng.allerta.configuration.schedulers.AllertaBaseSchedulersConfiguration;
-import it.eng.allerta.utils.AllertaTracker;
 import it.eng.animazione.image.exception.NoSuchPioggiaCumulativaException;
 import it.eng.animazione.image.model.PioggiaCumulativa;
 import it.eng.animazione.image.service.ParametroLocalService;
@@ -46,10 +48,13 @@ import it.eng.animazione.image.service.PioggiaCumulativaLocalService;
 
 
 @Component(
-		immediate = false,
-		service = MessageListener.class
+		  property = {
+			"dispatch.task.executor.name=Scarico cumulate",
+			"dispatch.task.executor.type=task-scarico-cumulate"
+		  },
+		  service = DispatchTaskExecutor.class
 		)
-public class CumulativeScheduler extends BaseMessageListener{
+public class CumulativeScheduler extends BaseDispatchTaskExecutor{
 	
 	private Log _log = LogFactoryUtil.getLog(CumulativeScheduler.class);
 
@@ -62,11 +67,12 @@ public class CumulativeScheduler extends BaseMessageListener{
 	ParametroLocalService parametroLocalService;
 	
 	@Override
-	protected void doReceive(Message message) throws Exception {
+	public void doExecute(DispatchTrigger dispatchTrigger, DispatchTaskExecutorOutput output) {
 		
 		_log.info("CumulativeScheduler - START");
 		
 		getCumulativeImages();
+		output.setOutput("Scarico cumulate terminato");
 		
 		_log.info("CumulativeScheduler - END");
 	}
@@ -255,33 +261,7 @@ public class CumulativeScheduler extends BaseMessageListener{
 		return null;
 	}
 
-	
-	@Activate
-	@Modified
-	protected void activate(Map<String, Object> properties) {
-		
-		Class<?> clazz = getClass();
 
-		String className = clazz.getName();
-		
-		AllertaBaseSchedulersConfiguration configuration = AllertaTracker.getAllertaSchedulersConfiguration();
-		
-		_log.info("CumulativeScheduler scheduling at " + configuration.schedulerCumulativeMinutes());
-
-		if (configuration.schedulerCumulativeMinutes()<1) return;
-		
-		Trigger trigger = _triggerFactory.createTrigger(className, className, null, null, configuration.schedulerCumulativeMinutes(), TimeUnit.MINUTE);
-
-		SchedulerEntry schedulerEntry = new SchedulerEntryImpl(className, trigger);
-
-		baseScheduler.register(this, schedulerEntry, DestinationNames.SCHEDULER_DISPATCH);
-		
-	}
-
-	@Deactivate
-	protected void deactivate() {
-		baseScheduler.unregister(this);
-	}
 	
 
 	@Reference
@@ -289,6 +269,11 @@ public class CumulativeScheduler extends BaseMessageListener{
 
 	@Reference
 	private SchedulerEngineHelper baseScheduler;
+
+	@Override
+	public String getName() {
+		return "Scarico cumulate";
+	}
 	
 	
 	

@@ -1,21 +1,12 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.bollettino.service.persistence.impl;
 
-import aQute.bnd.annotation.ProviderType;
-
+import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
@@ -23,32 +14,40 @@ import com.liferay.portal.kernel.dao.orm.Query;
 import com.liferay.portal.kernel.dao.orm.QueryPos;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
+import com.liferay.portal.kernel.dao.orm.SessionFactory;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.kernel.util.PropsKeys;
+import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.ProxyUtil;
-import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.spring.extender.service.ServiceReference;
 
 import it.eng.bollettino.exception.NoSuchIdrometroException;
 import it.eng.bollettino.model.Idrometro;
+import it.eng.bollettino.model.IdrometroTable;
 import it.eng.bollettino.model.impl.IdrometroImpl;
 import it.eng.bollettino.model.impl.IdrometroModelImpl;
 import it.eng.bollettino.service.persistence.IdrometroPersistence;
+import it.eng.bollettino.service.persistence.IdrometroUtil;
+import it.eng.bollettino.service.persistence.impl.constants.BOLLETTINOPersistenceConstants;
 
 import java.io.Serializable;
 
 import java.lang.reflect.InvocationHandler;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+
+import javax.sql.DataSource;
+
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The persistence implementation for the idrometro service.
@@ -60,7 +59,7 @@ import java.util.Set;
  * @author GFAVINI
  * @generated
  */
-@ProviderType
+@Component(service = IdrometroPersistence.class)
 public class IdrometroPersistenceImpl
 	extends BasePersistenceImpl<Idrometro> implements IdrometroPersistence {
 
@@ -101,7 +100,7 @@ public class IdrometroPersistenceImpl
 	 * Returns a range of all the idrometros where nomeBacino = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>IdrometroModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>IdrometroModelImpl</code>.
 	 * </p>
 	 *
 	 * @param nomeBacino the nome bacino
@@ -120,7 +119,7 @@ public class IdrometroPersistenceImpl
 	 * Returns an ordered range of all the idrometros where nomeBacino = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>IdrometroModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>IdrometroModelImpl</code>.
 	 * </p>
 	 *
 	 * @param nomeBacino the nome bacino
@@ -142,36 +141,36 @@ public class IdrometroPersistenceImpl
 	 * Returns an ordered range of all the idrometros where nomeBacino = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>IdrometroModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>IdrometroModelImpl</code>.
 	 * </p>
 	 *
 	 * @param nomeBacino the nome bacino
 	 * @param start the lower bound of the range of idrometros
 	 * @param end the upper bound of the range of idrometros (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching idrometros
 	 */
 	@Override
 	public List<Idrometro> findByNomeBacino(
 		String nomeBacino, int start, int end,
 		OrderByComparator<Idrometro> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
 		nomeBacino = Objects.toString(nomeBacino, "");
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindByNomeBacino;
-			finderArgs = new Object[] {nomeBacino};
+			if (useFinderCache) {
+				finderPath = _finderPathWithoutPaginationFindByNomeBacino;
+				finderArgs = new Object[] {nomeBacino};
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByNomeBacino;
 			finderArgs = new Object[] {
 				nomeBacino, start, end, orderByComparator
@@ -180,7 +179,7 @@ public class IdrometroPersistenceImpl
 
 		List<Idrometro> list = null;
 
-		if (retrieveFromCache) {
+		if (useFinderCache) {
 			list = (List<Idrometro>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
@@ -196,73 +195,63 @@ public class IdrometroPersistenceImpl
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					3 + (orderByComparator.getOrderByFields().length * 2));
 			}
 			else {
-				query = new StringBundler(3);
+				sb = new StringBundler(3);
 			}
 
-			query.append(_SQL_SELECT_IDROMETRO_WHERE);
+			sb.append(_SQL_SELECT_IDROMETRO_WHERE);
 
 			boolean bindNomeBacino = false;
 
 			if (nomeBacino.isEmpty()) {
-				query.append(_FINDER_COLUMN_NOMEBACINO_NOMEBACINO_3);
+				sb.append(_FINDER_COLUMN_NOMEBACINO_NOMEBACINO_3);
 			}
 			else {
 				bindNomeBacino = true;
 
-				query.append(_FINDER_COLUMN_NOMEBACINO_NOMEBACINO_2);
+				sb.append(_FINDER_COLUMN_NOMEBACINO_NOMEBACINO_2);
 			}
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 			}
-			else if (pagination) {
-				query.append(IdrometroModelImpl.ORDER_BY_JPQL);
+			else {
+				sb.append(IdrometroModelImpl.ORDER_BY_JPQL);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindNomeBacino) {
-					qPos.add(nomeBacino);
+					queryPos.add(nomeBacino);
 				}
 
-				if (!pagination) {
-					list = (List<Idrometro>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<Idrometro>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<Idrometro>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					finderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -292,16 +281,16 @@ public class IdrometroPersistenceImpl
 			return idrometro;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("nomeBacino=");
-		msg.append(nomeBacino);
+		sb.append("nomeBacino=");
+		sb.append(nomeBacino);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchIdrometroException(msg.toString());
+		throw new NoSuchIdrometroException(sb.toString());
 	}
 
 	/**
@@ -345,16 +334,16 @@ public class IdrometroPersistenceImpl
 			return idrometro;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("nomeBacino=");
-		msg.append(nomeBacino);
+		sb.append("nomeBacino=");
+		sb.append(nomeBacino);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchIdrometroException(msg.toString());
+		throw new NoSuchIdrometroException(sb.toString());
 	}
 
 	/**
@@ -420,8 +409,8 @@ public class IdrometroPersistenceImpl
 
 			return array;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -432,28 +421,28 @@ public class IdrometroPersistenceImpl
 		Session session, Idrometro idrometro, String nomeBacino,
 		OrderByComparator<Idrometro> orderByComparator, boolean previous) {
 
-		StringBundler query = null;
+		StringBundler sb = null;
 
 		if (orderByComparator != null) {
-			query = new StringBundler(
+			sb = new StringBundler(
 				4 + (orderByComparator.getOrderByConditionFields().length * 3) +
 					(orderByComparator.getOrderByFields().length * 3));
 		}
 		else {
-			query = new StringBundler(3);
+			sb = new StringBundler(3);
 		}
 
-		query.append(_SQL_SELECT_IDROMETRO_WHERE);
+		sb.append(_SQL_SELECT_IDROMETRO_WHERE);
 
 		boolean bindNomeBacino = false;
 
 		if (nomeBacino.isEmpty()) {
-			query.append(_FINDER_COLUMN_NOMEBACINO_NOMEBACINO_3);
+			sb.append(_FINDER_COLUMN_NOMEBACINO_NOMEBACINO_3);
 		}
 		else {
 			bindNomeBacino = true;
 
-			query.append(_FINDER_COLUMN_NOMEBACINO_NOMEBACINO_2);
+			sb.append(_FINDER_COLUMN_NOMEBACINO_NOMEBACINO_2);
 		}
 
 		if (orderByComparator != null) {
@@ -461,83 +450,83 @@ public class IdrometroPersistenceImpl
 				orderByComparator.getOrderByConditionFields();
 
 			if (orderByConditionFields.length > 0) {
-				query.append(WHERE_AND);
+				sb.append(WHERE_AND);
 			}
 
 			for (int i = 0; i < orderByConditionFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByConditionFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByConditionFields[i]);
 
 				if ((i + 1) < orderByConditionFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+						sb.append(WHERE_GREATER_THAN_HAS_NEXT);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+						sb.append(WHERE_LESSER_THAN_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN);
+						sb.append(WHERE_GREATER_THAN);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN);
+						sb.append(WHERE_LESSER_THAN);
 					}
 				}
 			}
 
-			query.append(ORDER_BY_CLAUSE);
+			sb.append(ORDER_BY_CLAUSE);
 
 			String[] orderByFields = orderByComparator.getOrderByFields();
 
 			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByFields[i]);
 
 				if ((i + 1) < orderByFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC_HAS_NEXT);
+						sb.append(ORDER_BY_ASC_HAS_NEXT);
 					}
 					else {
-						query.append(ORDER_BY_DESC_HAS_NEXT);
+						sb.append(ORDER_BY_DESC_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC);
+						sb.append(ORDER_BY_ASC);
 					}
 					else {
-						query.append(ORDER_BY_DESC);
+						sb.append(ORDER_BY_DESC);
 					}
 				}
 			}
 		}
 		else {
-			query.append(IdrometroModelImpl.ORDER_BY_JPQL);
+			sb.append(IdrometroModelImpl.ORDER_BY_JPQL);
 		}
 
-		String sql = query.toString();
+		String sql = sb.toString();
 
-		Query q = session.createQuery(sql);
+		Query query = session.createQuery(sql);
 
-		q.setFirstResult(0);
-		q.setMaxResults(2);
+		query.setFirstResult(0);
+		query.setMaxResults(2);
 
-		QueryPos qPos = QueryPos.getInstance(q);
+		QueryPos queryPos = QueryPos.getInstance(query);
 
 		if (bindNomeBacino) {
-			qPos.add(nomeBacino);
+			queryPos.add(nomeBacino);
 		}
 
 		if (orderByComparator != null) {
 			for (Object orderByConditionValue :
 					orderByComparator.getOrderByConditionValues(idrometro)) {
 
-				qPos.add(orderByConditionValue);
+				queryPos.add(orderByConditionValue);
 			}
 		}
 
-		List<Idrometro> list = q.list();
+		List<Idrometro> list = query.list();
 
 		if (list.size() == 2) {
 			return list.get(1);
@@ -579,44 +568,42 @@ public class IdrometroPersistenceImpl
 		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
-			StringBundler query = new StringBundler(2);
+			StringBundler sb = new StringBundler(2);
 
-			query.append(_SQL_COUNT_IDROMETRO_WHERE);
+			sb.append(_SQL_COUNT_IDROMETRO_WHERE);
 
 			boolean bindNomeBacino = false;
 
 			if (nomeBacino.isEmpty()) {
-				query.append(_FINDER_COLUMN_NOMEBACINO_NOMEBACINO_3);
+				sb.append(_FINDER_COLUMN_NOMEBACINO_NOMEBACINO_3);
 			}
 			else {
 				bindNomeBacino = true;
 
-				query.append(_FINDER_COLUMN_NOMEBACINO_NOMEBACINO_2);
+				sb.append(_FINDER_COLUMN_NOMEBACINO_NOMEBACINO_2);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindNomeBacino) {
-					qPos.add(nomeBacino);
+					queryPos.add(nomeBacino);
 				}
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
 				finderCache.putResult(finderPath, finderArgs, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -652,7 +639,7 @@ public class IdrometroPersistenceImpl
 	 * Returns a range of all the idrometros where nomeSottobacino = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>IdrometroModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>IdrometroModelImpl</code>.
 	 * </p>
 	 *
 	 * @param nomeSottobacino the nome sottobacino
@@ -671,7 +658,7 @@ public class IdrometroPersistenceImpl
 	 * Returns an ordered range of all the idrometros where nomeSottobacino = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>IdrometroModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>IdrometroModelImpl</code>.
 	 * </p>
 	 *
 	 * @param nomeSottobacino the nome sottobacino
@@ -693,36 +680,36 @@ public class IdrometroPersistenceImpl
 	 * Returns an ordered range of all the idrometros where nomeSottobacino = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>IdrometroModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>IdrometroModelImpl</code>.
 	 * </p>
 	 *
 	 * @param nomeSottobacino the nome sottobacino
 	 * @param start the lower bound of the range of idrometros
 	 * @param end the upper bound of the range of idrometros (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching idrometros
 	 */
 	@Override
 	public List<Idrometro> findByNomeSottobacino(
 		String nomeSottobacino, int start, int end,
 		OrderByComparator<Idrometro> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
 		nomeSottobacino = Objects.toString(nomeSottobacino, "");
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindByNomeSottobacino;
-			finderArgs = new Object[] {nomeSottobacino};
+			if (useFinderCache) {
+				finderPath = _finderPathWithoutPaginationFindByNomeSottobacino;
+				finderArgs = new Object[] {nomeSottobacino};
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByNomeSottobacino;
 			finderArgs = new Object[] {
 				nomeSottobacino, start, end, orderByComparator
@@ -731,7 +718,7 @@ public class IdrometroPersistenceImpl
 
 		List<Idrometro> list = null;
 
-		if (retrieveFromCache) {
+		if (useFinderCache) {
 			list = (List<Idrometro>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
@@ -749,73 +736,63 @@ public class IdrometroPersistenceImpl
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					3 + (orderByComparator.getOrderByFields().length * 2));
 			}
 			else {
-				query = new StringBundler(3);
+				sb = new StringBundler(3);
 			}
 
-			query.append(_SQL_SELECT_IDROMETRO_WHERE);
+			sb.append(_SQL_SELECT_IDROMETRO_WHERE);
 
 			boolean bindNomeSottobacino = false;
 
 			if (nomeSottobacino.isEmpty()) {
-				query.append(_FINDER_COLUMN_NOMESOTTOBACINO_NOMESOTTOBACINO_3);
+				sb.append(_FINDER_COLUMN_NOMESOTTOBACINO_NOMESOTTOBACINO_3);
 			}
 			else {
 				bindNomeSottobacino = true;
 
-				query.append(_FINDER_COLUMN_NOMESOTTOBACINO_NOMESOTTOBACINO_2);
+				sb.append(_FINDER_COLUMN_NOMESOTTOBACINO_NOMESOTTOBACINO_2);
 			}
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 			}
-			else if (pagination) {
-				query.append(IdrometroModelImpl.ORDER_BY_JPQL);
+			else {
+				sb.append(IdrometroModelImpl.ORDER_BY_JPQL);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindNomeSottobacino) {
-					qPos.add(nomeSottobacino);
+					queryPos.add(nomeSottobacino);
 				}
 
-				if (!pagination) {
-					list = (List<Idrometro>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<Idrometro>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<Idrometro>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					finderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -846,16 +823,16 @@ public class IdrometroPersistenceImpl
 			return idrometro;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("nomeSottobacino=");
-		msg.append(nomeSottobacino);
+		sb.append("nomeSottobacino=");
+		sb.append(nomeSottobacino);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchIdrometroException(msg.toString());
+		throw new NoSuchIdrometroException(sb.toString());
 	}
 
 	/**
@@ -901,16 +878,16 @@ public class IdrometroPersistenceImpl
 			return idrometro;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("nomeSottobacino=");
-		msg.append(nomeSottobacino);
+		sb.append("nomeSottobacino=");
+		sb.append(nomeSottobacino);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchIdrometroException(msg.toString());
+		throw new NoSuchIdrometroException(sb.toString());
 	}
 
 	/**
@@ -977,8 +954,8 @@ public class IdrometroPersistenceImpl
 
 			return array;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -989,28 +966,28 @@ public class IdrometroPersistenceImpl
 		Session session, Idrometro idrometro, String nomeSottobacino,
 		OrderByComparator<Idrometro> orderByComparator, boolean previous) {
 
-		StringBundler query = null;
+		StringBundler sb = null;
 
 		if (orderByComparator != null) {
-			query = new StringBundler(
+			sb = new StringBundler(
 				4 + (orderByComparator.getOrderByConditionFields().length * 3) +
 					(orderByComparator.getOrderByFields().length * 3));
 		}
 		else {
-			query = new StringBundler(3);
+			sb = new StringBundler(3);
 		}
 
-		query.append(_SQL_SELECT_IDROMETRO_WHERE);
+		sb.append(_SQL_SELECT_IDROMETRO_WHERE);
 
 		boolean bindNomeSottobacino = false;
 
 		if (nomeSottobacino.isEmpty()) {
-			query.append(_FINDER_COLUMN_NOMESOTTOBACINO_NOMESOTTOBACINO_3);
+			sb.append(_FINDER_COLUMN_NOMESOTTOBACINO_NOMESOTTOBACINO_3);
 		}
 		else {
 			bindNomeSottobacino = true;
 
-			query.append(_FINDER_COLUMN_NOMESOTTOBACINO_NOMESOTTOBACINO_2);
+			sb.append(_FINDER_COLUMN_NOMESOTTOBACINO_NOMESOTTOBACINO_2);
 		}
 
 		if (orderByComparator != null) {
@@ -1018,83 +995,83 @@ public class IdrometroPersistenceImpl
 				orderByComparator.getOrderByConditionFields();
 
 			if (orderByConditionFields.length > 0) {
-				query.append(WHERE_AND);
+				sb.append(WHERE_AND);
 			}
 
 			for (int i = 0; i < orderByConditionFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByConditionFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByConditionFields[i]);
 
 				if ((i + 1) < orderByConditionFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+						sb.append(WHERE_GREATER_THAN_HAS_NEXT);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+						sb.append(WHERE_LESSER_THAN_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN);
+						sb.append(WHERE_GREATER_THAN);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN);
+						sb.append(WHERE_LESSER_THAN);
 					}
 				}
 			}
 
-			query.append(ORDER_BY_CLAUSE);
+			sb.append(ORDER_BY_CLAUSE);
 
 			String[] orderByFields = orderByComparator.getOrderByFields();
 
 			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByFields[i]);
 
 				if ((i + 1) < orderByFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC_HAS_NEXT);
+						sb.append(ORDER_BY_ASC_HAS_NEXT);
 					}
 					else {
-						query.append(ORDER_BY_DESC_HAS_NEXT);
+						sb.append(ORDER_BY_DESC_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC);
+						sb.append(ORDER_BY_ASC);
 					}
 					else {
-						query.append(ORDER_BY_DESC);
+						sb.append(ORDER_BY_DESC);
 					}
 				}
 			}
 		}
 		else {
-			query.append(IdrometroModelImpl.ORDER_BY_JPQL);
+			sb.append(IdrometroModelImpl.ORDER_BY_JPQL);
 		}
 
-		String sql = query.toString();
+		String sql = sb.toString();
 
-		Query q = session.createQuery(sql);
+		Query query = session.createQuery(sql);
 
-		q.setFirstResult(0);
-		q.setMaxResults(2);
+		query.setFirstResult(0);
+		query.setMaxResults(2);
 
-		QueryPos qPos = QueryPos.getInstance(q);
+		QueryPos queryPos = QueryPos.getInstance(query);
 
 		if (bindNomeSottobacino) {
-			qPos.add(nomeSottobacino);
+			queryPos.add(nomeSottobacino);
 		}
 
 		if (orderByComparator != null) {
 			for (Object orderByConditionValue :
 					orderByComparator.getOrderByConditionValues(idrometro)) {
 
-				qPos.add(orderByConditionValue);
+				queryPos.add(orderByConditionValue);
 			}
 		}
 
-		List<Idrometro> list = q.list();
+		List<Idrometro> list = query.list();
 
 		if (list.size() == 2) {
 			return list.get(1);
@@ -1137,44 +1114,42 @@ public class IdrometroPersistenceImpl
 		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
-			StringBundler query = new StringBundler(2);
+			StringBundler sb = new StringBundler(2);
 
-			query.append(_SQL_COUNT_IDROMETRO_WHERE);
+			sb.append(_SQL_COUNT_IDROMETRO_WHERE);
 
 			boolean bindNomeSottobacino = false;
 
 			if (nomeSottobacino.isEmpty()) {
-				query.append(_FINDER_COLUMN_NOMESOTTOBACINO_NOMESOTTOBACINO_3);
+				sb.append(_FINDER_COLUMN_NOMESOTTOBACINO_NOMESOTTOBACINO_3);
 			}
 			else {
 				bindNomeSottobacino = true;
 
-				query.append(_FINDER_COLUMN_NOMESOTTOBACINO_NOMESOTTOBACINO_2);
+				sb.append(_FINDER_COLUMN_NOMESOTTOBACINO_NOMESOTTOBACINO_2);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindNomeSottobacino) {
-					qPos.add(nomeSottobacino);
+					queryPos.add(nomeSottobacino);
 				}
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
 				finderCache.putResult(finderPath, finderArgs, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -1212,7 +1187,7 @@ public class IdrometroPersistenceImpl
 	 * Returns a range of all the idrometros where nomeRubrica = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>IdrometroModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>IdrometroModelImpl</code>.
 	 * </p>
 	 *
 	 * @param nomeRubrica the nome rubrica
@@ -1231,7 +1206,7 @@ public class IdrometroPersistenceImpl
 	 * Returns an ordered range of all the idrometros where nomeRubrica = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>IdrometroModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>IdrometroModelImpl</code>.
 	 * </p>
 	 *
 	 * @param nomeRubrica the nome rubrica
@@ -1253,36 +1228,36 @@ public class IdrometroPersistenceImpl
 	 * Returns an ordered range of all the idrometros where nomeRubrica = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>IdrometroModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>IdrometroModelImpl</code>.
 	 * </p>
 	 *
 	 * @param nomeRubrica the nome rubrica
 	 * @param start the lower bound of the range of idrometros
 	 * @param end the upper bound of the range of idrometros (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching idrometros
 	 */
 	@Override
 	public List<Idrometro> findByNomeRubrica(
 		String nomeRubrica, int start, int end,
 		OrderByComparator<Idrometro> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
 		nomeRubrica = Objects.toString(nomeRubrica, "");
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindByNomeRubrica;
-			finderArgs = new Object[] {nomeRubrica};
+			if (useFinderCache) {
+				finderPath = _finderPathWithoutPaginationFindByNomeRubrica;
+				finderArgs = new Object[] {nomeRubrica};
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByNomeRubrica;
 			finderArgs = new Object[] {
 				nomeRubrica, start, end, orderByComparator
@@ -1291,7 +1266,7 @@ public class IdrometroPersistenceImpl
 
 		List<Idrometro> list = null;
 
-		if (retrieveFromCache) {
+		if (useFinderCache) {
 			list = (List<Idrometro>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
@@ -1307,73 +1282,63 @@ public class IdrometroPersistenceImpl
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					3 + (orderByComparator.getOrderByFields().length * 2));
 			}
 			else {
-				query = new StringBundler(3);
+				sb = new StringBundler(3);
 			}
 
-			query.append(_SQL_SELECT_IDROMETRO_WHERE);
+			sb.append(_SQL_SELECT_IDROMETRO_WHERE);
 
 			boolean bindNomeRubrica = false;
 
 			if (nomeRubrica.isEmpty()) {
-				query.append(_FINDER_COLUMN_NOMERUBRICA_NOMERUBRICA_3);
+				sb.append(_FINDER_COLUMN_NOMERUBRICA_NOMERUBRICA_3);
 			}
 			else {
 				bindNomeRubrica = true;
 
-				query.append(_FINDER_COLUMN_NOMERUBRICA_NOMERUBRICA_2);
+				sb.append(_FINDER_COLUMN_NOMERUBRICA_NOMERUBRICA_2);
 			}
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 			}
-			else if (pagination) {
-				query.append(IdrometroModelImpl.ORDER_BY_JPQL);
+			else {
+				sb.append(IdrometroModelImpl.ORDER_BY_JPQL);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindNomeRubrica) {
-					qPos.add(nomeRubrica);
+					queryPos.add(nomeRubrica);
 				}
 
-				if (!pagination) {
-					list = (List<Idrometro>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<Idrometro>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<Idrometro>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					finderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -1403,16 +1368,16 @@ public class IdrometroPersistenceImpl
 			return idrometro;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("nomeRubrica=");
-		msg.append(nomeRubrica);
+		sb.append("nomeRubrica=");
+		sb.append(nomeRubrica);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchIdrometroException(msg.toString());
+		throw new NoSuchIdrometroException(sb.toString());
 	}
 
 	/**
@@ -1456,16 +1421,16 @@ public class IdrometroPersistenceImpl
 			return idrometro;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("nomeRubrica=");
-		msg.append(nomeRubrica);
+		sb.append("nomeRubrica=");
+		sb.append(nomeRubrica);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchIdrometroException(msg.toString());
+		throw new NoSuchIdrometroException(sb.toString());
 	}
 
 	/**
@@ -1531,8 +1496,8 @@ public class IdrometroPersistenceImpl
 
 			return array;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -1543,28 +1508,28 @@ public class IdrometroPersistenceImpl
 		Session session, Idrometro idrometro, String nomeRubrica,
 		OrderByComparator<Idrometro> orderByComparator, boolean previous) {
 
-		StringBundler query = null;
+		StringBundler sb = null;
 
 		if (orderByComparator != null) {
-			query = new StringBundler(
+			sb = new StringBundler(
 				4 + (orderByComparator.getOrderByConditionFields().length * 3) +
 					(orderByComparator.getOrderByFields().length * 3));
 		}
 		else {
-			query = new StringBundler(3);
+			sb = new StringBundler(3);
 		}
 
-		query.append(_SQL_SELECT_IDROMETRO_WHERE);
+		sb.append(_SQL_SELECT_IDROMETRO_WHERE);
 
 		boolean bindNomeRubrica = false;
 
 		if (nomeRubrica.isEmpty()) {
-			query.append(_FINDER_COLUMN_NOMERUBRICA_NOMERUBRICA_3);
+			sb.append(_FINDER_COLUMN_NOMERUBRICA_NOMERUBRICA_3);
 		}
 		else {
 			bindNomeRubrica = true;
 
-			query.append(_FINDER_COLUMN_NOMERUBRICA_NOMERUBRICA_2);
+			sb.append(_FINDER_COLUMN_NOMERUBRICA_NOMERUBRICA_2);
 		}
 
 		if (orderByComparator != null) {
@@ -1572,83 +1537,83 @@ public class IdrometroPersistenceImpl
 				orderByComparator.getOrderByConditionFields();
 
 			if (orderByConditionFields.length > 0) {
-				query.append(WHERE_AND);
+				sb.append(WHERE_AND);
 			}
 
 			for (int i = 0; i < orderByConditionFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByConditionFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByConditionFields[i]);
 
 				if ((i + 1) < orderByConditionFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+						sb.append(WHERE_GREATER_THAN_HAS_NEXT);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+						sb.append(WHERE_LESSER_THAN_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN);
+						sb.append(WHERE_GREATER_THAN);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN);
+						sb.append(WHERE_LESSER_THAN);
 					}
 				}
 			}
 
-			query.append(ORDER_BY_CLAUSE);
+			sb.append(ORDER_BY_CLAUSE);
 
 			String[] orderByFields = orderByComparator.getOrderByFields();
 
 			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByFields[i]);
 
 				if ((i + 1) < orderByFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC_HAS_NEXT);
+						sb.append(ORDER_BY_ASC_HAS_NEXT);
 					}
 					else {
-						query.append(ORDER_BY_DESC_HAS_NEXT);
+						sb.append(ORDER_BY_DESC_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC);
+						sb.append(ORDER_BY_ASC);
 					}
 					else {
-						query.append(ORDER_BY_DESC);
+						sb.append(ORDER_BY_DESC);
 					}
 				}
 			}
 		}
 		else {
-			query.append(IdrometroModelImpl.ORDER_BY_JPQL);
+			sb.append(IdrometroModelImpl.ORDER_BY_JPQL);
 		}
 
-		String sql = query.toString();
+		String sql = sb.toString();
 
-		Query q = session.createQuery(sql);
+		Query query = session.createQuery(sql);
 
-		q.setFirstResult(0);
-		q.setMaxResults(2);
+		query.setFirstResult(0);
+		query.setMaxResults(2);
 
-		QueryPos qPos = QueryPos.getInstance(q);
+		QueryPos queryPos = QueryPos.getInstance(query);
 
 		if (bindNomeRubrica) {
-			qPos.add(nomeRubrica);
+			queryPos.add(nomeRubrica);
 		}
 
 		if (orderByComparator != null) {
 			for (Object orderByConditionValue :
 					orderByComparator.getOrderByConditionValues(idrometro)) {
 
-				qPos.add(orderByConditionValue);
+				queryPos.add(orderByConditionValue);
 			}
 		}
 
-		List<Idrometro> list = q.list();
+		List<Idrometro> list = query.list();
 
 		if (list.size() == 2) {
 			return list.get(1);
@@ -1690,44 +1655,42 @@ public class IdrometroPersistenceImpl
 		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
-			StringBundler query = new StringBundler(2);
+			StringBundler sb = new StringBundler(2);
 
-			query.append(_SQL_COUNT_IDROMETRO_WHERE);
+			sb.append(_SQL_COUNT_IDROMETRO_WHERE);
 
 			boolean bindNomeRubrica = false;
 
 			if (nomeRubrica.isEmpty()) {
-				query.append(_FINDER_COLUMN_NOMERUBRICA_NOMERUBRICA_3);
+				sb.append(_FINDER_COLUMN_NOMERUBRICA_NOMERUBRICA_3);
 			}
 			else {
 				bindNomeRubrica = true;
 
-				query.append(_FINDER_COLUMN_NOMERUBRICA_NOMERUBRICA_2);
+				sb.append(_FINDER_COLUMN_NOMERUBRICA_NOMERUBRICA_2);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindNomeRubrica) {
-					qPos.add(nomeRubrica);
+					queryPos.add(nomeRubrica);
 				}
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
 				finderCache.putResult(finderPath, finderArgs, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -1745,6 +1708,11 @@ public class IdrometroPersistenceImpl
 
 	public IdrometroPersistenceImpl() {
 		setModelClass(Idrometro.class);
+
+		setModelImplClass(IdrometroImpl.class);
+		setModelPKClass(String.class);
+
+		setTable(IdrometroTable.INSTANCE);
 	}
 
 	/**
@@ -1755,11 +1723,10 @@ public class IdrometroPersistenceImpl
 	@Override
 	public void cacheResult(Idrometro idrometro) {
 		entityCache.putResult(
-			IdrometroModelImpl.ENTITY_CACHE_ENABLED, IdrometroImpl.class,
-			idrometro.getPrimaryKey(), idrometro);
-
-		idrometro.resetOriginalValues();
+			IdrometroImpl.class, idrometro.getPrimaryKey(), idrometro);
 	}
+
+	private int _valueObjectFinderCacheListThreshold;
 
 	/**
 	 * Caches the idrometros in the entity cache if it is enabled.
@@ -1768,15 +1735,18 @@ public class IdrometroPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(List<Idrometro> idrometros) {
+		if ((_valueObjectFinderCacheListThreshold == 0) ||
+			((_valueObjectFinderCacheListThreshold > 0) &&
+			 (idrometros.size() > _valueObjectFinderCacheListThreshold))) {
+
+			return;
+		}
+
 		for (Idrometro idrometro : idrometros) {
 			if (entityCache.getResult(
-					IdrometroModelImpl.ENTITY_CACHE_ENABLED,
 					IdrometroImpl.class, idrometro.getPrimaryKey()) == null) {
 
 				cacheResult(idrometro);
-			}
-			else {
-				idrometro.resetOriginalValues();
 			}
 		}
 	}
@@ -1792,9 +1762,7 @@ public class IdrometroPersistenceImpl
 	public void clearCache() {
 		entityCache.clearCache(IdrometroImpl.class);
 
-		finderCache.clearCache(FINDER_CLASS_NAME_ENTITY);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		finderCache.clearCache(IdrometroImpl.class);
 	}
 
 	/**
@@ -1806,23 +1774,22 @@ public class IdrometroPersistenceImpl
 	 */
 	@Override
 	public void clearCache(Idrometro idrometro) {
-		entityCache.removeResult(
-			IdrometroModelImpl.ENTITY_CACHE_ENABLED, IdrometroImpl.class,
-			idrometro.getPrimaryKey());
-
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		entityCache.removeResult(IdrometroImpl.class, idrometro);
 	}
 
 	@Override
 	public void clearCache(List<Idrometro> idrometros) {
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
-
 		for (Idrometro idrometro : idrometros) {
-			entityCache.removeResult(
-				IdrometroModelImpl.ENTITY_CACHE_ENABLED, IdrometroImpl.class,
-				idrometro.getPrimaryKey());
+			entityCache.removeResult(IdrometroImpl.class, idrometro);
+		}
+	}
+
+	@Override
+	public void clearCache(Set<Serializable> primaryKeys) {
+		finderCache.clearCache(IdrometroImpl.class);
+
+		for (Serializable primaryKey : primaryKeys) {
+			entityCache.removeResult(IdrometroImpl.class, primaryKey);
 		}
 	}
 
@@ -1884,11 +1851,11 @@ public class IdrometroPersistenceImpl
 
 			return remove(idrometro);
 		}
-		catch (NoSuchIdrometroException nsee) {
-			throw nsee;
+		catch (NoSuchIdrometroException noSuchEntityException) {
+			throw noSuchEntityException;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -1911,8 +1878,8 @@ public class IdrometroPersistenceImpl
 				session.delete(idrometro);
 			}
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -1952,114 +1919,26 @@ public class IdrometroPersistenceImpl
 		try {
 			session = openSession();
 
-			if (idrometro.isNew()) {
+			if (isNew) {
 				session.save(idrometro);
-
-				idrometro.setNew(false);
 			}
 			else {
 				idrometro = (Idrometro)session.merge(idrometro);
 			}
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
 		}
 
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-
-		if (!IdrometroModelImpl.COLUMN_BITMASK_ENABLED) {
-			finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
-		}
-		else if (isNew) {
-			Object[] args = new Object[] {idrometroModelImpl.getNomeBacino()};
-
-			finderCache.removeResult(_finderPathCountByNomeBacino, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByNomeBacino, args);
-
-			args = new Object[] {idrometroModelImpl.getNomeSottobacino()};
-
-			finderCache.removeResult(_finderPathCountByNomeSottobacino, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByNomeSottobacino, args);
-
-			args = new Object[] {idrometroModelImpl.getNomeRubrica()};
-
-			finderCache.removeResult(_finderPathCountByNomeRubrica, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByNomeRubrica, args);
-
-			finderCache.removeResult(_finderPathCountAll, FINDER_ARGS_EMPTY);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindAll, FINDER_ARGS_EMPTY);
-		}
-		else {
-			if ((idrometroModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByNomeBacino.
-					 getColumnBitmask()) != 0) {
-
-				Object[] args = new Object[] {
-					idrometroModelImpl.getOriginalNomeBacino()
-				};
-
-				finderCache.removeResult(_finderPathCountByNomeBacino, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByNomeBacino, args);
-
-				args = new Object[] {idrometroModelImpl.getNomeBacino()};
-
-				finderCache.removeResult(_finderPathCountByNomeBacino, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByNomeBacino, args);
-			}
-
-			if ((idrometroModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByNomeSottobacino.
-					 getColumnBitmask()) != 0) {
-
-				Object[] args = new Object[] {
-					idrometroModelImpl.getOriginalNomeSottobacino()
-				};
-
-				finderCache.removeResult(
-					_finderPathCountByNomeSottobacino, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByNomeSottobacino, args);
-
-				args = new Object[] {idrometroModelImpl.getNomeSottobacino()};
-
-				finderCache.removeResult(
-					_finderPathCountByNomeSottobacino, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByNomeSottobacino, args);
-			}
-
-			if ((idrometroModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByNomeRubrica.
-					 getColumnBitmask()) != 0) {
-
-				Object[] args = new Object[] {
-					idrometroModelImpl.getOriginalNomeRubrica()
-				};
-
-				finderCache.removeResult(_finderPathCountByNomeRubrica, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByNomeRubrica, args);
-
-				args = new Object[] {idrometroModelImpl.getNomeRubrica()};
-
-				finderCache.removeResult(_finderPathCountByNomeRubrica, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByNomeRubrica, args);
-			}
-		}
-
 		entityCache.putResult(
-			IdrometroModelImpl.ENTITY_CACHE_ENABLED, IdrometroImpl.class,
-			idrometro.getPrimaryKey(), idrometro, false);
+			IdrometroImpl.class, idrometroModelImpl, false, true);
+
+		if (isNew) {
+			idrometro.setNew(false);
+		}
 
 		idrometro.resetOriginalValues();
 
@@ -2108,167 +1987,12 @@ public class IdrometroPersistenceImpl
 	/**
 	 * Returns the idrometro with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the idrometro
-	 * @return the idrometro, or <code>null</code> if a idrometro with the primary key could not be found
-	 */
-	@Override
-	public Idrometro fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(
-			IdrometroModelImpl.ENTITY_CACHE_ENABLED, IdrometroImpl.class,
-			primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		Idrometro idrometro = (Idrometro)serializable;
-
-		if (idrometro == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				idrometro = (Idrometro)session.get(
-					IdrometroImpl.class, primaryKey);
-
-				if (idrometro != null) {
-					cacheResult(idrometro);
-				}
-				else {
-					entityCache.putResult(
-						IdrometroModelImpl.ENTITY_CACHE_ENABLED,
-						IdrometroImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(
-					IdrometroModelImpl.ENTITY_CACHE_ENABLED,
-					IdrometroImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return idrometro;
-	}
-
-	/**
-	 * Returns the idrometro with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param stazioneId the primary key of the idrometro
 	 * @return the idrometro, or <code>null</code> if a idrometro with the primary key could not be found
 	 */
 	@Override
 	public Idrometro fetchByPrimaryKey(String stazioneId) {
 		return fetchByPrimaryKey((Serializable)stazioneId);
-	}
-
-	@Override
-	public Map<Serializable, Idrometro> fetchByPrimaryKeys(
-		Set<Serializable> primaryKeys) {
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, Idrometro> map =
-			new HashMap<Serializable, Idrometro>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			Idrometro idrometro = fetchByPrimaryKey(primaryKey);
-
-			if (idrometro != null) {
-				map.put(primaryKey, idrometro);
-			}
-
-			return map;
-		}
-
-		Set<Serializable> uncachedPrimaryKeys = null;
-
-		for (Serializable primaryKey : primaryKeys) {
-			Serializable serializable = entityCache.getResult(
-				IdrometroModelImpl.ENTITY_CACHE_ENABLED, IdrometroImpl.class,
-				primaryKey);
-
-			if (serializable != nullModel) {
-				if (serializable == null) {
-					if (uncachedPrimaryKeys == null) {
-						uncachedPrimaryKeys = new HashSet<Serializable>();
-					}
-
-					uncachedPrimaryKeys.add(primaryKey);
-				}
-				else {
-					map.put(primaryKey, (Idrometro)serializable);
-				}
-			}
-		}
-
-		if (uncachedPrimaryKeys == null) {
-			return map;
-		}
-
-		StringBundler query = new StringBundler(
-			uncachedPrimaryKeys.size() * 2 + 1);
-
-		query.append(_SQL_SELECT_IDROMETRO_WHERE_PKS_IN);
-
-		for (int i = 0; i < uncachedPrimaryKeys.size(); i++) {
-			query.append("?");
-
-			query.append(",");
-		}
-
-		query.setIndex(query.index() - 1);
-
-		query.append(")");
-
-		String sql = query.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query q = session.createQuery(sql);
-
-			QueryPos qPos = QueryPos.getInstance(q);
-
-			for (Serializable primaryKey : uncachedPrimaryKeys) {
-				qPos.add((String)primaryKey);
-			}
-
-			for (Idrometro idrometro : (List<Idrometro>)q.list()) {
-				map.put(idrometro.getPrimaryKeyObj(), idrometro);
-
-				cacheResult(idrometro);
-
-				uncachedPrimaryKeys.remove(idrometro.getPrimaryKeyObj());
-			}
-
-			for (Serializable primaryKey : uncachedPrimaryKeys) {
-				entityCache.putResult(
-					IdrometroModelImpl.ENTITY_CACHE_ENABLED,
-					IdrometroImpl.class, primaryKey, nullModel);
-			}
-		}
-		catch (Exception e) {
-			throw processException(e);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**
@@ -2285,7 +2009,7 @@ public class IdrometroPersistenceImpl
 	 * Returns a range of all the idrometros.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>IdrometroModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>IdrometroModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of idrometros
@@ -2301,7 +2025,7 @@ public class IdrometroPersistenceImpl
 	 * Returns an ordered range of all the idrometros.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>IdrometroModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>IdrometroModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of idrometros
@@ -2320,64 +2044,62 @@ public class IdrometroPersistenceImpl
 	 * Returns an ordered range of all the idrometros.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>IdrometroModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>IdrometroModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of idrometros
 	 * @param end the upper bound of the range of idrometros (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of idrometros
 	 */
 	@Override
 	public List<Idrometro> findAll(
 		int start, int end, OrderByComparator<Idrometro> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindAll;
-			finderArgs = FINDER_ARGS_EMPTY;
+			if (useFinderCache) {
+				finderPath = _finderPathWithoutPaginationFindAll;
+				finderArgs = FINDER_ARGS_EMPTY;
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
 			finderArgs = new Object[] {start, end, orderByComparator};
 		}
 
 		List<Idrometro> list = null;
 
-		if (retrieveFromCache) {
+		if (useFinderCache) {
 			list = (List<Idrometro>)finderCache.getResult(
 				finderPath, finderArgs, this);
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 			String sql = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					2 + (orderByComparator.getOrderByFields().length * 2));
 
-				query.append(_SQL_SELECT_IDROMETRO);
+				sb.append(_SQL_SELECT_IDROMETRO);
 
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 
-				sql = query.toString();
+				sql = sb.toString();
 			}
 			else {
 				sql = _SQL_SELECT_IDROMETRO;
 
-				if (pagination) {
-					sql = sql.concat(IdrometroModelImpl.ORDER_BY_JPQL);
-				}
+				sql = sql.concat(IdrometroModelImpl.ORDER_BY_JPQL);
 			}
 
 			Session session = null;
@@ -2385,29 +2107,19 @@ public class IdrometroPersistenceImpl
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				if (!pagination) {
-					list = (List<Idrometro>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<Idrometro>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<Idrometro>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					finderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -2444,18 +2156,15 @@ public class IdrometroPersistenceImpl
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(_SQL_COUNT_IDROMETRO);
+				Query query = session.createQuery(_SQL_COUNT_IDROMETRO);
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
 				finderCache.putResult(
 					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -2466,6 +2175,21 @@ public class IdrometroPersistenceImpl
 	}
 
 	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
+	}
+
+	@Override
+	protected String getPKDBName() {
+		return "stazioneId";
+	}
+
+	@Override
+	protected String getSelectSQL() {
+		return _SQL_SELECT_IDROMETRO;
+	}
+
+	@Override
 	protected Map<String, Integer> getTableColumnsMap() {
 		return IdrometroModelImpl.TABLE_COLUMNS_MAP;
 	}
@@ -2473,109 +2197,121 @@ public class IdrometroPersistenceImpl
 	/**
 	 * Initializes the idrometro persistence.
 	 */
-	public void afterPropertiesSet() {
+	@Activate
+	public void activate() {
+		_valueObjectFinderCacheListThreshold = GetterUtil.getInteger(
+			PropsUtil.get(PropsKeys.VALUE_OBJECT_FINDER_CACHE_LIST_THRESHOLD));
+
 		_finderPathWithPaginationFindAll = new FinderPath(
-			IdrometroModelImpl.ENTITY_CACHE_ENABLED,
-			IdrometroModelImpl.FINDER_CACHE_ENABLED, IdrometroImpl.class,
-			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findAll", new String[0]);
+			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findAll", new String[0],
+			new String[0], true);
 
 		_finderPathWithoutPaginationFindAll = new FinderPath(
-			IdrometroModelImpl.ENTITY_CACHE_ENABLED,
-			IdrometroModelImpl.FINDER_CACHE_ENABLED, IdrometroImpl.class,
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findAll",
-			new String[0]);
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findAll", new String[0],
+			new String[0], true);
 
 		_finderPathCountAll = new FinderPath(
-			IdrometroModelImpl.ENTITY_CACHE_ENABLED,
-			IdrometroModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countAll",
-			new String[0]);
+			new String[0], new String[0], false);
 
 		_finderPathWithPaginationFindByNomeBacino = new FinderPath(
-			IdrometroModelImpl.ENTITY_CACHE_ENABLED,
-			IdrometroModelImpl.FINDER_CACHE_ENABLED, IdrometroImpl.class,
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByNomeBacino",
 			new String[] {
 				String.class.getName(), Integer.class.getName(),
 				Integer.class.getName(), OrderByComparator.class.getName()
-			});
+			},
+			new String[] {"nomeBacino"}, true);
 
 		_finderPathWithoutPaginationFindByNomeBacino = new FinderPath(
-			IdrometroModelImpl.ENTITY_CACHE_ENABLED,
-			IdrometroModelImpl.FINDER_CACHE_ENABLED, IdrometroImpl.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByNomeBacino",
-			new String[] {String.class.getName()},
-			IdrometroModelImpl.NOMEBACINO_COLUMN_BITMASK);
+			new String[] {String.class.getName()}, new String[] {"nomeBacino"},
+			true);
 
 		_finderPathCountByNomeBacino = new FinderPath(
-			IdrometroModelImpl.ENTITY_CACHE_ENABLED,
-			IdrometroModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByNomeBacino",
-			new String[] {String.class.getName()});
+			new String[] {String.class.getName()}, new String[] {"nomeBacino"},
+			false);
 
 		_finderPathWithPaginationFindByNomeSottobacino = new FinderPath(
-			IdrometroModelImpl.ENTITY_CACHE_ENABLED,
-			IdrometroModelImpl.FINDER_CACHE_ENABLED, IdrometroImpl.class,
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByNomeSottobacino",
 			new String[] {
 				String.class.getName(), Integer.class.getName(),
 				Integer.class.getName(), OrderByComparator.class.getName()
-			});
+			},
+			new String[] {"nomeSottobacino"}, true);
 
 		_finderPathWithoutPaginationFindByNomeSottobacino = new FinderPath(
-			IdrometroModelImpl.ENTITY_CACHE_ENABLED,
-			IdrometroModelImpl.FINDER_CACHE_ENABLED, IdrometroImpl.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByNomeSottobacino",
 			new String[] {String.class.getName()},
-			IdrometroModelImpl.NOMESOTTOBACINO_COLUMN_BITMASK);
+			new String[] {"nomeSottobacino"}, true);
 
 		_finderPathCountByNomeSottobacino = new FinderPath(
-			IdrometroModelImpl.ENTITY_CACHE_ENABLED,
-			IdrometroModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByNomeSottobacino",
-			new String[] {String.class.getName()});
+			new String[] {String.class.getName()},
+			new String[] {"nomeSottobacino"}, false);
 
 		_finderPathWithPaginationFindByNomeRubrica = new FinderPath(
-			IdrometroModelImpl.ENTITY_CACHE_ENABLED,
-			IdrometroModelImpl.FINDER_CACHE_ENABLED, IdrometroImpl.class,
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByNomeRubrica",
 			new String[] {
 				String.class.getName(), Integer.class.getName(),
 				Integer.class.getName(), OrderByComparator.class.getName()
-			});
+			},
+			new String[] {"nomeRubrica"}, true);
 
 		_finderPathWithoutPaginationFindByNomeRubrica = new FinderPath(
-			IdrometroModelImpl.ENTITY_CACHE_ENABLED,
-			IdrometroModelImpl.FINDER_CACHE_ENABLED, IdrometroImpl.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByNomeRubrica",
-			new String[] {String.class.getName()},
-			IdrometroModelImpl.NOMERUBRICA_COLUMN_BITMASK);
+			new String[] {String.class.getName()}, new String[] {"nomeRubrica"},
+			true);
 
 		_finderPathCountByNomeRubrica = new FinderPath(
-			IdrometroModelImpl.ENTITY_CACHE_ENABLED,
-			IdrometroModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByNomeRubrica",
-			new String[] {String.class.getName()});
+			new String[] {String.class.getName()}, new String[] {"nomeRubrica"},
+			false);
+
+		IdrometroUtil.setPersistence(this);
 	}
 
-	public void destroy() {
+	@Deactivate
+	public void deactivate() {
+		IdrometroUtil.setPersistence(null);
+
 		entityCache.removeCache(IdrometroImpl.class.getName());
-		finderCache.removeCache(FINDER_CLASS_NAME_ENTITY);
-		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 	}
 
-	@ServiceReference(type = EntityCache.class)
+	@Override
+	@Reference(
+		target = BOLLETTINOPersistenceConstants.SERVICE_CONFIGURATION_FILTER,
+		unbind = "-"
+	)
+	public void setConfiguration(Configuration configuration) {
+	}
+
+	@Override
+	@Reference(
+		target = BOLLETTINOPersistenceConstants.ORIGIN_BUNDLE_SYMBOLIC_NAME_FILTER,
+		unbind = "-"
+	)
+	public void setDataSource(DataSource dataSource) {
+		super.setDataSource(dataSource);
+	}
+
+	@Override
+	@Reference(
+		target = BOLLETTINOPersistenceConstants.ORIGIN_BUNDLE_SYMBOLIC_NAME_FILTER,
+		unbind = "-"
+	)
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		super.setSessionFactory(sessionFactory);
+	}
+
+	@Reference
 	protected EntityCache entityCache;
 
-	@ServiceReference(type = FinderCache.class)
+	@Reference
 	protected FinderCache finderCache;
 
 	private static final String _SQL_SELECT_IDROMETRO =
 		"SELECT idrometro FROM Idrometro idrometro";
-
-	private static final String _SQL_SELECT_IDROMETRO_WHERE_PKS_IN =
-		"SELECT idrometro FROM Idrometro idrometro WHERE stazioneId IN (";
 
 	private static final String _SQL_SELECT_IDROMETRO_WHERE =
 		"SELECT idrometro FROM Idrometro idrometro WHERE ";
@@ -2596,5 +2332,10 @@ public class IdrometroPersistenceImpl
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		IdrometroPersistenceImpl.class);
+
+	@Override
+	protected FinderCache getFinderCache() {
+		return finderCache;
+	}
 
 }

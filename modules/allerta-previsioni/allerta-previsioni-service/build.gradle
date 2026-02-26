@@ -1,18 +1,19 @@
 dependencies {
-	compileOnly group: "biz.aQute.bnd", name: "biz.aQute.bndlib"
+	api project(":modules:allerta-previsioni:allerta-previsioni-api")
+
+	compileOnly group: "com.liferay.portal", name: "release.dxp.api"
+	
 	compileOnly group: "com.liferay.portal", name: "com.liferay.portal.kernel"
 	
 	
 	compileOnly 'biz.aQute.bnd:biz.aQute.bnd.annotation:4.2.0'
 	compileOnly group: "com.liferay", name: "com.liferay.portal.spring.extender", version: "2.0.0"
 	compileOnly group: "com.liferay", name: "com.liferay.petra.string"
-	compileOnly 'com.liferay:com.liferay.portal.upgrade.api:2.0.0'
-	
-	compileOnly project(":modules:allerta-previsioni:allerta-previsioni-api")
 }
 
 buildService {
 	apiDir = "../allerta-previsioni-api/src/main/java"
+	testDir = "../allerta-previsioni-test/src/testIntegration/java"
 }
 
 group = "it.eng.allerta.previsioni"

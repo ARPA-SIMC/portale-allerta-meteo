@@ -1,32 +1,17 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerter.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.exportimport.kernel.lar.StagedModelType;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -37,22 +22,12 @@ import java.util.Objects;
  * @see StatoAllertamento
  * @generated
  */
-@ProviderType
 public class StatoAllertamentoWrapper
-	implements StatoAllertamento, ModelWrapper<StatoAllertamento> {
+	extends BaseModelWrapper<StatoAllertamento>
+	implements ModelWrapper<StatoAllertamento>, StatoAllertamento {
 
 	public StatoAllertamentoWrapper(StatoAllertamento statoAllertamento) {
-		_statoAllertamento = statoAllertamento;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return StatoAllertamento.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return StatoAllertamento.class.getName();
+		super(statoAllertamento);
 	}
 
 	@Override
@@ -151,16 +126,8 @@ public class StatoAllertamentoWrapper
 	}
 
 	@Override
-	public Object clone() {
-		return new StatoAllertamentoWrapper(
-			(StatoAllertamento)_statoAllertamento.clone());
-	}
-
-	@Override
-	public int compareTo(
-		it.eng.allerter.model.StatoAllertamento statoAllertamento) {
-
-		return _statoAllertamento.compareTo(statoAllertamento);
+	public StatoAllertamento cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -170,7 +137,7 @@ public class StatoAllertamentoWrapper
 	 */
 	@Override
 	public long getCompanyId() {
-		return _statoAllertamento.getCompanyId();
+		return model.getCompanyId();
 	}
 
 	/**
@@ -180,7 +147,7 @@ public class StatoAllertamentoWrapper
 	 */
 	@Override
 	public Date getCreateDate() {
-		return _statoAllertamento.getCreateDate();
+		return model.getCreateDate();
 	}
 
 	/**
@@ -190,7 +157,7 @@ public class StatoAllertamentoWrapper
 	 */
 	@Override
 	public Date getDataFine() {
-		return _statoAllertamento.getDataFine();
+		return model.getDataFine();
 	}
 
 	/**
@@ -200,12 +167,7 @@ public class StatoAllertamentoWrapper
 	 */
 	@Override
 	public Date getDataInizio() {
-		return _statoAllertamento.getDataInizio();
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _statoAllertamento.getExpandoBridge();
+		return model.getDataInizio();
 	}
 
 	/**
@@ -215,7 +177,7 @@ public class StatoAllertamentoWrapper
 	 */
 	@Override
 	public long getGroupId() {
-		return _statoAllertamento.getGroupId();
+		return model.getGroupId();
 	}
 
 	/**
@@ -225,7 +187,7 @@ public class StatoAllertamentoWrapper
 	 */
 	@Override
 	public Date getModifiedDate() {
-		return _statoAllertamento.getModifiedDate();
+		return model.getModifiedDate();
 	}
 
 	/**
@@ -235,7 +197,7 @@ public class StatoAllertamentoWrapper
 	 */
 	@Override
 	public String getNome() {
-		return _statoAllertamento.getNome();
+		return model.getNome();
 	}
 
 	/**
@@ -245,7 +207,7 @@ public class StatoAllertamentoWrapper
 	 */
 	@Override
 	public long getParentId() {
-		return _statoAllertamento.getParentId();
+		return model.getParentId();
 	}
 
 	/**
@@ -255,12 +217,7 @@ public class StatoAllertamentoWrapper
 	 */
 	@Override
 	public long getPrimaryKey() {
-		return _statoAllertamento.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _statoAllertamento.getPrimaryKeyObj();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -270,7 +227,7 @@ public class StatoAllertamentoWrapper
 	 */
 	@Override
 	public long getStatoId() {
-		return _statoAllertamento.getStatoId();
+		return model.getStatoId();
 	}
 
 	/**
@@ -280,7 +237,7 @@ public class StatoAllertamentoWrapper
 	 */
 	@Override
 	public long getUserId() {
-		return _statoAllertamento.getUserId();
+		return model.getUserId();
 	}
 
 	/**
@@ -290,7 +247,7 @@ public class StatoAllertamentoWrapper
 	 */
 	@Override
 	public String getUserName() {
-		return _statoAllertamento.getUserName();
+		return model.getUserName();
 	}
 
 	/**
@@ -300,7 +257,7 @@ public class StatoAllertamentoWrapper
 	 */
 	@Override
 	public String getUserUuid() {
-		return _statoAllertamento.getUserUuid();
+		return model.getUserUuid();
 	}
 
 	/**
@@ -310,37 +267,12 @@ public class StatoAllertamentoWrapper
 	 */
 	@Override
 	public String getUuid() {
-		return _statoAllertamento.getUuid();
-	}
-
-	@Override
-	public int hashCode() {
-		return _statoAllertamento.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _statoAllertamento.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _statoAllertamento.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _statoAllertamento.isNew();
+		return model.getUuid();
 	}
 
 	@Override
 	public void persist() {
-		_statoAllertamento.persist();
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_statoAllertamento.setCachedModel(cachedModel);
+		model.persist();
 	}
 
 	/**
@@ -350,7 +282,7 @@ public class StatoAllertamentoWrapper
 	 */
 	@Override
 	public void setCompanyId(long companyId) {
-		_statoAllertamento.setCompanyId(companyId);
+		model.setCompanyId(companyId);
 	}
 
 	/**
@@ -360,7 +292,7 @@ public class StatoAllertamentoWrapper
 	 */
 	@Override
 	public void setCreateDate(Date createDate) {
-		_statoAllertamento.setCreateDate(createDate);
+		model.setCreateDate(createDate);
 	}
 
 	/**
@@ -370,7 +302,7 @@ public class StatoAllertamentoWrapper
 	 */
 	@Override
 	public void setDataFine(Date dataFine) {
-		_statoAllertamento.setDataFine(dataFine);
+		model.setDataFine(dataFine);
 	}
 
 	/**
@@ -380,24 +312,7 @@ public class StatoAllertamentoWrapper
 	 */
 	@Override
 	public void setDataInizio(Date dataInizio) {
-		_statoAllertamento.setDataInizio(dataInizio);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_statoAllertamento.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_statoAllertamento.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_statoAllertamento.setExpandoBridgeAttributes(serviceContext);
+		model.setDataInizio(dataInizio);
 	}
 
 	/**
@@ -407,7 +322,7 @@ public class StatoAllertamentoWrapper
 	 */
 	@Override
 	public void setGroupId(long groupId) {
-		_statoAllertamento.setGroupId(groupId);
+		model.setGroupId(groupId);
 	}
 
 	/**
@@ -417,12 +332,7 @@ public class StatoAllertamentoWrapper
 	 */
 	@Override
 	public void setModifiedDate(Date modifiedDate) {
-		_statoAllertamento.setModifiedDate(modifiedDate);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_statoAllertamento.setNew(n);
+		model.setModifiedDate(modifiedDate);
 	}
 
 	/**
@@ -432,7 +342,7 @@ public class StatoAllertamentoWrapper
 	 */
 	@Override
 	public void setNome(String nome) {
-		_statoAllertamento.setNome(nome);
+		model.setNome(nome);
 	}
 
 	/**
@@ -442,7 +352,7 @@ public class StatoAllertamentoWrapper
 	 */
 	@Override
 	public void setParentId(long parentId) {
-		_statoAllertamento.setParentId(parentId);
+		model.setParentId(parentId);
 	}
 
 	/**
@@ -452,12 +362,7 @@ public class StatoAllertamentoWrapper
 	 */
 	@Override
 	public void setPrimaryKey(long primaryKey) {
-		_statoAllertamento.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_statoAllertamento.setPrimaryKeyObj(primaryKeyObj);
+		model.setPrimaryKey(primaryKey);
 	}
 
 	/**
@@ -467,7 +372,7 @@ public class StatoAllertamentoWrapper
 	 */
 	@Override
 	public void setStatoId(long statoId) {
-		_statoAllertamento.setStatoId(statoId);
+		model.setStatoId(statoId);
 	}
 
 	/**
@@ -477,7 +382,7 @@ public class StatoAllertamentoWrapper
 	 */
 	@Override
 	public void setUserId(long userId) {
-		_statoAllertamento.setUserId(userId);
+		model.setUserId(userId);
 	}
 
 	/**
@@ -487,7 +392,7 @@ public class StatoAllertamentoWrapper
 	 */
 	@Override
 	public void setUserName(String userName) {
-		_statoAllertamento.setUserName(userName);
+		model.setUserName(userName);
 	}
 
 	/**
@@ -497,7 +402,7 @@ public class StatoAllertamentoWrapper
 	 */
 	@Override
 	public void setUserUuid(String userUuid) {
-		_statoAllertamento.setUserUuid(userUuid);
+		model.setUserUuid(userUuid);
 	}
 
 	/**
@@ -507,86 +412,24 @@ public class StatoAllertamentoWrapper
 	 */
 	@Override
 	public void setUuid(String uuid) {
-		_statoAllertamento.setUuid(uuid);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<it.eng.allerter.model.StatoAllertamento> toCacheModel() {
-
-		return _statoAllertamento.toCacheModel();
-	}
-
-	@Override
-	public it.eng.allerter.model.StatoAllertamento toEscapedModel() {
-		return new StatoAllertamentoWrapper(
-			_statoAllertamento.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _statoAllertamento.toString();
-	}
-
-	@Override
-	public it.eng.allerter.model.StatoAllertamento toUnescapedModel() {
-		return new StatoAllertamentoWrapper(
-			_statoAllertamento.toUnescapedModel());
+		model.setUuid(uuid);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _statoAllertamento.toXmlString();
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-
-		if (!(obj instanceof StatoAllertamentoWrapper)) {
-			return false;
-		}
-
-		StatoAllertamentoWrapper statoAllertamentoWrapper =
-			(StatoAllertamentoWrapper)obj;
-
-		if (Objects.equals(
-				_statoAllertamento,
-				statoAllertamentoWrapper._statoAllertamento)) {
-
-			return true;
-		}
-
-		return false;
+		return model.toXmlString();
 	}
 
 	@Override
 	public StagedModelType getStagedModelType() {
-		return _statoAllertamento.getStagedModelType();
+		return model.getStagedModelType();
 	}
 
 	@Override
-	public StatoAllertamento getWrappedModel() {
-		return _statoAllertamento;
-	}
+	protected StatoAllertamentoWrapper wrap(
+		StatoAllertamento statoAllertamento) {
 
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _statoAllertamento.isEntityCacheEnabled();
+		return new StatoAllertamentoWrapper(statoAllertamento);
 	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _statoAllertamento.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_statoAllertamento.resetOriginalValues();
-	}
-
-	private final StatoAllertamento _statoAllertamento;
 
 }

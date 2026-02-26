@@ -20,6 +20,10 @@ import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 
+import com.liferay.dispatch.executor.BaseDispatchTaskExecutor;
+import com.liferay.dispatch.executor.DispatchTaskExecutor;
+import com.liferay.dispatch.executor.DispatchTaskExecutorOutput;
+import com.liferay.dispatch.model.DispatchTrigger;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
@@ -38,8 +42,6 @@ import com.liferay.portal.kernel.scheduler.TriggerFactory;
 import com.liferay.portal.kernel.util.Base64;
 import com.liferay.portal.kernel.util.StreamUtil;
 
-import it.eng.allerta.configuration.schedulers.AllertaBaseSchedulersConfiguration;
-import it.eng.allerta.utils.AllertaTracker;
 import it.eng.animaeteo.model.AnimeteoImg;
 import it.eng.animaeteo.model.AnimeteoSmallImg;
 import it.eng.animaeteo.service.AnimeteoImgLocalService;
@@ -49,10 +51,13 @@ import it.eng.animaeteo.service.AnimeteoSmallImgLocalService;
 
 
 @Component(
-  immediate = false, 			  
-  service = MessageListener.class
-)
-public class AnimeteoScheduler extends BaseMessageListener {
+		  property = {
+			"dispatch.task.executor.name=Scarico previsioni modelli",
+			"dispatch.task.executor.type=task-previsioni-modelli"
+		  },
+		  service = DispatchTaskExecutor.class
+		)
+public class AnimeteoScheduler extends BaseDispatchTaskExecutor {
 	
 	private Log _log = LogFactoryUtil.getLog(AnimeteoScheduler.class);
 
@@ -78,13 +83,16 @@ public class AnimeteoScheduler extends BaseMessageListener {
 	private static final List<String> url;
 	static {
 		url = new ArrayList<String>();
-		url.add("meteo_mappe_previsione_nord_italia_precipitazione");
+		/*url.add("meteo_mappe_previsione_nord_italia_precipitazione");
 		url.add("meteo_mappe_previsione_nord_italia_copertura_nuvolosa");
-		url.add("meteo_mappe_previsione_nord_italia_vento");
+		url.add("meteo_mappe_previsione_nord_italia_vento");*/
+		url.add("meteo_mappe_previsioni_meteo_icon_2I_precipitazione");
+		url.add("meteo_mappe_previsioni_meteo_icon_2I_copertura_nuvolosa");
+		url.add("meteo_mappe_previsioni_meteo_icon_2I_vento");
 	}
 	
 	@Override
-	protected void doReceive(Message message) throws Exception {
+	public void doExecute(DispatchTrigger dispatchTrigger, DispatchTaskExecutorOutput output) {
 		
 	
 		_log.info("Animeteo Scheduler START");
@@ -111,7 +119,13 @@ public class AnimeteoScheduler extends BaseMessageListener {
 		
 		//getImages();
 		
-		getBigImages();
+		try {
+			getBigImages();
+		} catch (IOException e) {
+			_log.error(e);
+		}
+		
+		output.setOutput("Scarico previsioni modelli completato");
 		
 		_log.info("Animeteo Scheduler END");
 	}
@@ -234,38 +248,14 @@ public InputStream getInputStreaWithTimeout(String value){
 	
 	
 	
-
-	@Activate
-	@Modified
-	protected void activate(Map<String, Object> properties) {
-		
-		Class<?> clazz = getClass();
-
-		String className = clazz.getName();
-		
-		AllertaBaseSchedulersConfiguration configuration = AllertaTracker.getAllertaSchedulersConfiguration();
-		
-		_log.info("AnimeteoScheduler scheduling at " + configuration.schedulerAnimeteoMinutes());
-
-		if (configuration.schedulerAnimeteoMinutes()<1) return;
-		
-		Trigger trigger = _triggerFactory.createTrigger(className, className, null, null, configuration.schedulerAnimeteoMinutes(), TimeUnit.MINUTE);
-
-		SchedulerEntry schedulerEntry = new SchedulerEntryImpl(className, trigger);
-
-		baseScheduler.register(this, schedulerEntry, DestinationNames.SCHEDULER_DISPATCH);
-		
-	}
-
-	@Deactivate
-	protected void deactivate() {
-		
-		baseScheduler.unregister(this);
-	}
-	
 	@Reference
 	private SchedulerEngineHelper baseScheduler;
 	
 	@Reference
 	private TriggerFactory _triggerFactory;
+
+	@Override
+	public String getName() {
+		return "Scarico previsioni modelli";
+	}
 }

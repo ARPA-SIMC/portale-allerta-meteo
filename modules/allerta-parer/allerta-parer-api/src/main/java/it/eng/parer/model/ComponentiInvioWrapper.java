@@ -1,30 +1,15 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.parer.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -35,22 +20,12 @@ import java.util.Objects;
  * @see ComponentiInvio
  * @generated
  */
-@ProviderType
 public class ComponentiInvioWrapper
+	extends BaseModelWrapper<ComponentiInvio>
 	implements ComponentiInvio, ModelWrapper<ComponentiInvio> {
 
 	public ComponentiInvioWrapper(ComponentiInvio componentiInvio) {
-		_componentiInvio = componentiInvio;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return ComponentiInvio.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return ComponentiInvio.class.getName();
+		super(componentiInvio);
 	}
 
 	@Override
@@ -140,19 +115,8 @@ public class ComponentiInvioWrapper
 	}
 
 	@Override
-	public Object clone() {
-		return new ComponentiInvioWrapper(
-			(ComponentiInvio)_componentiInvio.clone());
-	}
-
-	@Override
-	public int compareTo(it.eng.parer.model.ComponentiInvio componentiInvio) {
-		return _componentiInvio.compareTo(componentiInvio);
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _componentiInvio.getExpandoBridge();
+	public ComponentiInvio cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -162,7 +126,7 @@ public class ComponentiInvioWrapper
 	 */
 	@Override
 	public String getFORMATO_FILE_VERSATO() {
-		return _componentiInvio.getFORMATO_FILE_VERSATO();
+		return model.getFORMATO_FILE_VERSATO();
 	}
 
 	/**
@@ -172,7 +136,7 @@ public class ComponentiInvioWrapper
 	 */
 	@Override
 	public String getHASH_VERSATO() {
-		return _componentiInvio.getHASH_VERSATO();
+		return model.getHASH_VERSATO();
 	}
 
 	/**
@@ -182,7 +146,7 @@ public class ComponentiInvioWrapper
 	 */
 	@Override
 	public long getID_COMPONENTE() {
-		return _componentiInvio.getID_COMPONENTE();
+		return model.getID_COMPONENTE();
 	}
 
 	/**
@@ -192,7 +156,7 @@ public class ComponentiInvioWrapper
 	 */
 	@Override
 	public long getID_COMPONENTE_VERSATO() {
-		return _componentiInvio.getID_COMPONENTE_VERSATO();
+		return model.getID_COMPONENTE_VERSATO();
 	}
 
 	/**
@@ -202,7 +166,7 @@ public class ComponentiInvioWrapper
 	 */
 	@Override
 	public long getID_INVIO() {
-		return _componentiInvio.getID_INVIO();
+		return model.getID_INVIO();
 	}
 
 	/**
@@ -212,7 +176,7 @@ public class ComponentiInvioWrapper
 	 */
 	@Override
 	public String getNOME_COMPONENTE() {
-		return _componentiInvio.getNOME_COMPONENTE();
+		return model.getNOME_COMPONENTE();
 	}
 
 	/**
@@ -222,7 +186,7 @@ public class ComponentiInvioWrapper
 	 */
 	@Override
 	public long getORDINE_PRESENTAZIONE() {
-		return _componentiInvio.getORDINE_PRESENTAZIONE();
+		return model.getORDINE_PRESENTAZIONE();
 	}
 
 	/**
@@ -232,12 +196,7 @@ public class ComponentiInvioWrapper
 	 */
 	@Override
 	public it.eng.parer.service.persistence.ComponentiInvioPK getPrimaryKey() {
-		return _componentiInvio.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _componentiInvio.getPrimaryKeyObj();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -247,7 +206,7 @@ public class ComponentiInvioWrapper
 	 */
 	@Override
 	public String getTIPO_COMPONENTE() {
-		return _componentiInvio.getTIPO_COMPONENTE();
+		return model.getTIPO_COMPONENTE();
 	}
 
 	/**
@@ -257,7 +216,7 @@ public class ComponentiInvioWrapper
 	 */
 	@Override
 	public String getTIPO_SUPPORTO_COMPONENTE() {
-		return _componentiInvio.getTIPO_SUPPORTO_COMPONENTE();
+		return model.getTIPO_SUPPORTO_COMPONENTE();
 	}
 
 	/**
@@ -267,54 +226,12 @@ public class ComponentiInvioWrapper
 	 */
 	@Override
 	public String getURN_VERSATO() {
-		return _componentiInvio.getURN_VERSATO();
-	}
-
-	@Override
-	public int hashCode() {
-		return _componentiInvio.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _componentiInvio.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _componentiInvio.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _componentiInvio.isNew();
+		return model.getURN_VERSATO();
 	}
 
 	@Override
 	public void persist() {
-		_componentiInvio.persist();
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_componentiInvio.setCachedModel(cachedModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_componentiInvio.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_componentiInvio.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_componentiInvio.setExpandoBridgeAttributes(serviceContext);
+		model.persist();
 	}
 
 	/**
@@ -324,7 +241,7 @@ public class ComponentiInvioWrapper
 	 */
 	@Override
 	public void setFORMATO_FILE_VERSATO(String FORMATO_FILE_VERSATO) {
-		_componentiInvio.setFORMATO_FILE_VERSATO(FORMATO_FILE_VERSATO);
+		model.setFORMATO_FILE_VERSATO(FORMATO_FILE_VERSATO);
 	}
 
 	/**
@@ -334,7 +251,7 @@ public class ComponentiInvioWrapper
 	 */
 	@Override
 	public void setHASH_VERSATO(String HASH_VERSATO) {
-		_componentiInvio.setHASH_VERSATO(HASH_VERSATO);
+		model.setHASH_VERSATO(HASH_VERSATO);
 	}
 
 	/**
@@ -344,7 +261,7 @@ public class ComponentiInvioWrapper
 	 */
 	@Override
 	public void setID_COMPONENTE(long ID_COMPONENTE) {
-		_componentiInvio.setID_COMPONENTE(ID_COMPONENTE);
+		model.setID_COMPONENTE(ID_COMPONENTE);
 	}
 
 	/**
@@ -354,7 +271,7 @@ public class ComponentiInvioWrapper
 	 */
 	@Override
 	public void setID_COMPONENTE_VERSATO(long ID_COMPONENTE_VERSATO) {
-		_componentiInvio.setID_COMPONENTE_VERSATO(ID_COMPONENTE_VERSATO);
+		model.setID_COMPONENTE_VERSATO(ID_COMPONENTE_VERSATO);
 	}
 
 	/**
@@ -364,12 +281,7 @@ public class ComponentiInvioWrapper
 	 */
 	@Override
 	public void setID_INVIO(long ID_INVIO) {
-		_componentiInvio.setID_INVIO(ID_INVIO);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_componentiInvio.setNew(n);
+		model.setID_INVIO(ID_INVIO);
 	}
 
 	/**
@@ -379,7 +291,7 @@ public class ComponentiInvioWrapper
 	 */
 	@Override
 	public void setNOME_COMPONENTE(String NOME_COMPONENTE) {
-		_componentiInvio.setNOME_COMPONENTE(NOME_COMPONENTE);
+		model.setNOME_COMPONENTE(NOME_COMPONENTE);
 	}
 
 	/**
@@ -389,7 +301,7 @@ public class ComponentiInvioWrapper
 	 */
 	@Override
 	public void setORDINE_PRESENTAZIONE(long ORDINE_PRESENTAZIONE) {
-		_componentiInvio.setORDINE_PRESENTAZIONE(ORDINE_PRESENTAZIONE);
+		model.setORDINE_PRESENTAZIONE(ORDINE_PRESENTAZIONE);
 	}
 
 	/**
@@ -401,12 +313,7 @@ public class ComponentiInvioWrapper
 	public void setPrimaryKey(
 		it.eng.parer.service.persistence.ComponentiInvioPK primaryKey) {
 
-		_componentiInvio.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_componentiInvio.setPrimaryKeyObj(primaryKeyObj);
+		model.setPrimaryKey(primaryKey);
 	}
 
 	/**
@@ -416,7 +323,7 @@ public class ComponentiInvioWrapper
 	 */
 	@Override
 	public void setTIPO_COMPONENTE(String TIPO_COMPONENTE) {
-		_componentiInvio.setTIPO_COMPONENTE(TIPO_COMPONENTE);
+		model.setTIPO_COMPONENTE(TIPO_COMPONENTE);
 	}
 
 	/**
@@ -426,7 +333,7 @@ public class ComponentiInvioWrapper
 	 */
 	@Override
 	public void setTIPO_SUPPORTO_COMPONENTE(String TIPO_SUPPORTO_COMPONENTE) {
-		_componentiInvio.setTIPO_SUPPORTO_COMPONENTE(TIPO_SUPPORTO_COMPONENTE);
+		model.setTIPO_SUPPORTO_COMPONENTE(TIPO_SUPPORTO_COMPONENTE);
 	}
 
 	/**
@@ -436,78 +343,17 @@ public class ComponentiInvioWrapper
 	 */
 	@Override
 	public void setURN_VERSATO(String URN_VERSATO) {
-		_componentiInvio.setURN_VERSATO(URN_VERSATO);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<it.eng.parer.model.ComponentiInvio> toCacheModel() {
-
-		return _componentiInvio.toCacheModel();
-	}
-
-	@Override
-	public it.eng.parer.model.ComponentiInvio toEscapedModel() {
-		return new ComponentiInvioWrapper(_componentiInvio.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _componentiInvio.toString();
-	}
-
-	@Override
-	public it.eng.parer.model.ComponentiInvio toUnescapedModel() {
-		return new ComponentiInvioWrapper(_componentiInvio.toUnescapedModel());
+		model.setURN_VERSATO(URN_VERSATO);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _componentiInvio.toXmlString();
+		return model.toXmlString();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-
-		if (!(obj instanceof ComponentiInvioWrapper)) {
-			return false;
-		}
-
-		ComponentiInvioWrapper componentiInvioWrapper =
-			(ComponentiInvioWrapper)obj;
-
-		if (Objects.equals(
-				_componentiInvio, componentiInvioWrapper._componentiInvio)) {
-
-			return true;
-		}
-
-		return false;
+	protected ComponentiInvioWrapper wrap(ComponentiInvio componentiInvio) {
+		return new ComponentiInvioWrapper(componentiInvio);
 	}
-
-	@Override
-	public ComponentiInvio getWrappedModel() {
-		return _componentiInvio;
-	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _componentiInvio.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _componentiInvio.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_componentiInvio.resetOriginalValues();
-	}
-
-	private final ComponentiInvio _componentiInvio;
 
 }

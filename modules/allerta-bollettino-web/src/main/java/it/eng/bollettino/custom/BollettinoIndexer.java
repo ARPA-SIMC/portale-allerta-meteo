@@ -98,8 +98,8 @@ public class BollettinoIndexer extends BaseIndexer<Bollettino> {
 		
 		Bollettino a = (Bollettino)object;
 		Document d = getDocument(a);
-		indexWriterHelper.updateDocument(getSearchEngineId(), 
-				a.getCompanyId(), d, true);
+		indexWriterHelper.updateDocument(/*getSearchEngineId(), */
+				a.getCompanyId(), d /*, true*/);
 	}
 	
 	private void reindexEntries(long companyId) throws Exception {
@@ -130,7 +130,7 @@ public class BollettinoIndexer extends BaseIndexer<Bollettino> {
 		                    }
 		                }
 		            });
-		        indexableActionableDynamicQuery.setSearchEngineId(getSearchEngineId());
+		        //indexableActionableDynamicQuery.setSearchEngineId(getSearchEngineId());
 		        indexableActionableDynamicQuery.performActions();
 		        
 //	

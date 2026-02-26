@@ -1,24 +1,13 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerte.service;
 
-import aQute.bnd.annotation.ProviderType;
+import com.liferay.portal.kernel.module.service.Snapshot;
 
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.util.tracker.ServiceTracker;
+import java.util.Map;
 
 /**
  * Provides the remote service utility for RubricaCanale. This utility wraps
@@ -32,7 +21,6 @@ import org.osgi.util.tracker.ServiceTracker;
  * @see RubricaCanaleService
  * @generated
  */
-@ProviderType
 public class RubricaCanaleServiceUtil {
 
 	/*
@@ -40,7 +28,7 @@ public class RubricaCanaleServiceUtil {
 	 *
 	 * Never modify this class directly. Add custom service methods to <code>it.eng.allerte.service.impl.RubricaCanaleServiceImpl</code> and rerun ServiceBuilder to regenerate this class.
 	 */
-	public static java.util.Map<String, Object> getChannels() {
+	public static Map<String, Object> getChannels() {
 		return getService().getChannels();
 	}
 
@@ -54,24 +42,11 @@ public class RubricaCanaleServiceUtil {
 	}
 
 	public static RubricaCanaleService getService() {
-		return _serviceTracker.getService();
+		return _serviceSnapshot.get();
 	}
 
-	private static ServiceTracker<RubricaCanaleService, RubricaCanaleService>
-		_serviceTracker;
-
-	static {
-		Bundle bundle = FrameworkUtil.getBundle(RubricaCanaleService.class);
-
-		ServiceTracker<RubricaCanaleService, RubricaCanaleService>
-			serviceTracker =
-				new ServiceTracker<RubricaCanaleService, RubricaCanaleService>(
-					bundle.getBundleContext(), RubricaCanaleService.class,
-					null);
-
-		serviceTracker.open();
-
-		_serviceTracker = serviceTracker;
-	}
+	private static final Snapshot<RubricaCanaleService> _serviceSnapshot =
+		new Snapshot<>(
+			RubricaCanaleServiceUtil.class, RubricaCanaleService.class);
 
 }

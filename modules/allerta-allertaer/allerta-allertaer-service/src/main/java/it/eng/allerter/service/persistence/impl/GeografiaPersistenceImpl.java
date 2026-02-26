@@ -1,21 +1,12 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerter.service.persistence.impl;
 
-import aQute.bnd.annotation.ProviderType;
-
+import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
@@ -23,32 +14,42 @@ import com.liferay.portal.kernel.dao.orm.Query;
 import com.liferay.portal.kernel.dao.orm.QueryPos;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
+import com.liferay.portal.kernel.dao.orm.SessionFactory;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.kernel.util.PropsKeys;
+import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.SetUtil;
-import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.spring.extender.service.ServiceReference;
 
 import it.eng.allerter.exception.NoSuchGeografiaException;
 import it.eng.allerter.model.Geografia;
+import it.eng.allerter.model.GeografiaTable;
 import it.eng.allerter.model.impl.GeografiaImpl;
 import it.eng.allerter.model.impl.GeografiaModelImpl;
 import it.eng.allerter.service.persistence.GeografiaPK;
 import it.eng.allerter.service.persistence.GeografiaPersistence;
+import it.eng.allerter.service.persistence.GeografiaUtil;
+import it.eng.allerter.service.persistence.impl.constants.ALLERTERPersistenceConstants;
 
 import java.io.Serializable;
 
 import java.lang.reflect.InvocationHandler;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+
+import javax.sql.DataSource;
+
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The persistence implementation for the geografia service.
@@ -60,7 +61,7 @@ import java.util.Set;
  * @author GFAVINI
  * @generated
  */
-@ProviderType
+@Component(service = GeografiaPersistence.class)
 public class GeografiaPersistenceImpl
 	extends BasePersistenceImpl<Geografia> implements GeografiaPersistence {
 
@@ -100,7 +101,7 @@ public class GeografiaPersistenceImpl
 	 * Returns a range of all the geografias where tipo = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>GeografiaModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>GeografiaModelImpl</code>.
 	 * </p>
 	 *
 	 * @param tipo the tipo
@@ -117,7 +118,7 @@ public class GeografiaPersistenceImpl
 	 * Returns an ordered range of all the geografias where tipo = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>GeografiaModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>GeografiaModelImpl</code>.
 	 * </p>
 	 *
 	 * @param tipo the tipo
@@ -138,43 +139,43 @@ public class GeografiaPersistenceImpl
 	 * Returns an ordered range of all the geografias where tipo = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>GeografiaModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>GeografiaModelImpl</code>.
 	 * </p>
 	 *
 	 * @param tipo the tipo
 	 * @param start the lower bound of the range of geografias
 	 * @param end the upper bound of the range of geografias (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching geografias
 	 */
 	@Override
 	public List<Geografia> findByTipo(
 		String tipo, int start, int end,
 		OrderByComparator<Geografia> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
 		tipo = Objects.toString(tipo, "");
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindByTipo;
-			finderArgs = new Object[] {tipo};
+			if (useFinderCache) {
+				finderPath = _finderPathWithoutPaginationFindByTipo;
+				finderArgs = new Object[] {tipo};
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByTipo;
 			finderArgs = new Object[] {tipo, start, end, orderByComparator};
 		}
 
 		List<Geografia> list = null;
 
-		if (retrieveFromCache) {
+		if (useFinderCache) {
 			list = (List<Geografia>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
@@ -190,73 +191,63 @@ public class GeografiaPersistenceImpl
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					3 + (orderByComparator.getOrderByFields().length * 2));
 			}
 			else {
-				query = new StringBundler(3);
+				sb = new StringBundler(3);
 			}
 
-			query.append(_SQL_SELECT_GEOGRAFIA_WHERE);
+			sb.append(_SQL_SELECT_GEOGRAFIA_WHERE);
 
 			boolean bindTipo = false;
 
 			if (tipo.isEmpty()) {
-				query.append(_FINDER_COLUMN_TIPO_TIPO_3);
+				sb.append(_FINDER_COLUMN_TIPO_TIPO_3);
 			}
 			else {
 				bindTipo = true;
 
-				query.append(_FINDER_COLUMN_TIPO_TIPO_2);
+				sb.append(_FINDER_COLUMN_TIPO_TIPO_2);
 			}
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 			}
-			else if (pagination) {
-				query.append(GeografiaModelImpl.ORDER_BY_JPQL);
+			else {
+				sb.append(GeografiaModelImpl.ORDER_BY_JPQL);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindTipo) {
-					qPos.add(tipo);
+					queryPos.add(tipo);
 				}
 
-				if (!pagination) {
-					list = (List<Geografia>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<Geografia>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<Geografia>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					finderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -285,16 +276,16 @@ public class GeografiaPersistenceImpl
 			return geografia;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("tipo=");
-		msg.append(tipo);
+		sb.append("tipo=");
+		sb.append(tipo);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchGeografiaException(msg.toString());
+		throw new NoSuchGeografiaException(sb.toString());
 	}
 
 	/**
@@ -336,16 +327,16 @@ public class GeografiaPersistenceImpl
 			return geografia;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("tipo=");
-		msg.append(tipo);
+		sb.append("tipo=");
+		sb.append(tipo);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchGeografiaException(msg.toString());
+		throw new NoSuchGeografiaException(sb.toString());
 	}
 
 	/**
@@ -411,8 +402,8 @@ public class GeografiaPersistenceImpl
 
 			return array;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -423,28 +414,28 @@ public class GeografiaPersistenceImpl
 		Session session, Geografia geografia, String tipo,
 		OrderByComparator<Geografia> orderByComparator, boolean previous) {
 
-		StringBundler query = null;
+		StringBundler sb = null;
 
 		if (orderByComparator != null) {
-			query = new StringBundler(
+			sb = new StringBundler(
 				4 + (orderByComparator.getOrderByConditionFields().length * 3) +
 					(orderByComparator.getOrderByFields().length * 3));
 		}
 		else {
-			query = new StringBundler(3);
+			sb = new StringBundler(3);
 		}
 
-		query.append(_SQL_SELECT_GEOGRAFIA_WHERE);
+		sb.append(_SQL_SELECT_GEOGRAFIA_WHERE);
 
 		boolean bindTipo = false;
 
 		if (tipo.isEmpty()) {
-			query.append(_FINDER_COLUMN_TIPO_TIPO_3);
+			sb.append(_FINDER_COLUMN_TIPO_TIPO_3);
 		}
 		else {
 			bindTipo = true;
 
-			query.append(_FINDER_COLUMN_TIPO_TIPO_2);
+			sb.append(_FINDER_COLUMN_TIPO_TIPO_2);
 		}
 
 		if (orderByComparator != null) {
@@ -452,83 +443,83 @@ public class GeografiaPersistenceImpl
 				orderByComparator.getOrderByConditionFields();
 
 			if (orderByConditionFields.length > 0) {
-				query.append(WHERE_AND);
+				sb.append(WHERE_AND);
 			}
 
 			for (int i = 0; i < orderByConditionFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByConditionFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByConditionFields[i]);
 
 				if ((i + 1) < orderByConditionFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+						sb.append(WHERE_GREATER_THAN_HAS_NEXT);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+						sb.append(WHERE_LESSER_THAN_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN);
+						sb.append(WHERE_GREATER_THAN);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN);
+						sb.append(WHERE_LESSER_THAN);
 					}
 				}
 			}
 
-			query.append(ORDER_BY_CLAUSE);
+			sb.append(ORDER_BY_CLAUSE);
 
 			String[] orderByFields = orderByComparator.getOrderByFields();
 
 			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByFields[i]);
 
 				if ((i + 1) < orderByFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC_HAS_NEXT);
+						sb.append(ORDER_BY_ASC_HAS_NEXT);
 					}
 					else {
-						query.append(ORDER_BY_DESC_HAS_NEXT);
+						sb.append(ORDER_BY_DESC_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC);
+						sb.append(ORDER_BY_ASC);
 					}
 					else {
-						query.append(ORDER_BY_DESC);
+						sb.append(ORDER_BY_DESC);
 					}
 				}
 			}
 		}
 		else {
-			query.append(GeografiaModelImpl.ORDER_BY_JPQL);
+			sb.append(GeografiaModelImpl.ORDER_BY_JPQL);
 		}
 
-		String sql = query.toString();
+		String sql = sb.toString();
 
-		Query q = session.createQuery(sql);
+		Query query = session.createQuery(sql);
 
-		q.setFirstResult(0);
-		q.setMaxResults(2);
+		query.setFirstResult(0);
+		query.setMaxResults(2);
 
-		QueryPos qPos = QueryPos.getInstance(q);
+		QueryPos queryPos = QueryPos.getInstance(query);
 
 		if (bindTipo) {
-			qPos.add(tipo);
+			queryPos.add(tipo);
 		}
 
 		if (orderByComparator != null) {
 			for (Object orderByConditionValue :
 					orderByComparator.getOrderByConditionValues(geografia)) {
 
-				qPos.add(orderByConditionValue);
+				queryPos.add(orderByConditionValue);
 			}
 		}
 
-		List<Geografia> list = q.list();
+		List<Geografia> list = query.list();
 
 		if (list.size() == 2) {
 			return list.get(1);
@@ -569,44 +560,42 @@ public class GeografiaPersistenceImpl
 		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
-			StringBundler query = new StringBundler(2);
+			StringBundler sb = new StringBundler(2);
 
-			query.append(_SQL_COUNT_GEOGRAFIA_WHERE);
+			sb.append(_SQL_COUNT_GEOGRAFIA_WHERE);
 
 			boolean bindTipo = false;
 
 			if (tipo.isEmpty()) {
-				query.append(_FINDER_COLUMN_TIPO_TIPO_3);
+				sb.append(_FINDER_COLUMN_TIPO_TIPO_3);
 			}
 			else {
 				bindTipo = true;
 
-				query.append(_FINDER_COLUMN_TIPO_TIPO_2);
+				sb.append(_FINDER_COLUMN_TIPO_TIPO_2);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindTipo) {
-					qPos.add(tipo);
+					queryPos.add(tipo);
 				}
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
 				finderCache.putResult(finderPath, finderArgs, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -643,7 +632,7 @@ public class GeografiaPersistenceImpl
 	 * Returns a range of all the geografias where tipo = &#63; and area = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>GeografiaModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>GeografiaModelImpl</code>.
 	 * </p>
 	 *
 	 * @param tipo the tipo
@@ -663,7 +652,7 @@ public class GeografiaPersistenceImpl
 	 * Returns an ordered range of all the geografias where tipo = &#63; and area = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>GeografiaModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>GeografiaModelImpl</code>.
 	 * </p>
 	 *
 	 * @param tipo the tipo
@@ -685,7 +674,7 @@ public class GeografiaPersistenceImpl
 	 * Returns an ordered range of all the geografias where tipo = &#63; and area = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>GeografiaModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>GeografiaModelImpl</code>.
 	 * </p>
 	 *
 	 * @param tipo the tipo
@@ -693,30 +682,30 @@ public class GeografiaPersistenceImpl
 	 * @param start the lower bound of the range of geografias
 	 * @param end the upper bound of the range of geografias (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching geografias
 	 */
 	@Override
 	public List<Geografia> findByTipoArea(
 		String tipo, String area, int start, int end,
 		OrderByComparator<Geografia> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
 		tipo = Objects.toString(tipo, "");
 		area = Objects.toString(area, "");
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindByTipoArea;
-			finderArgs = new Object[] {tipo, area};
+			if (useFinderCache) {
+				finderPath = _finderPathWithoutPaginationFindByTipoArea;
+				finderArgs = new Object[] {tipo, area};
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByTipoArea;
 			finderArgs = new Object[] {
 				tipo, area, start, end, orderByComparator
@@ -725,7 +714,7 @@ public class GeografiaPersistenceImpl
 
 		List<Geografia> list = null;
 
-		if (retrieveFromCache) {
+		if (useFinderCache) {
 			list = (List<Geografia>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
@@ -743,88 +732,78 @@ public class GeografiaPersistenceImpl
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					4 + (orderByComparator.getOrderByFields().length * 2));
 			}
 			else {
-				query = new StringBundler(4);
+				sb = new StringBundler(4);
 			}
 
-			query.append(_SQL_SELECT_GEOGRAFIA_WHERE);
+			sb.append(_SQL_SELECT_GEOGRAFIA_WHERE);
 
 			boolean bindTipo = false;
 
 			if (tipo.isEmpty()) {
-				query.append(_FINDER_COLUMN_TIPOAREA_TIPO_3);
+				sb.append(_FINDER_COLUMN_TIPOAREA_TIPO_3);
 			}
 			else {
 				bindTipo = true;
 
-				query.append(_FINDER_COLUMN_TIPOAREA_TIPO_2);
+				sb.append(_FINDER_COLUMN_TIPOAREA_TIPO_2);
 			}
 
 			boolean bindArea = false;
 
 			if (area.isEmpty()) {
-				query.append(_FINDER_COLUMN_TIPOAREA_AREA_3);
+				sb.append(_FINDER_COLUMN_TIPOAREA_AREA_3);
 			}
 			else {
 				bindArea = true;
 
-				query.append(_FINDER_COLUMN_TIPOAREA_AREA_2);
+				sb.append(_FINDER_COLUMN_TIPOAREA_AREA_2);
 			}
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 			}
-			else if (pagination) {
-				query.append(GeografiaModelImpl.ORDER_BY_JPQL);
+			else {
+				sb.append(GeografiaModelImpl.ORDER_BY_JPQL);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindTipo) {
-					qPos.add(tipo);
+					queryPos.add(tipo);
 				}
 
 				if (bindArea) {
-					qPos.add(area);
+					queryPos.add(area);
 				}
 
-				if (!pagination) {
-					list = (List<Geografia>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<Geografia>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<Geografia>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					finderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -856,19 +835,19 @@ public class GeografiaPersistenceImpl
 			return geografia;
 		}
 
-		StringBundler msg = new StringBundler(6);
+		StringBundler sb = new StringBundler(6);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("tipo=");
-		msg.append(tipo);
+		sb.append("tipo=");
+		sb.append(tipo);
 
-		msg.append(", area=");
-		msg.append(area);
+		sb.append(", area=");
+		sb.append(area);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchGeografiaException(msg.toString());
+		throw new NoSuchGeografiaException(sb.toString());
 	}
 
 	/**
@@ -916,19 +895,19 @@ public class GeografiaPersistenceImpl
 			return geografia;
 		}
 
-		StringBundler msg = new StringBundler(6);
+		StringBundler sb = new StringBundler(6);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("tipo=");
-		msg.append(tipo);
+		sb.append("tipo=");
+		sb.append(tipo);
 
-		msg.append(", area=");
-		msg.append(area);
+		sb.append(", area=");
+		sb.append(area);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchGeografiaException(msg.toString());
+		throw new NoSuchGeografiaException(sb.toString());
 	}
 
 	/**
@@ -998,8 +977,8 @@ public class GeografiaPersistenceImpl
 
 			return array;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -1010,39 +989,39 @@ public class GeografiaPersistenceImpl
 		Session session, Geografia geografia, String tipo, String area,
 		OrderByComparator<Geografia> orderByComparator, boolean previous) {
 
-		StringBundler query = null;
+		StringBundler sb = null;
 
 		if (orderByComparator != null) {
-			query = new StringBundler(
+			sb = new StringBundler(
 				5 + (orderByComparator.getOrderByConditionFields().length * 3) +
 					(orderByComparator.getOrderByFields().length * 3));
 		}
 		else {
-			query = new StringBundler(4);
+			sb = new StringBundler(4);
 		}
 
-		query.append(_SQL_SELECT_GEOGRAFIA_WHERE);
+		sb.append(_SQL_SELECT_GEOGRAFIA_WHERE);
 
 		boolean bindTipo = false;
 
 		if (tipo.isEmpty()) {
-			query.append(_FINDER_COLUMN_TIPOAREA_TIPO_3);
+			sb.append(_FINDER_COLUMN_TIPOAREA_TIPO_3);
 		}
 		else {
 			bindTipo = true;
 
-			query.append(_FINDER_COLUMN_TIPOAREA_TIPO_2);
+			sb.append(_FINDER_COLUMN_TIPOAREA_TIPO_2);
 		}
 
 		boolean bindArea = false;
 
 		if (area.isEmpty()) {
-			query.append(_FINDER_COLUMN_TIPOAREA_AREA_3);
+			sb.append(_FINDER_COLUMN_TIPOAREA_AREA_3);
 		}
 		else {
 			bindArea = true;
 
-			query.append(_FINDER_COLUMN_TIPOAREA_AREA_2);
+			sb.append(_FINDER_COLUMN_TIPOAREA_AREA_2);
 		}
 
 		if (orderByComparator != null) {
@@ -1050,87 +1029,87 @@ public class GeografiaPersistenceImpl
 				orderByComparator.getOrderByConditionFields();
 
 			if (orderByConditionFields.length > 0) {
-				query.append(WHERE_AND);
+				sb.append(WHERE_AND);
 			}
 
 			for (int i = 0; i < orderByConditionFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByConditionFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByConditionFields[i]);
 
 				if ((i + 1) < orderByConditionFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+						sb.append(WHERE_GREATER_THAN_HAS_NEXT);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+						sb.append(WHERE_LESSER_THAN_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN);
+						sb.append(WHERE_GREATER_THAN);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN);
+						sb.append(WHERE_LESSER_THAN);
 					}
 				}
 			}
 
-			query.append(ORDER_BY_CLAUSE);
+			sb.append(ORDER_BY_CLAUSE);
 
 			String[] orderByFields = orderByComparator.getOrderByFields();
 
 			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByFields[i]);
 
 				if ((i + 1) < orderByFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC_HAS_NEXT);
+						sb.append(ORDER_BY_ASC_HAS_NEXT);
 					}
 					else {
-						query.append(ORDER_BY_DESC_HAS_NEXT);
+						sb.append(ORDER_BY_DESC_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC);
+						sb.append(ORDER_BY_ASC);
 					}
 					else {
-						query.append(ORDER_BY_DESC);
+						sb.append(ORDER_BY_DESC);
 					}
 				}
 			}
 		}
 		else {
-			query.append(GeografiaModelImpl.ORDER_BY_JPQL);
+			sb.append(GeografiaModelImpl.ORDER_BY_JPQL);
 		}
 
-		String sql = query.toString();
+		String sql = sb.toString();
 
-		Query q = session.createQuery(sql);
+		Query query = session.createQuery(sql);
 
-		q.setFirstResult(0);
-		q.setMaxResults(2);
+		query.setFirstResult(0);
+		query.setMaxResults(2);
 
-		QueryPos qPos = QueryPos.getInstance(q);
+		QueryPos queryPos = QueryPos.getInstance(query);
 
 		if (bindTipo) {
-			qPos.add(tipo);
+			queryPos.add(tipo);
 		}
 
 		if (bindArea) {
-			qPos.add(area);
+			queryPos.add(area);
 		}
 
 		if (orderByComparator != null) {
 			for (Object orderByConditionValue :
 					orderByComparator.getOrderByConditionValues(geografia)) {
 
-				qPos.add(orderByConditionValue);
+				queryPos.add(orderByConditionValue);
 			}
 		}
 
-		List<Geografia> list = q.list();
+		List<Geografia> list = query.list();
 
 		if (list.size() == 2) {
 			return list.get(1);
@@ -1175,59 +1154,57 @@ public class GeografiaPersistenceImpl
 		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
-			StringBundler query = new StringBundler(3);
+			StringBundler sb = new StringBundler(3);
 
-			query.append(_SQL_COUNT_GEOGRAFIA_WHERE);
+			sb.append(_SQL_COUNT_GEOGRAFIA_WHERE);
 
 			boolean bindTipo = false;
 
 			if (tipo.isEmpty()) {
-				query.append(_FINDER_COLUMN_TIPOAREA_TIPO_3);
+				sb.append(_FINDER_COLUMN_TIPOAREA_TIPO_3);
 			}
 			else {
 				bindTipo = true;
 
-				query.append(_FINDER_COLUMN_TIPOAREA_TIPO_2);
+				sb.append(_FINDER_COLUMN_TIPOAREA_TIPO_2);
 			}
 
 			boolean bindArea = false;
 
 			if (area.isEmpty()) {
-				query.append(_FINDER_COLUMN_TIPOAREA_AREA_3);
+				sb.append(_FINDER_COLUMN_TIPOAREA_AREA_3);
 			}
 			else {
 				bindArea = true;
 
-				query.append(_FINDER_COLUMN_TIPOAREA_AREA_2);
+				sb.append(_FINDER_COLUMN_TIPOAREA_AREA_2);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindTipo) {
-					qPos.add(tipo);
+					queryPos.add(tipo);
 				}
 
 				if (bindArea) {
-					qPos.add(area);
+					queryPos.add(area);
 				}
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
 				finderCache.putResult(finderPath, finderArgs, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -1274,7 +1251,7 @@ public class GeografiaPersistenceImpl
 	 * Returns a range of all the geografias where tipo = &#63; and area = &#63; and complessita = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>GeografiaModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>GeografiaModelImpl</code>.
 	 * </p>
 	 *
 	 * @param tipo the tipo
@@ -1296,7 +1273,7 @@ public class GeografiaPersistenceImpl
 	 * Returns an ordered range of all the geografias where tipo = &#63; and area = &#63; and complessita = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>GeografiaModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>GeografiaModelImpl</code>.
 	 * </p>
 	 *
 	 * @param tipo the tipo
@@ -1320,7 +1297,7 @@ public class GeografiaPersistenceImpl
 	 * Returns an ordered range of all the geografias where tipo = &#63; and area = &#63; and complessita = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>GeografiaModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>GeografiaModelImpl</code>.
 	 * </p>
 	 *
 	 * @param tipo the tipo
@@ -1329,31 +1306,32 @@ public class GeografiaPersistenceImpl
 	 * @param start the lower bound of the range of geografias
 	 * @param end the upper bound of the range of geografias (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching geografias
 	 */
 	@Override
 	public List<Geografia> findByTipoAreaComplessita(
 		String tipo, String area, String complessita, int start, int end,
 		OrderByComparator<Geografia> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
 		tipo = Objects.toString(tipo, "");
 		area = Objects.toString(area, "");
 		complessita = Objects.toString(complessita, "");
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindByTipoAreaComplessita;
-			finderArgs = new Object[] {tipo, area, complessita};
+			if (useFinderCache) {
+				finderPath =
+					_finderPathWithoutPaginationFindByTipoAreaComplessita;
+				finderArgs = new Object[] {tipo, area, complessita};
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByTipoAreaComplessita;
 			finderArgs = new Object[] {
 				tipo, area, complessita, start, end, orderByComparator
@@ -1362,7 +1340,7 @@ public class GeografiaPersistenceImpl
 
 		List<Geografia> list = null;
 
-		if (retrieveFromCache) {
+		if (useFinderCache) {
 			list = (List<Geografia>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
@@ -1381,103 +1359,93 @@ public class GeografiaPersistenceImpl
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					5 + (orderByComparator.getOrderByFields().length * 2));
 			}
 			else {
-				query = new StringBundler(5);
+				sb = new StringBundler(5);
 			}
 
-			query.append(_SQL_SELECT_GEOGRAFIA_WHERE);
+			sb.append(_SQL_SELECT_GEOGRAFIA_WHERE);
 
 			boolean bindTipo = false;
 
 			if (tipo.isEmpty()) {
-				query.append(_FINDER_COLUMN_TIPOAREACOMPLESSITA_TIPO_3);
+				sb.append(_FINDER_COLUMN_TIPOAREACOMPLESSITA_TIPO_3);
 			}
 			else {
 				bindTipo = true;
 
-				query.append(_FINDER_COLUMN_TIPOAREACOMPLESSITA_TIPO_2);
+				sb.append(_FINDER_COLUMN_TIPOAREACOMPLESSITA_TIPO_2);
 			}
 
 			boolean bindArea = false;
 
 			if (area.isEmpty()) {
-				query.append(_FINDER_COLUMN_TIPOAREACOMPLESSITA_AREA_3);
+				sb.append(_FINDER_COLUMN_TIPOAREACOMPLESSITA_AREA_3);
 			}
 			else {
 				bindArea = true;
 
-				query.append(_FINDER_COLUMN_TIPOAREACOMPLESSITA_AREA_2);
+				sb.append(_FINDER_COLUMN_TIPOAREACOMPLESSITA_AREA_2);
 			}
 
 			boolean bindComplessita = false;
 
 			if (complessita.isEmpty()) {
-				query.append(_FINDER_COLUMN_TIPOAREACOMPLESSITA_COMPLESSITA_3);
+				sb.append(_FINDER_COLUMN_TIPOAREACOMPLESSITA_COMPLESSITA_3);
 			}
 			else {
 				bindComplessita = true;
 
-				query.append(_FINDER_COLUMN_TIPOAREACOMPLESSITA_COMPLESSITA_2);
+				sb.append(_FINDER_COLUMN_TIPOAREACOMPLESSITA_COMPLESSITA_2);
 			}
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 			}
-			else if (pagination) {
-				query.append(GeografiaModelImpl.ORDER_BY_JPQL);
+			else {
+				sb.append(GeografiaModelImpl.ORDER_BY_JPQL);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindTipo) {
-					qPos.add(tipo);
+					queryPos.add(tipo);
 				}
 
 				if (bindArea) {
-					qPos.add(area);
+					queryPos.add(area);
 				}
 
 				if (bindComplessita) {
-					qPos.add(complessita);
+					queryPos.add(complessita);
 				}
 
-				if (!pagination) {
-					list = (List<Geografia>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<Geografia>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<Geografia>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					finderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -1510,22 +1478,22 @@ public class GeografiaPersistenceImpl
 			return geografia;
 		}
 
-		StringBundler msg = new StringBundler(8);
+		StringBundler sb = new StringBundler(8);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("tipo=");
-		msg.append(tipo);
+		sb.append("tipo=");
+		sb.append(tipo);
 
-		msg.append(", area=");
-		msg.append(area);
+		sb.append(", area=");
+		sb.append(area);
 
-		msg.append(", complessita=");
-		msg.append(complessita);
+		sb.append(", complessita=");
+		sb.append(complessita);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchGeografiaException(msg.toString());
+		throw new NoSuchGeografiaException(sb.toString());
 	}
 
 	/**
@@ -1575,22 +1543,22 @@ public class GeografiaPersistenceImpl
 			return geografia;
 		}
 
-		StringBundler msg = new StringBundler(8);
+		StringBundler sb = new StringBundler(8);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("tipo=");
-		msg.append(tipo);
+		sb.append("tipo=");
+		sb.append(tipo);
 
-		msg.append(", area=");
-		msg.append(area);
+		sb.append(", area=");
+		sb.append(area);
 
-		msg.append(", complessita=");
-		msg.append(complessita);
+		sb.append(", complessita=");
+		sb.append(complessita);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchGeografiaException(msg.toString());
+		throw new NoSuchGeografiaException(sb.toString());
 	}
 
 	/**
@@ -1665,8 +1633,8 @@ public class GeografiaPersistenceImpl
 
 			return array;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -1678,50 +1646,50 @@ public class GeografiaPersistenceImpl
 		String complessita, OrderByComparator<Geografia> orderByComparator,
 		boolean previous) {
 
-		StringBundler query = null;
+		StringBundler sb = null;
 
 		if (orderByComparator != null) {
-			query = new StringBundler(
+			sb = new StringBundler(
 				6 + (orderByComparator.getOrderByConditionFields().length * 3) +
 					(orderByComparator.getOrderByFields().length * 3));
 		}
 		else {
-			query = new StringBundler(5);
+			sb = new StringBundler(5);
 		}
 
-		query.append(_SQL_SELECT_GEOGRAFIA_WHERE);
+		sb.append(_SQL_SELECT_GEOGRAFIA_WHERE);
 
 		boolean bindTipo = false;
 
 		if (tipo.isEmpty()) {
-			query.append(_FINDER_COLUMN_TIPOAREACOMPLESSITA_TIPO_3);
+			sb.append(_FINDER_COLUMN_TIPOAREACOMPLESSITA_TIPO_3);
 		}
 		else {
 			bindTipo = true;
 
-			query.append(_FINDER_COLUMN_TIPOAREACOMPLESSITA_TIPO_2);
+			sb.append(_FINDER_COLUMN_TIPOAREACOMPLESSITA_TIPO_2);
 		}
 
 		boolean bindArea = false;
 
 		if (area.isEmpty()) {
-			query.append(_FINDER_COLUMN_TIPOAREACOMPLESSITA_AREA_3);
+			sb.append(_FINDER_COLUMN_TIPOAREACOMPLESSITA_AREA_3);
 		}
 		else {
 			bindArea = true;
 
-			query.append(_FINDER_COLUMN_TIPOAREACOMPLESSITA_AREA_2);
+			sb.append(_FINDER_COLUMN_TIPOAREACOMPLESSITA_AREA_2);
 		}
 
 		boolean bindComplessita = false;
 
 		if (complessita.isEmpty()) {
-			query.append(_FINDER_COLUMN_TIPOAREACOMPLESSITA_COMPLESSITA_3);
+			sb.append(_FINDER_COLUMN_TIPOAREACOMPLESSITA_COMPLESSITA_3);
 		}
 		else {
 			bindComplessita = true;
 
-			query.append(_FINDER_COLUMN_TIPOAREACOMPLESSITA_COMPLESSITA_2);
+			sb.append(_FINDER_COLUMN_TIPOAREACOMPLESSITA_COMPLESSITA_2);
 		}
 
 		if (orderByComparator != null) {
@@ -1729,91 +1697,91 @@ public class GeografiaPersistenceImpl
 				orderByComparator.getOrderByConditionFields();
 
 			if (orderByConditionFields.length > 0) {
-				query.append(WHERE_AND);
+				sb.append(WHERE_AND);
 			}
 
 			for (int i = 0; i < orderByConditionFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByConditionFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByConditionFields[i]);
 
 				if ((i + 1) < orderByConditionFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+						sb.append(WHERE_GREATER_THAN_HAS_NEXT);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+						sb.append(WHERE_LESSER_THAN_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN);
+						sb.append(WHERE_GREATER_THAN);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN);
+						sb.append(WHERE_LESSER_THAN);
 					}
 				}
 			}
 
-			query.append(ORDER_BY_CLAUSE);
+			sb.append(ORDER_BY_CLAUSE);
 
 			String[] orderByFields = orderByComparator.getOrderByFields();
 
 			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByFields[i]);
 
 				if ((i + 1) < orderByFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC_HAS_NEXT);
+						sb.append(ORDER_BY_ASC_HAS_NEXT);
 					}
 					else {
-						query.append(ORDER_BY_DESC_HAS_NEXT);
+						sb.append(ORDER_BY_DESC_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC);
+						sb.append(ORDER_BY_ASC);
 					}
 					else {
-						query.append(ORDER_BY_DESC);
+						sb.append(ORDER_BY_DESC);
 					}
 				}
 			}
 		}
 		else {
-			query.append(GeografiaModelImpl.ORDER_BY_JPQL);
+			sb.append(GeografiaModelImpl.ORDER_BY_JPQL);
 		}
 
-		String sql = query.toString();
+		String sql = sb.toString();
 
-		Query q = session.createQuery(sql);
+		Query query = session.createQuery(sql);
 
-		q.setFirstResult(0);
-		q.setMaxResults(2);
+		query.setFirstResult(0);
+		query.setMaxResults(2);
 
-		QueryPos qPos = QueryPos.getInstance(q);
+		QueryPos queryPos = QueryPos.getInstance(query);
 
 		if (bindTipo) {
-			qPos.add(tipo);
+			queryPos.add(tipo);
 		}
 
 		if (bindArea) {
-			qPos.add(area);
+			queryPos.add(area);
 		}
 
 		if (bindComplessita) {
-			qPos.add(complessita);
+			queryPos.add(complessita);
 		}
 
 		if (orderByComparator != null) {
 			for (Object orderByConditionValue :
 					orderByComparator.getOrderByConditionValues(geografia)) {
 
-				qPos.add(orderByConditionValue);
+				queryPos.add(orderByConditionValue);
 			}
 		}
 
-		List<Geografia> list = q.list();
+		List<Geografia> list = query.list();
 
 		if (list.size() == 2) {
 			return list.get(1);
@@ -1866,74 +1834,72 @@ public class GeografiaPersistenceImpl
 		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
-			StringBundler query = new StringBundler(4);
+			StringBundler sb = new StringBundler(4);
 
-			query.append(_SQL_COUNT_GEOGRAFIA_WHERE);
+			sb.append(_SQL_COUNT_GEOGRAFIA_WHERE);
 
 			boolean bindTipo = false;
 
 			if (tipo.isEmpty()) {
-				query.append(_FINDER_COLUMN_TIPOAREACOMPLESSITA_TIPO_3);
+				sb.append(_FINDER_COLUMN_TIPOAREACOMPLESSITA_TIPO_3);
 			}
 			else {
 				bindTipo = true;
 
-				query.append(_FINDER_COLUMN_TIPOAREACOMPLESSITA_TIPO_2);
+				sb.append(_FINDER_COLUMN_TIPOAREACOMPLESSITA_TIPO_2);
 			}
 
 			boolean bindArea = false;
 
 			if (area.isEmpty()) {
-				query.append(_FINDER_COLUMN_TIPOAREACOMPLESSITA_AREA_3);
+				sb.append(_FINDER_COLUMN_TIPOAREACOMPLESSITA_AREA_3);
 			}
 			else {
 				bindArea = true;
 
-				query.append(_FINDER_COLUMN_TIPOAREACOMPLESSITA_AREA_2);
+				sb.append(_FINDER_COLUMN_TIPOAREACOMPLESSITA_AREA_2);
 			}
 
 			boolean bindComplessita = false;
 
 			if (complessita.isEmpty()) {
-				query.append(_FINDER_COLUMN_TIPOAREACOMPLESSITA_COMPLESSITA_3);
+				sb.append(_FINDER_COLUMN_TIPOAREACOMPLESSITA_COMPLESSITA_3);
 			}
 			else {
 				bindComplessita = true;
 
-				query.append(_FINDER_COLUMN_TIPOAREACOMPLESSITA_COMPLESSITA_2);
+				sb.append(_FINDER_COLUMN_TIPOAREACOMPLESSITA_COMPLESSITA_2);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindTipo) {
-					qPos.add(tipo);
+					queryPos.add(tipo);
 				}
 
 				if (bindArea) {
-					qPos.add(area);
+					queryPos.add(area);
 				}
 
 				if (bindComplessita) {
-					qPos.add(complessita);
+					queryPos.add(complessita);
 				}
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
 				finderCache.putResult(finderPath, finderArgs, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -1986,7 +1952,7 @@ public class GeografiaPersistenceImpl
 	 * Returns a range of all the geografias where tipo = &#63; and complessita = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>GeografiaModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>GeografiaModelImpl</code>.
 	 * </p>
 	 *
 	 * @param tipo the tipo
@@ -2006,7 +1972,7 @@ public class GeografiaPersistenceImpl
 	 * Returns an ordered range of all the geografias where tipo = &#63; and complessita = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>GeografiaModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>GeografiaModelImpl</code>.
 	 * </p>
 	 *
 	 * @param tipo the tipo
@@ -2029,7 +1995,7 @@ public class GeografiaPersistenceImpl
 	 * Returns an ordered range of all the geografias where tipo = &#63; and complessita = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>GeografiaModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>GeografiaModelImpl</code>.
 	 * </p>
 	 *
 	 * @param tipo the tipo
@@ -2037,30 +2003,30 @@ public class GeografiaPersistenceImpl
 	 * @param start the lower bound of the range of geografias
 	 * @param end the upper bound of the range of geografias (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching geografias
 	 */
 	@Override
 	public List<Geografia> findByTipoComplessita(
 		String tipo, String complessita, int start, int end,
 		OrderByComparator<Geografia> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
 		tipo = Objects.toString(tipo, "");
 		complessita = Objects.toString(complessita, "");
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindByTipoComplessita;
-			finderArgs = new Object[] {tipo, complessita};
+			if (useFinderCache) {
+				finderPath = _finderPathWithoutPaginationFindByTipoComplessita;
+				finderArgs = new Object[] {tipo, complessita};
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByTipoComplessita;
 			finderArgs = new Object[] {
 				tipo, complessita, start, end, orderByComparator
@@ -2069,7 +2035,7 @@ public class GeografiaPersistenceImpl
 
 		List<Geografia> list = null;
 
-		if (retrieveFromCache) {
+		if (useFinderCache) {
 			list = (List<Geografia>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
@@ -2087,88 +2053,78 @@ public class GeografiaPersistenceImpl
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					4 + (orderByComparator.getOrderByFields().length * 2));
 			}
 			else {
-				query = new StringBundler(4);
+				sb = new StringBundler(4);
 			}
 
-			query.append(_SQL_SELECT_GEOGRAFIA_WHERE);
+			sb.append(_SQL_SELECT_GEOGRAFIA_WHERE);
 
 			boolean bindTipo = false;
 
 			if (tipo.isEmpty()) {
-				query.append(_FINDER_COLUMN_TIPOCOMPLESSITA_TIPO_3);
+				sb.append(_FINDER_COLUMN_TIPOCOMPLESSITA_TIPO_3);
 			}
 			else {
 				bindTipo = true;
 
-				query.append(_FINDER_COLUMN_TIPOCOMPLESSITA_TIPO_2);
+				sb.append(_FINDER_COLUMN_TIPOCOMPLESSITA_TIPO_2);
 			}
 
 			boolean bindComplessita = false;
 
 			if (complessita.isEmpty()) {
-				query.append(_FINDER_COLUMN_TIPOCOMPLESSITA_COMPLESSITA_3);
+				sb.append(_FINDER_COLUMN_TIPOCOMPLESSITA_COMPLESSITA_3);
 			}
 			else {
 				bindComplessita = true;
 
-				query.append(_FINDER_COLUMN_TIPOCOMPLESSITA_COMPLESSITA_2);
+				sb.append(_FINDER_COLUMN_TIPOCOMPLESSITA_COMPLESSITA_2);
 			}
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 			}
-			else if (pagination) {
-				query.append(GeografiaModelImpl.ORDER_BY_JPQL);
+			else {
+				sb.append(GeografiaModelImpl.ORDER_BY_JPQL);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindTipo) {
-					qPos.add(tipo);
+					queryPos.add(tipo);
 				}
 
 				if (bindComplessita) {
-					qPos.add(complessita);
+					queryPos.add(complessita);
 				}
 
-				if (!pagination) {
-					list = (List<Geografia>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<Geografia>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<Geografia>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					finderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -2200,19 +2156,19 @@ public class GeografiaPersistenceImpl
 			return geografia;
 		}
 
-		StringBundler msg = new StringBundler(6);
+		StringBundler sb = new StringBundler(6);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("tipo=");
-		msg.append(tipo);
+		sb.append("tipo=");
+		sb.append(tipo);
 
-		msg.append(", complessita=");
-		msg.append(complessita);
+		sb.append(", complessita=");
+		sb.append(complessita);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchGeografiaException(msg.toString());
+		throw new NoSuchGeografiaException(sb.toString());
 	}
 
 	/**
@@ -2260,19 +2216,19 @@ public class GeografiaPersistenceImpl
 			return geografia;
 		}
 
-		StringBundler msg = new StringBundler(6);
+		StringBundler sb = new StringBundler(6);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("tipo=");
-		msg.append(tipo);
+		sb.append("tipo=");
+		sb.append(tipo);
 
-		msg.append(", complessita=");
-		msg.append(complessita);
+		sb.append(", complessita=");
+		sb.append(complessita);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchGeografiaException(msg.toString());
+		throw new NoSuchGeografiaException(sb.toString());
 	}
 
 	/**
@@ -2343,8 +2299,8 @@ public class GeografiaPersistenceImpl
 
 			return array;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -2355,39 +2311,39 @@ public class GeografiaPersistenceImpl
 		Session session, Geografia geografia, String tipo, String complessita,
 		OrderByComparator<Geografia> orderByComparator, boolean previous) {
 
-		StringBundler query = null;
+		StringBundler sb = null;
 
 		if (orderByComparator != null) {
-			query = new StringBundler(
+			sb = new StringBundler(
 				5 + (orderByComparator.getOrderByConditionFields().length * 3) +
 					(orderByComparator.getOrderByFields().length * 3));
 		}
 		else {
-			query = new StringBundler(4);
+			sb = new StringBundler(4);
 		}
 
-		query.append(_SQL_SELECT_GEOGRAFIA_WHERE);
+		sb.append(_SQL_SELECT_GEOGRAFIA_WHERE);
 
 		boolean bindTipo = false;
 
 		if (tipo.isEmpty()) {
-			query.append(_FINDER_COLUMN_TIPOCOMPLESSITA_TIPO_3);
+			sb.append(_FINDER_COLUMN_TIPOCOMPLESSITA_TIPO_3);
 		}
 		else {
 			bindTipo = true;
 
-			query.append(_FINDER_COLUMN_TIPOCOMPLESSITA_TIPO_2);
+			sb.append(_FINDER_COLUMN_TIPOCOMPLESSITA_TIPO_2);
 		}
 
 		boolean bindComplessita = false;
 
 		if (complessita.isEmpty()) {
-			query.append(_FINDER_COLUMN_TIPOCOMPLESSITA_COMPLESSITA_3);
+			sb.append(_FINDER_COLUMN_TIPOCOMPLESSITA_COMPLESSITA_3);
 		}
 		else {
 			bindComplessita = true;
 
-			query.append(_FINDER_COLUMN_TIPOCOMPLESSITA_COMPLESSITA_2);
+			sb.append(_FINDER_COLUMN_TIPOCOMPLESSITA_COMPLESSITA_2);
 		}
 
 		if (orderByComparator != null) {
@@ -2395,87 +2351,87 @@ public class GeografiaPersistenceImpl
 				orderByComparator.getOrderByConditionFields();
 
 			if (orderByConditionFields.length > 0) {
-				query.append(WHERE_AND);
+				sb.append(WHERE_AND);
 			}
 
 			for (int i = 0; i < orderByConditionFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByConditionFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByConditionFields[i]);
 
 				if ((i + 1) < orderByConditionFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+						sb.append(WHERE_GREATER_THAN_HAS_NEXT);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+						sb.append(WHERE_LESSER_THAN_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN);
+						sb.append(WHERE_GREATER_THAN);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN);
+						sb.append(WHERE_LESSER_THAN);
 					}
 				}
 			}
 
-			query.append(ORDER_BY_CLAUSE);
+			sb.append(ORDER_BY_CLAUSE);
 
 			String[] orderByFields = orderByComparator.getOrderByFields();
 
 			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByFields[i]);
 
 				if ((i + 1) < orderByFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC_HAS_NEXT);
+						sb.append(ORDER_BY_ASC_HAS_NEXT);
 					}
 					else {
-						query.append(ORDER_BY_DESC_HAS_NEXT);
+						sb.append(ORDER_BY_DESC_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC);
+						sb.append(ORDER_BY_ASC);
 					}
 					else {
-						query.append(ORDER_BY_DESC);
+						sb.append(ORDER_BY_DESC);
 					}
 				}
 			}
 		}
 		else {
-			query.append(GeografiaModelImpl.ORDER_BY_JPQL);
+			sb.append(GeografiaModelImpl.ORDER_BY_JPQL);
 		}
 
-		String sql = query.toString();
+		String sql = sb.toString();
 
-		Query q = session.createQuery(sql);
+		Query query = session.createQuery(sql);
 
-		q.setFirstResult(0);
-		q.setMaxResults(2);
+		query.setFirstResult(0);
+		query.setMaxResults(2);
 
-		QueryPos qPos = QueryPos.getInstance(q);
+		QueryPos queryPos = QueryPos.getInstance(query);
 
 		if (bindTipo) {
-			qPos.add(tipo);
+			queryPos.add(tipo);
 		}
 
 		if (bindComplessita) {
-			qPos.add(complessita);
+			queryPos.add(complessita);
 		}
 
 		if (orderByComparator != null) {
 			for (Object orderByConditionValue :
 					orderByComparator.getOrderByConditionValues(geografia)) {
 
-				qPos.add(orderByConditionValue);
+				queryPos.add(orderByConditionValue);
 			}
 		}
 
-		List<Geografia> list = q.list();
+		List<Geografia> list = query.list();
 
 		if (list.size() == 2) {
 			return list.get(1);
@@ -2521,59 +2477,57 @@ public class GeografiaPersistenceImpl
 		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
-			StringBundler query = new StringBundler(3);
+			StringBundler sb = new StringBundler(3);
 
-			query.append(_SQL_COUNT_GEOGRAFIA_WHERE);
+			sb.append(_SQL_COUNT_GEOGRAFIA_WHERE);
 
 			boolean bindTipo = false;
 
 			if (tipo.isEmpty()) {
-				query.append(_FINDER_COLUMN_TIPOCOMPLESSITA_TIPO_3);
+				sb.append(_FINDER_COLUMN_TIPOCOMPLESSITA_TIPO_3);
 			}
 			else {
 				bindTipo = true;
 
-				query.append(_FINDER_COLUMN_TIPOCOMPLESSITA_TIPO_2);
+				sb.append(_FINDER_COLUMN_TIPOCOMPLESSITA_TIPO_2);
 			}
 
 			boolean bindComplessita = false;
 
 			if (complessita.isEmpty()) {
-				query.append(_FINDER_COLUMN_TIPOCOMPLESSITA_COMPLESSITA_3);
+				sb.append(_FINDER_COLUMN_TIPOCOMPLESSITA_COMPLESSITA_3);
 			}
 			else {
 				bindComplessita = true;
 
-				query.append(_FINDER_COLUMN_TIPOCOMPLESSITA_COMPLESSITA_2);
+				sb.append(_FINDER_COLUMN_TIPOCOMPLESSITA_COMPLESSITA_2);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindTipo) {
-					qPos.add(tipo);
+					queryPos.add(tipo);
 				}
 
 				if (bindComplessita) {
-					qPos.add(complessita);
+					queryPos.add(complessita);
 				}
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
 				finderCache.putResult(finderPath, finderArgs, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -2619,7 +2573,7 @@ public class GeografiaPersistenceImpl
 	 * Returns a range of all the geografias where geografiaId = &#63; and complessita = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>GeografiaModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>GeografiaModelImpl</code>.
 	 * </p>
 	 *
 	 * @param geografiaId the geografia ID
@@ -2639,7 +2593,7 @@ public class GeografiaPersistenceImpl
 	 * Returns an ordered range of all the geografias where geografiaId = &#63; and complessita = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>GeografiaModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>GeografiaModelImpl</code>.
 	 * </p>
 	 *
 	 * @param geografiaId the geografia ID
@@ -2662,7 +2616,7 @@ public class GeografiaPersistenceImpl
 	 * Returns an ordered range of all the geografias where geografiaId = &#63; and complessita = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>GeografiaModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>GeografiaModelImpl</code>.
 	 * </p>
 	 *
 	 * @param geografiaId the geografia ID
@@ -2670,30 +2624,30 @@ public class GeografiaPersistenceImpl
 	 * @param start the lower bound of the range of geografias
 	 * @param end the upper bound of the range of geografias (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching geografias
 	 */
 	@Override
 	public List<Geografia> findByIdComplessita(
 		String geografiaId, String complessita, int start, int end,
 		OrderByComparator<Geografia> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
 		geografiaId = Objects.toString(geografiaId, "");
 		complessita = Objects.toString(complessita, "");
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindByIdComplessita;
-			finderArgs = new Object[] {geografiaId, complessita};
+			if (useFinderCache) {
+				finderPath = _finderPathWithoutPaginationFindByIdComplessita;
+				finderArgs = new Object[] {geografiaId, complessita};
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByIdComplessita;
 			finderArgs = new Object[] {
 				geografiaId, complessita, start, end, orderByComparator
@@ -2702,7 +2656,7 @@ public class GeografiaPersistenceImpl
 
 		List<Geografia> list = null;
 
-		if (retrieveFromCache) {
+		if (useFinderCache) {
 			list = (List<Geografia>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
@@ -2720,88 +2674,78 @@ public class GeografiaPersistenceImpl
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					4 + (orderByComparator.getOrderByFields().length * 2));
 			}
 			else {
-				query = new StringBundler(4);
+				sb = new StringBundler(4);
 			}
 
-			query.append(_SQL_SELECT_GEOGRAFIA_WHERE);
+			sb.append(_SQL_SELECT_GEOGRAFIA_WHERE);
 
 			boolean bindGeografiaId = false;
 
 			if (geografiaId.isEmpty()) {
-				query.append(_FINDER_COLUMN_IDCOMPLESSITA_GEOGRAFIAID_3);
+				sb.append(_FINDER_COLUMN_IDCOMPLESSITA_GEOGRAFIAID_3);
 			}
 			else {
 				bindGeografiaId = true;
 
-				query.append(_FINDER_COLUMN_IDCOMPLESSITA_GEOGRAFIAID_2);
+				sb.append(_FINDER_COLUMN_IDCOMPLESSITA_GEOGRAFIAID_2);
 			}
 
 			boolean bindComplessita = false;
 
 			if (complessita.isEmpty()) {
-				query.append(_FINDER_COLUMN_IDCOMPLESSITA_COMPLESSITA_3);
+				sb.append(_FINDER_COLUMN_IDCOMPLESSITA_COMPLESSITA_3);
 			}
 			else {
 				bindComplessita = true;
 
-				query.append(_FINDER_COLUMN_IDCOMPLESSITA_COMPLESSITA_2);
+				sb.append(_FINDER_COLUMN_IDCOMPLESSITA_COMPLESSITA_2);
 			}
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 			}
-			else if (pagination) {
-				query.append(GeografiaModelImpl.ORDER_BY_JPQL);
+			else {
+				sb.append(GeografiaModelImpl.ORDER_BY_JPQL);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindGeografiaId) {
-					qPos.add(geografiaId);
+					queryPos.add(geografiaId);
 				}
 
 				if (bindComplessita) {
-					qPos.add(complessita);
+					queryPos.add(complessita);
 				}
 
-				if (!pagination) {
-					list = (List<Geografia>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<Geografia>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<Geografia>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					finderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -2833,19 +2777,19 @@ public class GeografiaPersistenceImpl
 			return geografia;
 		}
 
-		StringBundler msg = new StringBundler(6);
+		StringBundler sb = new StringBundler(6);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("geografiaId=");
-		msg.append(geografiaId);
+		sb.append("geografiaId=");
+		sb.append(geografiaId);
 
-		msg.append(", complessita=");
-		msg.append(complessita);
+		sb.append(", complessita=");
+		sb.append(complessita);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchGeografiaException(msg.toString());
+		throw new NoSuchGeografiaException(sb.toString());
 	}
 
 	/**
@@ -2893,19 +2837,19 @@ public class GeografiaPersistenceImpl
 			return geografia;
 		}
 
-		StringBundler msg = new StringBundler(6);
+		StringBundler sb = new StringBundler(6);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("geografiaId=");
-		msg.append(geografiaId);
+		sb.append("geografiaId=");
+		sb.append(geografiaId);
 
-		msg.append(", complessita=");
-		msg.append(complessita);
+		sb.append(", complessita=");
+		sb.append(complessita);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchGeografiaException(msg.toString());
+		throw new NoSuchGeografiaException(sb.toString());
 	}
 
 	/**
@@ -2977,8 +2921,8 @@ public class GeografiaPersistenceImpl
 
 			return array;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -2990,39 +2934,39 @@ public class GeografiaPersistenceImpl
 		String complessita, OrderByComparator<Geografia> orderByComparator,
 		boolean previous) {
 
-		StringBundler query = null;
+		StringBundler sb = null;
 
 		if (orderByComparator != null) {
-			query = new StringBundler(
+			sb = new StringBundler(
 				5 + (orderByComparator.getOrderByConditionFields().length * 3) +
 					(orderByComparator.getOrderByFields().length * 3));
 		}
 		else {
-			query = new StringBundler(4);
+			sb = new StringBundler(4);
 		}
 
-		query.append(_SQL_SELECT_GEOGRAFIA_WHERE);
+		sb.append(_SQL_SELECT_GEOGRAFIA_WHERE);
 
 		boolean bindGeografiaId = false;
 
 		if (geografiaId.isEmpty()) {
-			query.append(_FINDER_COLUMN_IDCOMPLESSITA_GEOGRAFIAID_3);
+			sb.append(_FINDER_COLUMN_IDCOMPLESSITA_GEOGRAFIAID_3);
 		}
 		else {
 			bindGeografiaId = true;
 
-			query.append(_FINDER_COLUMN_IDCOMPLESSITA_GEOGRAFIAID_2);
+			sb.append(_FINDER_COLUMN_IDCOMPLESSITA_GEOGRAFIAID_2);
 		}
 
 		boolean bindComplessita = false;
 
 		if (complessita.isEmpty()) {
-			query.append(_FINDER_COLUMN_IDCOMPLESSITA_COMPLESSITA_3);
+			sb.append(_FINDER_COLUMN_IDCOMPLESSITA_COMPLESSITA_3);
 		}
 		else {
 			bindComplessita = true;
 
-			query.append(_FINDER_COLUMN_IDCOMPLESSITA_COMPLESSITA_2);
+			sb.append(_FINDER_COLUMN_IDCOMPLESSITA_COMPLESSITA_2);
 		}
 
 		if (orderByComparator != null) {
@@ -3030,87 +2974,87 @@ public class GeografiaPersistenceImpl
 				orderByComparator.getOrderByConditionFields();
 
 			if (orderByConditionFields.length > 0) {
-				query.append(WHERE_AND);
+				sb.append(WHERE_AND);
 			}
 
 			for (int i = 0; i < orderByConditionFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByConditionFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByConditionFields[i]);
 
 				if ((i + 1) < orderByConditionFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+						sb.append(WHERE_GREATER_THAN_HAS_NEXT);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+						sb.append(WHERE_LESSER_THAN_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN);
+						sb.append(WHERE_GREATER_THAN);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN);
+						sb.append(WHERE_LESSER_THAN);
 					}
 				}
 			}
 
-			query.append(ORDER_BY_CLAUSE);
+			sb.append(ORDER_BY_CLAUSE);
 
 			String[] orderByFields = orderByComparator.getOrderByFields();
 
 			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByFields[i]);
 
 				if ((i + 1) < orderByFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC_HAS_NEXT);
+						sb.append(ORDER_BY_ASC_HAS_NEXT);
 					}
 					else {
-						query.append(ORDER_BY_DESC_HAS_NEXT);
+						sb.append(ORDER_BY_DESC_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC);
+						sb.append(ORDER_BY_ASC);
 					}
 					else {
-						query.append(ORDER_BY_DESC);
+						sb.append(ORDER_BY_DESC);
 					}
 				}
 			}
 		}
 		else {
-			query.append(GeografiaModelImpl.ORDER_BY_JPQL);
+			sb.append(GeografiaModelImpl.ORDER_BY_JPQL);
 		}
 
-		String sql = query.toString();
+		String sql = sb.toString();
 
-		Query q = session.createQuery(sql);
+		Query query = session.createQuery(sql);
 
-		q.setFirstResult(0);
-		q.setMaxResults(2);
+		query.setFirstResult(0);
+		query.setMaxResults(2);
 
-		QueryPos qPos = QueryPos.getInstance(q);
+		QueryPos queryPos = QueryPos.getInstance(query);
 
 		if (bindGeografiaId) {
-			qPos.add(geografiaId);
+			queryPos.add(geografiaId);
 		}
 
 		if (bindComplessita) {
-			qPos.add(complessita);
+			queryPos.add(complessita);
 		}
 
 		if (orderByComparator != null) {
 			for (Object orderByConditionValue :
 					orderByComparator.getOrderByConditionValues(geografia)) {
 
-				qPos.add(orderByConditionValue);
+				queryPos.add(orderByConditionValue);
 			}
 		}
 
-		List<Geografia> list = q.list();
+		List<Geografia> list = query.list();
 
 		if (list.size() == 2) {
 			return list.get(1);
@@ -3156,59 +3100,57 @@ public class GeografiaPersistenceImpl
 		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
-			StringBundler query = new StringBundler(3);
+			StringBundler sb = new StringBundler(3);
 
-			query.append(_SQL_COUNT_GEOGRAFIA_WHERE);
+			sb.append(_SQL_COUNT_GEOGRAFIA_WHERE);
 
 			boolean bindGeografiaId = false;
 
 			if (geografiaId.isEmpty()) {
-				query.append(_FINDER_COLUMN_IDCOMPLESSITA_GEOGRAFIAID_3);
+				sb.append(_FINDER_COLUMN_IDCOMPLESSITA_GEOGRAFIAID_3);
 			}
 			else {
 				bindGeografiaId = true;
 
-				query.append(_FINDER_COLUMN_IDCOMPLESSITA_GEOGRAFIAID_2);
+				sb.append(_FINDER_COLUMN_IDCOMPLESSITA_GEOGRAFIAID_2);
 			}
 
 			boolean bindComplessita = false;
 
 			if (complessita.isEmpty()) {
-				query.append(_FINDER_COLUMN_IDCOMPLESSITA_COMPLESSITA_3);
+				sb.append(_FINDER_COLUMN_IDCOMPLESSITA_COMPLESSITA_3);
 			}
 			else {
 				bindComplessita = true;
 
-				query.append(_FINDER_COLUMN_IDCOMPLESSITA_COMPLESSITA_2);
+				sb.append(_FINDER_COLUMN_IDCOMPLESSITA_COMPLESSITA_2);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindGeografiaId) {
-					qPos.add(geografiaId);
+					queryPos.add(geografiaId);
 				}
 
 				if (bindComplessita) {
-					qPos.add(complessita);
+					queryPos.add(complessita);
 				}
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
 				finderCache.putResult(finderPath, finderArgs, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -3253,7 +3195,7 @@ public class GeografiaPersistenceImpl
 	 * Returns a range of all the geografias where area = &#63; and complessita = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>GeografiaModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>GeografiaModelImpl</code>.
 	 * </p>
 	 *
 	 * @param area the area
@@ -3273,7 +3215,7 @@ public class GeografiaPersistenceImpl
 	 * Returns an ordered range of all the geografias where area = &#63; and complessita = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>GeografiaModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>GeografiaModelImpl</code>.
 	 * </p>
 	 *
 	 * @param area the area
@@ -3296,7 +3238,7 @@ public class GeografiaPersistenceImpl
 	 * Returns an ordered range of all the geografias where area = &#63; and complessita = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>GeografiaModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>GeografiaModelImpl</code>.
 	 * </p>
 	 *
 	 * @param area the area
@@ -3304,30 +3246,30 @@ public class GeografiaPersistenceImpl
 	 * @param start the lower bound of the range of geografias
 	 * @param end the upper bound of the range of geografias (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching geografias
 	 */
 	@Override
 	public List<Geografia> findByAreaComplessita(
 		String area, String complessita, int start, int end,
 		OrderByComparator<Geografia> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
 		area = Objects.toString(area, "");
 		complessita = Objects.toString(complessita, "");
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindByAreaComplessita;
-			finderArgs = new Object[] {area, complessita};
+			if (useFinderCache) {
+				finderPath = _finderPathWithoutPaginationFindByAreaComplessita;
+				finderArgs = new Object[] {area, complessita};
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByAreaComplessita;
 			finderArgs = new Object[] {
 				area, complessita, start, end, orderByComparator
@@ -3336,7 +3278,7 @@ public class GeografiaPersistenceImpl
 
 		List<Geografia> list = null;
 
-		if (retrieveFromCache) {
+		if (useFinderCache) {
 			list = (List<Geografia>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
@@ -3354,88 +3296,78 @@ public class GeografiaPersistenceImpl
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					4 + (orderByComparator.getOrderByFields().length * 2));
 			}
 			else {
-				query = new StringBundler(4);
+				sb = new StringBundler(4);
 			}
 
-			query.append(_SQL_SELECT_GEOGRAFIA_WHERE);
+			sb.append(_SQL_SELECT_GEOGRAFIA_WHERE);
 
 			boolean bindArea = false;
 
 			if (area.isEmpty()) {
-				query.append(_FINDER_COLUMN_AREACOMPLESSITA_AREA_3);
+				sb.append(_FINDER_COLUMN_AREACOMPLESSITA_AREA_3);
 			}
 			else {
 				bindArea = true;
 
-				query.append(_FINDER_COLUMN_AREACOMPLESSITA_AREA_2);
+				sb.append(_FINDER_COLUMN_AREACOMPLESSITA_AREA_2);
 			}
 
 			boolean bindComplessita = false;
 
 			if (complessita.isEmpty()) {
-				query.append(_FINDER_COLUMN_AREACOMPLESSITA_COMPLESSITA_3);
+				sb.append(_FINDER_COLUMN_AREACOMPLESSITA_COMPLESSITA_3);
 			}
 			else {
 				bindComplessita = true;
 
-				query.append(_FINDER_COLUMN_AREACOMPLESSITA_COMPLESSITA_2);
+				sb.append(_FINDER_COLUMN_AREACOMPLESSITA_COMPLESSITA_2);
 			}
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 			}
-			else if (pagination) {
-				query.append(GeografiaModelImpl.ORDER_BY_JPQL);
+			else {
+				sb.append(GeografiaModelImpl.ORDER_BY_JPQL);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindArea) {
-					qPos.add(area);
+					queryPos.add(area);
 				}
 
 				if (bindComplessita) {
-					qPos.add(complessita);
+					queryPos.add(complessita);
 				}
 
-				if (!pagination) {
-					list = (List<Geografia>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<Geografia>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<Geografia>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					finderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -3467,19 +3399,19 @@ public class GeografiaPersistenceImpl
 			return geografia;
 		}
 
-		StringBundler msg = new StringBundler(6);
+		StringBundler sb = new StringBundler(6);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("area=");
-		msg.append(area);
+		sb.append("area=");
+		sb.append(area);
 
-		msg.append(", complessita=");
-		msg.append(complessita);
+		sb.append(", complessita=");
+		sb.append(complessita);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchGeografiaException(msg.toString());
+		throw new NoSuchGeografiaException(sb.toString());
 	}
 
 	/**
@@ -3527,19 +3459,19 @@ public class GeografiaPersistenceImpl
 			return geografia;
 		}
 
-		StringBundler msg = new StringBundler(6);
+		StringBundler sb = new StringBundler(6);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("area=");
-		msg.append(area);
+		sb.append("area=");
+		sb.append(area);
 
-		msg.append(", complessita=");
-		msg.append(complessita);
+		sb.append(", complessita=");
+		sb.append(complessita);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchGeografiaException(msg.toString());
+		throw new NoSuchGeografiaException(sb.toString());
 	}
 
 	/**
@@ -3610,8 +3542,8 @@ public class GeografiaPersistenceImpl
 
 			return array;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -3622,39 +3554,39 @@ public class GeografiaPersistenceImpl
 		Session session, Geografia geografia, String area, String complessita,
 		OrderByComparator<Geografia> orderByComparator, boolean previous) {
 
-		StringBundler query = null;
+		StringBundler sb = null;
 
 		if (orderByComparator != null) {
-			query = new StringBundler(
+			sb = new StringBundler(
 				5 + (orderByComparator.getOrderByConditionFields().length * 3) +
 					(orderByComparator.getOrderByFields().length * 3));
 		}
 		else {
-			query = new StringBundler(4);
+			sb = new StringBundler(4);
 		}
 
-		query.append(_SQL_SELECT_GEOGRAFIA_WHERE);
+		sb.append(_SQL_SELECT_GEOGRAFIA_WHERE);
 
 		boolean bindArea = false;
 
 		if (area.isEmpty()) {
-			query.append(_FINDER_COLUMN_AREACOMPLESSITA_AREA_3);
+			sb.append(_FINDER_COLUMN_AREACOMPLESSITA_AREA_3);
 		}
 		else {
 			bindArea = true;
 
-			query.append(_FINDER_COLUMN_AREACOMPLESSITA_AREA_2);
+			sb.append(_FINDER_COLUMN_AREACOMPLESSITA_AREA_2);
 		}
 
 		boolean bindComplessita = false;
 
 		if (complessita.isEmpty()) {
-			query.append(_FINDER_COLUMN_AREACOMPLESSITA_COMPLESSITA_3);
+			sb.append(_FINDER_COLUMN_AREACOMPLESSITA_COMPLESSITA_3);
 		}
 		else {
 			bindComplessita = true;
 
-			query.append(_FINDER_COLUMN_AREACOMPLESSITA_COMPLESSITA_2);
+			sb.append(_FINDER_COLUMN_AREACOMPLESSITA_COMPLESSITA_2);
 		}
 
 		if (orderByComparator != null) {
@@ -3662,87 +3594,87 @@ public class GeografiaPersistenceImpl
 				orderByComparator.getOrderByConditionFields();
 
 			if (orderByConditionFields.length > 0) {
-				query.append(WHERE_AND);
+				sb.append(WHERE_AND);
 			}
 
 			for (int i = 0; i < orderByConditionFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByConditionFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByConditionFields[i]);
 
 				if ((i + 1) < orderByConditionFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+						sb.append(WHERE_GREATER_THAN_HAS_NEXT);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+						sb.append(WHERE_LESSER_THAN_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN);
+						sb.append(WHERE_GREATER_THAN);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN);
+						sb.append(WHERE_LESSER_THAN);
 					}
 				}
 			}
 
-			query.append(ORDER_BY_CLAUSE);
+			sb.append(ORDER_BY_CLAUSE);
 
 			String[] orderByFields = orderByComparator.getOrderByFields();
 
 			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByFields[i]);
 
 				if ((i + 1) < orderByFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC_HAS_NEXT);
+						sb.append(ORDER_BY_ASC_HAS_NEXT);
 					}
 					else {
-						query.append(ORDER_BY_DESC_HAS_NEXT);
+						sb.append(ORDER_BY_DESC_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC);
+						sb.append(ORDER_BY_ASC);
 					}
 					else {
-						query.append(ORDER_BY_DESC);
+						sb.append(ORDER_BY_DESC);
 					}
 				}
 			}
 		}
 		else {
-			query.append(GeografiaModelImpl.ORDER_BY_JPQL);
+			sb.append(GeografiaModelImpl.ORDER_BY_JPQL);
 		}
 
-		String sql = query.toString();
+		String sql = sb.toString();
 
-		Query q = session.createQuery(sql);
+		Query query = session.createQuery(sql);
 
-		q.setFirstResult(0);
-		q.setMaxResults(2);
+		query.setFirstResult(0);
+		query.setMaxResults(2);
 
-		QueryPos qPos = QueryPos.getInstance(q);
+		QueryPos queryPos = QueryPos.getInstance(query);
 
 		if (bindArea) {
-			qPos.add(area);
+			queryPos.add(area);
 		}
 
 		if (bindComplessita) {
-			qPos.add(complessita);
+			queryPos.add(complessita);
 		}
 
 		if (orderByComparator != null) {
 			for (Object orderByConditionValue :
 					orderByComparator.getOrderByConditionValues(geografia)) {
 
-				qPos.add(orderByConditionValue);
+				queryPos.add(orderByConditionValue);
 			}
 		}
 
-		List<Geografia> list = q.list();
+		List<Geografia> list = query.list();
 
 		if (list.size() == 2) {
 			return list.get(1);
@@ -3788,59 +3720,57 @@ public class GeografiaPersistenceImpl
 		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
-			StringBundler query = new StringBundler(3);
+			StringBundler sb = new StringBundler(3);
 
-			query.append(_SQL_COUNT_GEOGRAFIA_WHERE);
+			sb.append(_SQL_COUNT_GEOGRAFIA_WHERE);
 
 			boolean bindArea = false;
 
 			if (area.isEmpty()) {
-				query.append(_FINDER_COLUMN_AREACOMPLESSITA_AREA_3);
+				sb.append(_FINDER_COLUMN_AREACOMPLESSITA_AREA_3);
 			}
 			else {
 				bindArea = true;
 
-				query.append(_FINDER_COLUMN_AREACOMPLESSITA_AREA_2);
+				sb.append(_FINDER_COLUMN_AREACOMPLESSITA_AREA_2);
 			}
 
 			boolean bindComplessita = false;
 
 			if (complessita.isEmpty()) {
-				query.append(_FINDER_COLUMN_AREACOMPLESSITA_COMPLESSITA_3);
+				sb.append(_FINDER_COLUMN_AREACOMPLESSITA_COMPLESSITA_3);
 			}
 			else {
 				bindComplessita = true;
 
-				query.append(_FINDER_COLUMN_AREACOMPLESSITA_COMPLESSITA_2);
+				sb.append(_FINDER_COLUMN_AREACOMPLESSITA_COMPLESSITA_2);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindArea) {
-					qPos.add(area);
+					queryPos.add(area);
 				}
 
 				if (bindComplessita) {
-					qPos.add(complessita);
+					queryPos.add(complessita);
 				}
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
 				finderCache.putResult(finderPath, finderArgs, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -3864,6 +3794,11 @@ public class GeografiaPersistenceImpl
 
 	public GeografiaPersistenceImpl() {
 		setModelClass(Geografia.class);
+
+		setModelImplClass(GeografiaImpl.class);
+		setModelPKClass(GeografiaPK.class);
+
+		setTable(GeografiaTable.INSTANCE);
 	}
 
 	/**
@@ -3874,11 +3809,10 @@ public class GeografiaPersistenceImpl
 	@Override
 	public void cacheResult(Geografia geografia) {
 		entityCache.putResult(
-			GeografiaModelImpl.ENTITY_CACHE_ENABLED, GeografiaImpl.class,
-			geografia.getPrimaryKey(), geografia);
-
-		geografia.resetOriginalValues();
+			GeografiaImpl.class, geografia.getPrimaryKey(), geografia);
 	}
+
+	private int _valueObjectFinderCacheListThreshold;
 
 	/**
 	 * Caches the geografias in the entity cache if it is enabled.
@@ -3887,15 +3821,18 @@ public class GeografiaPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(List<Geografia> geografias) {
+		if ((_valueObjectFinderCacheListThreshold == 0) ||
+			((_valueObjectFinderCacheListThreshold > 0) &&
+			 (geografias.size() > _valueObjectFinderCacheListThreshold))) {
+
+			return;
+		}
+
 		for (Geografia geografia : geografias) {
 			if (entityCache.getResult(
-					GeografiaModelImpl.ENTITY_CACHE_ENABLED,
 					GeografiaImpl.class, geografia.getPrimaryKey()) == null) {
 
 				cacheResult(geografia);
-			}
-			else {
-				geografia.resetOriginalValues();
 			}
 		}
 	}
@@ -3911,9 +3848,7 @@ public class GeografiaPersistenceImpl
 	public void clearCache() {
 		entityCache.clearCache(GeografiaImpl.class);
 
-		finderCache.clearCache(FINDER_CLASS_NAME_ENTITY);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		finderCache.clearCache(GeografiaImpl.class);
 	}
 
 	/**
@@ -3925,23 +3860,22 @@ public class GeografiaPersistenceImpl
 	 */
 	@Override
 	public void clearCache(Geografia geografia) {
-		entityCache.removeResult(
-			GeografiaModelImpl.ENTITY_CACHE_ENABLED, GeografiaImpl.class,
-			geografia.getPrimaryKey());
-
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		entityCache.removeResult(GeografiaImpl.class, geografia);
 	}
 
 	@Override
 	public void clearCache(List<Geografia> geografias) {
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
-
 		for (Geografia geografia : geografias) {
-			entityCache.removeResult(
-				GeografiaModelImpl.ENTITY_CACHE_ENABLED, GeografiaImpl.class,
-				geografia.getPrimaryKey());
+			entityCache.removeResult(GeografiaImpl.class, geografia);
+		}
+	}
+
+	@Override
+	public void clearCache(Set<Serializable> primaryKeys) {
+		finderCache.clearCache(GeografiaImpl.class);
+
+		for (Serializable primaryKey : primaryKeys) {
+			entityCache.removeResult(GeografiaImpl.class, primaryKey);
 		}
 	}
 
@@ -4005,11 +3939,11 @@ public class GeografiaPersistenceImpl
 
 			return remove(geografia);
 		}
-		catch (NoSuchGeografiaException nsee) {
-			throw nsee;
+		catch (NoSuchGeografiaException noSuchEntityException) {
+			throw noSuchEntityException;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -4032,8 +3966,8 @@ public class GeografiaPersistenceImpl
 				session.delete(geografia);
 			}
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -4073,230 +4007,26 @@ public class GeografiaPersistenceImpl
 		try {
 			session = openSession();
 
-			if (geografia.isNew()) {
+			if (isNew) {
 				session.save(geografia);
-
-				geografia.setNew(false);
 			}
 			else {
 				geografia = (Geografia)session.merge(geografia);
 			}
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
 		}
 
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-
-		if (!GeografiaModelImpl.COLUMN_BITMASK_ENABLED) {
-			finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
-		}
-		else if (isNew) {
-			Object[] args = new Object[] {geografiaModelImpl.getTipo()};
-
-			finderCache.removeResult(_finderPathCountByTipo, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByTipo, args);
-
-			args = new Object[] {
-				geografiaModelImpl.getTipo(), geografiaModelImpl.getArea()
-			};
-
-			finderCache.removeResult(_finderPathCountByTipoArea, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByTipoArea, args);
-
-			args = new Object[] {
-				geografiaModelImpl.getTipo(), geografiaModelImpl.getArea(),
-				geografiaModelImpl.getComplessita()
-			};
-
-			finderCache.removeResult(
-				_finderPathCountByTipoAreaComplessita, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByTipoAreaComplessita, args);
-
-			args = new Object[] {
-				geografiaModelImpl.getTipo(),
-				geografiaModelImpl.getComplessita()
-			};
-
-			finderCache.removeResult(_finderPathCountByTipoComplessita, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByTipoComplessita, args);
-
-			args = new Object[] {
-				geografiaModelImpl.getGeografiaId(),
-				geografiaModelImpl.getComplessita()
-			};
-
-			finderCache.removeResult(_finderPathCountByIdComplessita, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByIdComplessita, args);
-
-			args = new Object[] {
-				geografiaModelImpl.getArea(),
-				geografiaModelImpl.getComplessita()
-			};
-
-			finderCache.removeResult(_finderPathCountByAreaComplessita, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByAreaComplessita, args);
-
-			finderCache.removeResult(_finderPathCountAll, FINDER_ARGS_EMPTY);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindAll, FINDER_ARGS_EMPTY);
-		}
-		else {
-			if ((geografiaModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByTipo.getColumnBitmask()) !=
-					 0) {
-
-				Object[] args = new Object[] {
-					geografiaModelImpl.getOriginalTipo()
-				};
-
-				finderCache.removeResult(_finderPathCountByTipo, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByTipo, args);
-
-				args = new Object[] {geografiaModelImpl.getTipo()};
-
-				finderCache.removeResult(_finderPathCountByTipo, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByTipo, args);
-			}
-
-			if ((geografiaModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByTipoArea.
-					 getColumnBitmask()) != 0) {
-
-				Object[] args = new Object[] {
-					geografiaModelImpl.getOriginalTipo(),
-					geografiaModelImpl.getOriginalArea()
-				};
-
-				finderCache.removeResult(_finderPathCountByTipoArea, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByTipoArea, args);
-
-				args = new Object[] {
-					geografiaModelImpl.getTipo(), geografiaModelImpl.getArea()
-				};
-
-				finderCache.removeResult(_finderPathCountByTipoArea, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByTipoArea, args);
-			}
-
-			if ((geografiaModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByTipoAreaComplessita.
-					 getColumnBitmask()) != 0) {
-
-				Object[] args = new Object[] {
-					geografiaModelImpl.getOriginalTipo(),
-					geografiaModelImpl.getOriginalArea(),
-					geografiaModelImpl.getOriginalComplessita()
-				};
-
-				finderCache.removeResult(
-					_finderPathCountByTipoAreaComplessita, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByTipoAreaComplessita,
-					args);
-
-				args = new Object[] {
-					geografiaModelImpl.getTipo(), geografiaModelImpl.getArea(),
-					geografiaModelImpl.getComplessita()
-				};
-
-				finderCache.removeResult(
-					_finderPathCountByTipoAreaComplessita, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByTipoAreaComplessita,
-					args);
-			}
-
-			if ((geografiaModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByTipoComplessita.
-					 getColumnBitmask()) != 0) {
-
-				Object[] args = new Object[] {
-					geografiaModelImpl.getOriginalTipo(),
-					geografiaModelImpl.getOriginalComplessita()
-				};
-
-				finderCache.removeResult(
-					_finderPathCountByTipoComplessita, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByTipoComplessita, args);
-
-				args = new Object[] {
-					geografiaModelImpl.getTipo(),
-					geografiaModelImpl.getComplessita()
-				};
-
-				finderCache.removeResult(
-					_finderPathCountByTipoComplessita, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByTipoComplessita, args);
-			}
-
-			if ((geografiaModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByIdComplessita.
-					 getColumnBitmask()) != 0) {
-
-				Object[] args = new Object[] {
-					geografiaModelImpl.getOriginalGeografiaId(),
-					geografiaModelImpl.getOriginalComplessita()
-				};
-
-				finderCache.removeResult(_finderPathCountByIdComplessita, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByIdComplessita, args);
-
-				args = new Object[] {
-					geografiaModelImpl.getGeografiaId(),
-					geografiaModelImpl.getComplessita()
-				};
-
-				finderCache.removeResult(_finderPathCountByIdComplessita, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByIdComplessita, args);
-			}
-
-			if ((geografiaModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByAreaComplessita.
-					 getColumnBitmask()) != 0) {
-
-				Object[] args = new Object[] {
-					geografiaModelImpl.getOriginalArea(),
-					geografiaModelImpl.getOriginalComplessita()
-				};
-
-				finderCache.removeResult(
-					_finderPathCountByAreaComplessita, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByAreaComplessita, args);
-
-				args = new Object[] {
-					geografiaModelImpl.getArea(),
-					geografiaModelImpl.getComplessita()
-				};
-
-				finderCache.removeResult(
-					_finderPathCountByAreaComplessita, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByAreaComplessita, args);
-			}
-		}
-
 		entityCache.putResult(
-			GeografiaModelImpl.ENTITY_CACHE_ENABLED, GeografiaImpl.class,
-			geografia.getPrimaryKey(), geografia, false);
+			GeografiaImpl.class, geografiaModelImpl, false, true);
+
+		if (isNew) {
+			geografia.setNew(false);
+		}
 
 		geografia.resetOriginalValues();
 
@@ -4345,85 +4075,12 @@ public class GeografiaPersistenceImpl
 	/**
 	 * Returns the geografia with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the geografia
-	 * @return the geografia, or <code>null</code> if a geografia with the primary key could not be found
-	 */
-	@Override
-	public Geografia fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(
-			GeografiaModelImpl.ENTITY_CACHE_ENABLED, GeografiaImpl.class,
-			primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		Geografia geografia = (Geografia)serializable;
-
-		if (geografia == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				geografia = (Geografia)session.get(
-					GeografiaImpl.class, primaryKey);
-
-				if (geografia != null) {
-					cacheResult(geografia);
-				}
-				else {
-					entityCache.putResult(
-						GeografiaModelImpl.ENTITY_CACHE_ENABLED,
-						GeografiaImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(
-					GeografiaModelImpl.ENTITY_CACHE_ENABLED,
-					GeografiaImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return geografia;
-	}
-
-	/**
-	 * Returns the geografia with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param geografiaPK the primary key of the geografia
 	 * @return the geografia, or <code>null</code> if a geografia with the primary key could not be found
 	 */
 	@Override
 	public Geografia fetchByPrimaryKey(GeografiaPK geografiaPK) {
 		return fetchByPrimaryKey((Serializable)geografiaPK);
-	}
-
-	@Override
-	public Map<Serializable, Geografia> fetchByPrimaryKeys(
-		Set<Serializable> primaryKeys) {
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, Geografia> map =
-			new HashMap<Serializable, Geografia>();
-
-		for (Serializable primaryKey : primaryKeys) {
-			Geografia geografia = fetchByPrimaryKey(primaryKey);
-
-			if (geografia != null) {
-				map.put(primaryKey, geografia);
-			}
-		}
-
-		return map;
 	}
 
 	/**
@@ -4440,7 +4097,7 @@ public class GeografiaPersistenceImpl
 	 * Returns a range of all the geografias.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>GeografiaModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>GeografiaModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of geografias
@@ -4456,7 +4113,7 @@ public class GeografiaPersistenceImpl
 	 * Returns an ordered range of all the geografias.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>GeografiaModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>GeografiaModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of geografias
@@ -4475,64 +4132,62 @@ public class GeografiaPersistenceImpl
 	 * Returns an ordered range of all the geografias.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>GeografiaModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>GeografiaModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of geografias
 	 * @param end the upper bound of the range of geografias (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of geografias
 	 */
 	@Override
 	public List<Geografia> findAll(
 		int start, int end, OrderByComparator<Geografia> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindAll;
-			finderArgs = FINDER_ARGS_EMPTY;
+			if (useFinderCache) {
+				finderPath = _finderPathWithoutPaginationFindAll;
+				finderArgs = FINDER_ARGS_EMPTY;
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
 			finderArgs = new Object[] {start, end, orderByComparator};
 		}
 
 		List<Geografia> list = null;
 
-		if (retrieveFromCache) {
+		if (useFinderCache) {
 			list = (List<Geografia>)finderCache.getResult(
 				finderPath, finderArgs, this);
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 			String sql = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					2 + (orderByComparator.getOrderByFields().length * 2));
 
-				query.append(_SQL_SELECT_GEOGRAFIA);
+				sb.append(_SQL_SELECT_GEOGRAFIA);
 
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 
-				sql = query.toString();
+				sql = sb.toString();
 			}
 			else {
 				sql = _SQL_SELECT_GEOGRAFIA;
 
-				if (pagination) {
-					sql = sql.concat(GeografiaModelImpl.ORDER_BY_JPQL);
-				}
+				sql = sql.concat(GeografiaModelImpl.ORDER_BY_JPQL);
 			}
 
 			Session session = null;
@@ -4540,29 +4195,19 @@ public class GeografiaPersistenceImpl
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				if (!pagination) {
-					list = (List<Geografia>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<Geografia>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<Geografia>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					finderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -4599,18 +4244,15 @@ public class GeografiaPersistenceImpl
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(_SQL_COUNT_GEOGRAFIA);
+				Query query = session.createQuery(_SQL_COUNT_GEOGRAFIA);
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
 				finderCache.putResult(
 					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -4626,6 +4268,21 @@ public class GeografiaPersistenceImpl
 	}
 
 	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
+	}
+
+	@Override
+	protected String getPKDBName() {
+		return "geografiaPK";
+	}
+
+	@Override
+	protected String getSelectSQL() {
+		return _SQL_SELECT_GEOGRAFIA;
+	}
+
+	@Override
 	protected Map<String, Integer> getTableColumnsMap() {
 		return GeografiaModelImpl.TABLE_COLUMNS_MAP;
 	}
@@ -4633,187 +4290,183 @@ public class GeografiaPersistenceImpl
 	/**
 	 * Initializes the geografia persistence.
 	 */
-	public void afterPropertiesSet() {
+	@Activate
+	public void activate() {
+		_valueObjectFinderCacheListThreshold = GetterUtil.getInteger(
+			PropsUtil.get(PropsKeys.VALUE_OBJECT_FINDER_CACHE_LIST_THRESHOLD));
+
 		_finderPathWithPaginationFindAll = new FinderPath(
-			GeografiaModelImpl.ENTITY_CACHE_ENABLED,
-			GeografiaModelImpl.FINDER_CACHE_ENABLED, GeografiaImpl.class,
-			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findAll", new String[0]);
+			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findAll", new String[0],
+			new String[0], true);
 
 		_finderPathWithoutPaginationFindAll = new FinderPath(
-			GeografiaModelImpl.ENTITY_CACHE_ENABLED,
-			GeografiaModelImpl.FINDER_CACHE_ENABLED, GeografiaImpl.class,
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findAll",
-			new String[0]);
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findAll", new String[0],
+			new String[0], true);
 
 		_finderPathCountAll = new FinderPath(
-			GeografiaModelImpl.ENTITY_CACHE_ENABLED,
-			GeografiaModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countAll",
-			new String[0]);
+			new String[0], new String[0], false);
 
 		_finderPathWithPaginationFindByTipo = new FinderPath(
-			GeografiaModelImpl.ENTITY_CACHE_ENABLED,
-			GeografiaModelImpl.FINDER_CACHE_ENABLED, GeografiaImpl.class,
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByTipo",
 			new String[] {
 				String.class.getName(), Integer.class.getName(),
 				Integer.class.getName(), OrderByComparator.class.getName()
-			});
+			},
+			new String[] {"tipo"}, true);
 
 		_finderPathWithoutPaginationFindByTipo = new FinderPath(
-			GeografiaModelImpl.ENTITY_CACHE_ENABLED,
-			GeografiaModelImpl.FINDER_CACHE_ENABLED, GeografiaImpl.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByTipo",
-			new String[] {String.class.getName()},
-			GeografiaModelImpl.TIPO_COLUMN_BITMASK);
+			new String[] {String.class.getName()}, new String[] {"tipo"}, true);
 
 		_finderPathCountByTipo = new FinderPath(
-			GeografiaModelImpl.ENTITY_CACHE_ENABLED,
-			GeografiaModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByTipo",
-			new String[] {String.class.getName()});
+			new String[] {String.class.getName()}, new String[] {"tipo"},
+			false);
 
 		_finderPathWithPaginationFindByTipoArea = new FinderPath(
-			GeografiaModelImpl.ENTITY_CACHE_ENABLED,
-			GeografiaModelImpl.FINDER_CACHE_ENABLED, GeografiaImpl.class,
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByTipoArea",
 			new String[] {
 				String.class.getName(), String.class.getName(),
 				Integer.class.getName(), Integer.class.getName(),
 				OrderByComparator.class.getName()
-			});
+			},
+			new String[] {"tipo", "area"}, true);
 
 		_finderPathWithoutPaginationFindByTipoArea = new FinderPath(
-			GeografiaModelImpl.ENTITY_CACHE_ENABLED,
-			GeografiaModelImpl.FINDER_CACHE_ENABLED, GeografiaImpl.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByTipoArea",
 			new String[] {String.class.getName(), String.class.getName()},
-			GeografiaModelImpl.TIPO_COLUMN_BITMASK |
-			GeografiaModelImpl.AREA_COLUMN_BITMASK);
+			new String[] {"tipo", "area"}, true);
 
 		_finderPathCountByTipoArea = new FinderPath(
-			GeografiaModelImpl.ENTITY_CACHE_ENABLED,
-			GeografiaModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByTipoArea",
-			new String[] {String.class.getName(), String.class.getName()});
+			new String[] {String.class.getName(), String.class.getName()},
+			new String[] {"tipo", "area"}, false);
 
 		_finderPathWithPaginationFindByTipoAreaComplessita = new FinderPath(
-			GeografiaModelImpl.ENTITY_CACHE_ENABLED,
-			GeografiaModelImpl.FINDER_CACHE_ENABLED, GeografiaImpl.class,
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByTipoAreaComplessita",
 			new String[] {
 				String.class.getName(), String.class.getName(),
 				String.class.getName(), Integer.class.getName(),
 				Integer.class.getName(), OrderByComparator.class.getName()
-			});
+			},
+			new String[] {"tipo", "area", "complessita"}, true);
 
 		_finderPathWithoutPaginationFindByTipoAreaComplessita = new FinderPath(
-			GeografiaModelImpl.ENTITY_CACHE_ENABLED,
-			GeografiaModelImpl.FINDER_CACHE_ENABLED, GeografiaImpl.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
 			"findByTipoAreaComplessita",
 			new String[] {
 				String.class.getName(), String.class.getName(),
 				String.class.getName()
 			},
-			GeografiaModelImpl.TIPO_COLUMN_BITMASK |
-			GeografiaModelImpl.AREA_COLUMN_BITMASK |
-			GeografiaModelImpl.COMPLESSITA_COLUMN_BITMASK);
+			new String[] {"tipo", "area", "complessita"}, true);
 
 		_finderPathCountByTipoAreaComplessita = new FinderPath(
-			GeografiaModelImpl.ENTITY_CACHE_ENABLED,
-			GeografiaModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
 			"countByTipoAreaComplessita",
 			new String[] {
 				String.class.getName(), String.class.getName(),
 				String.class.getName()
-			});
+			},
+			new String[] {"tipo", "area", "complessita"}, false);
 
 		_finderPathWithPaginationFindByTipoComplessita = new FinderPath(
-			GeografiaModelImpl.ENTITY_CACHE_ENABLED,
-			GeografiaModelImpl.FINDER_CACHE_ENABLED, GeografiaImpl.class,
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByTipoComplessita",
 			new String[] {
 				String.class.getName(), String.class.getName(),
 				Integer.class.getName(), Integer.class.getName(),
 				OrderByComparator.class.getName()
-			});
+			},
+			new String[] {"tipo", "complessita"}, true);
 
 		_finderPathWithoutPaginationFindByTipoComplessita = new FinderPath(
-			GeografiaModelImpl.ENTITY_CACHE_ENABLED,
-			GeografiaModelImpl.FINDER_CACHE_ENABLED, GeografiaImpl.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByTipoComplessita",
 			new String[] {String.class.getName(), String.class.getName()},
-			GeografiaModelImpl.TIPO_COLUMN_BITMASK |
-			GeografiaModelImpl.COMPLESSITA_COLUMN_BITMASK);
+			new String[] {"tipo", "complessita"}, true);
 
 		_finderPathCountByTipoComplessita = new FinderPath(
-			GeografiaModelImpl.ENTITY_CACHE_ENABLED,
-			GeografiaModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByTipoComplessita",
-			new String[] {String.class.getName(), String.class.getName()});
+			new String[] {String.class.getName(), String.class.getName()},
+			new String[] {"tipo", "complessita"}, false);
 
 		_finderPathWithPaginationFindByIdComplessita = new FinderPath(
-			GeografiaModelImpl.ENTITY_CACHE_ENABLED,
-			GeografiaModelImpl.FINDER_CACHE_ENABLED, GeografiaImpl.class,
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByIdComplessita",
 			new String[] {
 				String.class.getName(), String.class.getName(),
 				Integer.class.getName(), Integer.class.getName(),
 				OrderByComparator.class.getName()
-			});
+			},
+			new String[] {"geografiaId", "complessita"}, true);
 
 		_finderPathWithoutPaginationFindByIdComplessita = new FinderPath(
-			GeografiaModelImpl.ENTITY_CACHE_ENABLED,
-			GeografiaModelImpl.FINDER_CACHE_ENABLED, GeografiaImpl.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByIdComplessita",
 			new String[] {String.class.getName(), String.class.getName()},
-			GeografiaModelImpl.GEOGRAFIAID_COLUMN_BITMASK |
-			GeografiaModelImpl.COMPLESSITA_COLUMN_BITMASK);
+			new String[] {"geografiaId", "complessita"}, true);
 
 		_finderPathCountByIdComplessita = new FinderPath(
-			GeografiaModelImpl.ENTITY_CACHE_ENABLED,
-			GeografiaModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByIdComplessita",
-			new String[] {String.class.getName(), String.class.getName()});
+			new String[] {String.class.getName(), String.class.getName()},
+			new String[] {"geografiaId", "complessita"}, false);
 
 		_finderPathWithPaginationFindByAreaComplessita = new FinderPath(
-			GeografiaModelImpl.ENTITY_CACHE_ENABLED,
-			GeografiaModelImpl.FINDER_CACHE_ENABLED, GeografiaImpl.class,
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByAreaComplessita",
 			new String[] {
 				String.class.getName(), String.class.getName(),
 				Integer.class.getName(), Integer.class.getName(),
 				OrderByComparator.class.getName()
-			});
+			},
+			new String[] {"area", "complessita"}, true);
 
 		_finderPathWithoutPaginationFindByAreaComplessita = new FinderPath(
-			GeografiaModelImpl.ENTITY_CACHE_ENABLED,
-			GeografiaModelImpl.FINDER_CACHE_ENABLED, GeografiaImpl.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByAreaComplessita",
 			new String[] {String.class.getName(), String.class.getName()},
-			GeografiaModelImpl.AREA_COLUMN_BITMASK |
-			GeografiaModelImpl.COMPLESSITA_COLUMN_BITMASK);
+			new String[] {"area", "complessita"}, true);
 
 		_finderPathCountByAreaComplessita = new FinderPath(
-			GeografiaModelImpl.ENTITY_CACHE_ENABLED,
-			GeografiaModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByAreaComplessita",
-			new String[] {String.class.getName(), String.class.getName()});
+			new String[] {String.class.getName(), String.class.getName()},
+			new String[] {"area", "complessita"}, false);
+
+		GeografiaUtil.setPersistence(this);
 	}
 
-	public void destroy() {
+	@Deactivate
+	public void deactivate() {
+		GeografiaUtil.setPersistence(null);
+
 		entityCache.removeCache(GeografiaImpl.class.getName());
-		finderCache.removeCache(FINDER_CLASS_NAME_ENTITY);
-		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 	}
 
-	@ServiceReference(type = EntityCache.class)
+	@Override
+	@Reference(
+		target = ALLERTERPersistenceConstants.SERVICE_CONFIGURATION_FILTER,
+		unbind = "-"
+	)
+	public void setConfiguration(Configuration configuration) {
+	}
+
+	@Override
+	@Reference(
+		target = ALLERTERPersistenceConstants.ORIGIN_BUNDLE_SYMBOLIC_NAME_FILTER,
+		unbind = "-"
+	)
+	public void setDataSource(DataSource dataSource) {
+		super.setDataSource(dataSource);
+	}
+
+	@Override
+	@Reference(
+		target = ALLERTERPersistenceConstants.ORIGIN_BUNDLE_SYMBOLIC_NAME_FILTER,
+		unbind = "-"
+	)
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		super.setSessionFactory(sessionFactory);
+	}
+
+	@Reference
 	protected EntityCache entityCache;
 
-	@ServiceReference(type = FinderCache.class)
+	@Reference
 	protected FinderCache finderCache;
 
 	private static final String _SQL_SELECT_GEOGRAFIA =
@@ -4841,5 +4494,10 @@ public class GeografiaPersistenceImpl
 
 	private static final Set<String> _compoundPKColumnNames = SetUtil.fromArray(
 		new String[] {"geografiaId", "tipo", "area", "complessita"});
+
+	@Override
+	protected FinderCache getFinderCache() {
+		return finderCache;
+	}
 
 }

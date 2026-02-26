@@ -33,7 +33,7 @@ import org.osgi.service.component.annotations.Component;
 		"com.liferay.portlet.display-category=" +  AllertaKeys.AllertaCategory,
 		"com.liferay.portlet.use-default-template=true",
 		"com.liferay.portlet.instanceable=false",
-		"com.liferay.portlet.footer-portlet-javascript=/js/am.init.map-regional-and-local.js?v=1.0h",
+		"com.liferay.portlet.footer-portlet-javascript=/js/am.init.map-regional-and-local.js?v=1.0k",
 		"com.liferay.fragment.entry.processor.portlet.alias=previsioni-home",
 		"javax.portlet.display-name=Allerta Previsioni Home", 
 		"javax.portlet.init-param.template-path=/",

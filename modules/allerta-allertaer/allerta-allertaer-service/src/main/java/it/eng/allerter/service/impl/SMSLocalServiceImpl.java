@@ -1,18 +1,11 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerter.service.impl;
+
+import com.liferay.portal.aop.AopService;
 
 import com.liferay.mail.kernel.model.MailMessage;
 import com.liferay.mail.kernel.service.MailServiceUtil;
@@ -59,28 +52,23 @@ import it.eng.allerte.service.RubricaNominativoLocalServiceUtil;
 import it.eng.allerter.model.AllertaParametro;
 import it.eng.allerter.model.Email;
 import it.eng.allerter.model.SMS;
+import it.eng.allerter.service.AllertaParametroLocalServiceUtil;
+import it.eng.allerter.service.EmailLocalServiceUtil;
 import it.eng.allerter.service.LogInternoLocalServiceUtil;
 import it.eng.allerter.service.SMSLocalServiceUtil;
 import it.eng.allerter.service.base.SMSLocalServiceBaseImpl;
 
+import org.osgi.service.component.annotations.Component;
+
 /**
- * The implementation of the sms local service.
- *
- * <p>
- * All custom service methods should be put in this class. Whenever methods are
- * added, rerun ServiceBuilder to copy their definitions into the
- * <code>it.eng.allerter.service.SMSLocalService</code> interface.
- *
- * <p>
- * This is a local service. Methods of this service will not have security
- * checks based on the propagated JAAS credentials because this service can only
- * be accessed from within the same VM.
- * </p>
- *
  * @author GFAVINI
- * @see SMSLocalServiceBaseImpl
  */
+@Component(
+	property = "model.class.name=it.eng.allerter.model.SMS",
+	service = AopService.class
+)
 public class SMSLocalServiceImpl extends SMSLocalServiceBaseImpl {
+	
 
 	/*
 	 * NOTE FOR DEVELOPERS:
@@ -441,7 +429,7 @@ public class SMSLocalServiceImpl extends SMSLocalServiceBaseImpl {
 
 		if (u.getEmailAddress() != null) {
 			long id = counterLocalService.increment(Email.class.getName());
-			Email e = emailLocalService.createEmail(id);
+			Email e = EmailLocalServiceUtil.createEmail(id);
 
 			e.setDestinatario(u.getUserId());
 			e.setIndirizzo(u.getEmailAddress().toLowerCase());
@@ -452,7 +440,7 @@ public class SMSLocalServiceImpl extends SMSLocalServiceBaseImpl {
 			e.setTipo(tipo);
 			e.setDataInvio(new Date());
 
-			emailLocalService.updateEmail(e);
+			EmailLocalServiceUtil.updateEmail(e);
 		}
 
 		// logger.info("TROVATE " + u.getEmailAddresses().size() + " EMAIL AGGIUNTIVE
@@ -464,7 +452,7 @@ public class SMSLocalServiceImpl extends SMSLocalServiceBaseImpl {
 				continue;
 
 			long id = counterLocalService.increment(Email.class.getName());
-			Email e = emailLocalService.createEmail(id);
+			Email e = EmailLocalServiceUtil.createEmail(id);
 
 			e.setDestinatario(u.getUserId());
 			e.setIndirizzo(ea.getAddress().toLowerCase());
@@ -475,7 +463,7 @@ public class SMSLocalServiceImpl extends SMSLocalServiceBaseImpl {
 			e.setTipo(tipo);
 			e.setDataInvio(new Date());
 
-			emailLocalService.updateEmail(e);
+			EmailLocalServiceUtil.updateEmail(e);
 		}
 
 	}
@@ -491,7 +479,7 @@ public class SMSLocalServiceImpl extends SMSLocalServiceBaseImpl {
 
 		}
 
-		// gi� che ci siamo creiamo anche le mail!
+		// giï¿½ che ci siamo creiamo anche le mail!
 		creaEmail(tipo, sottotipo, param, u);
 
 		return created;
@@ -574,7 +562,7 @@ public class SMSLocalServiceImpl extends SMSLocalServiceBaseImpl {
 				spedite++;
 			} catch (Exception e) {
 				logger.error(e);
-				// logInternoLocalService.log("smsLocalService", "creaNotificaContattoRubrica",
+				// LogInternoLocalServiceUtil.log("smsLocalService", "creaNotificaContattoRubrica",
 				// e, "");
 
 			}
@@ -586,7 +574,7 @@ public class SMSLocalServiceImpl extends SMSLocalServiceBaseImpl {
 
 				if (rc.getCONTATTO() != null && !"".equals(rc.getCONTATTO())) {
 					long id = counterLocalService.increment(Email.class.getName());
-					Email e = emailLocalService.createEmail(id);
+					Email e = EmailLocalServiceUtil.createEmail(id);
 
 					e.setDestinatario(rn.getID_NOMINATIVO());
 					e.setIndirizzo(rc.getCONTATTO());
@@ -597,12 +585,12 @@ public class SMSLocalServiceImpl extends SMSLocalServiceBaseImpl {
 					e.setTipo(tipo);
 					e.setDataInvio(new Date());
 
-					emailLocalService.updateEmail(e);
+					EmailLocalServiceUtil.updateEmail(e);
 					spedite++;
 				}
 			} catch (Exception e) {
 				logger.error(e);
-				// logInternoLocalService.log("SMSLocalServiceUtil",
+				// LogInternoLocalServiceUtil.log("SMSLocalServiceUtil",
 				// "creaNotificaContattoRubrica", e, "");
 
 			}
@@ -623,12 +611,12 @@ public class SMSLocalServiceImpl extends SMSLocalServiceBaseImpl {
 	 * @param sottotipo   il sottotipo della notifica (secondo elemento della
 	 *                    gerarchia tipo/sottotipo/param)
 	 * @param param       - il parametro della notifica (terzo elemento della
-	 *                    gerarchia tipo/sottotipo/param. questo � un numero che pu�
+	 *                    gerarchia tipo/sottotipo/param. questo è un numero che può
 	 *                    funzionare da chiave esterna)
 	 * @param groupOwner  - l'id del proprietario della rubrica in cui cercare il
 	 *                    gruppo
 	 * @param nomeGruppo  - il nome del gruppo da invocare
-	 * @param ricorsivo   - se true, l'invio � ricorsivo, cio� tutti i path non
+	 * @param ricorsivo   - se true, l'invio è ricorsivo, cioè tutti i path non
 	 *                    specificati nel parametro successivo ricevono la notifica
 	 * @param sottogruppi - una mappa String che dice a quali sottogruppi (indicati
 	 *                    con notazione "path/con/wildcard->TRUE" con wildcard e
@@ -691,7 +679,7 @@ public class SMSLocalServiceImpl extends SMSLocalServiceBaseImpl {
 
 				// filtra e togli il primo pezzo da tutti i path dei sottogruppi quando passi al
 				// livello inferiore. L'unica eccezione
-				// � la wildcard *, che vale da questo livello in poi.
+				// è la wildcard *, che vale da questo livello in poi.
 				nuoviSottogruppi.clear();
 				if (sottogruppi != null)
 					for (String s : sottogruppi) {
@@ -761,7 +749,7 @@ public class SMSLocalServiceImpl extends SMSLocalServiceBaseImpl {
 
 	public void creaEmailGroup(String tipo, String sottotipo, long param, long groupId) throws Exception {
 
-		logInternoLocalService.log("creaEmailGroup", "" + tipo + "," + groupId, "", "");
+		LogInternoLocalServiceUtil.log("creaEmailGroup", "" + tipo + "," + groupId, "", "");
 
 		for (User p : userLocalService.getGroupUsers(groupId)) {
 
@@ -774,7 +762,7 @@ public class SMSLocalServiceImpl extends SMSLocalServiceBaseImpl {
 
 	public void creaEmailOrganization(String tipo, String sottotipo, long param, long id) throws Exception {
 
-		logInternoLocalService.log("creaEmailOrganization", "" + tipo + "," + id, "", "");
+		LogInternoLocalServiceUtil.log("creaEmailOrganization", "" + tipo + "," + id, "", "");
 
 		for (User p : userLocalService.getOrganizationUsers(id)) {
 
@@ -788,7 +776,7 @@ public class SMSLocalServiceImpl extends SMSLocalServiceBaseImpl {
 	public void creaEmailGroupRole(String tipo, String sottotipo, long param, long groupId, long roleId)
 			throws Exception {
 
-		logInternoLocalService.log("creaEmailGroupRole", "" + tipo + "," + groupId, "", "");
+		LogInternoLocalServiceUtil.log("creaEmailGroupRole", "" + tipo + "," + groupId, "", "");
 
 		for (UserGroupRole p : UserGroupRoleLocalServiceUtil.getUserGroupRolesByGroupAndRole(groupId, roleId)) {
 
@@ -870,19 +858,19 @@ public class SMSLocalServiceImpl extends SMSLocalServiceBaseImpl {
 					}
 
 				}
-				// se gerarchia � vuota visitale tutte
+				// se gerarchia ï¿½ vuota visitale tutte
 				if (gerarchiaOrg == null || gerarchiaOrg.size() == 0)
 					created += creaSMSOrganization(from, testo, tipo, sottotipo, param, sub.getOrganizationId(), roleId,
 							gerarchiaOrg);
 
 			}
 
-			logInternoLocalService.log("creaSMSOrganization", o.getName(), "created " + created, null);
+			LogInternoLocalServiceUtil.log("creaSMSOrganization", o.getName(), "created " + created, null);
 
 			return created;
 
 		} catch (Exception e) {
-			logInternoLocalService.log("creaSMSOrganization", (o != null ? o.getName() : "" + organizationId), e, null);
+			LogInternoLocalServiceUtil.log("creaSMSOrganization", (o != null ? o.getName() : "" + organizationId), e, null);
 			return 0;
 		}
 
@@ -927,19 +915,19 @@ public class SMSLocalServiceImpl extends SMSLocalServiceBaseImpl {
 					}
 
 				}
-				// se gerarchia � vuota visitale tutte
+				// se gerarchia ï¿½ vuota visitale tutte
 				if (gerarchiaOrg == null || gerarchiaOrg.size() == 0)
 					created += creaOnlySMSOrganization(from, testo, tipo, sottotipo, param, sub.getOrganizationId(),
 							roleId, gerarchiaOrg);
 
 			}
 
-			logInternoLocalService.log("creaSMSOrganization", o.getName(), "created " + created, null);
+			LogInternoLocalServiceUtil.log("creaSMSOrganization", o.getName(), "created " + created, null);
 
 			return created;
 
 		} catch (Exception e) {
-			logInternoLocalService.log("creaSMSOrganization", (o != null ? o.getName() : "" + organizationId), e, null);
+			LogInternoLocalServiceUtil.log("creaSMSOrganization", (o != null ? o.getName() : "" + organizationId), e, null);
 			return 0;
 		}
 
@@ -995,7 +983,7 @@ public class SMSLocalServiceImpl extends SMSLocalServiceBaseImpl {
 		eliminaDuplicati(tipo, sottotipo, param);
 		List l = smsFinder.ottieniPerSpedizione(tipo, sottotipo, param);
 		if (l != null && l.size() > 0)
-			logInternoLocalService.log("sms", "Creazione SMS",
+			LogInternoLocalServiceUtil.log("sms", "Creazione SMS",
 					"Tipo " + tipo + ", sottotipo " + sottotipo + ": " + l.size() + " SMS creati", "");
 
 	}
@@ -1050,7 +1038,7 @@ public class SMSLocalServiceImpl extends SMSLocalServiceBaseImpl {
 
 		try {
  
-			// logInternoLocalService.log("inviaEmail", "inviaEmail-inizio", "", "");
+			// LogInternoLocalServiceUtil.log("inviaEmail", "inviaEmail-inizio", "", "");
 			if (configuration.enableTestMode()) {
 				indirizzi = new ArrayList<String>();
 			}
@@ -1060,11 +1048,11 @@ public class SMSLocalServiceImpl extends SMSLocalServiceBaseImpl {
 			if (indirizzi == null || indirizzi.size() == 0)
 				return;
 
-			// logInternoLocalService.log("inviaEmail", "inviaEmail-conto",
+			// LogInternoLocalServiceUtil.log("inviaEmail", "inviaEmail-conto",
 			// ""+indirizzi.size(), "");
 			List<String> indirizzi2 = new ArrayList<String>();
 			List<String> indirizzi3 = new ArrayList<String>();
-			Pattern p = Pattern.compile("^[a-zA-Z0-9.!#$%&�*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)+$");
+			Pattern p = Pattern.compile("^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)+$");
 			for (String ind : indirizzi) {
 				if (ind == null)
 					continue;
@@ -1095,9 +1083,10 @@ public class SMSLocalServiceImpl extends SMSLocalServiceBaseImpl {
 
 			MailMessage mailMessage = new MailMessage();
 			mailMessage.setBCC(ind);
-			if (from.getAddress().contains("allertameteoer.it")) {
+			/*if (from.getAddress().contains("allertameteoer.it")) {
 				from = new InternetAddress(from.getAddress().replaceAll("allertameteoer.it", "regione.emilia-romagna.it"));
-			}
+			}*/
+			from = new InternetAddress("NoReply.AllertaMeteoER@regione.emilia-romagna.it");
 			mailMessage.setFrom(from);
 			mailMessage.setTo(from);
 
@@ -1134,6 +1123,10 @@ public class SMSLocalServiceImpl extends SMSLocalServiceBaseImpl {
 			}
 
 			MailServiceUtil.sendEmail(mailMessage);
+			try {
+				Thread.sleep(2000);
+				
+			} catch (Exception e) {}
 			
 			if (indirizzi3!=null && indirizzi3.size()>0) {
 				try {
@@ -1149,9 +1142,10 @@ public class SMSLocalServiceImpl extends SMSLocalServiceBaseImpl {
 	
 					mailMessage = new MailMessage();
 					
-					if (from.getAddress().contains("allertameteoer.it")) {
+					/*if (from.getAddress().contains("allertameteoer.it")) {
 						from = new InternetAddress(from.getAddress().replaceAll("allertameteoer.it", "regione.emilia-romagna.it"));
-					}
+					}*/
+					from = new InternetAddress("NoReply.AllertaMeteoER@regione.emilia-romagna.it");
 					
 					mailMessage.setTo(from);
 					mailMessage.setBCC(ind);
@@ -1188,13 +1182,17 @@ public class SMSLocalServiceImpl extends SMSLocalServiceBaseImpl {
 					}
 	
 					MailServiceUtil.sendEmail(mailMessage);
+					try {
+						Thread.sleep(2000);
+						
+					} catch (Exception e) {}
 				} catch (Exception e ) {}
 			}
 			
 
 		} catch (Exception e) {
 			logger.error(e);
-			logInternoLocalService.log("inviaEmail", "inviaEmail", e, "");
+			LogInternoLocalServiceUtil.log("inviaEmail", "inviaEmail", e, "");
 		}
 
 	}
@@ -1254,7 +1252,7 @@ public class SMSLocalServiceImpl extends SMSLocalServiceBaseImpl {
 
 			List<String> indirizzi2 = new ArrayList<String>();
 			List<String> indirizzi3 = new ArrayList<String>();
-			Pattern p = Pattern.compile("^[a-zA-Z0-9.!#$%&�*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)+$");
+			Pattern p = Pattern.compile("^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)+$");
 			for (String ind : indirizzi) {
 				if (ind == null)
 					continue;
@@ -1287,9 +1285,10 @@ public class SMSLocalServiceImpl extends SMSLocalServiceBaseImpl {
 			MailMessage mailMessage = new MailMessage();
 			mailMessage.setBCC(ind);
 			
-			if (from.getAddress().contains("allertameteoer.it")) {
+			/*if (from.getAddress().contains("allertameteoer.it")) {
 				from = new InternetAddress(from.getAddress().replaceAll("allertameteoer.it", "regione.emilia-romagna.it"));
-			}
+			}*/
+			from = new InternetAddress("NoReply.AllertaMeteoER@regione.emilia-romagna.it");
 			
 			mailMessage.setTo(from);
 			mailMessage.setFrom(from);
@@ -1309,6 +1308,10 @@ public class SMSLocalServiceImpl extends SMSLocalServiceBaseImpl {
 			}
 			mailMessage.setHTMLFormat(true);
 			MailServiceUtil.sendEmail(mailMessage);
+			try {
+				Thread.sleep(2000);
+				
+			} catch (Exception e) {}
 			
 			if (indirizzi3!=null && indirizzi3.size()>0) {
 				try {
@@ -1349,7 +1352,7 @@ public class SMSLocalServiceImpl extends SMSLocalServiceBaseImpl {
 
 		} catch (Exception e) {
 			logger.error(e);
-			logInternoLocalService.log("inviaEmail", "inviaEmail", e, "");
+			LogInternoLocalServiceUtil.log("inviaEmail", "inviaEmail", e, "");
 		}
 
 	}
@@ -1362,7 +1365,7 @@ public class SMSLocalServiceImpl extends SMSLocalServiceBaseImpl {
 			return;
 		inviaEmail(l, subject, text, creaMittenteEmail(from, tipo));
 		if (l.size() > 0)
-			logInternoLocalService.log("email", "Invio email",
+			LogInternoLocalServiceUtil.log("email", "Invio email",
 					"Tipo " + tipo + ", sottotipo " + sottotipo + ", " + l.size() + " email create", "");
 
 	}
@@ -1376,7 +1379,7 @@ public class SMSLocalServiceImpl extends SMSLocalServiceBaseImpl {
 		inviaEmail(l, subject, text, creaMittenteEmail(from, tipo), attach, fileName);
 
 		if (l.size() > 0)
-			logInternoLocalService.log("email", "Invio email con allegato",
+			LogInternoLocalServiceUtil.log("email", "Invio email con allegato",
 					"Tipo " + tipo + ", sottotipo " + sottotipo + ", " + l.size() + " email create", "");
 
 	}
@@ -1390,7 +1393,7 @@ public class SMSLocalServiceImpl extends SMSLocalServiceBaseImpl {
 		inviaEmail(l, subject, text, creaMittenteEmail(from, tipo), attach, fileName);
 
 		if (l.size() > 0)
-			logInternoLocalService.log("email", "Invio email con allegati",
+			LogInternoLocalServiceUtil.log("email", "Invio email con allegati",
 					"Tipo " + tipo + ", sottotipo " + sottotipo + ", " + l.size() + " email create", "");
 
 	}
@@ -1407,7 +1410,7 @@ public class SMSLocalServiceImpl extends SMSLocalServiceBaseImpl {
 			if (tipo == null || indirizzo == null)
 				return null;
 
-			AllertaParametro ap = allertaParametroLocalService
+			AllertaParametro ap = AllertaParametroLocalServiceUtil
 					.fetchAllertaParametro("MITTENTE_EMAIL_" + tipo.toUpperCase());
 			if (ap == null)
 				return new InternetAddress(indirizzo);
@@ -1416,7 +1419,7 @@ public class SMSLocalServiceImpl extends SMSLocalServiceBaseImpl {
 
 		} catch (Exception e) {
 			logger.error(e);
-			// logInternoLocalService.log("SMSLocalServiceImpl", "creaMittenteEmail", e,
+			// LogInternoLocalServiceUtil.log("SMSLocalServiceImpl", "creaMittenteEmail", e,
 			// "");
 			return null;
 		}
@@ -1439,5 +1442,5 @@ public class SMSLocalServiceImpl extends SMSLocalServiceBaseImpl {
 	public List<SMS> findByTimestamp(String numero) throws SystemException {
 		return smsPersistence.findByTimestamp(numero);
 	}
-
+	
 }

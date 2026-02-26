@@ -1,24 +1,15 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.radarMeteo.service;
 
-import aQute.bnd.annotation.ProviderType;
+import com.liferay.portal.kernel.module.service.Snapshot;
 
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.util.tracker.ServiceTracker;
+import it.eng.radarMeteo.model.Img;
+
+import java.util.Map;
 
 /**
  * Provides the remote service utility for Img. This utility wraps
@@ -32,7 +23,6 @@ import org.osgi.util.tracker.ServiceTracker;
  * @see ImgService
  * @generated
  */
-@ProviderType
 public class ImgServiceUtil {
 
 	/*
@@ -40,13 +30,13 @@ public class ImgServiceUtil {
 	 *
 	 * Never modify this class directly. Add custom service methods to <code>it.eng.radarMeteo.service.impl.ImgServiceImpl</code> and rerun ServiceBuilder to regenerate this class.
 	 */
-	public static java.util.Map<String, Object> getInfoSensore(
+	public static Map<String, Object> getInfoSensore(
 		String stazione, String variabile) {
 
 		return getService().getInfoSensore(stazione, variabile);
 	}
 
-	public static it.eng.radarMeteo.model.Img getlastimages() {
+	public static Img getlastimages() {
 		return getService().getlastimages();
 	}
 
@@ -59,52 +49,39 @@ public class ImgServiceUtil {
 		return getService().getOSGiServiceIdentifier();
 	}
 
-	public static java.util.ArrayList<java.util.Map<String, Object>>
-		getSensorValues(String variabile, Long time) {
+	public static java.util.ArrayList<Map<String, Object>> getSensorValues(
+		String variabile, Long time) {
 
 		return getService().getSensorValues(variabile, time);
 	}
 
-	public static java.util.ArrayList<java.util.Map<String, Object>>
+	public static java.util.ArrayList<Map<String, Object>>
 		getsensorvaluesnotime(String variabile, long time) {
 
 		return getService().getsensorvaluesnotime(variabile, time);
 	}
 
-	public static java.util.ArrayList<java.util.Map<String, Object>>
-		getStations() {
-
+	public static java.util.ArrayList<Map<String, Object>> getStations() {
 		return getService().getStations();
 	}
 
-	public static java.util.ArrayList<java.util.Map<String, Object>>
-		getTimeSeries(String stazione, String variabile) {
+	public static java.util.ArrayList<Map<String, Object>> getTimeSeries(
+		String stazione, String variabile) {
 
 		return getService().getTimeSeries(stazione, variabile);
 	}
 
-	public static java.util.ArrayList<java.util.Map<String, Object>> lastdata(
+	public static java.util.ArrayList<Map<String, Object>> lastdata(
 		String stazione, String variabile) {
 
 		return getService().lastdata(stazione, variabile);
 	}
 
 	public static ImgService getService() {
-		return _serviceTracker.getService();
+		return _serviceSnapshot.get();
 	}
 
-	private static ServiceTracker<ImgService, ImgService> _serviceTracker;
-
-	static {
-		Bundle bundle = FrameworkUtil.getBundle(ImgService.class);
-
-		ServiceTracker<ImgService, ImgService> serviceTracker =
-			new ServiceTracker<ImgService, ImgService>(
-				bundle.getBundleContext(), ImgService.class, null);
-
-		serviceTracker.open();
-
-		_serviceTracker = serviceTracker;
-	}
+	private static final Snapshot<ImgService> _serviceSnapshot = new Snapshot<>(
+		ImgServiceUtil.class, ImgService.class);
 
 }

@@ -1,30 +1,15 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.animazione.image.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -35,22 +20,12 @@ import java.util.Objects;
  * @see altezzaOndaAdriac
  * @generated
  */
-@ProviderType
 public class altezzaOndaAdriacWrapper
+	extends BaseModelWrapper<altezzaOndaAdriac>
 	implements altezzaOndaAdriac, ModelWrapper<altezzaOndaAdriac> {
 
 	public altezzaOndaAdriacWrapper(altezzaOndaAdriac altezzaOndaAdriac) {
-		_altezzaOndaAdriac = altezzaOndaAdriac;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return altezzaOndaAdriac.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return altezzaOndaAdriac.class.getName();
+		super(altezzaOndaAdriac);
 	}
 
 	@Override
@@ -100,21 +75,8 @@ public class altezzaOndaAdriacWrapper
 	}
 
 	@Override
-	public Object clone() {
-		return new altezzaOndaAdriacWrapper(
-			(altezzaOndaAdriac)_altezzaOndaAdriac.clone());
-	}
-
-	@Override
-	public int compareTo(
-		it.eng.animazione.image.model.altezzaOndaAdriac altezzaOndaAdriac) {
-
-		return _altezzaOndaAdriac.compareTo(altezzaOndaAdriac);
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _altezzaOndaAdriac.getExpandoBridge();
+	public altezzaOndaAdriac cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -124,7 +86,7 @@ public class altezzaOndaAdriacWrapper
 	 */
 	@Override
 	public long getId() {
-		return _altezzaOndaAdriac.getId();
+		return model.getId();
 	}
 
 	/**
@@ -134,7 +96,7 @@ public class altezzaOndaAdriacWrapper
 	 */
 	@Override
 	public String getIm() {
-		return _altezzaOndaAdriac.getIm();
+		return model.getIm();
 	}
 
 	/**
@@ -144,7 +106,7 @@ public class altezzaOndaAdriacWrapper
 	 */
 	@Override
 	public String getImgData() {
-		return _altezzaOndaAdriac.getImgData();
+		return model.getImgData();
 	}
 
 	/**
@@ -154,12 +116,7 @@ public class altezzaOndaAdriacWrapper
 	 */
 	@Override
 	public long getPrimaryKey() {
-		return _altezzaOndaAdriac.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _altezzaOndaAdriac.getPrimaryKeyObj();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -169,7 +126,7 @@ public class altezzaOndaAdriacWrapper
 	 */
 	@Override
 	public String getText_LOC() {
-		return _altezzaOndaAdriac.getText_LOC();
+		return model.getText_LOC();
 	}
 
 	/**
@@ -179,54 +136,12 @@ public class altezzaOndaAdriacWrapper
 	 */
 	@Override
 	public long getTs_UTC() {
-		return _altezzaOndaAdriac.getTs_UTC();
-	}
-
-	@Override
-	public int hashCode() {
-		return _altezzaOndaAdriac.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _altezzaOndaAdriac.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _altezzaOndaAdriac.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _altezzaOndaAdriac.isNew();
+		return model.getTs_UTC();
 	}
 
 	@Override
 	public void persist() {
-		_altezzaOndaAdriac.persist();
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_altezzaOndaAdriac.setCachedModel(cachedModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_altezzaOndaAdriac.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_altezzaOndaAdriac.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_altezzaOndaAdriac.setExpandoBridgeAttributes(serviceContext);
+		model.persist();
 	}
 
 	/**
@@ -236,7 +151,7 @@ public class altezzaOndaAdriacWrapper
 	 */
 	@Override
 	public void setId(long id) {
-		_altezzaOndaAdriac.setId(id);
+		model.setId(id);
 	}
 
 	/**
@@ -246,7 +161,7 @@ public class altezzaOndaAdriacWrapper
 	 */
 	@Override
 	public void setIm(String im) {
-		_altezzaOndaAdriac.setIm(im);
+		model.setIm(im);
 	}
 
 	/**
@@ -256,12 +171,7 @@ public class altezzaOndaAdriacWrapper
 	 */
 	@Override
 	public void setImgData(String imgData) {
-		_altezzaOndaAdriac.setImgData(imgData);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_altezzaOndaAdriac.setNew(n);
+		model.setImgData(imgData);
 	}
 
 	/**
@@ -271,12 +181,7 @@ public class altezzaOndaAdriacWrapper
 	 */
 	@Override
 	public void setPrimaryKey(long primaryKey) {
-		_altezzaOndaAdriac.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_altezzaOndaAdriac.setPrimaryKeyObj(primaryKeyObj);
+		model.setPrimaryKey(primaryKey);
 	}
 
 	/**
@@ -286,7 +191,7 @@ public class altezzaOndaAdriacWrapper
 	 */
 	@Override
 	public void setText_LOC(String text_LOC) {
-		_altezzaOndaAdriac.setText_LOC(text_LOC);
+		model.setText_LOC(text_LOC);
 	}
 
 	/**
@@ -296,81 +201,19 @@ public class altezzaOndaAdriacWrapper
 	 */
 	@Override
 	public void setTs_UTC(long ts_UTC) {
-		_altezzaOndaAdriac.setTs_UTC(ts_UTC);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<it.eng.animazione.image.model.altezzaOndaAdriac> toCacheModel() {
-
-		return _altezzaOndaAdriac.toCacheModel();
-	}
-
-	@Override
-	public it.eng.animazione.image.model.altezzaOndaAdriac toEscapedModel() {
-		return new altezzaOndaAdriacWrapper(
-			_altezzaOndaAdriac.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _altezzaOndaAdriac.toString();
-	}
-
-	@Override
-	public it.eng.animazione.image.model.altezzaOndaAdriac toUnescapedModel() {
-		return new altezzaOndaAdriacWrapper(
-			_altezzaOndaAdriac.toUnescapedModel());
+		model.setTs_UTC(ts_UTC);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _altezzaOndaAdriac.toXmlString();
+		return model.toXmlString();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
+	protected altezzaOndaAdriacWrapper wrap(
+		altezzaOndaAdriac altezzaOndaAdriac) {
 
-		if (!(obj instanceof altezzaOndaAdriacWrapper)) {
-			return false;
-		}
-
-		altezzaOndaAdriacWrapper altezzaOndaAdriacWrapper =
-			(altezzaOndaAdriacWrapper)obj;
-
-		if (Objects.equals(
-				_altezzaOndaAdriac,
-				altezzaOndaAdriacWrapper._altezzaOndaAdriac)) {
-
-			return true;
-		}
-
-		return false;
+		return new altezzaOndaAdriacWrapper(altezzaOndaAdriac);
 	}
-
-	@Override
-	public altezzaOndaAdriac getWrappedModel() {
-		return _altezzaOndaAdriac;
-	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _altezzaOndaAdriac.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _altezzaOndaAdriac.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_altezzaOndaAdriac.resetOriginalValues();
-	}
-
-	private final altezzaOndaAdriac _altezzaOndaAdriac;
 
 }

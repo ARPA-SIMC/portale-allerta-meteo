@@ -3,7 +3,9 @@ package it.eng.allerte.service.persistence.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.liferay.portal.dao.orm.custom.sql.CustomSQL;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
 import com.liferay.portal.kernel.dao.orm.CacheMode;
 import com.liferay.portal.kernel.dao.orm.QueryPos;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
@@ -14,18 +16,19 @@ import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
-import com.liferay.portal.spring.extender.service.ServiceReference;
+//import com.liferay.util.dao.orm.CustomSQLUtil;
 
 import it.eng.allerte.model.RubricaGruppoGruppi;
+import it.eng.allerte.service.persistence.RubricaContattoFinder;
 import it.eng.allerte.service.persistence.RubricaGruppoGruppiFinder;
 
-
+@Component(service = RubricaGruppoGruppiFinder.class)
 public class RubricaGruppoGruppiFinderImpl extends RubricaGruppoGruppiFinderBaseImpl 
 	implements RubricaGruppoGruppiFinder{
 		
 	public static final Log _log = LogFactoryUtil.getLog(RubricaGruppoGruppiFinderImpl.class);
 		
-		private String GET_ANTENATI = RubricaGruppoGruppiFinderImpl.class.getName()
+		/*private String GET_ANTENATI = RubricaGruppoGruppiFinderImpl.class.getName()
 				+ ".getAntenati";
 		
 		private String GET_GRUPPI_FIGLI = RubricaGruppoGruppiFinderImpl.class.getName()
@@ -38,14 +41,36 @@ public class RubricaGruppoGruppiFinderImpl extends RubricaGruppoGruppiFinderBase
 				+ ".deleteGruppoPadreFiglio";
 		
 		private String DEL_GRUPPO_SOTTO_GRUPPO = RubricaGruppoGruppiFinderImpl.class.getName()
-				+ ".deleteGruppoSottoGruppo";
+				+ ".deleteGruppoSottoGruppo";*/
+	
+	private String GET_ANTENATI = "select rgg.FK_GRUPPO_PADRE\r\n"
+			+ "	from  rubrica_rubricaGruppoGruppi rgg, rubrica_rubricaGruppo rg\r\n"
+			+ "	where rgg.FK_GRUPPO_FIGLIO = ?\r\n"
+			+ "	and rg.id_gruppo = rgg.fk_gruppo_figlio\r\n"
+			+ "	and not rg.disabled";
+	
+	private String GET_GRUPPI_FIGLI = "select rgg.FK_GRUPPO_PADRE, rgg.FK_GRUPPO_FIGLIO\r\n"
+			+ "	from  rubrica_rubricaGruppoGruppi rgg, rubrica_rubricaGruppo rg \r\n"
+			+ "	where rgg.FK_GRUPPO_PADRE = ? \r\n"
+			+ "		  and rg.id_gruppo = rgg.fk_gruppo_figlio \r\n"
+			+ "		  and not rg.disabled";
+	
+	private String GET_GRUPPI_PADRE_FIGLI = "select rgg.FK_GRUPPO_PADRE, rg.nome, rgg.FK_GRUPPO_FIGLIO\r\n"
+			+ "	from  rubrica_rubricaGruppoGruppi rgg, rubrica_rubricaGruppo rg \r\n"
+			+ "	where rgg.FK_GRUPPO_FIGLIO= ?\r\n"
+			+ "		  and rg.id_gruppo = rgg.fk_gruppo_padre \r\n"
+			+ "		  and not rg.disabled";
+	
+	private String DEL_GRUPPO_PADRE_FIGLIO = "delete from rubrica_rubricaGruppoGruppi where FK_GRUPPO_PADRE = ? or FK_GRUPPO_FIGLIO = ?";
+	
+	private String DEL_GRUPPO_SOTTO_GRUPPO = "delete from rubrica_rubricaGruppoGruppi where FK_GRUPPO_PADRE = ? and FK_GRUPPO_FIGLIO = ?";
 
 		public ArrayList<Object[]> getAntenati(Long fkGruppoFiglio) {
 			Session session = null;
 			try{
 				session = openSession();
 
-				String sql = customSQL.get(this.getClass(), GET_ANTENATI);
+				String sql =  GET_ANTENATI;
 
 				SQLQuery query = session.createSQLQuery(sql);
 				query.setCacheable(false);
@@ -78,7 +103,7 @@ public class RubricaGruppoGruppiFinderImpl extends RubricaGruppoGruppiFinderBase
 			try{
 				session = openSession();
 
-				String sql = customSQL.get(this.getClass(), GET_GRUPPI_FIGLI);
+				String sql =  GET_GRUPPI_FIGLI;
 
 				SQLQuery query = session.createSQLQuery(sql);
 				query.setCacheable(false);
@@ -112,7 +137,7 @@ public class RubricaGruppoGruppiFinderImpl extends RubricaGruppoGruppiFinderBase
 			try{
 				session = openSession();
 
-				String sql = customSQL.get(this.getClass(), GET_GRUPPI_PADRE_FIGLI);
+				String sql =  GET_GRUPPI_PADRE_FIGLI;
 
 				SQLQuery query = session.createSQLQuery(sql);
 				query.setCacheable(false);
@@ -150,7 +175,7 @@ public class RubricaGruppoGruppiFinderImpl extends RubricaGruppoGruppiFinderBase
 			try{
 				session = openSession();
 
-				String sql = customSQL.get(this.getClass(), DEL_GRUPPO_PADRE_FIGLIO);
+				String sql =  DEL_GRUPPO_PADRE_FIGLIO;
 
 				SQLQuery query = session.createSQLQuery(sql);
 				query.setCacheable(false);
@@ -181,7 +206,7 @@ public class RubricaGruppoGruppiFinderImpl extends RubricaGruppoGruppiFinderBase
 			try{
 				session = openSession();
 
-				String sql = customSQL.get(this.getClass(), DEL_GRUPPO_SOTTO_GRUPPO);
+				String sql =  DEL_GRUPPO_SOTTO_GRUPPO;
 
 				SQLQuery query = session.createSQLQuery(sql);
 				query.setCacheable(false);
@@ -205,8 +230,6 @@ public class RubricaGruppoGruppiFinderImpl extends RubricaGruppoGruppiFinderBase
 			}
 		}
 		
-		@ServiceReference(type = CustomSQL.class)
-		private CustomSQL customSQL;
 
 }
 

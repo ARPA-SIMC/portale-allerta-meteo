@@ -1,30 +1,15 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.animazione.image.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -35,22 +20,12 @@ import java.util.Objects;
  * @see altezzaOnda
  * @generated
  */
-@ProviderType
 public class altezzaOndaWrapper
+	extends BaseModelWrapper<altezzaOnda>
 	implements altezzaOnda, ModelWrapper<altezzaOnda> {
 
 	public altezzaOndaWrapper(altezzaOnda altezzaOnda) {
-		_altezzaOnda = altezzaOnda;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return altezzaOnda.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return altezzaOnda.class.getName();
+		super(altezzaOnda);
 	}
 
 	@Override
@@ -100,20 +75,8 @@ public class altezzaOndaWrapper
 	}
 
 	@Override
-	public Object clone() {
-		return new altezzaOndaWrapper((altezzaOnda)_altezzaOnda.clone());
-	}
-
-	@Override
-	public int compareTo(
-		it.eng.animazione.image.model.altezzaOnda altezzaOnda) {
-
-		return _altezzaOnda.compareTo(altezzaOnda);
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _altezzaOnda.getExpandoBridge();
+	public altezzaOnda cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -123,7 +86,7 @@ public class altezzaOndaWrapper
 	 */
 	@Override
 	public long getId() {
-		return _altezzaOnda.getId();
+		return model.getId();
 	}
 
 	/**
@@ -133,7 +96,7 @@ public class altezzaOndaWrapper
 	 */
 	@Override
 	public String getIm() {
-		return _altezzaOnda.getIm();
+		return model.getIm();
 	}
 
 	/**
@@ -143,7 +106,7 @@ public class altezzaOndaWrapper
 	 */
 	@Override
 	public String getImgData() {
-		return _altezzaOnda.getImgData();
+		return model.getImgData();
 	}
 
 	/**
@@ -153,12 +116,7 @@ public class altezzaOndaWrapper
 	 */
 	@Override
 	public long getPrimaryKey() {
-		return _altezzaOnda.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _altezzaOnda.getPrimaryKeyObj();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -168,7 +126,7 @@ public class altezzaOndaWrapper
 	 */
 	@Override
 	public String getText_LOC() {
-		return _altezzaOnda.getText_LOC();
+		return model.getText_LOC();
 	}
 
 	/**
@@ -178,54 +136,12 @@ public class altezzaOndaWrapper
 	 */
 	@Override
 	public long getTs_UTC() {
-		return _altezzaOnda.getTs_UTC();
-	}
-
-	@Override
-	public int hashCode() {
-		return _altezzaOnda.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _altezzaOnda.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _altezzaOnda.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _altezzaOnda.isNew();
+		return model.getTs_UTC();
 	}
 
 	@Override
 	public void persist() {
-		_altezzaOnda.persist();
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_altezzaOnda.setCachedModel(cachedModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_altezzaOnda.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_altezzaOnda.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_altezzaOnda.setExpandoBridgeAttributes(serviceContext);
+		model.persist();
 	}
 
 	/**
@@ -235,7 +151,7 @@ public class altezzaOndaWrapper
 	 */
 	@Override
 	public void setId(long id) {
-		_altezzaOnda.setId(id);
+		model.setId(id);
 	}
 
 	/**
@@ -245,7 +161,7 @@ public class altezzaOndaWrapper
 	 */
 	@Override
 	public void setIm(String im) {
-		_altezzaOnda.setIm(im);
+		model.setIm(im);
 	}
 
 	/**
@@ -255,12 +171,7 @@ public class altezzaOndaWrapper
 	 */
 	@Override
 	public void setImgData(String imgData) {
-		_altezzaOnda.setImgData(imgData);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_altezzaOnda.setNew(n);
+		model.setImgData(imgData);
 	}
 
 	/**
@@ -270,12 +181,7 @@ public class altezzaOndaWrapper
 	 */
 	@Override
 	public void setPrimaryKey(long primaryKey) {
-		_altezzaOnda.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_altezzaOnda.setPrimaryKeyObj(primaryKeyObj);
+		model.setPrimaryKey(primaryKey);
 	}
 
 	/**
@@ -285,7 +191,7 @@ public class altezzaOndaWrapper
 	 */
 	@Override
 	public void setText_LOC(String text_LOC) {
-		_altezzaOnda.setText_LOC(text_LOC);
+		model.setText_LOC(text_LOC);
 	}
 
 	/**
@@ -295,75 +201,17 @@ public class altezzaOndaWrapper
 	 */
 	@Override
 	public void setTs_UTC(long ts_UTC) {
-		_altezzaOnda.setTs_UTC(ts_UTC);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<it.eng.animazione.image.model.altezzaOnda> toCacheModel() {
-
-		return _altezzaOnda.toCacheModel();
-	}
-
-	@Override
-	public it.eng.animazione.image.model.altezzaOnda toEscapedModel() {
-		return new altezzaOndaWrapper(_altezzaOnda.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _altezzaOnda.toString();
-	}
-
-	@Override
-	public it.eng.animazione.image.model.altezzaOnda toUnescapedModel() {
-		return new altezzaOndaWrapper(_altezzaOnda.toUnescapedModel());
+		model.setTs_UTC(ts_UTC);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _altezzaOnda.toXmlString();
+		return model.toXmlString();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-
-		if (!(obj instanceof altezzaOndaWrapper)) {
-			return false;
-		}
-
-		altezzaOndaWrapper altezzaOndaWrapper = (altezzaOndaWrapper)obj;
-
-		if (Objects.equals(_altezzaOnda, altezzaOndaWrapper._altezzaOnda)) {
-			return true;
-		}
-
-		return false;
+	protected altezzaOndaWrapper wrap(altezzaOnda altezzaOnda) {
+		return new altezzaOndaWrapper(altezzaOnda);
 	}
-
-	@Override
-	public altezzaOnda getWrappedModel() {
-		return _altezzaOnda;
-	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _altezzaOnda.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _altezzaOnda.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_altezzaOnda.resetOriginalValues();
-	}
-
-	private final altezzaOnda _altezzaOnda;
 
 }

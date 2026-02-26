@@ -1,30 +1,15 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.bollettino.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -35,22 +20,12 @@ import java.util.Objects;
  * @see BollettinoParametro
  * @generated
  */
-@ProviderType
 public class BollettinoParametroWrapper
+	extends BaseModelWrapper<BollettinoParametro>
 	implements BollettinoParametro, ModelWrapper<BollettinoParametro> {
 
 	public BollettinoParametroWrapper(BollettinoParametro bollettinoParametro) {
-		_bollettinoParametro = bollettinoParametro;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return BollettinoParametro.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return BollettinoParametro.class.getName();
+		super(bollettinoParametro);
 	}
 
 	@Override
@@ -79,21 +54,8 @@ public class BollettinoParametroWrapper
 	}
 
 	@Override
-	public Object clone() {
-		return new BollettinoParametroWrapper(
-			(BollettinoParametro)_bollettinoParametro.clone());
-	}
-
-	@Override
-	public int compareTo(
-		it.eng.bollettino.model.BollettinoParametro bollettinoParametro) {
-
-		return _bollettinoParametro.compareTo(bollettinoParametro);
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _bollettinoParametro.getExpandoBridge();
+	public BollettinoParametro cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -103,7 +65,7 @@ public class BollettinoParametroWrapper
 	 */
 	@Override
 	public String getParametroId() {
-		return _bollettinoParametro.getParametroId();
+		return model.getParametroId();
 	}
 
 	/**
@@ -113,12 +75,7 @@ public class BollettinoParametroWrapper
 	 */
 	@Override
 	public String getPrimaryKey() {
-		return _bollettinoParametro.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _bollettinoParametro.getPrimaryKeyObj();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -128,59 +85,12 @@ public class BollettinoParametroWrapper
 	 */
 	@Override
 	public String getValore() {
-		return _bollettinoParametro.getValore();
-	}
-
-	@Override
-	public int hashCode() {
-		return _bollettinoParametro.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _bollettinoParametro.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _bollettinoParametro.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _bollettinoParametro.isNew();
+		return model.getValore();
 	}
 
 	@Override
 	public void persist() {
-		_bollettinoParametro.persist();
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_bollettinoParametro.setCachedModel(cachedModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_bollettinoParametro.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_bollettinoParametro.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_bollettinoParametro.setExpandoBridgeAttributes(serviceContext);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_bollettinoParametro.setNew(n);
+		model.persist();
 	}
 
 	/**
@@ -190,7 +100,7 @@ public class BollettinoParametroWrapper
 	 */
 	@Override
 	public void setParametroId(String parametroId) {
-		_bollettinoParametro.setParametroId(parametroId);
+		model.setParametroId(parametroId);
 	}
 
 	/**
@@ -200,12 +110,7 @@ public class BollettinoParametroWrapper
 	 */
 	@Override
 	public void setPrimaryKey(String primaryKey) {
-		_bollettinoParametro.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_bollettinoParametro.setPrimaryKeyObj(primaryKeyObj);
+		model.setPrimaryKey(primaryKey);
 	}
 
 	/**
@@ -215,81 +120,19 @@ public class BollettinoParametroWrapper
 	 */
 	@Override
 	public void setValore(String valore) {
-		_bollettinoParametro.setValore(valore);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<it.eng.bollettino.model.BollettinoParametro> toCacheModel() {
-
-		return _bollettinoParametro.toCacheModel();
-	}
-
-	@Override
-	public it.eng.bollettino.model.BollettinoParametro toEscapedModel() {
-		return new BollettinoParametroWrapper(
-			_bollettinoParametro.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _bollettinoParametro.toString();
-	}
-
-	@Override
-	public it.eng.bollettino.model.BollettinoParametro toUnescapedModel() {
-		return new BollettinoParametroWrapper(
-			_bollettinoParametro.toUnescapedModel());
+		model.setValore(valore);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _bollettinoParametro.toXmlString();
+		return model.toXmlString();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
+	protected BollettinoParametroWrapper wrap(
+		BollettinoParametro bollettinoParametro) {
 
-		if (!(obj instanceof BollettinoParametroWrapper)) {
-			return false;
-		}
-
-		BollettinoParametroWrapper bollettinoParametroWrapper =
-			(BollettinoParametroWrapper)obj;
-
-		if (Objects.equals(
-				_bollettinoParametro,
-				bollettinoParametroWrapper._bollettinoParametro)) {
-
-			return true;
-		}
-
-		return false;
+		return new BollettinoParametroWrapper(bollettinoParametro);
 	}
-
-	@Override
-	public BollettinoParametro getWrappedModel() {
-		return _bollettinoParametro;
-	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _bollettinoParametro.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _bollettinoParametro.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_bollettinoParametro.resetOriginalValues();
-	}
-
-	private final BollettinoParametro _bollettinoParametro;
 
 }

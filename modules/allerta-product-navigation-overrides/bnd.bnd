@@ -1,4 +1,0 @@
-Bundle-Name: allerta-product-navigation-overrides
-Bundle-SymbolicName: allerta.product.navigation.overrides
-Bundle-Version: 1.0.0
-Fragment-Host: com.liferay.product.navigation.menu.web;bundle-version="4.0.6"

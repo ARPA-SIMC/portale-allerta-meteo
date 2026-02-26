@@ -1,31 +1,16 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package allerta.dewetra.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -36,21 +21,11 @@ import java.util.Objects;
  * @see HRW
  * @generated
  */
-@ProviderType
-public class HRWWrapper implements HRW, ModelWrapper<HRW> {
+public class HRWWrapper
+	extends BaseModelWrapper<HRW> implements HRW, ModelWrapper<HRW> {
 
 	public HRWWrapper(HRW hrw) {
-		_hrw = hrw;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return HRW.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return HRW.class.getName();
+		super(hrw);
 	}
 
 	@Override
@@ -191,13 +166,8 @@ public class HRWWrapper implements HRW, ModelWrapper<HRW> {
 	}
 
 	@Override
-	public Object clone() {
-		return new HRWWrapper((HRW)_hrw.clone());
-	}
-
-	@Override
-	public int compareTo(allerta.dewetra.model.HRW hrw) {
-		return _hrw.compareTo(hrw);
+	public HRW cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -207,7 +177,7 @@ public class HRWWrapper implements HRW, ModelWrapper<HRW> {
 	 */
 	@Override
 	public String getComune() {
-		return _hrw.getComune();
+		return model.getComune();
 	}
 
 	/**
@@ -217,7 +187,7 @@ public class HRWWrapper implements HRW, ModelWrapper<HRW> {
 	 */
 	@Override
 	public double getDir() {
-		return _hrw.getDir();
+		return model.getDir();
 	}
 
 	/**
@@ -227,12 +197,7 @@ public class HRWWrapper implements HRW, ModelWrapper<HRW> {
 	 */
 	@Override
 	public double getETM() {
-		return _hrw.getETM();
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _hrw.getExpandoBridge();
+		return model.getETM();
 	}
 
 	/**
@@ -242,7 +207,7 @@ public class HRWWrapper implements HRW, ModelWrapper<HRW> {
 	 */
 	@Override
 	public double getHRI() {
-		return _hrw.getHRI();
+		return model.getHRI();
 	}
 
 	/**
@@ -252,7 +217,7 @@ public class HRWWrapper implements HRW, ModelWrapper<HRW> {
 	 */
 	@Override
 	public long getId() {
-		return _hrw.getId();
+		return model.getId();
 	}
 
 	/**
@@ -262,7 +227,7 @@ public class HRWWrapper implements HRW, ModelWrapper<HRW> {
 	 */
 	@Override
 	public double getLGT() {
-		return _hrw.getLGT();
+		return model.getLGT();
 	}
 
 	/**
@@ -272,7 +237,7 @@ public class HRWWrapper implements HRW, ModelWrapper<HRW> {
 	 */
 	@Override
 	public double getPers() {
-		return _hrw.getPers();
+		return model.getPers();
 	}
 
 	/**
@@ -282,7 +247,7 @@ public class HRWWrapper implements HRW, ModelWrapper<HRW> {
 	 */
 	@Override
 	public double getPOH() {
-		return _hrw.getPOH();
+		return model.getPOH();
 	}
 
 	/**
@@ -292,12 +257,7 @@ public class HRWWrapper implements HRW, ModelWrapper<HRW> {
 	 */
 	@Override
 	public long getPrimaryKey() {
-		return _hrw.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _hrw.getPrimaryKeyObj();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -307,7 +267,7 @@ public class HRWWrapper implements HRW, ModelWrapper<HRW> {
 	 */
 	@Override
 	public double getSRI() {
-		return _hrw.getSRI();
+		return model.getSRI();
 	}
 
 	/**
@@ -317,7 +277,7 @@ public class HRWWrapper implements HRW, ModelWrapper<HRW> {
 	 */
 	@Override
 	public double getSRT() {
-		return _hrw.getSRT();
+		return model.getSRT();
 	}
 
 	/**
@@ -327,7 +287,7 @@ public class HRWWrapper implements HRW, ModelWrapper<HRW> {
 	 */
 	@Override
 	public double getSRT_3() {
-		return _hrw.getSRT_3();
+		return model.getSRT_3();
 	}
 
 	/**
@@ -337,7 +297,7 @@ public class HRWWrapper implements HRW, ModelWrapper<HRW> {
 	 */
 	@Override
 	public double getSRT_6() {
-		return _hrw.getSRT_6();
+		return model.getSRT_6();
 	}
 
 	/**
@@ -347,7 +307,7 @@ public class HRWWrapper implements HRW, ModelWrapper<HRW> {
 	 */
 	@Override
 	public double getSSI() {
-		return _hrw.getSSI();
+		return model.getSSI();
 	}
 
 	/**
@@ -357,7 +317,7 @@ public class HRWWrapper implements HRW, ModelWrapper<HRW> {
 	 */
 	@Override
 	public Date getTimestamp() {
-		return _hrw.getTimestamp();
+		return model.getTimestamp();
 	}
 
 	/**
@@ -367,7 +327,7 @@ public class HRWWrapper implements HRW, ModelWrapper<HRW> {
 	 */
 	@Override
 	public double getTOP() {
-		return _hrw.getTOP();
+		return model.getTOP();
 	}
 
 	/**
@@ -377,7 +337,7 @@ public class HRWWrapper implements HRW, ModelWrapper<HRW> {
 	 */
 	@Override
 	public double getVel() {
-		return _hrw.getVel();
+		return model.getVel();
 	}
 
 	/**
@@ -387,7 +347,7 @@ public class HRWWrapper implements HRW, ModelWrapper<HRW> {
 	 */
 	@Override
 	public double getVIL() {
-		return _hrw.getVIL();
+		return model.getVIL();
 	}
 
 	/**
@@ -397,37 +357,12 @@ public class HRWWrapper implements HRW, ModelWrapper<HRW> {
 	 */
 	@Override
 	public double getVMI() {
-		return _hrw.getVMI();
-	}
-
-	@Override
-	public int hashCode() {
-		return _hrw.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _hrw.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _hrw.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _hrw.isNew();
+		return model.getVMI();
 	}
 
 	@Override
 	public void persist() {
-		_hrw.persist();
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_hrw.setCachedModel(cachedModel);
+		model.persist();
 	}
 
 	/**
@@ -437,7 +372,7 @@ public class HRWWrapper implements HRW, ModelWrapper<HRW> {
 	 */
 	@Override
 	public void setComune(String comune) {
-		_hrw.setComune(comune);
+		model.setComune(comune);
 	}
 
 	/**
@@ -447,7 +382,7 @@ public class HRWWrapper implements HRW, ModelWrapper<HRW> {
 	 */
 	@Override
 	public void setDir(double Dir) {
-		_hrw.setDir(Dir);
+		model.setDir(Dir);
 	}
 
 	/**
@@ -457,24 +392,7 @@ public class HRWWrapper implements HRW, ModelWrapper<HRW> {
 	 */
 	@Override
 	public void setETM(double ETM) {
-		_hrw.setETM(ETM);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_hrw.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_hrw.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_hrw.setExpandoBridgeAttributes(serviceContext);
+		model.setETM(ETM);
 	}
 
 	/**
@@ -484,7 +402,7 @@ public class HRWWrapper implements HRW, ModelWrapper<HRW> {
 	 */
 	@Override
 	public void setHRI(double HRI) {
-		_hrw.setHRI(HRI);
+		model.setHRI(HRI);
 	}
 
 	/**
@@ -494,7 +412,7 @@ public class HRWWrapper implements HRW, ModelWrapper<HRW> {
 	 */
 	@Override
 	public void setId(long id) {
-		_hrw.setId(id);
+		model.setId(id);
 	}
 
 	/**
@@ -504,12 +422,7 @@ public class HRWWrapper implements HRW, ModelWrapper<HRW> {
 	 */
 	@Override
 	public void setLGT(double LGT) {
-		_hrw.setLGT(LGT);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_hrw.setNew(n);
+		model.setLGT(LGT);
 	}
 
 	/**
@@ -519,7 +432,7 @@ public class HRWWrapper implements HRW, ModelWrapper<HRW> {
 	 */
 	@Override
 	public void setPers(double Pers) {
-		_hrw.setPers(Pers);
+		model.setPers(Pers);
 	}
 
 	/**
@@ -529,7 +442,7 @@ public class HRWWrapper implements HRW, ModelWrapper<HRW> {
 	 */
 	@Override
 	public void setPOH(double POH) {
-		_hrw.setPOH(POH);
+		model.setPOH(POH);
 	}
 
 	/**
@@ -539,12 +452,7 @@ public class HRWWrapper implements HRW, ModelWrapper<HRW> {
 	 */
 	@Override
 	public void setPrimaryKey(long primaryKey) {
-		_hrw.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_hrw.setPrimaryKeyObj(primaryKeyObj);
+		model.setPrimaryKey(primaryKey);
 	}
 
 	/**
@@ -554,7 +462,7 @@ public class HRWWrapper implements HRW, ModelWrapper<HRW> {
 	 */
 	@Override
 	public void setSRI(double SRI) {
-		_hrw.setSRI(SRI);
+		model.setSRI(SRI);
 	}
 
 	/**
@@ -564,7 +472,7 @@ public class HRWWrapper implements HRW, ModelWrapper<HRW> {
 	 */
 	@Override
 	public void setSRT(double SRT) {
-		_hrw.setSRT(SRT);
+		model.setSRT(SRT);
 	}
 
 	/**
@@ -574,7 +482,7 @@ public class HRWWrapper implements HRW, ModelWrapper<HRW> {
 	 */
 	@Override
 	public void setSRT_3(double SRT_3) {
-		_hrw.setSRT_3(SRT_3);
+		model.setSRT_3(SRT_3);
 	}
 
 	/**
@@ -584,7 +492,7 @@ public class HRWWrapper implements HRW, ModelWrapper<HRW> {
 	 */
 	@Override
 	public void setSRT_6(double SRT_6) {
-		_hrw.setSRT_6(SRT_6);
+		model.setSRT_6(SRT_6);
 	}
 
 	/**
@@ -594,7 +502,7 @@ public class HRWWrapper implements HRW, ModelWrapper<HRW> {
 	 */
 	@Override
 	public void setSSI(double SSI) {
-		_hrw.setSSI(SSI);
+		model.setSSI(SSI);
 	}
 
 	/**
@@ -604,7 +512,7 @@ public class HRWWrapper implements HRW, ModelWrapper<HRW> {
 	 */
 	@Override
 	public void setTimestamp(Date timestamp) {
-		_hrw.setTimestamp(timestamp);
+		model.setTimestamp(timestamp);
 	}
 
 	/**
@@ -614,7 +522,7 @@ public class HRWWrapper implements HRW, ModelWrapper<HRW> {
 	 */
 	@Override
 	public void setTOP(double TOP) {
-		_hrw.setTOP(TOP);
+		model.setTOP(TOP);
 	}
 
 	/**
@@ -624,7 +532,7 @@ public class HRWWrapper implements HRW, ModelWrapper<HRW> {
 	 */
 	@Override
 	public void setVel(double Vel) {
-		_hrw.setVel(Vel);
+		model.setVel(Vel);
 	}
 
 	/**
@@ -634,7 +542,7 @@ public class HRWWrapper implements HRW, ModelWrapper<HRW> {
 	 */
 	@Override
 	public void setVIL(double VIL) {
-		_hrw.setVIL(VIL);
+		model.setVIL(VIL);
 	}
 
 	/**
@@ -644,75 +552,17 @@ public class HRWWrapper implements HRW, ModelWrapper<HRW> {
 	 */
 	@Override
 	public void setVMI(double VMI) {
-		_hrw.setVMI(VMI);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel<allerta.dewetra.model.HRW>
-		toCacheModel() {
-
-		return _hrw.toCacheModel();
-	}
-
-	@Override
-	public allerta.dewetra.model.HRW toEscapedModel() {
-		return new HRWWrapper(_hrw.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _hrw.toString();
-	}
-
-	@Override
-	public allerta.dewetra.model.HRW toUnescapedModel() {
-		return new HRWWrapper(_hrw.toUnescapedModel());
+		model.setVMI(VMI);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _hrw.toXmlString();
+		return model.toXmlString();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-
-		if (!(obj instanceof HRWWrapper)) {
-			return false;
-		}
-
-		HRWWrapper hrwWrapper = (HRWWrapper)obj;
-
-		if (Objects.equals(_hrw, hrwWrapper._hrw)) {
-			return true;
-		}
-
-		return false;
+	protected HRWWrapper wrap(HRW hrw) {
+		return new HRWWrapper(hrw);
 	}
-
-	@Override
-	public HRW getWrappedModel() {
-		return _hrw;
-	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _hrw.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _hrw.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_hrw.resetOriginalValues();
-	}
-
-	private final HRW _hrw;
 
 }

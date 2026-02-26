@@ -1,30 +1,15 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package allerta.catasto.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -35,21 +20,12 @@ import java.util.Objects;
  * @see Effetti
  * @generated
  */
-@ProviderType
-public class EffettiWrapper implements Effetti, ModelWrapper<Effetti> {
+public class EffettiWrapper
+	extends BaseModelWrapper<Effetti>
+	implements Effetti, ModelWrapper<Effetti> {
 
 	public EffettiWrapper(Effetti effetti) {
-		_effetti = effetti;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return Effetti.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return Effetti.class.getName();
+		super(effetti);
 	}
 
 	@Override
@@ -78,13 +54,8 @@ public class EffettiWrapper implements Effetti, ModelWrapper<Effetti> {
 	}
 
 	@Override
-	public Object clone() {
-		return new EffettiWrapper((Effetti)_effetti.clone());
-	}
-
-	@Override
-	public int compareTo(allerta.catasto.model.Effetti effetti) {
-		return _effetti.compareTo(effetti);
+	public Effetti cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -94,12 +65,7 @@ public class EffettiWrapper implements Effetti, ModelWrapper<Effetti> {
 	 */
 	@Override
 	public String getDescrizione() {
-		return _effetti.getDescrizione();
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _effetti.getExpandoBridge();
+		return model.getDescrizione();
 	}
 
 	/**
@@ -109,7 +75,7 @@ public class EffettiWrapper implements Effetti, ModelWrapper<Effetti> {
 	 */
 	@Override
 	public long getId() {
-		return _effetti.getId();
+		return model.getId();
 	}
 
 	/**
@@ -119,42 +85,12 @@ public class EffettiWrapper implements Effetti, ModelWrapper<Effetti> {
 	 */
 	@Override
 	public long getPrimaryKey() {
-		return _effetti.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _effetti.getPrimaryKeyObj();
-	}
-
-	@Override
-	public int hashCode() {
-		return _effetti.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _effetti.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _effetti.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _effetti.isNew();
+		return model.getPrimaryKey();
 	}
 
 	@Override
 	public void persist() {
-		_effetti.persist();
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_effetti.setCachedModel(cachedModel);
+		model.persist();
 	}
 
 	/**
@@ -164,24 +100,7 @@ public class EffettiWrapper implements Effetti, ModelWrapper<Effetti> {
 	 */
 	@Override
 	public void setDescrizione(String descrizione) {
-		_effetti.setDescrizione(descrizione);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_effetti.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_effetti.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_effetti.setExpandoBridgeAttributes(serviceContext);
+		model.setDescrizione(descrizione);
 	}
 
 	/**
@@ -191,12 +110,7 @@ public class EffettiWrapper implements Effetti, ModelWrapper<Effetti> {
 	 */
 	@Override
 	public void setId(long id) {
-		_effetti.setId(id);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_effetti.setNew(n);
+		model.setId(id);
 	}
 
 	/**
@@ -206,80 +120,17 @@ public class EffettiWrapper implements Effetti, ModelWrapper<Effetti> {
 	 */
 	@Override
 	public void setPrimaryKey(long primaryKey) {
-		_effetti.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_effetti.setPrimaryKeyObj(primaryKeyObj);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<allerta.catasto.model.Effetti> toCacheModel() {
-
-		return _effetti.toCacheModel();
-	}
-
-	@Override
-	public allerta.catasto.model.Effetti toEscapedModel() {
-		return new EffettiWrapper(_effetti.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _effetti.toString();
-	}
-
-	@Override
-	public allerta.catasto.model.Effetti toUnescapedModel() {
-		return new EffettiWrapper(_effetti.toUnescapedModel());
+		model.setPrimaryKey(primaryKey);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _effetti.toXmlString();
+		return model.toXmlString();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-
-		if (!(obj instanceof EffettiWrapper)) {
-			return false;
-		}
-
-		EffettiWrapper effettiWrapper = (EffettiWrapper)obj;
-
-		if (Objects.equals(_effetti, effettiWrapper._effetti)) {
-			return true;
-		}
-
-		return false;
+	protected EffettiWrapper wrap(Effetti effetti) {
+		return new EffettiWrapper(effetti);
 	}
-
-	@Override
-	public Effetti getWrappedModel() {
-		return _effetti;
-	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _effetti.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _effetti.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_effetti.resetOriginalValues();
-	}
-
-	private final Effetti _effetti;
 
 }

@@ -1,21 +1,12 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerte.service.persistence.impl;
 
-import aQute.bnd.annotation.ProviderType;
-
+import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
@@ -23,19 +14,24 @@ import com.liferay.portal.kernel.dao.orm.Query;
 import com.liferay.portal.kernel.dao.orm.QueryPos;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
+import com.liferay.portal.kernel.dao.orm.SessionFactory;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.kernel.util.PropsKeys;
+import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.ProxyUtil;
-import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.spring.extender.service.ServiceReference;
 
 import it.eng.allerte.exception.NoSuchRubricaLogException;
 import it.eng.allerte.model.RubricaLog;
+import it.eng.allerte.model.RubricaLogTable;
 import it.eng.allerte.model.impl.RubricaLogImpl;
 import it.eng.allerte.model.impl.RubricaLogModelImpl;
 import it.eng.allerte.service.persistence.RubricaLogPersistence;
+import it.eng.allerte.service.persistence.RubricaLogUtil;
+import it.eng.allerte.service.persistence.impl.constants.rubricaPersistenceConstants;
 
 import java.io.Serializable;
 
@@ -43,15 +39,18 @@ import java.lang.reflect.InvocationHandler;
 
 import java.sql.Timestamp;
 
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+
+import javax.sql.DataSource;
+
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The persistence implementation for the rubrica log service.
@@ -63,7 +62,7 @@ import java.util.Set;
  * @author Pratola_L
  * @generated
  */
-@ProviderType
+@Component(service = RubricaLogPersistence.class)
 public class RubricaLogPersistenceImpl
 	extends BasePersistenceImpl<RubricaLog> implements RubricaLogPersistence {
 
@@ -107,7 +106,7 @@ public class RubricaLogPersistenceImpl
 	 * Returns a range of all the rubrica logs where FK_UTENTE_MODIFICA = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaLogModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaLogModelImpl</code>.
 	 * </p>
 	 *
 	 * @param FK_UTENTE_MODIFICA the fk_utente_modifica
@@ -127,7 +126,7 @@ public class RubricaLogPersistenceImpl
 	 * Returns an ordered range of all the rubrica logs where FK_UTENTE_MODIFICA = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaLogModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaLogModelImpl</code>.
 	 * </p>
 	 *
 	 * @param FK_UTENTE_MODIFICA the fk_utente_modifica
@@ -149,35 +148,35 @@ public class RubricaLogPersistenceImpl
 	 * Returns an ordered range of all the rubrica logs where FK_UTENTE_MODIFICA = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaLogModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaLogModelImpl</code>.
 	 * </p>
 	 *
 	 * @param FK_UTENTE_MODIFICA the fk_utente_modifica
 	 * @param start the lower bound of the range of rubrica logs
 	 * @param end the upper bound of the range of rubrica logs (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching rubrica logs
 	 */
 	@Override
 	public List<RubricaLog> findByRubricaLogUtenteModifica(
 		long FK_UTENTE_MODIFICA, int start, int end,
 		OrderByComparator<RubricaLog> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath =
-				_finderPathWithoutPaginationFindByRubricaLogUtenteModifica;
-			finderArgs = new Object[] {FK_UTENTE_MODIFICA};
+			if (useFinderCache) {
+				finderPath =
+					_finderPathWithoutPaginationFindByRubricaLogUtenteModifica;
+				finderArgs = new Object[] {FK_UTENTE_MODIFICA};
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath =
 				_finderPathWithPaginationFindByRubricaLogUtenteModifica;
 			finderArgs = new Object[] {
@@ -187,14 +186,14 @@ public class RubricaLogPersistenceImpl
 
 		List<RubricaLog> list = null;
 
-		if (retrieveFromCache) {
-			list = (List<RubricaLog>)finderCache.getResult(
+		if (useFinderCache) {
+			list = (List<RubricaLog>)dummyFinderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (RubricaLog rubricaLog : list) {
-					if ((FK_UTENTE_MODIFICA !=
-							rubricaLog.getFK_UTENTE_MODIFICA())) {
+					if (FK_UTENTE_MODIFICA !=
+							rubricaLog.getFK_UTENTE_MODIFICA()) {
 
 						list = null;
 
@@ -205,63 +204,53 @@ public class RubricaLogPersistenceImpl
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					3 + (orderByComparator.getOrderByFields().length * 2));
 			}
 			else {
-				query = new StringBundler(3);
+				sb = new StringBundler(3);
 			}
 
-			query.append(_SQL_SELECT_RUBRICALOG_WHERE);
+			sb.append(_SQL_SELECT_RUBRICALOG_WHERE);
 
-			query.append(
+			sb.append(
 				_FINDER_COLUMN_RUBRICALOGUTENTEMODIFICA_FK_UTENTE_MODIFICA_2);
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 			}
-			else if (pagination) {
-				query.append(RubricaLogModelImpl.ORDER_BY_JPQL);
+			else {
+				sb.append(RubricaLogModelImpl.ORDER_BY_JPQL);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
-				qPos.add(FK_UTENTE_MODIFICA);
+				queryPos.add(FK_UTENTE_MODIFICA);
 
-				if (!pagination) {
-					list = (List<RubricaLog>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<RubricaLog>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<RubricaLog>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					dummyFinderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -292,16 +281,16 @@ public class RubricaLogPersistenceImpl
 			return rubricaLog;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("FK_UTENTE_MODIFICA=");
-		msg.append(FK_UTENTE_MODIFICA);
+		sb.append("FK_UTENTE_MODIFICA=");
+		sb.append(FK_UTENTE_MODIFICA);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchRubricaLogException(msg.toString());
+		throw new NoSuchRubricaLogException(sb.toString());
 	}
 
 	/**
@@ -347,16 +336,16 @@ public class RubricaLogPersistenceImpl
 			return rubricaLog;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("FK_UTENTE_MODIFICA=");
-		msg.append(FK_UTENTE_MODIFICA);
+		sb.append("FK_UTENTE_MODIFICA=");
+		sb.append(FK_UTENTE_MODIFICA);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchRubricaLogException(msg.toString());
+		throw new NoSuchRubricaLogException(sb.toString());
 	}
 
 	/**
@@ -423,8 +412,8 @@ public class RubricaLogPersistenceImpl
 
 			return array;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -435,102 +424,101 @@ public class RubricaLogPersistenceImpl
 		Session session, RubricaLog rubricaLog, long FK_UTENTE_MODIFICA,
 		OrderByComparator<RubricaLog> orderByComparator, boolean previous) {
 
-		StringBundler query = null;
+		StringBundler sb = null;
 
 		if (orderByComparator != null) {
-			query = new StringBundler(
+			sb = new StringBundler(
 				4 + (orderByComparator.getOrderByConditionFields().length * 3) +
 					(orderByComparator.getOrderByFields().length * 3));
 		}
 		else {
-			query = new StringBundler(3);
+			sb = new StringBundler(3);
 		}
 
-		query.append(_SQL_SELECT_RUBRICALOG_WHERE);
+		sb.append(_SQL_SELECT_RUBRICALOG_WHERE);
 
-		query.append(
-			_FINDER_COLUMN_RUBRICALOGUTENTEMODIFICA_FK_UTENTE_MODIFICA_2);
+		sb.append(_FINDER_COLUMN_RUBRICALOGUTENTEMODIFICA_FK_UTENTE_MODIFICA_2);
 
 		if (orderByComparator != null) {
 			String[] orderByConditionFields =
 				orderByComparator.getOrderByConditionFields();
 
 			if (orderByConditionFields.length > 0) {
-				query.append(WHERE_AND);
+				sb.append(WHERE_AND);
 			}
 
 			for (int i = 0; i < orderByConditionFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByConditionFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByConditionFields[i]);
 
 				if ((i + 1) < orderByConditionFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+						sb.append(WHERE_GREATER_THAN_HAS_NEXT);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+						sb.append(WHERE_LESSER_THAN_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN);
+						sb.append(WHERE_GREATER_THAN);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN);
+						sb.append(WHERE_LESSER_THAN);
 					}
 				}
 			}
 
-			query.append(ORDER_BY_CLAUSE);
+			sb.append(ORDER_BY_CLAUSE);
 
 			String[] orderByFields = orderByComparator.getOrderByFields();
 
 			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByFields[i]);
 
 				if ((i + 1) < orderByFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC_HAS_NEXT);
+						sb.append(ORDER_BY_ASC_HAS_NEXT);
 					}
 					else {
-						query.append(ORDER_BY_DESC_HAS_NEXT);
+						sb.append(ORDER_BY_DESC_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC);
+						sb.append(ORDER_BY_ASC);
 					}
 					else {
-						query.append(ORDER_BY_DESC);
+						sb.append(ORDER_BY_DESC);
 					}
 				}
 			}
 		}
 		else {
-			query.append(RubricaLogModelImpl.ORDER_BY_JPQL);
+			sb.append(RubricaLogModelImpl.ORDER_BY_JPQL);
 		}
 
-		String sql = query.toString();
+		String sql = sb.toString();
 
-		Query q = session.createQuery(sql);
+		Query query = session.createQuery(sql);
 
-		q.setFirstResult(0);
-		q.setMaxResults(2);
+		query.setFirstResult(0);
+		query.setMaxResults(2);
 
-		QueryPos qPos = QueryPos.getInstance(q);
+		QueryPos queryPos = QueryPos.getInstance(query);
 
-		qPos.add(FK_UTENTE_MODIFICA);
+		queryPos.add(FK_UTENTE_MODIFICA);
 
 		if (orderByComparator != null) {
 			for (Object orderByConditionValue :
 					orderByComparator.getOrderByConditionValues(rubricaLog)) {
 
-				qPos.add(orderByConditionValue);
+				queryPos.add(orderByConditionValue);
 			}
 		}
 
-		List<RubricaLog> list = q.list();
+		List<RubricaLog> list = query.list();
 
 		if (list.size() == 2) {
 			return list.get(1);
@@ -568,37 +556,36 @@ public class RubricaLogPersistenceImpl
 
 		Object[] finderArgs = new Object[] {FK_UTENTE_MODIFICA};
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = (Long)dummyFinderCache.getResult(
+			finderPath, finderArgs, this);
 
 		if (count == null) {
-			StringBundler query = new StringBundler(2);
+			StringBundler sb = new StringBundler(2);
 
-			query.append(_SQL_COUNT_RUBRICALOG_WHERE);
+			sb.append(_SQL_COUNT_RUBRICALOG_WHERE);
 
-			query.append(
+			sb.append(
 				_FINDER_COLUMN_RUBRICALOGUTENTEMODIFICA_FK_UTENTE_MODIFICA_2);
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
-				qPos.add(FK_UTENTE_MODIFICA);
+				queryPos.add(FK_UTENTE_MODIFICA);
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
-				finderCache.putResult(finderPath, finderArgs, count);
+				dummyFinderCache.putResult(finderPath, finderArgs, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -636,7 +623,7 @@ public class RubricaLogPersistenceImpl
 	 * Returns a range of all the rubrica logs where DATA_MODIFICA = &#63; and FK_SITO_PROPRIETARIO = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaLogModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaLogModelImpl</code>.
 	 * </p>
 	 *
 	 * @param DATA_MODIFICA the data_modifica
@@ -657,7 +644,7 @@ public class RubricaLogPersistenceImpl
 	 * Returns an ordered range of all the rubrica logs where DATA_MODIFICA = &#63; and FK_SITO_PROPRIETARIO = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaLogModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaLogModelImpl</code>.
 	 * </p>
 	 *
 	 * @param DATA_MODIFICA the data_modifica
@@ -681,7 +668,7 @@ public class RubricaLogPersistenceImpl
 	 * Returns an ordered range of all the rubrica logs where DATA_MODIFICA = &#63; and FK_SITO_PROPRIETARIO = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaLogModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaLogModelImpl</code>.
 	 * </p>
 	 *
 	 * @param DATA_MODIFICA the data_modifica
@@ -689,30 +676,30 @@ public class RubricaLogPersistenceImpl
 	 * @param start the lower bound of the range of rubrica logs
 	 * @param end the upper bound of the range of rubrica logs (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching rubrica logs
 	 */
 	@Override
 	public List<RubricaLog> findByRubricaLogDataModifica(
 		Date DATA_MODIFICA, long FK_SITO_PROPRIETARIO, int start, int end,
 		OrderByComparator<RubricaLog> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath =
-				_finderPathWithoutPaginationFindByRubricaLogDataModifica;
-			finderArgs = new Object[] {
-				_getTime(DATA_MODIFICA), FK_SITO_PROPRIETARIO
-			};
+			if (useFinderCache) {
+				finderPath =
+					_finderPathWithoutPaginationFindByRubricaLogDataModifica;
+				finderArgs = new Object[] {
+					_getTime(DATA_MODIFICA), FK_SITO_PROPRIETARIO
+				};
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByRubricaLogDataModifica;
 			finderArgs = new Object[] {
 				_getTime(DATA_MODIFICA), FK_SITO_PROPRIETARIO, start, end,
@@ -722,8 +709,8 @@ public class RubricaLogPersistenceImpl
 
 		List<RubricaLog> list = null;
 
-		if (retrieveFromCache) {
-			list = (List<RubricaLog>)finderCache.getResult(
+		if (useFinderCache) {
+			list = (List<RubricaLog>)dummyFinderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
@@ -742,80 +729,70 @@ public class RubricaLogPersistenceImpl
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					4 + (orderByComparator.getOrderByFields().length * 2));
 			}
 			else {
-				query = new StringBundler(4);
+				sb = new StringBundler(4);
 			}
 
-			query.append(_SQL_SELECT_RUBRICALOG_WHERE);
+			sb.append(_SQL_SELECT_RUBRICALOG_WHERE);
 
 			boolean bindDATA_MODIFICA = false;
 
 			if (DATA_MODIFICA == null) {
-				query.append(
+				sb.append(
 					_FINDER_COLUMN_RUBRICALOGDATAMODIFICA_DATA_MODIFICA_1);
 			}
 			else {
 				bindDATA_MODIFICA = true;
 
-				query.append(
+				sb.append(
 					_FINDER_COLUMN_RUBRICALOGDATAMODIFICA_DATA_MODIFICA_2);
 			}
 
-			query.append(
+			sb.append(
 				_FINDER_COLUMN_RUBRICALOGDATAMODIFICA_FK_SITO_PROPRIETARIO_2);
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 			}
-			else if (pagination) {
-				query.append(RubricaLogModelImpl.ORDER_BY_JPQL);
+			else {
+				sb.append(RubricaLogModelImpl.ORDER_BY_JPQL);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindDATA_MODIFICA) {
-					qPos.add(new Timestamp(DATA_MODIFICA.getTime()));
+					queryPos.add(new Timestamp(DATA_MODIFICA.getTime()));
 				}
 
-				qPos.add(FK_SITO_PROPRIETARIO);
+				queryPos.add(FK_SITO_PROPRIETARIO);
 
-				if (!pagination) {
-					list = (List<RubricaLog>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<RubricaLog>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<RubricaLog>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					dummyFinderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -847,19 +824,19 @@ public class RubricaLogPersistenceImpl
 			return rubricaLog;
 		}
 
-		StringBundler msg = new StringBundler(6);
+		StringBundler sb = new StringBundler(6);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("DATA_MODIFICA=");
-		msg.append(DATA_MODIFICA);
+		sb.append("DATA_MODIFICA=");
+		sb.append(DATA_MODIFICA);
 
-		msg.append(", FK_SITO_PROPRIETARIO=");
-		msg.append(FK_SITO_PROPRIETARIO);
+		sb.append(", FK_SITO_PROPRIETARIO=");
+		sb.append(FK_SITO_PROPRIETARIO);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchRubricaLogException(msg.toString());
+		throw new NoSuchRubricaLogException(sb.toString());
 	}
 
 	/**
@@ -907,19 +884,19 @@ public class RubricaLogPersistenceImpl
 			return rubricaLog;
 		}
 
-		StringBundler msg = new StringBundler(6);
+		StringBundler sb = new StringBundler(6);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("DATA_MODIFICA=");
-		msg.append(DATA_MODIFICA);
+		sb.append("DATA_MODIFICA=");
+		sb.append(DATA_MODIFICA);
 
-		msg.append(", FK_SITO_PROPRIETARIO=");
-		msg.append(FK_SITO_PROPRIETARIO);
+		sb.append(", FK_SITO_PROPRIETARIO=");
+		sb.append(FK_SITO_PROPRIETARIO);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchRubricaLogException(msg.toString());
+		throw new NoSuchRubricaLogException(sb.toString());
 	}
 
 	/**
@@ -990,8 +967,8 @@ public class RubricaLogPersistenceImpl
 
 			return array;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -1003,117 +980,116 @@ public class RubricaLogPersistenceImpl
 		long FK_SITO_PROPRIETARIO,
 		OrderByComparator<RubricaLog> orderByComparator, boolean previous) {
 
-		StringBundler query = null;
+		StringBundler sb = null;
 
 		if (orderByComparator != null) {
-			query = new StringBundler(
+			sb = new StringBundler(
 				5 + (orderByComparator.getOrderByConditionFields().length * 3) +
 					(orderByComparator.getOrderByFields().length * 3));
 		}
 		else {
-			query = new StringBundler(4);
+			sb = new StringBundler(4);
 		}
 
-		query.append(_SQL_SELECT_RUBRICALOG_WHERE);
+		sb.append(_SQL_SELECT_RUBRICALOG_WHERE);
 
 		boolean bindDATA_MODIFICA = false;
 
 		if (DATA_MODIFICA == null) {
-			query.append(_FINDER_COLUMN_RUBRICALOGDATAMODIFICA_DATA_MODIFICA_1);
+			sb.append(_FINDER_COLUMN_RUBRICALOGDATAMODIFICA_DATA_MODIFICA_1);
 		}
 		else {
 			bindDATA_MODIFICA = true;
 
-			query.append(_FINDER_COLUMN_RUBRICALOGDATAMODIFICA_DATA_MODIFICA_2);
+			sb.append(_FINDER_COLUMN_RUBRICALOGDATAMODIFICA_DATA_MODIFICA_2);
 		}
 
-		query.append(
-			_FINDER_COLUMN_RUBRICALOGDATAMODIFICA_FK_SITO_PROPRIETARIO_2);
+		sb.append(_FINDER_COLUMN_RUBRICALOGDATAMODIFICA_FK_SITO_PROPRIETARIO_2);
 
 		if (orderByComparator != null) {
 			String[] orderByConditionFields =
 				orderByComparator.getOrderByConditionFields();
 
 			if (orderByConditionFields.length > 0) {
-				query.append(WHERE_AND);
+				sb.append(WHERE_AND);
 			}
 
 			for (int i = 0; i < orderByConditionFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByConditionFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByConditionFields[i]);
 
 				if ((i + 1) < orderByConditionFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+						sb.append(WHERE_GREATER_THAN_HAS_NEXT);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+						sb.append(WHERE_LESSER_THAN_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN);
+						sb.append(WHERE_GREATER_THAN);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN);
+						sb.append(WHERE_LESSER_THAN);
 					}
 				}
 			}
 
-			query.append(ORDER_BY_CLAUSE);
+			sb.append(ORDER_BY_CLAUSE);
 
 			String[] orderByFields = orderByComparator.getOrderByFields();
 
 			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByFields[i]);
 
 				if ((i + 1) < orderByFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC_HAS_NEXT);
+						sb.append(ORDER_BY_ASC_HAS_NEXT);
 					}
 					else {
-						query.append(ORDER_BY_DESC_HAS_NEXT);
+						sb.append(ORDER_BY_DESC_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC);
+						sb.append(ORDER_BY_ASC);
 					}
 					else {
-						query.append(ORDER_BY_DESC);
+						sb.append(ORDER_BY_DESC);
 					}
 				}
 			}
 		}
 		else {
-			query.append(RubricaLogModelImpl.ORDER_BY_JPQL);
+			sb.append(RubricaLogModelImpl.ORDER_BY_JPQL);
 		}
 
-		String sql = query.toString();
+		String sql = sb.toString();
 
-		Query q = session.createQuery(sql);
+		Query query = session.createQuery(sql);
 
-		q.setFirstResult(0);
-		q.setMaxResults(2);
+		query.setFirstResult(0);
+		query.setMaxResults(2);
 
-		QueryPos qPos = QueryPos.getInstance(q);
+		QueryPos queryPos = QueryPos.getInstance(query);
 
 		if (bindDATA_MODIFICA) {
-			qPos.add(new Timestamp(DATA_MODIFICA.getTime()));
+			queryPos.add(new Timestamp(DATA_MODIFICA.getTime()));
 		}
 
-		qPos.add(FK_SITO_PROPRIETARIO);
+		queryPos.add(FK_SITO_PROPRIETARIO);
 
 		if (orderByComparator != null) {
 			for (Object orderByConditionValue :
 					orderByComparator.getOrderByConditionValues(rubricaLog)) {
 
-				qPos.add(orderByConditionValue);
+				queryPos.add(orderByConditionValue);
 			}
 		}
 
-		List<RubricaLog> list = q.list();
+		List<RubricaLog> list = query.list();
 
 		if (list.size() == 2) {
 			return list.get(1);
@@ -1159,54 +1135,53 @@ public class RubricaLogPersistenceImpl
 			_getTime(DATA_MODIFICA), FK_SITO_PROPRIETARIO
 		};
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = (Long)dummyFinderCache.getResult(
+			finderPath, finderArgs, this);
 
 		if (count == null) {
-			StringBundler query = new StringBundler(3);
+			StringBundler sb = new StringBundler(3);
 
-			query.append(_SQL_COUNT_RUBRICALOG_WHERE);
+			sb.append(_SQL_COUNT_RUBRICALOG_WHERE);
 
 			boolean bindDATA_MODIFICA = false;
 
 			if (DATA_MODIFICA == null) {
-				query.append(
+				sb.append(
 					_FINDER_COLUMN_RUBRICALOGDATAMODIFICA_DATA_MODIFICA_1);
 			}
 			else {
 				bindDATA_MODIFICA = true;
 
-				query.append(
+				sb.append(
 					_FINDER_COLUMN_RUBRICALOGDATAMODIFICA_DATA_MODIFICA_2);
 			}
 
-			query.append(
+			sb.append(
 				_FINDER_COLUMN_RUBRICALOGDATAMODIFICA_FK_SITO_PROPRIETARIO_2);
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindDATA_MODIFICA) {
-					qPos.add(new Timestamp(DATA_MODIFICA.getTime()));
+					queryPos.add(new Timestamp(DATA_MODIFICA.getTime()));
 				}
 
-				qPos.add(FK_SITO_PROPRIETARIO);
+				queryPos.add(FK_SITO_PROPRIETARIO);
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
-				finderCache.putResult(finderPath, finderArgs, count);
+				dummyFinderCache.putResult(finderPath, finderArgs, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -1252,7 +1227,7 @@ public class RubricaLogPersistenceImpl
 	 * Returns a range of all the rubrica logs where TABELLA = &#63; and FK_SITO_PROPRIETARIO = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaLogModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaLogModelImpl</code>.
 	 * </p>
 	 *
 	 * @param TABELLA the tabella
@@ -1273,7 +1248,7 @@ public class RubricaLogPersistenceImpl
 	 * Returns an ordered range of all the rubrica logs where TABELLA = &#63; and FK_SITO_PROPRIETARIO = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaLogModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaLogModelImpl</code>.
 	 * </p>
 	 *
 	 * @param TABELLA the tabella
@@ -1296,7 +1271,7 @@ public class RubricaLogPersistenceImpl
 	 * Returns an ordered range of all the rubrica logs where TABELLA = &#63; and FK_SITO_PROPRIETARIO = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaLogModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaLogModelImpl</code>.
 	 * </p>
 	 *
 	 * @param TABELLA the tabella
@@ -1304,29 +1279,30 @@ public class RubricaLogPersistenceImpl
 	 * @param start the lower bound of the range of rubrica logs
 	 * @param end the upper bound of the range of rubrica logs (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching rubrica logs
 	 */
 	@Override
 	public List<RubricaLog> findByRubricaLogTabella(
 		String TABELLA, long FK_SITO_PROPRIETARIO, int start, int end,
 		OrderByComparator<RubricaLog> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
 		TABELLA = Objects.toString(TABELLA, "");
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindByRubricaLogTabella;
-			finderArgs = new Object[] {TABELLA, FK_SITO_PROPRIETARIO};
+			if (useFinderCache) {
+				finderPath =
+					_finderPathWithoutPaginationFindByRubricaLogTabella;
+				finderArgs = new Object[] {TABELLA, FK_SITO_PROPRIETARIO};
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByRubricaLogTabella;
 			finderArgs = new Object[] {
 				TABELLA, FK_SITO_PROPRIETARIO, start, end, orderByComparator
@@ -1335,8 +1311,8 @@ public class RubricaLogPersistenceImpl
 
 		List<RubricaLog> list = null;
 
-		if (retrieveFromCache) {
-			list = (List<RubricaLog>)finderCache.getResult(
+		if (useFinderCache) {
+			list = (List<RubricaLog>)dummyFinderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
@@ -1354,78 +1330,67 @@ public class RubricaLogPersistenceImpl
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					4 + (orderByComparator.getOrderByFields().length * 2));
 			}
 			else {
-				query = new StringBundler(4);
+				sb = new StringBundler(4);
 			}
 
-			query.append(_SQL_SELECT_RUBRICALOG_WHERE);
+			sb.append(_SQL_SELECT_RUBRICALOG_WHERE);
 
 			boolean bindTABELLA = false;
 
 			if (TABELLA.isEmpty()) {
-				query.append(_FINDER_COLUMN_RUBRICALOGTABELLA_TABELLA_3);
+				sb.append(_FINDER_COLUMN_RUBRICALOGTABELLA_TABELLA_3);
 			}
 			else {
 				bindTABELLA = true;
 
-				query.append(_FINDER_COLUMN_RUBRICALOGTABELLA_TABELLA_2);
+				sb.append(_FINDER_COLUMN_RUBRICALOGTABELLA_TABELLA_2);
 			}
 
-			query.append(
-				_FINDER_COLUMN_RUBRICALOGTABELLA_FK_SITO_PROPRIETARIO_2);
+			sb.append(_FINDER_COLUMN_RUBRICALOGTABELLA_FK_SITO_PROPRIETARIO_2);
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 			}
-			else if (pagination) {
-				query.append(RubricaLogModelImpl.ORDER_BY_JPQL);
+			else {
+				sb.append(RubricaLogModelImpl.ORDER_BY_JPQL);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindTABELLA) {
-					qPos.add(TABELLA);
+					queryPos.add(TABELLA);
 				}
 
-				qPos.add(FK_SITO_PROPRIETARIO);
+				queryPos.add(FK_SITO_PROPRIETARIO);
 
-				if (!pagination) {
-					list = (List<RubricaLog>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<RubricaLog>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<RubricaLog>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					dummyFinderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -1457,19 +1422,19 @@ public class RubricaLogPersistenceImpl
 			return rubricaLog;
 		}
 
-		StringBundler msg = new StringBundler(6);
+		StringBundler sb = new StringBundler(6);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("TABELLA=");
-		msg.append(TABELLA);
+		sb.append("TABELLA=");
+		sb.append(TABELLA);
 
-		msg.append(", FK_SITO_PROPRIETARIO=");
-		msg.append(FK_SITO_PROPRIETARIO);
+		sb.append(", FK_SITO_PROPRIETARIO=");
+		sb.append(FK_SITO_PROPRIETARIO);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchRubricaLogException(msg.toString());
+		throw new NoSuchRubricaLogException(sb.toString());
 	}
 
 	/**
@@ -1517,19 +1482,19 @@ public class RubricaLogPersistenceImpl
 			return rubricaLog;
 		}
 
-		StringBundler msg = new StringBundler(6);
+		StringBundler sb = new StringBundler(6);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("TABELLA=");
-		msg.append(TABELLA);
+		sb.append("TABELLA=");
+		sb.append(TABELLA);
 
-		msg.append(", FK_SITO_PROPRIETARIO=");
-		msg.append(FK_SITO_PROPRIETARIO);
+		sb.append(", FK_SITO_PROPRIETARIO=");
+		sb.append(FK_SITO_PROPRIETARIO);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchRubricaLogException(msg.toString());
+		throw new NoSuchRubricaLogException(sb.toString());
 	}
 
 	/**
@@ -1600,8 +1565,8 @@ public class RubricaLogPersistenceImpl
 
 			return array;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -1613,116 +1578,116 @@ public class RubricaLogPersistenceImpl
 		long FK_SITO_PROPRIETARIO,
 		OrderByComparator<RubricaLog> orderByComparator, boolean previous) {
 
-		StringBundler query = null;
+		StringBundler sb = null;
 
 		if (orderByComparator != null) {
-			query = new StringBundler(
+			sb = new StringBundler(
 				5 + (orderByComparator.getOrderByConditionFields().length * 3) +
 					(orderByComparator.getOrderByFields().length * 3));
 		}
 		else {
-			query = new StringBundler(4);
+			sb = new StringBundler(4);
 		}
 
-		query.append(_SQL_SELECT_RUBRICALOG_WHERE);
+		sb.append(_SQL_SELECT_RUBRICALOG_WHERE);
 
 		boolean bindTABELLA = false;
 
 		if (TABELLA.isEmpty()) {
-			query.append(_FINDER_COLUMN_RUBRICALOGTABELLA_TABELLA_3);
+			sb.append(_FINDER_COLUMN_RUBRICALOGTABELLA_TABELLA_3);
 		}
 		else {
 			bindTABELLA = true;
 
-			query.append(_FINDER_COLUMN_RUBRICALOGTABELLA_TABELLA_2);
+			sb.append(_FINDER_COLUMN_RUBRICALOGTABELLA_TABELLA_2);
 		}
 
-		query.append(_FINDER_COLUMN_RUBRICALOGTABELLA_FK_SITO_PROPRIETARIO_2);
+		sb.append(_FINDER_COLUMN_RUBRICALOGTABELLA_FK_SITO_PROPRIETARIO_2);
 
 		if (orderByComparator != null) {
 			String[] orderByConditionFields =
 				orderByComparator.getOrderByConditionFields();
 
 			if (orderByConditionFields.length > 0) {
-				query.append(WHERE_AND);
+				sb.append(WHERE_AND);
 			}
 
 			for (int i = 0; i < orderByConditionFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByConditionFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByConditionFields[i]);
 
 				if ((i + 1) < orderByConditionFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+						sb.append(WHERE_GREATER_THAN_HAS_NEXT);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+						sb.append(WHERE_LESSER_THAN_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN);
+						sb.append(WHERE_GREATER_THAN);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN);
+						sb.append(WHERE_LESSER_THAN);
 					}
 				}
 			}
 
-			query.append(ORDER_BY_CLAUSE);
+			sb.append(ORDER_BY_CLAUSE);
 
 			String[] orderByFields = orderByComparator.getOrderByFields();
 
 			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByFields[i]);
 
 				if ((i + 1) < orderByFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC_HAS_NEXT);
+						sb.append(ORDER_BY_ASC_HAS_NEXT);
 					}
 					else {
-						query.append(ORDER_BY_DESC_HAS_NEXT);
+						sb.append(ORDER_BY_DESC_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC);
+						sb.append(ORDER_BY_ASC);
 					}
 					else {
-						query.append(ORDER_BY_DESC);
+						sb.append(ORDER_BY_DESC);
 					}
 				}
 			}
 		}
 		else {
-			query.append(RubricaLogModelImpl.ORDER_BY_JPQL);
+			sb.append(RubricaLogModelImpl.ORDER_BY_JPQL);
 		}
 
-		String sql = query.toString();
+		String sql = sb.toString();
 
-		Query q = session.createQuery(sql);
+		Query query = session.createQuery(sql);
 
-		q.setFirstResult(0);
-		q.setMaxResults(2);
+		query.setFirstResult(0);
+		query.setMaxResults(2);
 
-		QueryPos qPos = QueryPos.getInstance(q);
+		QueryPos queryPos = QueryPos.getInstance(query);
 
 		if (bindTABELLA) {
-			qPos.add(TABELLA);
+			queryPos.add(TABELLA);
 		}
 
-		qPos.add(FK_SITO_PROPRIETARIO);
+		queryPos.add(FK_SITO_PROPRIETARIO);
 
 		if (orderByComparator != null) {
 			for (Object orderByConditionValue :
 					orderByComparator.getOrderByConditionValues(rubricaLog)) {
 
-				qPos.add(orderByConditionValue);
+				queryPos.add(orderByConditionValue);
 			}
 		}
 
-		List<RubricaLog> list = q.list();
+		List<RubricaLog> list = query.list();
 
 		if (list.size() == 2) {
 			return list.get(1);
@@ -1768,52 +1733,50 @@ public class RubricaLogPersistenceImpl
 
 		Object[] finderArgs = new Object[] {TABELLA, FK_SITO_PROPRIETARIO};
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = (Long)dummyFinderCache.getResult(
+			finderPath, finderArgs, this);
 
 		if (count == null) {
-			StringBundler query = new StringBundler(3);
+			StringBundler sb = new StringBundler(3);
 
-			query.append(_SQL_COUNT_RUBRICALOG_WHERE);
+			sb.append(_SQL_COUNT_RUBRICALOG_WHERE);
 
 			boolean bindTABELLA = false;
 
 			if (TABELLA.isEmpty()) {
-				query.append(_FINDER_COLUMN_RUBRICALOGTABELLA_TABELLA_3);
+				sb.append(_FINDER_COLUMN_RUBRICALOGTABELLA_TABELLA_3);
 			}
 			else {
 				bindTABELLA = true;
 
-				query.append(_FINDER_COLUMN_RUBRICALOGTABELLA_TABELLA_2);
+				sb.append(_FINDER_COLUMN_RUBRICALOGTABELLA_TABELLA_2);
 			}
 
-			query.append(
-				_FINDER_COLUMN_RUBRICALOGTABELLA_FK_SITO_PROPRIETARIO_2);
+			sb.append(_FINDER_COLUMN_RUBRICALOGTABELLA_FK_SITO_PROPRIETARIO_2);
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindTABELLA) {
-					qPos.add(TABELLA);
+					queryPos.add(TABELLA);
 				}
 
-				qPos.add(FK_SITO_PROPRIETARIO);
+				queryPos.add(FK_SITO_PROPRIETARIO);
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
-				finderCache.putResult(finderPath, finderArgs, count);
+				dummyFinderCache.putResult(finderPath, finderArgs, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -1857,7 +1820,7 @@ public class RubricaLogPersistenceImpl
 	 * Returns a range of all the rubrica logs where ID_OGGETTO = &#63; and FK_SITO_PROPRIETARIO = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaLogModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaLogModelImpl</code>.
 	 * </p>
 	 *
 	 * @param ID_OGGETTO the id_oggetto
@@ -1878,7 +1841,7 @@ public class RubricaLogPersistenceImpl
 	 * Returns an ordered range of all the rubrica logs where ID_OGGETTO = &#63; and FK_SITO_PROPRIETARIO = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaLogModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaLogModelImpl</code>.
 	 * </p>
 	 *
 	 * @param ID_OGGETTO the id_oggetto
@@ -1902,7 +1865,7 @@ public class RubricaLogPersistenceImpl
 	 * Returns an ordered range of all the rubrica logs where ID_OGGETTO = &#63; and FK_SITO_PROPRIETARIO = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaLogModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaLogModelImpl</code>.
 	 * </p>
 	 *
 	 * @param ID_OGGETTO the id_oggetto
@@ -1910,29 +1873,30 @@ public class RubricaLogPersistenceImpl
 	 * @param start the lower bound of the range of rubrica logs
 	 * @param end the upper bound of the range of rubrica logs (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching rubrica logs
 	 */
 	@Override
 	public List<RubricaLog> findByRubricaLogIdOggetto(
 		String ID_OGGETTO, long FK_SITO_PROPRIETARIO, int start, int end,
 		OrderByComparator<RubricaLog> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
 		ID_OGGETTO = Objects.toString(ID_OGGETTO, "");
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindByRubricaLogIdOggetto;
-			finderArgs = new Object[] {ID_OGGETTO, FK_SITO_PROPRIETARIO};
+			if (useFinderCache) {
+				finderPath =
+					_finderPathWithoutPaginationFindByRubricaLogIdOggetto;
+				finderArgs = new Object[] {ID_OGGETTO, FK_SITO_PROPRIETARIO};
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByRubricaLogIdOggetto;
 			finderArgs = new Object[] {
 				ID_OGGETTO, FK_SITO_PROPRIETARIO, start, end, orderByComparator
@@ -1941,8 +1905,8 @@ public class RubricaLogPersistenceImpl
 
 		List<RubricaLog> list = null;
 
-		if (retrieveFromCache) {
-			list = (List<RubricaLog>)finderCache.getResult(
+		if (useFinderCache) {
+			list = (List<RubricaLog>)dummyFinderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
@@ -1960,78 +1924,68 @@ public class RubricaLogPersistenceImpl
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					4 + (orderByComparator.getOrderByFields().length * 2));
 			}
 			else {
-				query = new StringBundler(4);
+				sb = new StringBundler(4);
 			}
 
-			query.append(_SQL_SELECT_RUBRICALOG_WHERE);
+			sb.append(_SQL_SELECT_RUBRICALOG_WHERE);
 
 			boolean bindID_OGGETTO = false;
 
 			if (ID_OGGETTO.isEmpty()) {
-				query.append(_FINDER_COLUMN_RUBRICALOGIDOGGETTO_ID_OGGETTO_3);
+				sb.append(_FINDER_COLUMN_RUBRICALOGIDOGGETTO_ID_OGGETTO_3);
 			}
 			else {
 				bindID_OGGETTO = true;
 
-				query.append(_FINDER_COLUMN_RUBRICALOGIDOGGETTO_ID_OGGETTO_2);
+				sb.append(_FINDER_COLUMN_RUBRICALOGIDOGGETTO_ID_OGGETTO_2);
 			}
 
-			query.append(
+			sb.append(
 				_FINDER_COLUMN_RUBRICALOGIDOGGETTO_FK_SITO_PROPRIETARIO_2);
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 			}
-			else if (pagination) {
-				query.append(RubricaLogModelImpl.ORDER_BY_JPQL);
+			else {
+				sb.append(RubricaLogModelImpl.ORDER_BY_JPQL);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindID_OGGETTO) {
-					qPos.add(ID_OGGETTO);
+					queryPos.add(ID_OGGETTO);
 				}
 
-				qPos.add(FK_SITO_PROPRIETARIO);
+				queryPos.add(FK_SITO_PROPRIETARIO);
 
-				if (!pagination) {
-					list = (List<RubricaLog>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<RubricaLog>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<RubricaLog>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					dummyFinderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -2063,19 +2017,19 @@ public class RubricaLogPersistenceImpl
 			return rubricaLog;
 		}
 
-		StringBundler msg = new StringBundler(6);
+		StringBundler sb = new StringBundler(6);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("ID_OGGETTO=");
-		msg.append(ID_OGGETTO);
+		sb.append("ID_OGGETTO=");
+		sb.append(ID_OGGETTO);
 
-		msg.append(", FK_SITO_PROPRIETARIO=");
-		msg.append(FK_SITO_PROPRIETARIO);
+		sb.append(", FK_SITO_PROPRIETARIO=");
+		sb.append(FK_SITO_PROPRIETARIO);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchRubricaLogException(msg.toString());
+		throw new NoSuchRubricaLogException(sb.toString());
 	}
 
 	/**
@@ -2123,19 +2077,19 @@ public class RubricaLogPersistenceImpl
 			return rubricaLog;
 		}
 
-		StringBundler msg = new StringBundler(6);
+		StringBundler sb = new StringBundler(6);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("ID_OGGETTO=");
-		msg.append(ID_OGGETTO);
+		sb.append("ID_OGGETTO=");
+		sb.append(ID_OGGETTO);
 
-		msg.append(", FK_SITO_PROPRIETARIO=");
-		msg.append(FK_SITO_PROPRIETARIO);
+		sb.append(", FK_SITO_PROPRIETARIO=");
+		sb.append(FK_SITO_PROPRIETARIO);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchRubricaLogException(msg.toString());
+		throw new NoSuchRubricaLogException(sb.toString());
 	}
 
 	/**
@@ -2208,8 +2162,8 @@ public class RubricaLogPersistenceImpl
 
 			return array;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -2221,116 +2175,116 @@ public class RubricaLogPersistenceImpl
 		long FK_SITO_PROPRIETARIO,
 		OrderByComparator<RubricaLog> orderByComparator, boolean previous) {
 
-		StringBundler query = null;
+		StringBundler sb = null;
 
 		if (orderByComparator != null) {
-			query = new StringBundler(
+			sb = new StringBundler(
 				5 + (orderByComparator.getOrderByConditionFields().length * 3) +
 					(orderByComparator.getOrderByFields().length * 3));
 		}
 		else {
-			query = new StringBundler(4);
+			sb = new StringBundler(4);
 		}
 
-		query.append(_SQL_SELECT_RUBRICALOG_WHERE);
+		sb.append(_SQL_SELECT_RUBRICALOG_WHERE);
 
 		boolean bindID_OGGETTO = false;
 
 		if (ID_OGGETTO.isEmpty()) {
-			query.append(_FINDER_COLUMN_RUBRICALOGIDOGGETTO_ID_OGGETTO_3);
+			sb.append(_FINDER_COLUMN_RUBRICALOGIDOGGETTO_ID_OGGETTO_3);
 		}
 		else {
 			bindID_OGGETTO = true;
 
-			query.append(_FINDER_COLUMN_RUBRICALOGIDOGGETTO_ID_OGGETTO_2);
+			sb.append(_FINDER_COLUMN_RUBRICALOGIDOGGETTO_ID_OGGETTO_2);
 		}
 
-		query.append(_FINDER_COLUMN_RUBRICALOGIDOGGETTO_FK_SITO_PROPRIETARIO_2);
+		sb.append(_FINDER_COLUMN_RUBRICALOGIDOGGETTO_FK_SITO_PROPRIETARIO_2);
 
 		if (orderByComparator != null) {
 			String[] orderByConditionFields =
 				orderByComparator.getOrderByConditionFields();
 
 			if (orderByConditionFields.length > 0) {
-				query.append(WHERE_AND);
+				sb.append(WHERE_AND);
 			}
 
 			for (int i = 0; i < orderByConditionFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByConditionFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByConditionFields[i]);
 
 				if ((i + 1) < orderByConditionFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+						sb.append(WHERE_GREATER_THAN_HAS_NEXT);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+						sb.append(WHERE_LESSER_THAN_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN);
+						sb.append(WHERE_GREATER_THAN);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN);
+						sb.append(WHERE_LESSER_THAN);
 					}
 				}
 			}
 
-			query.append(ORDER_BY_CLAUSE);
+			sb.append(ORDER_BY_CLAUSE);
 
 			String[] orderByFields = orderByComparator.getOrderByFields();
 
 			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByFields[i]);
 
 				if ((i + 1) < orderByFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC_HAS_NEXT);
+						sb.append(ORDER_BY_ASC_HAS_NEXT);
 					}
 					else {
-						query.append(ORDER_BY_DESC_HAS_NEXT);
+						sb.append(ORDER_BY_DESC_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC);
+						sb.append(ORDER_BY_ASC);
 					}
 					else {
-						query.append(ORDER_BY_DESC);
+						sb.append(ORDER_BY_DESC);
 					}
 				}
 			}
 		}
 		else {
-			query.append(RubricaLogModelImpl.ORDER_BY_JPQL);
+			sb.append(RubricaLogModelImpl.ORDER_BY_JPQL);
 		}
 
-		String sql = query.toString();
+		String sql = sb.toString();
 
-		Query q = session.createQuery(sql);
+		Query query = session.createQuery(sql);
 
-		q.setFirstResult(0);
-		q.setMaxResults(2);
+		query.setFirstResult(0);
+		query.setMaxResults(2);
 
-		QueryPos qPos = QueryPos.getInstance(q);
+		QueryPos queryPos = QueryPos.getInstance(query);
 
 		if (bindID_OGGETTO) {
-			qPos.add(ID_OGGETTO);
+			queryPos.add(ID_OGGETTO);
 		}
 
-		qPos.add(FK_SITO_PROPRIETARIO);
+		queryPos.add(FK_SITO_PROPRIETARIO);
 
 		if (orderByComparator != null) {
 			for (Object orderByConditionValue :
 					orderByComparator.getOrderByConditionValues(rubricaLog)) {
 
-				qPos.add(orderByConditionValue);
+				queryPos.add(orderByConditionValue);
 			}
 		}
 
-		List<RubricaLog> list = q.list();
+		List<RubricaLog> list = query.list();
 
 		if (list.size() == 2) {
 			return list.get(1);
@@ -2376,52 +2330,51 @@ public class RubricaLogPersistenceImpl
 
 		Object[] finderArgs = new Object[] {ID_OGGETTO, FK_SITO_PROPRIETARIO};
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = (Long)dummyFinderCache.getResult(
+			finderPath, finderArgs, this);
 
 		if (count == null) {
-			StringBundler query = new StringBundler(3);
+			StringBundler sb = new StringBundler(3);
 
-			query.append(_SQL_COUNT_RUBRICALOG_WHERE);
+			sb.append(_SQL_COUNT_RUBRICALOG_WHERE);
 
 			boolean bindID_OGGETTO = false;
 
 			if (ID_OGGETTO.isEmpty()) {
-				query.append(_FINDER_COLUMN_RUBRICALOGIDOGGETTO_ID_OGGETTO_3);
+				sb.append(_FINDER_COLUMN_RUBRICALOGIDOGGETTO_ID_OGGETTO_3);
 			}
 			else {
 				bindID_OGGETTO = true;
 
-				query.append(_FINDER_COLUMN_RUBRICALOGIDOGGETTO_ID_OGGETTO_2);
+				sb.append(_FINDER_COLUMN_RUBRICALOGIDOGGETTO_ID_OGGETTO_2);
 			}
 
-			query.append(
+			sb.append(
 				_FINDER_COLUMN_RUBRICALOGIDOGGETTO_FK_SITO_PROPRIETARIO_2);
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindID_OGGETTO) {
-					qPos.add(ID_OGGETTO);
+					queryPos.add(ID_OGGETTO);
 				}
 
-				qPos.add(FK_SITO_PROPRIETARIO);
+				queryPos.add(FK_SITO_PROPRIETARIO);
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
-				finderCache.putResult(finderPath, finderArgs, count);
+				dummyFinderCache.putResult(finderPath, finderArgs, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -2467,7 +2420,7 @@ public class RubricaLogPersistenceImpl
 	 * Returns a range of all the rubrica logs where FK_SITO_PROPRIETARIO = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaLogModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaLogModelImpl</code>.
 	 * </p>
 	 *
 	 * @param FK_SITO_PROPRIETARIO the fk_sito_proprietario
@@ -2487,7 +2440,7 @@ public class RubricaLogPersistenceImpl
 	 * Returns an ordered range of all the rubrica logs where FK_SITO_PROPRIETARIO = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaLogModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaLogModelImpl</code>.
 	 * </p>
 	 *
 	 * @param FK_SITO_PROPRIETARIO the fk_sito_proprietario
@@ -2509,35 +2462,35 @@ public class RubricaLogPersistenceImpl
 	 * Returns an ordered range of all the rubrica logs where FK_SITO_PROPRIETARIO = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaLogModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaLogModelImpl</code>.
 	 * </p>
 	 *
 	 * @param FK_SITO_PROPRIETARIO the fk_sito_proprietario
 	 * @param start the lower bound of the range of rubrica logs
 	 * @param end the upper bound of the range of rubrica logs (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching rubrica logs
 	 */
 	@Override
 	public List<RubricaLog> findByRubricaLogBySitoProprietario(
 		long FK_SITO_PROPRIETARIO, int start, int end,
 		OrderByComparator<RubricaLog> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath =
-				_finderPathWithoutPaginationFindByRubricaLogBySitoProprietario;
-			finderArgs = new Object[] {FK_SITO_PROPRIETARIO};
+			if (useFinderCache) {
+				finderPath =
+					_finderPathWithoutPaginationFindByRubricaLogBySitoProprietario;
+				finderArgs = new Object[] {FK_SITO_PROPRIETARIO};
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath =
 				_finderPathWithPaginationFindByRubricaLogBySitoProprietario;
 			finderArgs = new Object[] {
@@ -2547,14 +2500,14 @@ public class RubricaLogPersistenceImpl
 
 		List<RubricaLog> list = null;
 
-		if (retrieveFromCache) {
-			list = (List<RubricaLog>)finderCache.getResult(
+		if (useFinderCache) {
+			list = (List<RubricaLog>)dummyFinderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (RubricaLog rubricaLog : list) {
-					if ((FK_SITO_PROPRIETARIO !=
-							rubricaLog.getFK_SITO_PROPRIETARIO())) {
+					if (FK_SITO_PROPRIETARIO !=
+							rubricaLog.getFK_SITO_PROPRIETARIO()) {
 
 						list = null;
 
@@ -2565,63 +2518,53 @@ public class RubricaLogPersistenceImpl
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					3 + (orderByComparator.getOrderByFields().length * 2));
 			}
 			else {
-				query = new StringBundler(3);
+				sb = new StringBundler(3);
 			}
 
-			query.append(_SQL_SELECT_RUBRICALOG_WHERE);
+			sb.append(_SQL_SELECT_RUBRICALOG_WHERE);
 
-			query.append(
+			sb.append(
 				_FINDER_COLUMN_RUBRICALOGBYSITOPROPRIETARIO_FK_SITO_PROPRIETARIO_2);
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 			}
-			else if (pagination) {
-				query.append(RubricaLogModelImpl.ORDER_BY_JPQL);
+			else {
+				sb.append(RubricaLogModelImpl.ORDER_BY_JPQL);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
-				qPos.add(FK_SITO_PROPRIETARIO);
+				queryPos.add(FK_SITO_PROPRIETARIO);
 
-				if (!pagination) {
-					list = (List<RubricaLog>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<RubricaLog>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<RubricaLog>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					dummyFinderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -2652,16 +2595,16 @@ public class RubricaLogPersistenceImpl
 			return rubricaLog;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("FK_SITO_PROPRIETARIO=");
-		msg.append(FK_SITO_PROPRIETARIO);
+		sb.append("FK_SITO_PROPRIETARIO=");
+		sb.append(FK_SITO_PROPRIETARIO);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchRubricaLogException(msg.toString());
+		throw new NoSuchRubricaLogException(sb.toString());
 	}
 
 	/**
@@ -2707,16 +2650,16 @@ public class RubricaLogPersistenceImpl
 			return rubricaLog;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("FK_SITO_PROPRIETARIO=");
-		msg.append(FK_SITO_PROPRIETARIO);
+		sb.append("FK_SITO_PROPRIETARIO=");
+		sb.append(FK_SITO_PROPRIETARIO);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchRubricaLogException(msg.toString());
+		throw new NoSuchRubricaLogException(sb.toString());
 	}
 
 	/**
@@ -2783,8 +2726,8 @@ public class RubricaLogPersistenceImpl
 
 			return array;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -2795,20 +2738,20 @@ public class RubricaLogPersistenceImpl
 		Session session, RubricaLog rubricaLog, long FK_SITO_PROPRIETARIO,
 		OrderByComparator<RubricaLog> orderByComparator, boolean previous) {
 
-		StringBundler query = null;
+		StringBundler sb = null;
 
 		if (orderByComparator != null) {
-			query = new StringBundler(
+			sb = new StringBundler(
 				4 + (orderByComparator.getOrderByConditionFields().length * 3) +
 					(orderByComparator.getOrderByFields().length * 3));
 		}
 		else {
-			query = new StringBundler(3);
+			sb = new StringBundler(3);
 		}
 
-		query.append(_SQL_SELECT_RUBRICALOG_WHERE);
+		sb.append(_SQL_SELECT_RUBRICALOG_WHERE);
 
-		query.append(
+		sb.append(
 			_FINDER_COLUMN_RUBRICALOGBYSITOPROPRIETARIO_FK_SITO_PROPRIETARIO_2);
 
 		if (orderByComparator != null) {
@@ -2816,81 +2759,81 @@ public class RubricaLogPersistenceImpl
 				orderByComparator.getOrderByConditionFields();
 
 			if (orderByConditionFields.length > 0) {
-				query.append(WHERE_AND);
+				sb.append(WHERE_AND);
 			}
 
 			for (int i = 0; i < orderByConditionFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByConditionFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByConditionFields[i]);
 
 				if ((i + 1) < orderByConditionFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+						sb.append(WHERE_GREATER_THAN_HAS_NEXT);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+						sb.append(WHERE_LESSER_THAN_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN);
+						sb.append(WHERE_GREATER_THAN);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN);
+						sb.append(WHERE_LESSER_THAN);
 					}
 				}
 			}
 
-			query.append(ORDER_BY_CLAUSE);
+			sb.append(ORDER_BY_CLAUSE);
 
 			String[] orderByFields = orderByComparator.getOrderByFields();
 
 			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByFields[i]);
 
 				if ((i + 1) < orderByFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC_HAS_NEXT);
+						sb.append(ORDER_BY_ASC_HAS_NEXT);
 					}
 					else {
-						query.append(ORDER_BY_DESC_HAS_NEXT);
+						sb.append(ORDER_BY_DESC_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC);
+						sb.append(ORDER_BY_ASC);
 					}
 					else {
-						query.append(ORDER_BY_DESC);
+						sb.append(ORDER_BY_DESC);
 					}
 				}
 			}
 		}
 		else {
-			query.append(RubricaLogModelImpl.ORDER_BY_JPQL);
+			sb.append(RubricaLogModelImpl.ORDER_BY_JPQL);
 		}
 
-		String sql = query.toString();
+		String sql = sb.toString();
 
-		Query q = session.createQuery(sql);
+		Query query = session.createQuery(sql);
 
-		q.setFirstResult(0);
-		q.setMaxResults(2);
+		query.setFirstResult(0);
+		query.setMaxResults(2);
 
-		QueryPos qPos = QueryPos.getInstance(q);
+		QueryPos queryPos = QueryPos.getInstance(query);
 
-		qPos.add(FK_SITO_PROPRIETARIO);
+		queryPos.add(FK_SITO_PROPRIETARIO);
 
 		if (orderByComparator != null) {
 			for (Object orderByConditionValue :
 					orderByComparator.getOrderByConditionValues(rubricaLog)) {
 
-				qPos.add(orderByConditionValue);
+				queryPos.add(orderByConditionValue);
 			}
 		}
 
-		List<RubricaLog> list = q.list();
+		List<RubricaLog> list = query.list();
 
 		if (list.size() == 2) {
 			return list.get(1);
@@ -2930,37 +2873,36 @@ public class RubricaLogPersistenceImpl
 
 		Object[] finderArgs = new Object[] {FK_SITO_PROPRIETARIO};
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = (Long)dummyFinderCache.getResult(
+			finderPath, finderArgs, this);
 
 		if (count == null) {
-			StringBundler query = new StringBundler(2);
+			StringBundler sb = new StringBundler(2);
 
-			query.append(_SQL_COUNT_RUBRICALOG_WHERE);
+			sb.append(_SQL_COUNT_RUBRICALOG_WHERE);
 
-			query.append(
+			sb.append(
 				_FINDER_COLUMN_RUBRICALOGBYSITOPROPRIETARIO_FK_SITO_PROPRIETARIO_2);
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
-				qPos.add(FK_SITO_PROPRIETARIO);
+				queryPos.add(FK_SITO_PROPRIETARIO);
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
-				finderCache.putResult(finderPath, finderArgs, count);
+				dummyFinderCache.putResult(finderPath, finderArgs, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -2976,6 +2918,11 @@ public class RubricaLogPersistenceImpl
 
 	public RubricaLogPersistenceImpl() {
 		setModelClass(RubricaLog.class);
+
+		setModelImplClass(RubricaLogImpl.class);
+		setModelPKClass(long.class);
+
+		setTable(RubricaLogTable.INSTANCE);
 	}
 
 	/**
@@ -2985,12 +2932,11 @@ public class RubricaLogPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(RubricaLog rubricaLog) {
-		entityCache.putResult(
-			RubricaLogModelImpl.ENTITY_CACHE_ENABLED, RubricaLogImpl.class,
-			rubricaLog.getPrimaryKey(), rubricaLog);
-
-		rubricaLog.resetOriginalValues();
+		dummyEntityCache.putResult(
+			RubricaLogImpl.class, rubricaLog.getPrimaryKey(), rubricaLog);
 	}
+
+	private int _valueObjectFinderCacheListThreshold;
 
 	/**
 	 * Caches the rubrica logs in the entity cache if it is enabled.
@@ -2999,15 +2945,18 @@ public class RubricaLogPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(List<RubricaLog> rubricaLogs) {
+		if ((_valueObjectFinderCacheListThreshold == 0) ||
+			((_valueObjectFinderCacheListThreshold > 0) &&
+			 (rubricaLogs.size() > _valueObjectFinderCacheListThreshold))) {
+
+			return;
+		}
+
 		for (RubricaLog rubricaLog : rubricaLogs) {
-			if (entityCache.getResult(
-					RubricaLogModelImpl.ENTITY_CACHE_ENABLED,
+			if (dummyEntityCache.getResult(
 					RubricaLogImpl.class, rubricaLog.getPrimaryKey()) == null) {
 
 				cacheResult(rubricaLog);
-			}
-			else {
-				rubricaLog.resetOriginalValues();
 			}
 		}
 	}
@@ -3021,11 +2970,9 @@ public class RubricaLogPersistenceImpl
 	 */
 	@Override
 	public void clearCache() {
-		entityCache.clearCache(RubricaLogImpl.class);
+		dummyEntityCache.clearCache(RubricaLogImpl.class);
 
-		finderCache.clearCache(FINDER_CLASS_NAME_ENTITY);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		dummyFinderCache.clearCache(RubricaLogImpl.class);
 	}
 
 	/**
@@ -3037,23 +2984,22 @@ public class RubricaLogPersistenceImpl
 	 */
 	@Override
 	public void clearCache(RubricaLog rubricaLog) {
-		entityCache.removeResult(
-			RubricaLogModelImpl.ENTITY_CACHE_ENABLED, RubricaLogImpl.class,
-			rubricaLog.getPrimaryKey());
-
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		dummyEntityCache.removeResult(RubricaLogImpl.class, rubricaLog);
 	}
 
 	@Override
 	public void clearCache(List<RubricaLog> rubricaLogs) {
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
-
 		for (RubricaLog rubricaLog : rubricaLogs) {
-			entityCache.removeResult(
-				RubricaLogModelImpl.ENTITY_CACHE_ENABLED, RubricaLogImpl.class,
-				rubricaLog.getPrimaryKey());
+			dummyEntityCache.removeResult(RubricaLogImpl.class, rubricaLog);
+		}
+	}
+
+	@Override
+	public void clearCache(Set<Serializable> primaryKeys) {
+		dummyFinderCache.clearCache(RubricaLogImpl.class);
+
+		for (Serializable primaryKey : primaryKeys) {
+			dummyEntityCache.removeResult(RubricaLogImpl.class, primaryKey);
 		}
 	}
 
@@ -3115,11 +3061,11 @@ public class RubricaLogPersistenceImpl
 
 			return remove(rubricaLog);
 		}
-		catch (NoSuchRubricaLogException nsee) {
-			throw nsee;
+		catch (NoSuchRubricaLogException noSuchEntityException) {
+			throw noSuchEntityException;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -3142,8 +3088,8 @@ public class RubricaLogPersistenceImpl
 				session.delete(rubricaLog);
 			}
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -3184,213 +3130,26 @@ public class RubricaLogPersistenceImpl
 		try {
 			session = openSession();
 
-			if (rubricaLog.isNew()) {
+			if (isNew) {
 				session.save(rubricaLog);
-
-				rubricaLog.setNew(false);
 			}
 			else {
 				rubricaLog = (RubricaLog)session.merge(rubricaLog);
 			}
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
 		}
 
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		dummyEntityCache.putResult(
+			RubricaLogImpl.class, rubricaLogModelImpl, false, true);
 
-		if (!RubricaLogModelImpl.COLUMN_BITMASK_ENABLED) {
-			finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		if (isNew) {
+			rubricaLog.setNew(false);
 		}
-		else if (isNew) {
-			Object[] args = new Object[] {
-				rubricaLogModelImpl.getFK_UTENTE_MODIFICA()
-			};
-
-			finderCache.removeResult(
-				_finderPathCountByRubricaLogUtenteModifica, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByRubricaLogUtenteModifica,
-				args);
-
-			args = new Object[] {
-				rubricaLogModelImpl.getDATA_MODIFICA(),
-				rubricaLogModelImpl.getFK_SITO_PROPRIETARIO()
-			};
-
-			finderCache.removeResult(
-				_finderPathCountByRubricaLogDataModifica, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByRubricaLogDataModifica, args);
-
-			args = new Object[] {
-				rubricaLogModelImpl.getTABELLA(),
-				rubricaLogModelImpl.getFK_SITO_PROPRIETARIO()
-			};
-
-			finderCache.removeResult(_finderPathCountByRubricaLogTabella, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByRubricaLogTabella, args);
-
-			args = new Object[] {
-				rubricaLogModelImpl.getID_OGGETTO(),
-				rubricaLogModelImpl.getFK_SITO_PROPRIETARIO()
-			};
-
-			finderCache.removeResult(
-				_finderPathCountByRubricaLogIdOggetto, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByRubricaLogIdOggetto, args);
-
-			args = new Object[] {rubricaLogModelImpl.getFK_SITO_PROPRIETARIO()};
-
-			finderCache.removeResult(
-				_finderPathCountByRubricaLogBySitoProprietario, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByRubricaLogBySitoProprietario,
-				args);
-
-			finderCache.removeResult(_finderPathCountAll, FINDER_ARGS_EMPTY);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindAll, FINDER_ARGS_EMPTY);
-		}
-		else {
-			if ((rubricaLogModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByRubricaLogUtenteModifica.
-					 getColumnBitmask()) != 0) {
-
-				Object[] args = new Object[] {
-					rubricaLogModelImpl.getOriginalFK_UTENTE_MODIFICA()
-				};
-
-				finderCache.removeResult(
-					_finderPathCountByRubricaLogUtenteModifica, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByRubricaLogUtenteModifica,
-					args);
-
-				args = new Object[] {
-					rubricaLogModelImpl.getFK_UTENTE_MODIFICA()
-				};
-
-				finderCache.removeResult(
-					_finderPathCountByRubricaLogUtenteModifica, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByRubricaLogUtenteModifica,
-					args);
-			}
-
-			if ((rubricaLogModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByRubricaLogDataModifica.
-					 getColumnBitmask()) != 0) {
-
-				Object[] args = new Object[] {
-					rubricaLogModelImpl.getOriginalDATA_MODIFICA(),
-					rubricaLogModelImpl.getOriginalFK_SITO_PROPRIETARIO()
-				};
-
-				finderCache.removeResult(
-					_finderPathCountByRubricaLogDataModifica, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByRubricaLogDataModifica,
-					args);
-
-				args = new Object[] {
-					rubricaLogModelImpl.getDATA_MODIFICA(),
-					rubricaLogModelImpl.getFK_SITO_PROPRIETARIO()
-				};
-
-				finderCache.removeResult(
-					_finderPathCountByRubricaLogDataModifica, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByRubricaLogDataModifica,
-					args);
-			}
-
-			if ((rubricaLogModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByRubricaLogTabella.
-					 getColumnBitmask()) != 0) {
-
-				Object[] args = new Object[] {
-					rubricaLogModelImpl.getOriginalTABELLA(),
-					rubricaLogModelImpl.getOriginalFK_SITO_PROPRIETARIO()
-				};
-
-				finderCache.removeResult(
-					_finderPathCountByRubricaLogTabella, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByRubricaLogTabella, args);
-
-				args = new Object[] {
-					rubricaLogModelImpl.getTABELLA(),
-					rubricaLogModelImpl.getFK_SITO_PROPRIETARIO()
-				};
-
-				finderCache.removeResult(
-					_finderPathCountByRubricaLogTabella, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByRubricaLogTabella, args);
-			}
-
-			if ((rubricaLogModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByRubricaLogIdOggetto.
-					 getColumnBitmask()) != 0) {
-
-				Object[] args = new Object[] {
-					rubricaLogModelImpl.getOriginalID_OGGETTO(),
-					rubricaLogModelImpl.getOriginalFK_SITO_PROPRIETARIO()
-				};
-
-				finderCache.removeResult(
-					_finderPathCountByRubricaLogIdOggetto, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByRubricaLogIdOggetto,
-					args);
-
-				args = new Object[] {
-					rubricaLogModelImpl.getID_OGGETTO(),
-					rubricaLogModelImpl.getFK_SITO_PROPRIETARIO()
-				};
-
-				finderCache.removeResult(
-					_finderPathCountByRubricaLogIdOggetto, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByRubricaLogIdOggetto,
-					args);
-			}
-
-			if ((rubricaLogModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByRubricaLogBySitoProprietario.
-					 getColumnBitmask()) != 0) {
-
-				Object[] args = new Object[] {
-					rubricaLogModelImpl.getOriginalFK_SITO_PROPRIETARIO()
-				};
-
-				finderCache.removeResult(
-					_finderPathCountByRubricaLogBySitoProprietario, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByRubricaLogBySitoProprietario,
-					args);
-
-				args = new Object[] {
-					rubricaLogModelImpl.getFK_SITO_PROPRIETARIO()
-				};
-
-				finderCache.removeResult(
-					_finderPathCountByRubricaLogBySitoProprietario, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByRubricaLogBySitoProprietario,
-					args);
-			}
-		}
-
-		entityCache.putResult(
-			RubricaLogModelImpl.ENTITY_CACHE_ENABLED, RubricaLogImpl.class,
-			rubricaLog.getPrimaryKey(), rubricaLog, false);
 
 		rubricaLog.resetOriginalValues();
 
@@ -3439,161 +3198,12 @@ public class RubricaLogPersistenceImpl
 	/**
 	 * Returns the rubrica log with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the rubrica log
-	 * @return the rubrica log, or <code>null</code> if a rubrica log with the primary key could not be found
-	 */
-	@Override
-	public RubricaLog fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(
-			RubricaLogModelImpl.ENTITY_CACHE_ENABLED, RubricaLogImpl.class,
-			primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		RubricaLog rubricaLog = (RubricaLog)serializable;
-
-		if (rubricaLog == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				rubricaLog = (RubricaLog)session.get(
-					RubricaLogImpl.class, primaryKey);
-
-				if (rubricaLog != null) {
-					cacheResult(rubricaLog);
-				}
-				else {
-					entityCache.putResult(
-						RubricaLogModelImpl.ENTITY_CACHE_ENABLED,
-						RubricaLogImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(
-					RubricaLogModelImpl.ENTITY_CACHE_ENABLED,
-					RubricaLogImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return rubricaLog;
-	}
-
-	/**
-	 * Returns the rubrica log with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param ID_LOG the primary key of the rubrica log
 	 * @return the rubrica log, or <code>null</code> if a rubrica log with the primary key could not be found
 	 */
 	@Override
 	public RubricaLog fetchByPrimaryKey(long ID_LOG) {
 		return fetchByPrimaryKey((Serializable)ID_LOG);
-	}
-
-	@Override
-	public Map<Serializable, RubricaLog> fetchByPrimaryKeys(
-		Set<Serializable> primaryKeys) {
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, RubricaLog> map =
-			new HashMap<Serializable, RubricaLog>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			RubricaLog rubricaLog = fetchByPrimaryKey(primaryKey);
-
-			if (rubricaLog != null) {
-				map.put(primaryKey, rubricaLog);
-			}
-
-			return map;
-		}
-
-		Set<Serializable> uncachedPrimaryKeys = null;
-
-		for (Serializable primaryKey : primaryKeys) {
-			Serializable serializable = entityCache.getResult(
-				RubricaLogModelImpl.ENTITY_CACHE_ENABLED, RubricaLogImpl.class,
-				primaryKey);
-
-			if (serializable != nullModel) {
-				if (serializable == null) {
-					if (uncachedPrimaryKeys == null) {
-						uncachedPrimaryKeys = new HashSet<Serializable>();
-					}
-
-					uncachedPrimaryKeys.add(primaryKey);
-				}
-				else {
-					map.put(primaryKey, (RubricaLog)serializable);
-				}
-			}
-		}
-
-		if (uncachedPrimaryKeys == null) {
-			return map;
-		}
-
-		StringBundler query = new StringBundler(
-			uncachedPrimaryKeys.size() * 2 + 1);
-
-		query.append(_SQL_SELECT_RUBRICALOG_WHERE_PKS_IN);
-
-		for (Serializable primaryKey : uncachedPrimaryKeys) {
-			query.append((long)primaryKey);
-
-			query.append(",");
-		}
-
-		query.setIndex(query.index() - 1);
-
-		query.append(")");
-
-		String sql = query.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query q = session.createQuery(sql);
-
-			for (RubricaLog rubricaLog : (List<RubricaLog>)q.list()) {
-				map.put(rubricaLog.getPrimaryKeyObj(), rubricaLog);
-
-				cacheResult(rubricaLog);
-
-				uncachedPrimaryKeys.remove(rubricaLog.getPrimaryKeyObj());
-			}
-
-			for (Serializable primaryKey : uncachedPrimaryKeys) {
-				entityCache.putResult(
-					RubricaLogModelImpl.ENTITY_CACHE_ENABLED,
-					RubricaLogImpl.class, primaryKey, nullModel);
-			}
-		}
-		catch (Exception e) {
-			throw processException(e);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**
@@ -3610,7 +3220,7 @@ public class RubricaLogPersistenceImpl
 	 * Returns a range of all the rubrica logs.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaLogModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaLogModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of rubrica logs
@@ -3626,7 +3236,7 @@ public class RubricaLogPersistenceImpl
 	 * Returns an ordered range of all the rubrica logs.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaLogModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaLogModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of rubrica logs
@@ -3645,64 +3255,62 @@ public class RubricaLogPersistenceImpl
 	 * Returns an ordered range of all the rubrica logs.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaLogModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaLogModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of rubrica logs
 	 * @param end the upper bound of the range of rubrica logs (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of rubrica logs
 	 */
 	@Override
 	public List<RubricaLog> findAll(
 		int start, int end, OrderByComparator<RubricaLog> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindAll;
-			finderArgs = FINDER_ARGS_EMPTY;
+			if (useFinderCache) {
+				finderPath = _finderPathWithoutPaginationFindAll;
+				finderArgs = FINDER_ARGS_EMPTY;
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
 			finderArgs = new Object[] {start, end, orderByComparator};
 		}
 
 		List<RubricaLog> list = null;
 
-		if (retrieveFromCache) {
-			list = (List<RubricaLog>)finderCache.getResult(
+		if (useFinderCache) {
+			list = (List<RubricaLog>)dummyFinderCache.getResult(
 				finderPath, finderArgs, this);
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 			String sql = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					2 + (orderByComparator.getOrderByFields().length * 2));
 
-				query.append(_SQL_SELECT_RUBRICALOG);
+				sb.append(_SQL_SELECT_RUBRICALOG);
 
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 
-				sql = query.toString();
+				sql = sb.toString();
 			}
 			else {
 				sql = _SQL_SELECT_RUBRICALOG;
 
-				if (pagination) {
-					sql = sql.concat(RubricaLogModelImpl.ORDER_BY_JPQL);
-				}
+				sql = sql.concat(RubricaLogModelImpl.ORDER_BY_JPQL);
 			}
 
 			Session session = null;
@@ -3710,29 +3318,19 @@ public class RubricaLogPersistenceImpl
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				if (!pagination) {
-					list = (List<RubricaLog>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<RubricaLog>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<RubricaLog>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					dummyFinderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -3760,7 +3358,7 @@ public class RubricaLogPersistenceImpl
 	 */
 	@Override
 	public int countAll() {
-		Long count = (Long)finderCache.getResult(
+		Long count = (Long)dummyFinderCache.getResult(
 			_finderPathCountAll, FINDER_ARGS_EMPTY, this);
 
 		if (count == null) {
@@ -3769,18 +3367,15 @@ public class RubricaLogPersistenceImpl
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(_SQL_COUNT_RUBRICALOG);
+				Query query = session.createQuery(_SQL_COUNT_RUBRICALOG);
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
-				finderCache.putResult(
+				dummyFinderCache.putResult(
 					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -3791,6 +3386,21 @@ public class RubricaLogPersistenceImpl
 	}
 
 	@Override
+	protected EntityCache getEntityCache() {
+		return dummyEntityCache;
+	}
+
+	@Override
+	protected String getPKDBName() {
+		return "ID_LOG";
+	}
+
+	@Override
+	protected String getSelectSQL() {
+		return _SQL_SELECT_RUBRICALOG;
+	}
+
+	@Override
 	protected Map<String, Integer> getTableColumnsMap() {
 		return RubricaLogModelImpl.TABLE_COLUMNS_MAP;
 	}
@@ -3798,173 +3408,171 @@ public class RubricaLogPersistenceImpl
 	/**
 	 * Initializes the rubrica log persistence.
 	 */
-	public void afterPropertiesSet() {
+	@Activate
+	public void activate() {
+		_valueObjectFinderCacheListThreshold = GetterUtil.getInteger(
+			PropsUtil.get(PropsKeys.VALUE_OBJECT_FINDER_CACHE_LIST_THRESHOLD));
+
 		_finderPathWithPaginationFindAll = new FinderPath(
-			RubricaLogModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaLogModelImpl.FINDER_CACHE_ENABLED, RubricaLogImpl.class,
-			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findAll", new String[0]);
+			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findAll", new String[0],
+			new String[0], true);
 
 		_finderPathWithoutPaginationFindAll = new FinderPath(
-			RubricaLogModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaLogModelImpl.FINDER_CACHE_ENABLED, RubricaLogImpl.class,
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findAll",
-			new String[0]);
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findAll", new String[0],
+			new String[0], true);
 
 		_finderPathCountAll = new FinderPath(
-			RubricaLogModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaLogModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countAll",
-			new String[0]);
+			new String[0], new String[0], false);
 
 		_finderPathWithPaginationFindByRubricaLogUtenteModifica =
 			new FinderPath(
-				RubricaLogModelImpl.ENTITY_CACHE_ENABLED,
-				RubricaLogModelImpl.FINDER_CACHE_ENABLED, RubricaLogImpl.class,
 				FINDER_CLASS_NAME_LIST_WITH_PAGINATION,
 				"findByRubricaLogUtenteModifica",
 				new String[] {
 					Long.class.getName(), Integer.class.getName(),
 					Integer.class.getName(), OrderByComparator.class.getName()
-				});
+				},
+				new String[] {"FK_UTENTE_MODIFICA"}, true);
 
 		_finderPathWithoutPaginationFindByRubricaLogUtenteModifica =
 			new FinderPath(
-				RubricaLogModelImpl.ENTITY_CACHE_ENABLED,
-				RubricaLogModelImpl.FINDER_CACHE_ENABLED, RubricaLogImpl.class,
 				FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
 				"findByRubricaLogUtenteModifica",
 				new String[] {Long.class.getName()},
-				RubricaLogModelImpl.FK_UTENTE_MODIFICA_COLUMN_BITMASK);
+				new String[] {"FK_UTENTE_MODIFICA"}, true);
 
 		_finderPathCountByRubricaLogUtenteModifica = new FinderPath(
-			RubricaLogModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaLogModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
 			"countByRubricaLogUtenteModifica",
-			new String[] {Long.class.getName()});
+			new String[] {Long.class.getName()},
+			new String[] {"FK_UTENTE_MODIFICA"}, false);
 
 		_finderPathWithPaginationFindByRubricaLogDataModifica = new FinderPath(
-			RubricaLogModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaLogModelImpl.FINDER_CACHE_ENABLED, RubricaLogImpl.class,
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION,
 			"findByRubricaLogDataModifica",
 			new String[] {
 				Date.class.getName(), Long.class.getName(),
 				Integer.class.getName(), Integer.class.getName(),
 				OrderByComparator.class.getName()
-			});
+			},
+			new String[] {"DATA_MODIFICA", "FK_SITO_PROPRIETARIO"}, true);
 
 		_finderPathWithoutPaginationFindByRubricaLogDataModifica =
 			new FinderPath(
-				RubricaLogModelImpl.ENTITY_CACHE_ENABLED,
-				RubricaLogModelImpl.FINDER_CACHE_ENABLED, RubricaLogImpl.class,
 				FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
 				"findByRubricaLogDataModifica",
 				new String[] {Date.class.getName(), Long.class.getName()},
-				RubricaLogModelImpl.DATA_MODIFICA_COLUMN_BITMASK |
-				RubricaLogModelImpl.FK_SITO_PROPRIETARIO_COLUMN_BITMASK);
+				new String[] {"DATA_MODIFICA", "FK_SITO_PROPRIETARIO"}, true);
 
 		_finderPathCountByRubricaLogDataModifica = new FinderPath(
-			RubricaLogModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaLogModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
 			"countByRubricaLogDataModifica",
-			new String[] {Date.class.getName(), Long.class.getName()});
+			new String[] {Date.class.getName(), Long.class.getName()},
+			new String[] {"DATA_MODIFICA", "FK_SITO_PROPRIETARIO"}, false);
 
 		_finderPathWithPaginationFindByRubricaLogTabella = new FinderPath(
-			RubricaLogModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaLogModelImpl.FINDER_CACHE_ENABLED, RubricaLogImpl.class,
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByRubricaLogTabella",
 			new String[] {
 				String.class.getName(), Long.class.getName(),
 				Integer.class.getName(), Integer.class.getName(),
 				OrderByComparator.class.getName()
-			});
+			},
+			new String[] {"TABELLA", "FK_SITO_PROPRIETARIO"}, true);
 
 		_finderPathWithoutPaginationFindByRubricaLogTabella = new FinderPath(
-			RubricaLogModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaLogModelImpl.FINDER_CACHE_ENABLED, RubricaLogImpl.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
 			"findByRubricaLogTabella",
 			new String[] {String.class.getName(), Long.class.getName()},
-			RubricaLogModelImpl.TABELLA_COLUMN_BITMASK |
-			RubricaLogModelImpl.FK_SITO_PROPRIETARIO_COLUMN_BITMASK);
+			new String[] {"TABELLA", "FK_SITO_PROPRIETARIO"}, true);
 
 		_finderPathCountByRubricaLogTabella = new FinderPath(
-			RubricaLogModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaLogModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
 			"countByRubricaLogTabella",
-			new String[] {String.class.getName(), Long.class.getName()});
+			new String[] {String.class.getName(), Long.class.getName()},
+			new String[] {"TABELLA", "FK_SITO_PROPRIETARIO"}, false);
 
 		_finderPathWithPaginationFindByRubricaLogIdOggetto = new FinderPath(
-			RubricaLogModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaLogModelImpl.FINDER_CACHE_ENABLED, RubricaLogImpl.class,
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByRubricaLogIdOggetto",
 			new String[] {
 				String.class.getName(), Long.class.getName(),
 				Integer.class.getName(), Integer.class.getName(),
 				OrderByComparator.class.getName()
-			});
+			},
+			new String[] {"ID_OGGETTO", "FK_SITO_PROPRIETARIO"}, true);
 
 		_finderPathWithoutPaginationFindByRubricaLogIdOggetto = new FinderPath(
-			RubricaLogModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaLogModelImpl.FINDER_CACHE_ENABLED, RubricaLogImpl.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
 			"findByRubricaLogIdOggetto",
 			new String[] {String.class.getName(), Long.class.getName()},
-			RubricaLogModelImpl.ID_OGGETTO_COLUMN_BITMASK |
-			RubricaLogModelImpl.FK_SITO_PROPRIETARIO_COLUMN_BITMASK);
+			new String[] {"ID_OGGETTO", "FK_SITO_PROPRIETARIO"}, true);
 
 		_finderPathCountByRubricaLogIdOggetto = new FinderPath(
-			RubricaLogModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaLogModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
 			"countByRubricaLogIdOggetto",
-			new String[] {String.class.getName(), Long.class.getName()});
+			new String[] {String.class.getName(), Long.class.getName()},
+			new String[] {"ID_OGGETTO", "FK_SITO_PROPRIETARIO"}, false);
 
 		_finderPathWithPaginationFindByRubricaLogBySitoProprietario =
 			new FinderPath(
-				RubricaLogModelImpl.ENTITY_CACHE_ENABLED,
-				RubricaLogModelImpl.FINDER_CACHE_ENABLED, RubricaLogImpl.class,
 				FINDER_CLASS_NAME_LIST_WITH_PAGINATION,
 				"findByRubricaLogBySitoProprietario",
 				new String[] {
 					Long.class.getName(), Integer.class.getName(),
 					Integer.class.getName(), OrderByComparator.class.getName()
-				});
+				},
+				new String[] {"FK_SITO_PROPRIETARIO"}, true);
 
 		_finderPathWithoutPaginationFindByRubricaLogBySitoProprietario =
 			new FinderPath(
-				RubricaLogModelImpl.ENTITY_CACHE_ENABLED,
-				RubricaLogModelImpl.FINDER_CACHE_ENABLED, RubricaLogImpl.class,
 				FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
 				"findByRubricaLogBySitoProprietario",
 				new String[] {Long.class.getName()},
-				RubricaLogModelImpl.FK_SITO_PROPRIETARIO_COLUMN_BITMASK);
+				new String[] {"FK_SITO_PROPRIETARIO"}, true);
 
 		_finderPathCountByRubricaLogBySitoProprietario = new FinderPath(
-			RubricaLogModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaLogModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
 			"countByRubricaLogBySitoProprietario",
-			new String[] {Long.class.getName()});
+			new String[] {Long.class.getName()},
+			new String[] {"FK_SITO_PROPRIETARIO"}, false);
+
+		RubricaLogUtil.setPersistence(this);
 	}
 
-	public void destroy() {
-		entityCache.removeCache(RubricaLogImpl.class.getName());
-		finderCache.removeCache(FINDER_CLASS_NAME_ENTITY);
-		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+	@Deactivate
+	public void deactivate() {
+		RubricaLogUtil.setPersistence(null);
+
+		dummyEntityCache.removeCache(RubricaLogImpl.class.getName());
 	}
 
-	@ServiceReference(type = EntityCache.class)
-	protected EntityCache entityCache;
+	@Override
+	@Reference(
+		target = rubricaPersistenceConstants.SERVICE_CONFIGURATION_FILTER,
+		unbind = "-"
+	)
+	public void setConfiguration(Configuration configuration) {
+	}
 
-	@ServiceReference(type = FinderCache.class)
-	protected FinderCache finderCache;
+	@Override
+	@Reference(
+		target = rubricaPersistenceConstants.ORIGIN_BUNDLE_SYMBOLIC_NAME_FILTER,
+		unbind = "-"
+	)
+	public void setDataSource(DataSource dataSource) {
+		super.setDataSource(dataSource);
+	}
 
-	private Long _getTime(Date date) {
+	@Override
+	@Reference(
+		target = rubricaPersistenceConstants.ORIGIN_BUNDLE_SYMBOLIC_NAME_FILTER,
+		unbind = "-"
+	)
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		super.setSessionFactory(sessionFactory);
+	}
+
+	private static Long _getTime(Date date) {
 		if (date == null) {
 			return null;
 		}
@@ -3974,9 +3582,6 @@ public class RubricaLogPersistenceImpl
 
 	private static final String _SQL_SELECT_RUBRICALOG =
 		"SELECT rubricaLog FROM RubricaLog rubricaLog";
-
-	private static final String _SQL_SELECT_RUBRICALOG_WHERE_PKS_IN =
-		"SELECT rubricaLog FROM RubricaLog rubricaLog WHERE ID_LOG IN (";
 
 	private static final String _SQL_SELECT_RUBRICALOG_WHERE =
 		"SELECT rubricaLog FROM RubricaLog rubricaLog WHERE ";
@@ -3997,5 +3602,10 @@ public class RubricaLogPersistenceImpl
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		RubricaLogPersistenceImpl.class);
+
+	@Override
+	protected FinderCache getFinderCache() {
+		return dummyFinderCache;
+	}
 
 }

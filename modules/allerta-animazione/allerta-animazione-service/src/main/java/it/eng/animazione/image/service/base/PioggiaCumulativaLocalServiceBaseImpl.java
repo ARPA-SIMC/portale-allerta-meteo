@@ -1,26 +1,15 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.animazione.image.service.base;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.portal.kernel.bean.BeanReference;
+import com.liferay.petra.sql.dsl.query.DSLQuery;
+import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.dao.db.DB;
 import com.liferay.portal.kernel.dao.db.DBManagerUtil;
-import com.liferay.portal.kernel.dao.jdbc.SqlUpdate;
-import com.liferay.portal.kernel.dao.jdbc.SqlUpdateFactoryUtil;
+import com.liferay.portal.kernel.dao.jdbc.CurrentConnectionUtil;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DefaultActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
@@ -29,18 +18,17 @@ import com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.Projection;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.PersistedModel;
 import com.liferay.portal.kernel.module.framework.service.IdentifiableOSGiService;
 import com.liferay.portal.kernel.search.Indexable;
 import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.service.BaseLocalServiceImpl;
-import com.liferay.portal.kernel.service.PersistedModelLocalServiceRegistry;
-import com.liferay.portal.kernel.service.persistence.ClassNamePersistence;
-import com.liferay.portal.kernel.service.persistence.UserPersistence;
+import com.liferay.portal.kernel.service.PersistedModelLocalService;
+import com.liferay.portal.kernel.service.persistence.BasePersistence;
 import com.liferay.portal.kernel.transaction.Transactional;
 import com.liferay.portal.kernel.util.OrderByComparator;
-import com.liferay.portal.kernel.util.PortalUtil;
-import com.liferay.portal.spring.extender.service.ServiceReference;
 
 import it.eng.animazione.image.model.PioggiaCumulativa;
 import it.eng.animazione.image.service.PioggiaCumulativaLocalService;
@@ -53,9 +41,14 @@ import it.eng.animazione.image.service.persistence.elevazionePersistence;
 
 import java.io.Serializable;
 
+import java.sql.Connection;
+
 import java.util.List;
 
 import javax.sql.DataSource;
+
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * Provides the base implementation for the pioggia cumulativa local service.
@@ -68,10 +61,10 @@ import javax.sql.DataSource;
  * @see it.eng.animazione.image.service.impl.PioggiaCumulativaLocalServiceImpl
  * @generated
  */
-@ProviderType
 public abstract class PioggiaCumulativaLocalServiceBaseImpl
 	extends BaseLocalServiceImpl
-	implements PioggiaCumulativaLocalService, IdentifiableOSGiService {
+	implements AopService, IdentifiableOSGiService,
+			   PioggiaCumulativaLocalService {
 
 	/*
 	 * NOTE FOR DEVELOPERS:
@@ -81,6 +74,10 @@ public abstract class PioggiaCumulativaLocalServiceBaseImpl
 
 	/**
 	 * Adds the pioggia cumulativa to the database. Also notifies the appropriate model listeners.
+	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect PioggiaCumulativaLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
 	 *
 	 * @param pioggiaCumulativa the pioggia cumulativa
 	 * @return the pioggia cumulativa that was added
@@ -110,6 +107,10 @@ public abstract class PioggiaCumulativaLocalServiceBaseImpl
 	/**
 	 * Deletes the pioggia cumulativa with the primary key from the database. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect PioggiaCumulativaLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param id the primary key of the pioggia cumulativa
 	 * @return the pioggia cumulativa that was removed
 	 * @throws PortalException if a pioggia cumulativa with the primary key could not be found
@@ -125,6 +126,10 @@ public abstract class PioggiaCumulativaLocalServiceBaseImpl
 	/**
 	 * Deletes the pioggia cumulativa from the database. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect PioggiaCumulativaLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param pioggiaCumulativa the pioggia cumulativa
 	 * @return the pioggia cumulativa that was removed
 	 */
@@ -134,6 +139,18 @@ public abstract class PioggiaCumulativaLocalServiceBaseImpl
 		PioggiaCumulativa pioggiaCumulativa) {
 
 		return pioggiaCumulativaPersistence.remove(pioggiaCumulativa);
+	}
+
+	@Override
+	public <T> T dslQuery(DSLQuery dslQuery) {
+		return pioggiaCumulativaPersistence.dslQuery(dslQuery);
+	}
+
+	@Override
+	public int dslQueryCount(DSLQuery dslQuery) {
+		Long count = dslQuery(dslQuery);
+
+		return count.intValue();
 	}
 
 	@Override
@@ -159,7 +176,7 @@ public abstract class PioggiaCumulativaLocalServiceBaseImpl
 	 * Performs a dynamic query on the database and returns a range of the matching rows.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>it.eng.animazione.image.model.impl.PioggiaCumulativaModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>it.eng.animazione.image.model.impl.PioggiaCumulativaModelImpl</code>.
 	 * </p>
 	 *
 	 * @param dynamicQuery the dynamic query
@@ -179,7 +196,7 @@ public abstract class PioggiaCumulativaLocalServiceBaseImpl
 	 * Performs a dynamic query on the database and returns an ordered range of the matching rows.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>it.eng.animazione.image.model.impl.PioggiaCumulativaModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>it.eng.animazione.image.model.impl.PioggiaCumulativaModelImpl</code>.
 	 * </p>
 	 *
 	 * @param dynamicQuery the dynamic query
@@ -289,13 +306,37 @@ public abstract class PioggiaCumulativaLocalServiceBaseImpl
 	 * @throws PortalException
 	 */
 	@Override
+	public PersistedModel createPersistedModel(Serializable primaryKeyObj)
+		throws PortalException {
+
+		return pioggiaCumulativaPersistence.create(
+			((Long)primaryKeyObj).longValue());
+	}
+
+	/**
+	 * @throws PortalException
+	 */
+	@Override
 	public PersistedModel deletePersistedModel(PersistedModel persistedModel)
 		throws PortalException {
+
+		if (_log.isWarnEnabled()) {
+			_log.warn(
+				"Implement PioggiaCumulativaLocalServiceImpl#deletePioggiaCumulativa(PioggiaCumulativa) to avoid orphaned data");
+		}
 
 		return pioggiaCumulativaLocalService.deletePioggiaCumulativa(
 			(PioggiaCumulativa)persistedModel);
 	}
 
+	@Override
+	public BasePersistence<PioggiaCumulativa> getBasePersistence() {
+		return pioggiaCumulativaPersistence;
+	}
+
+	/**
+	 * @throws PortalException
+	 */
 	@Override
 	public PersistedModel getPersistedModel(Serializable primaryKeyObj)
 		throws PortalException {
@@ -307,7 +348,7 @@ public abstract class PioggiaCumulativaLocalServiceBaseImpl
 	 * Returns a range of all the pioggia cumulativas.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>it.eng.animazione.image.model.impl.PioggiaCumulativaModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>it.eng.animazione.image.model.impl.PioggiaCumulativaModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of pioggia cumulativas
@@ -332,6 +373,10 @@ public abstract class PioggiaCumulativaLocalServiceBaseImpl
 	/**
 	 * Updates the pioggia cumulativa in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect PioggiaCumulativaLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param pioggiaCumulativa the pioggia cumulativa
 	 * @return the pioggia cumulativa that was updated
 	 */
@@ -343,399 +388,21 @@ public abstract class PioggiaCumulativaLocalServiceBaseImpl
 		return pioggiaCumulativaPersistence.update(pioggiaCumulativa);
 	}
 
-	/**
-	 * Returns the altezza onda local service.
-	 *
-	 * @return the altezza onda local service
-	 */
-	public it.eng.animazione.image.service.altezzaOndaLocalService
-		getaltezzaOndaLocalService() {
-
-		return altezzaOndaLocalService;
+	@Deactivate
+	protected void deactivate() {
 	}
 
-	/**
-	 * Sets the altezza onda local service.
-	 *
-	 * @param altezzaOndaLocalService the altezza onda local service
-	 */
-	public void setaltezzaOndaLocalService(
-		it.eng.animazione.image.service.altezzaOndaLocalService
-			altezzaOndaLocalService) {
-
-		this.altezzaOndaLocalService = altezzaOndaLocalService;
+	@Override
+	public Class<?>[] getAopInterfaces() {
+		return new Class<?>[] {
+			PioggiaCumulativaLocalService.class, IdentifiableOSGiService.class,
+			PersistedModelLocalService.class
+		};
 	}
 
-	/**
-	 * Returns the altezza onda persistence.
-	 *
-	 * @return the altezza onda persistence
-	 */
-	public altezzaOndaPersistence getaltezzaOndaPersistence() {
-		return altezzaOndaPersistence;
-	}
-
-	/**
-	 * Sets the altezza onda persistence.
-	 *
-	 * @param altezzaOndaPersistence the altezza onda persistence
-	 */
-	public void setaltezzaOndaPersistence(
-		altezzaOndaPersistence altezzaOndaPersistence) {
-
-		this.altezzaOndaPersistence = altezzaOndaPersistence;
-	}
-
-	/**
-	 * Returns the altezza onda adriac local service.
-	 *
-	 * @return the altezza onda adriac local service
-	 */
-	public it.eng.animazione.image.service.altezzaOndaAdriacLocalService
-		getaltezzaOndaAdriacLocalService() {
-
-		return altezzaOndaAdriacLocalService;
-	}
-
-	/**
-	 * Sets the altezza onda adriac local service.
-	 *
-	 * @param altezzaOndaAdriacLocalService the altezza onda adriac local service
-	 */
-	public void setaltezzaOndaAdriacLocalService(
-		it.eng.animazione.image.service.altezzaOndaAdriacLocalService
-			altezzaOndaAdriacLocalService) {
-
-		this.altezzaOndaAdriacLocalService = altezzaOndaAdriacLocalService;
-	}
-
-	/**
-	 * Returns the altezza onda adriac persistence.
-	 *
-	 * @return the altezza onda adriac persistence
-	 */
-	public altezzaOndaAdriacPersistence getaltezzaOndaAdriacPersistence() {
-		return altezzaOndaAdriacPersistence;
-	}
-
-	/**
-	 * Sets the altezza onda adriac persistence.
-	 *
-	 * @param altezzaOndaAdriacPersistence the altezza onda adriac persistence
-	 */
-	public void setaltezzaOndaAdriacPersistence(
-		altezzaOndaAdriacPersistence altezzaOndaAdriacPersistence) {
-
-		this.altezzaOndaAdriacPersistence = altezzaOndaAdriacPersistence;
-	}
-
-	/**
-	 * Returns the altezza onda swanita local service.
-	 *
-	 * @return the altezza onda swanita local service
-	 */
-	public it.eng.animazione.image.service.altezzaOndaSwanitaLocalService
-		getaltezzaOndaSwanitaLocalService() {
-
-		return altezzaOndaSwanitaLocalService;
-	}
-
-	/**
-	 * Sets the altezza onda swanita local service.
-	 *
-	 * @param altezzaOndaSwanitaLocalService the altezza onda swanita local service
-	 */
-	public void setaltezzaOndaSwanitaLocalService(
-		it.eng.animazione.image.service.altezzaOndaSwanitaLocalService
-			altezzaOndaSwanitaLocalService) {
-
-		this.altezzaOndaSwanitaLocalService = altezzaOndaSwanitaLocalService;
-	}
-
-	/**
-	 * Returns the altezza onda swanita persistence.
-	 *
-	 * @return the altezza onda swanita persistence
-	 */
-	public altezzaOndaSwanitaPersistence getaltezzaOndaSwanitaPersistence() {
-		return altezzaOndaSwanitaPersistence;
-	}
-
-	/**
-	 * Sets the altezza onda swanita persistence.
-	 *
-	 * @param altezzaOndaSwanitaPersistence the altezza onda swanita persistence
-	 */
-	public void setaltezzaOndaSwanitaPersistence(
-		altezzaOndaSwanitaPersistence altezzaOndaSwanitaPersistence) {
-
-		this.altezzaOndaSwanitaPersistence = altezzaOndaSwanitaPersistence;
-	}
-
-	/**
-	 * Returns the elevazione local service.
-	 *
-	 * @return the elevazione local service
-	 */
-	public it.eng.animazione.image.service.elevazioneLocalService
-		getelevazioneLocalService() {
-
-		return elevazioneLocalService;
-	}
-
-	/**
-	 * Sets the elevazione local service.
-	 *
-	 * @param elevazioneLocalService the elevazione local service
-	 */
-	public void setelevazioneLocalService(
-		it.eng.animazione.image.service.elevazioneLocalService
-			elevazioneLocalService) {
-
-		this.elevazioneLocalService = elevazioneLocalService;
-	}
-
-	/**
-	 * Returns the elevazione persistence.
-	 *
-	 * @return the elevazione persistence
-	 */
-	public elevazionePersistence getelevazionePersistence() {
-		return elevazionePersistence;
-	}
-
-	/**
-	 * Sets the elevazione persistence.
-	 *
-	 * @param elevazionePersistence the elevazione persistence
-	 */
-	public void setelevazionePersistence(
-		elevazionePersistence elevazionePersistence) {
-
-		this.elevazionePersistence = elevazionePersistence;
-	}
-
-	/**
-	 * Returns the parametro local service.
-	 *
-	 * @return the parametro local service
-	 */
-	public it.eng.animazione.image.service.ParametroLocalService
-		getParametroLocalService() {
-
-		return parametroLocalService;
-	}
-
-	/**
-	 * Sets the parametro local service.
-	 *
-	 * @param parametroLocalService the parametro local service
-	 */
-	public void setParametroLocalService(
-		it.eng.animazione.image.service.ParametroLocalService
-			parametroLocalService) {
-
-		this.parametroLocalService = parametroLocalService;
-	}
-
-	/**
-	 * Returns the parametro persistence.
-	 *
-	 * @return the parametro persistence
-	 */
-	public ParametroPersistence getParametroPersistence() {
-		return parametroPersistence;
-	}
-
-	/**
-	 * Sets the parametro persistence.
-	 *
-	 * @param parametroPersistence the parametro persistence
-	 */
-	public void setParametroPersistence(
-		ParametroPersistence parametroPersistence) {
-
-		this.parametroPersistence = parametroPersistence;
-	}
-
-	/**
-	 * Returns the pioggia cumulativa local service.
-	 *
-	 * @return the pioggia cumulativa local service
-	 */
-	public PioggiaCumulativaLocalService getPioggiaCumulativaLocalService() {
-		return pioggiaCumulativaLocalService;
-	}
-
-	/**
-	 * Sets the pioggia cumulativa local service.
-	 *
-	 * @param pioggiaCumulativaLocalService the pioggia cumulativa local service
-	 */
-	public void setPioggiaCumulativaLocalService(
-		PioggiaCumulativaLocalService pioggiaCumulativaLocalService) {
-
-		this.pioggiaCumulativaLocalService = pioggiaCumulativaLocalService;
-	}
-
-	/**
-	 * Returns the pioggia cumulativa persistence.
-	 *
-	 * @return the pioggia cumulativa persistence
-	 */
-	public PioggiaCumulativaPersistence getPioggiaCumulativaPersistence() {
-		return pioggiaCumulativaPersistence;
-	}
-
-	/**
-	 * Sets the pioggia cumulativa persistence.
-	 *
-	 * @param pioggiaCumulativaPersistence the pioggia cumulativa persistence
-	 */
-	public void setPioggiaCumulativaPersistence(
-		PioggiaCumulativaPersistence pioggiaCumulativaPersistence) {
-
-		this.pioggiaCumulativaPersistence = pioggiaCumulativaPersistence;
-	}
-
-	/**
-	 * Returns the counter local service.
-	 *
-	 * @return the counter local service
-	 */
-	public com.liferay.counter.kernel.service.CounterLocalService
-		getCounterLocalService() {
-
-		return counterLocalService;
-	}
-
-	/**
-	 * Sets the counter local service.
-	 *
-	 * @param counterLocalService the counter local service
-	 */
-	public void setCounterLocalService(
-		com.liferay.counter.kernel.service.CounterLocalService
-			counterLocalService) {
-
-		this.counterLocalService = counterLocalService;
-	}
-
-	/**
-	 * Returns the class name local service.
-	 *
-	 * @return the class name local service
-	 */
-	public com.liferay.portal.kernel.service.ClassNameLocalService
-		getClassNameLocalService() {
-
-		return classNameLocalService;
-	}
-
-	/**
-	 * Sets the class name local service.
-	 *
-	 * @param classNameLocalService the class name local service
-	 */
-	public void setClassNameLocalService(
-		com.liferay.portal.kernel.service.ClassNameLocalService
-			classNameLocalService) {
-
-		this.classNameLocalService = classNameLocalService;
-	}
-
-	/**
-	 * Returns the class name persistence.
-	 *
-	 * @return the class name persistence
-	 */
-	public ClassNamePersistence getClassNamePersistence() {
-		return classNamePersistence;
-	}
-
-	/**
-	 * Sets the class name persistence.
-	 *
-	 * @param classNamePersistence the class name persistence
-	 */
-	public void setClassNamePersistence(
-		ClassNamePersistence classNamePersistence) {
-
-		this.classNamePersistence = classNamePersistence;
-	}
-
-	/**
-	 * Returns the resource local service.
-	 *
-	 * @return the resource local service
-	 */
-	public com.liferay.portal.kernel.service.ResourceLocalService
-		getResourceLocalService() {
-
-		return resourceLocalService;
-	}
-
-	/**
-	 * Sets the resource local service.
-	 *
-	 * @param resourceLocalService the resource local service
-	 */
-	public void setResourceLocalService(
-		com.liferay.portal.kernel.service.ResourceLocalService
-			resourceLocalService) {
-
-		this.resourceLocalService = resourceLocalService;
-	}
-
-	/**
-	 * Returns the user local service.
-	 *
-	 * @return the user local service
-	 */
-	public com.liferay.portal.kernel.service.UserLocalService
-		getUserLocalService() {
-
-		return userLocalService;
-	}
-
-	/**
-	 * Sets the user local service.
-	 *
-	 * @param userLocalService the user local service
-	 */
-	public void setUserLocalService(
-		com.liferay.portal.kernel.service.UserLocalService userLocalService) {
-
-		this.userLocalService = userLocalService;
-	}
-
-	/**
-	 * Returns the user persistence.
-	 *
-	 * @return the user persistence
-	 */
-	public UserPersistence getUserPersistence() {
-		return userPersistence;
-	}
-
-	/**
-	 * Sets the user persistence.
-	 *
-	 * @param userPersistence the user persistence
-	 */
-	public void setUserPersistence(UserPersistence userPersistence) {
-		this.userPersistence = userPersistence;
-	}
-
-	public void afterPropertiesSet() {
-		persistedModelLocalServiceRegistry.register(
-			"it.eng.animazione.image.model.PioggiaCumulativa",
-			pioggiaCumulativaLocalService);
-	}
-
-	public void destroy() {
-		persistedModelLocalServiceRegistry.unregister(
-			"it.eng.animazione.image.model.PioggiaCumulativa");
+	@Override
+	public void setAopProxy(Object aopProxy) {
+		pioggiaCumulativaLocalService = (PioggiaCumulativaLocalService)aopProxy;
 	}
 
 	/**
@@ -762,108 +429,66 @@ public abstract class PioggiaCumulativaLocalServiceBaseImpl
 	 * @param sql the sql query
 	 */
 	protected void runSQL(String sql) {
+		DataSource dataSource = pioggiaCumulativaPersistence.getDataSource();
+
+		DB db = DBManagerUtil.getDB();
+
+		Connection currentConnection = CurrentConnectionUtil.getConnection(
+			dataSource);
+
 		try {
-			DataSource dataSource =
-				pioggiaCumulativaPersistence.getDataSource();
+			if (currentConnection != null) {
+				db.runSQL(currentConnection, new String[] {sql});
 
-			DB db = DBManagerUtil.getDB();
+				return;
+			}
 
-			sql = db.buildSQL(sql);
-			sql = PortalUtil.transformSQL(sql);
-
-			SqlUpdate sqlUpdate = SqlUpdateFactoryUtil.getSqlUpdate(
-				dataSource, sql);
-
-			sqlUpdate.update();
+			try (Connection connection = dataSource.getConnection()) {
+				db.runSQL(connection, new String[] {sql});
+			}
 		}
-		catch (Exception e) {
-			throw new SystemException(e);
+		catch (Exception exception) {
+			throw new SystemException(exception);
 		}
 	}
 
-	@BeanReference(
-		type = it.eng.animazione.image.service.altezzaOndaLocalService.class
-	)
-	protected it.eng.animazione.image.service.altezzaOndaLocalService
-		altezzaOndaLocalService;
-
-	@BeanReference(type = altezzaOndaPersistence.class)
+	@Reference
 	protected altezzaOndaPersistence altezzaOndaPersistence;
 
-	@BeanReference(
-		type = it.eng.animazione.image.service.altezzaOndaAdriacLocalService.class
-	)
-	protected it.eng.animazione.image.service.altezzaOndaAdriacLocalService
-		altezzaOndaAdriacLocalService;
-
-	@BeanReference(type = altezzaOndaAdriacPersistence.class)
+	@Reference
 	protected altezzaOndaAdriacPersistence altezzaOndaAdriacPersistence;
 
-	@BeanReference(
-		type = it.eng.animazione.image.service.altezzaOndaSwanitaLocalService.class
-	)
-	protected it.eng.animazione.image.service.altezzaOndaSwanitaLocalService
-		altezzaOndaSwanitaLocalService;
-
-	@BeanReference(type = altezzaOndaSwanitaPersistence.class)
+	@Reference
 	protected altezzaOndaSwanitaPersistence altezzaOndaSwanitaPersistence;
 
-	@BeanReference(
-		type = it.eng.animazione.image.service.elevazioneLocalService.class
-	)
-	protected it.eng.animazione.image.service.elevazioneLocalService
-		elevazioneLocalService;
-
-	@BeanReference(type = elevazionePersistence.class)
+	@Reference
 	protected elevazionePersistence elevazionePersistence;
 
-	@BeanReference(
-		type = it.eng.animazione.image.service.ParametroLocalService.class
-	)
-	protected it.eng.animazione.image.service.ParametroLocalService
-		parametroLocalService;
-
-	@BeanReference(type = ParametroPersistence.class)
+	@Reference
 	protected ParametroPersistence parametroPersistence;
 
-	@BeanReference(type = PioggiaCumulativaLocalService.class)
 	protected PioggiaCumulativaLocalService pioggiaCumulativaLocalService;
 
-	@BeanReference(type = PioggiaCumulativaPersistence.class)
+	@Reference
 	protected PioggiaCumulativaPersistence pioggiaCumulativaPersistence;
 
-	@ServiceReference(
-		type = com.liferay.counter.kernel.service.CounterLocalService.class
-	)
+	@Reference
 	protected com.liferay.counter.kernel.service.CounterLocalService
 		counterLocalService;
 
-	@ServiceReference(
-		type = com.liferay.portal.kernel.service.ClassNameLocalService.class
-	)
+	@Reference
 	protected com.liferay.portal.kernel.service.ClassNameLocalService
 		classNameLocalService;
 
-	@ServiceReference(type = ClassNamePersistence.class)
-	protected ClassNamePersistence classNamePersistence;
-
-	@ServiceReference(
-		type = com.liferay.portal.kernel.service.ResourceLocalService.class
-	)
+	@Reference
 	protected com.liferay.portal.kernel.service.ResourceLocalService
 		resourceLocalService;
 
-	@ServiceReference(
-		type = com.liferay.portal.kernel.service.UserLocalService.class
-	)
+	@Reference
 	protected com.liferay.portal.kernel.service.UserLocalService
 		userLocalService;
 
-	@ServiceReference(type = UserPersistence.class)
-	protected UserPersistence userPersistence;
-
-	@ServiceReference(type = PersistedModelLocalServiceRegistry.class)
-	protected PersistedModelLocalServiceRegistry
-		persistedModelLocalServiceRegistry;
+	private static final Log _log = LogFactoryUtil.getLog(
+		PioggiaCumulativaLocalServiceBaseImpl.class);
 
 }

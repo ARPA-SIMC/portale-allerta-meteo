@@ -1,31 +1,16 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerte.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -36,22 +21,12 @@ import java.util.Objects;
  * @see RubricaContatto
  * @generated
  */
-@ProviderType
 public class RubricaContattoWrapper
-	implements RubricaContatto, ModelWrapper<RubricaContatto> {
+	extends BaseModelWrapper<RubricaContatto>
+	implements ModelWrapper<RubricaContatto>, RubricaContatto {
 
 	public RubricaContattoWrapper(RubricaContatto rubricaContatto) {
-		_rubricaContatto = rubricaContatto;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return RubricaContatto.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return RubricaContatto.class.getName();
+		super(rubricaContatto);
 	}
 
 	@Override
@@ -143,14 +118,8 @@ public class RubricaContattoWrapper
 	}
 
 	@Override
-	public Object clone() {
-		return new RubricaContattoWrapper(
-			(RubricaContatto)_rubricaContatto.clone());
-	}
-
-	@Override
-	public int compareTo(it.eng.allerte.model.RubricaContatto rubricaContatto) {
-		return _rubricaContatto.compareTo(rubricaContatto);
+	public RubricaContatto cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -160,7 +129,7 @@ public class RubricaContattoWrapper
 	 */
 	@Override
 	public boolean getALLERTAMENTO() {
-		return _rubricaContatto.getALLERTAMENTO();
+		return model.getALLERTAMENTO();
 	}
 
 	/**
@@ -170,7 +139,7 @@ public class RubricaContattoWrapper
 	 */
 	@Override
 	public String getCONTATTO() {
-		return _rubricaContatto.getCONTATTO();
+		return model.getCONTATTO();
 	}
 
 	/**
@@ -180,7 +149,7 @@ public class RubricaContattoWrapper
 	 */
 	@Override
 	public Date getDATA_CREAZIONE() {
-		return _rubricaContatto.getDATA_CREAZIONE();
+		return model.getDATA_CREAZIONE();
 	}
 
 	/**
@@ -190,7 +159,7 @@ public class RubricaContattoWrapper
 	 */
 	@Override
 	public Date getDATA_FINE_VALIDITA() {
-		return _rubricaContatto.getDATA_FINE_VALIDITA();
+		return model.getDATA_FINE_VALIDITA();
 	}
 
 	/**
@@ -200,12 +169,7 @@ public class RubricaContattoWrapper
 	 */
 	@Override
 	public Date getDATA_MODIFICA() {
-		return _rubricaContatto.getDATA_MODIFICA();
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _rubricaContatto.getExpandoBridge();
+		return model.getDATA_MODIFICA();
 	}
 
 	/**
@@ -215,7 +179,7 @@ public class RubricaContattoWrapper
 	 */
 	@Override
 	public long getFK_CANALE() {
-		return _rubricaContatto.getFK_CANALE();
+		return model.getFK_CANALE();
 	}
 
 	/**
@@ -225,7 +189,7 @@ public class RubricaContattoWrapper
 	 */
 	@Override
 	public long getFK_NOMINATIVO() {
-		return _rubricaContatto.getFK_NOMINATIVO();
+		return model.getFK_NOMINATIVO();
 	}
 
 	/**
@@ -235,7 +199,7 @@ public class RubricaContattoWrapper
 	 */
 	@Override
 	public long getFK_UTENTE_CREAZIONE() {
-		return _rubricaContatto.getFK_UTENTE_CREAZIONE();
+		return model.getFK_UTENTE_CREAZIONE();
 	}
 
 	/**
@@ -245,7 +209,7 @@ public class RubricaContattoWrapper
 	 */
 	@Override
 	public long getFK_UTENTE_MODIFICA() {
-		return _rubricaContatto.getFK_UTENTE_MODIFICA();
+		return model.getFK_UTENTE_MODIFICA();
 	}
 
 	/**
@@ -255,7 +219,7 @@ public class RubricaContattoWrapper
 	 */
 	@Override
 	public long getID_CONTATTO() {
-		return _rubricaContatto.getID_CONTATTO();
+		return model.getID_CONTATTO();
 	}
 
 	/**
@@ -265,7 +229,7 @@ public class RubricaContattoWrapper
 	 */
 	@Override
 	public boolean getMODIFICA_MINORE() {
-		return _rubricaContatto.getMODIFICA_MINORE();
+		return model.getMODIFICA_MINORE();
 	}
 
 	/**
@@ -275,17 +239,7 @@ public class RubricaContattoWrapper
 	 */
 	@Override
 	public long getPrimaryKey() {
-		return _rubricaContatto.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _rubricaContatto.getPrimaryKeyObj();
-	}
-
-	@Override
-	public int hashCode() {
-		return _rubricaContatto.hashCode();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -295,17 +249,7 @@ public class RubricaContattoWrapper
 	 */
 	@Override
 	public boolean isALLERTAMENTO() {
-		return _rubricaContatto.isALLERTAMENTO();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _rubricaContatto.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _rubricaContatto.isEscapedModel();
+		return model.isALLERTAMENTO();
 	}
 
 	/**
@@ -315,17 +259,12 @@ public class RubricaContattoWrapper
 	 */
 	@Override
 	public boolean isMODIFICA_MINORE() {
-		return _rubricaContatto.isMODIFICA_MINORE();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _rubricaContatto.isNew();
+		return model.isMODIFICA_MINORE();
 	}
 
 	@Override
 	public void persist() {
-		_rubricaContatto.persist();
+		model.persist();
 	}
 
 	/**
@@ -335,12 +274,7 @@ public class RubricaContattoWrapper
 	 */
 	@Override
 	public void setALLERTAMENTO(boolean ALLERTAMENTO) {
-		_rubricaContatto.setALLERTAMENTO(ALLERTAMENTO);
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_rubricaContatto.setCachedModel(cachedModel);
+		model.setALLERTAMENTO(ALLERTAMENTO);
 	}
 
 	/**
@@ -350,7 +284,7 @@ public class RubricaContattoWrapper
 	 */
 	@Override
 	public void setCONTATTO(String CONTATTO) {
-		_rubricaContatto.setCONTATTO(CONTATTO);
+		model.setCONTATTO(CONTATTO);
 	}
 
 	/**
@@ -360,7 +294,7 @@ public class RubricaContattoWrapper
 	 */
 	@Override
 	public void setDATA_CREAZIONE(Date DATA_CREAZIONE) {
-		_rubricaContatto.setDATA_CREAZIONE(DATA_CREAZIONE);
+		model.setDATA_CREAZIONE(DATA_CREAZIONE);
 	}
 
 	/**
@@ -370,7 +304,7 @@ public class RubricaContattoWrapper
 	 */
 	@Override
 	public void setDATA_FINE_VALIDITA(Date DATA_FINE_VALIDITA) {
-		_rubricaContatto.setDATA_FINE_VALIDITA(DATA_FINE_VALIDITA);
+		model.setDATA_FINE_VALIDITA(DATA_FINE_VALIDITA);
 	}
 
 	/**
@@ -380,24 +314,7 @@ public class RubricaContattoWrapper
 	 */
 	@Override
 	public void setDATA_MODIFICA(Date DATA_MODIFICA) {
-		_rubricaContatto.setDATA_MODIFICA(DATA_MODIFICA);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_rubricaContatto.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_rubricaContatto.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_rubricaContatto.setExpandoBridgeAttributes(serviceContext);
+		model.setDATA_MODIFICA(DATA_MODIFICA);
 	}
 
 	/**
@@ -407,7 +324,7 @@ public class RubricaContattoWrapper
 	 */
 	@Override
 	public void setFK_CANALE(long FK_CANALE) {
-		_rubricaContatto.setFK_CANALE(FK_CANALE);
+		model.setFK_CANALE(FK_CANALE);
 	}
 
 	/**
@@ -417,7 +334,7 @@ public class RubricaContattoWrapper
 	 */
 	@Override
 	public void setFK_NOMINATIVO(long FK_NOMINATIVO) {
-		_rubricaContatto.setFK_NOMINATIVO(FK_NOMINATIVO);
+		model.setFK_NOMINATIVO(FK_NOMINATIVO);
 	}
 
 	/**
@@ -427,7 +344,7 @@ public class RubricaContattoWrapper
 	 */
 	@Override
 	public void setFK_UTENTE_CREAZIONE(long FK_UTENTE_CREAZIONE) {
-		_rubricaContatto.setFK_UTENTE_CREAZIONE(FK_UTENTE_CREAZIONE);
+		model.setFK_UTENTE_CREAZIONE(FK_UTENTE_CREAZIONE);
 	}
 
 	/**
@@ -437,7 +354,7 @@ public class RubricaContattoWrapper
 	 */
 	@Override
 	public void setFK_UTENTE_MODIFICA(long FK_UTENTE_MODIFICA) {
-		_rubricaContatto.setFK_UTENTE_MODIFICA(FK_UTENTE_MODIFICA);
+		model.setFK_UTENTE_MODIFICA(FK_UTENTE_MODIFICA);
 	}
 
 	/**
@@ -447,7 +364,7 @@ public class RubricaContattoWrapper
 	 */
 	@Override
 	public void setID_CONTATTO(long ID_CONTATTO) {
-		_rubricaContatto.setID_CONTATTO(ID_CONTATTO);
+		model.setID_CONTATTO(ID_CONTATTO);
 	}
 
 	/**
@@ -457,12 +374,7 @@ public class RubricaContattoWrapper
 	 */
 	@Override
 	public void setMODIFICA_MINORE(boolean MODIFICA_MINORE) {
-		_rubricaContatto.setMODIFICA_MINORE(MODIFICA_MINORE);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_rubricaContatto.setNew(n);
+		model.setMODIFICA_MINORE(MODIFICA_MINORE);
 	}
 
 	/**
@@ -472,83 +384,17 @@ public class RubricaContattoWrapper
 	 */
 	@Override
 	public void setPrimaryKey(long primaryKey) {
-		_rubricaContatto.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_rubricaContatto.setPrimaryKeyObj(primaryKeyObj);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<it.eng.allerte.model.RubricaContatto> toCacheModel() {
-
-		return _rubricaContatto.toCacheModel();
-	}
-
-	@Override
-	public it.eng.allerte.model.RubricaContatto toEscapedModel() {
-		return new RubricaContattoWrapper(_rubricaContatto.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _rubricaContatto.toString();
-	}
-
-	@Override
-	public it.eng.allerte.model.RubricaContatto toUnescapedModel() {
-		return new RubricaContattoWrapper(_rubricaContatto.toUnescapedModel());
+		model.setPrimaryKey(primaryKey);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _rubricaContatto.toXmlString();
+		return model.toXmlString();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-
-		if (!(obj instanceof RubricaContattoWrapper)) {
-			return false;
-		}
-
-		RubricaContattoWrapper rubricaContattoWrapper =
-			(RubricaContattoWrapper)obj;
-
-		if (Objects.equals(
-				_rubricaContatto, rubricaContattoWrapper._rubricaContatto)) {
-
-			return true;
-		}
-
-		return false;
+	protected RubricaContattoWrapper wrap(RubricaContatto rubricaContatto) {
+		return new RubricaContattoWrapper(rubricaContatto);
 	}
-
-	@Override
-	public RubricaContatto getWrappedModel() {
-		return _rubricaContatto;
-	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _rubricaContatto.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _rubricaContatto.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_rubricaContatto.resetOriginalValues();
-	}
-
-	private final RubricaContatto _rubricaContatto;
 
 }

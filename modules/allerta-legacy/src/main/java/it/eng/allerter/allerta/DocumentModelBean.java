@@ -95,7 +95,7 @@ public class DocumentModelBean {
 	 		
 		public void reset(String siteName) throws PortalException, SystemException {
 			
-			logger.info("@@@@@@@@@@@ RESET  DOCUMENT MODEL BEAN SITE NAME "+siteName);
+			//logger.info("@@@@@@@@@@@ RESET  DOCUMENT MODEL BEAN SITE NAME "+siteName);
 			
 			// preparo la lista delle avriabili 
 			
@@ -144,14 +144,14 @@ public class DocumentModelBean {
 		 */
 		private void getFileMezziEdAttrezzature(String siteName){
 			
-			logger.info(" @@ GET FILE MEZZI ED ATTREZZATURE ");
+			//logger.info(" @@ GET FILE MEZZI ED ATTREZZATURE ");
 			
 			try {
 				// CERCO I FILE PER  AREE SUSCETTIBILI A FRANE
 				this.searchFileInFolder(siteName, groupId, ID_FOLDER_MAPPE_DEI_MEZZI_E_ATTREZZATURE, showMappeDeiMezziEattrezzature, mappeDeiMezziEattrezzature);
 				
 			} catch (SystemException e) {
-				logger.info(" @@ CATTURATA ECCEZZIONE NEL PRELIEVO DELLE MAPPE @@"+ID_FOLDER_MAPPE_DEI_MEZZI_E_ATTREZZATURE);
+				//logger.info(" @@ CATTURATA ECCEZZIONE NEL PRELIEVO DELLE MAPPE @@"+ID_FOLDER_MAPPE_DEI_MEZZI_E_ATTREZZATURE);
 			}
 		}
 		
@@ -161,14 +161,14 @@ public class DocumentModelBean {
 		 */
 		private void getFileEmergenzaEcentriOperativi(String siteName){
 			
-			logger.info(" @@ GET FILE EMERGENZA E CENTRI OPERATIVI  ");
+			//logger.info(" @@ GET FILE EMERGENZA E CENTRI OPERATIVI  ");
 			
 			try {
 				// CERCO I FILE PER  AREE SUSCETTIBILI A FRANE
 				this.searchFileInFolder(siteName, groupId, ID_FOLDER_MAPPE_AREE_EMERGENZA_E_CENTRI_OPERATIVI, showMappeEmergenzaEcentriOperativi, mappeEmergenzaEcentriOperativi);
 				
 			} catch (SystemException e) {
-				logger.info(" @@ CATTURATA ECCEZZIONE NEL PRELIEVO DELLE MAPPE @@"+ID_FOLDER_MAPPE_AREE_EMERGENZA_E_CENTRI_OPERATIVI);
+				//logger.info(" @@ CATTURATA ECCEZZIONE NEL PRELIEVO DELLE MAPPE @@"+ID_FOLDER_MAPPE_AREE_EMERGENZA_E_CENTRI_OPERATIVI);
 			}
 		}
 		
@@ -177,14 +177,14 @@ public class DocumentModelBean {
 		 */
 		private void getFileForReticoloIdraulico(String siteName){
 			
-			logger.info(" @@ GET FILE PER RETICOLO IDRAULICO  ");
+			//logger.info(" @@ GET FILE PER RETICOLO IDRAULICO  ");
 			
 			try {
 				// CERCO I FILE PER  AREE SUSCETTIBILI A FRANE
 				this.searchFileInFolder(siteName, groupId, ID_FOLDER_MAPPE_RETICOLO_IDRAULICO, showMappeReticoloIdraulico, mappeReticoloIdraulico);
 				
 			} catch (SystemException e) {
-				logger.info(" @@ CATTURATA ECCEZZIONE NEL PRELIEVO DELLE MAPPE @@"+ID_FOLDER_MAPPE_RETICOLO_IDRAULICO);
+				//logger.info(" @@ CATTURATA ECCEZZIONE NEL PRELIEVO DELLE MAPPE @@"+ID_FOLDER_MAPPE_RETICOLO_IDRAULICO);
 			}
 		}
 		
@@ -193,14 +193,14 @@ public class DocumentModelBean {
 		 */
 		private void getFileForPuntiCritici(String siteName){
 			
-			logger.info(" @@ GET FILE PER PUNTI CRITICI  ");
+			//logger.info(" @@ GET FILE PER PUNTI CRITICI  ");
 			
 			try {
 				// CERCO I FILE PER  AREE SUSCETTIBILI A FRANE
 				this.searchFileInFolder(siteName, groupId, ID_FOLDER_MAPPE_PUNTI_CRITICI, showMappePuntiCritici, mappePuntiCritici);
 				
 			} catch (SystemException e) {
-				logger.info(" @@ CATTURATA ECCEZZIONE NEL PRELIEVO DELLE MAPPE @@"+ID_FOLDER_MAPPE_PUNTI_CRITICI);
+				//logger.info(" @@ CATTURATA ECCEZZIONE NEL PRELIEVO DELLE MAPPE @@"+ID_FOLDER_MAPPE_PUNTI_CRITICI);
 			}
 		}
 		
@@ -209,7 +209,7 @@ public class DocumentModelBean {
 		 */
 		public List<FolderToView> getFileForAlluvioni(String siteName ) {
 			
-			logger.info(" @@ GET FILE PER ALLUVIONI ");
+			//logger.info(" @@ GET FILE PER ALLUVIONI ");
 			
 			this.mappePericolositaErischioAlluvioni = new ArrayList<>();
 			
@@ -218,7 +218,7 @@ public class DocumentModelBean {
 				this.searchFileInFolder(siteName, groupId, ID_FOLDER_MAPPE_PERICOLOSITA_E_RISCHIO_ALLUVIONI, showMappePericolositaErischioAlluvioni,mappePericolositaErischioAlluvioni);
 				
 			} catch (SystemException e) {
-				logger.info(" @@ CATTURATA ECCEZZIONE NEL PRELIEVO DELLE MAPPE @@"+ID_FOLDER_MAPPE_PERICOLOSITA_E_RISCHIO_ALLUVIONI);
+				//logger.info(" @@ CATTURATA ECCEZZIONE NEL PRELIEVO DELLE MAPPE @@"+ID_FOLDER_MAPPE_PERICOLOSITA_E_RISCHIO_ALLUVIONI);
 			}
 			
 			return mappePericolositaErischioAlluvioni;
@@ -226,7 +226,7 @@ public class DocumentModelBean {
 		
 		public List<FolderToView> getFileForRischioAlluvioni(String siteName ) {
 			
-			logger.info(" @@ GET FILE PER ALLUVIONI ");
+			//logger.info(" @@ GET FILE PER ALLUVIONI ");
 			
 			this.mappeRischioAlluvioni = new ArrayList<>();
 			
@@ -235,7 +235,7 @@ public class DocumentModelBean {
 				this.searchFileInFolder(siteName, groupId, ID_FOLDER_MAPPE_RISCHIO_ALLUVIONI, showMappePericolositaErischioAlluvioni, mappeRischioAlluvioni);
 				
 			} catch (SystemException e) {
-				logger.info(" @@ CATTURATA ECCEZZIONE NEL PRELIEVO DELLE MAPPE @@"+ID_FOLDER_MAPPE_RISCHIO_ALLUVIONI);
+				//logger.info(" @@ CATTURATA ECCEZZIONE NEL PRELIEVO DELLE MAPPE @@"+ID_FOLDER_MAPPE_RISCHIO_ALLUVIONI);
 			}
 			
 			return mappeRischioAlluvioni;
@@ -246,7 +246,7 @@ public class DocumentModelBean {
 		 */
 		public List<FolderToView> getFileForMappeDissesto(String siteName ){
 			
-			logger.info(" @@ GET FILE PER MAPPE DEL DISSESTO (frane) ");
+			//logger.info(" @@ GET FILE PER MAPPE DEL DISSESTO (frane) ");
 			
 			this.mappeFraneDissesto = new ArrayList<>();
 			
@@ -255,7 +255,7 @@ public class DocumentModelBean {
 				this.searchFileInFolder(siteName, groupId, ID_FOLDER_MAPPE_DISSESTO, showMappeFraneDissesto, mappeFraneDissesto);
 				
 			} catch (SystemException e) {
-				logger.info(" @@ CATTURATA ECCEZZIONE NEL PRELIEVO DELLE MAPPE @@"+ID_FOLDER_MAPPE_DISSESTO);
+				//logger.info(" @@ CATTURATA ECCEZZIONE NEL PRELIEVO DELLE MAPPE @@"+ID_FOLDER_MAPPE_DISSESTO);
 			}
 			
 			return mappeFraneDissesto;
@@ -263,12 +263,12 @@ public class DocumentModelBean {
 		
 		private Long searchFileInFolder(String folderSearchName,long groupId,long folderBase,List<FolderToView> listFolder) throws SystemException{
 
-//			logger.info(">>>  SEARCH FILE IN FOLDER START");
+//			//logger.info(">>>  SEARCH FILE IN FOLDER START");
 
 			List<DLFolder> dlFolders = DLFolderLocalServiceUtil.getFolders(groupId, folderBase);
 			Long folderFounded = null;
 			if(dlFolders.size()>0){
-//				logger.info("@ NUMERO CARTELLE TROVATE "+dlFolders.size());
+//				//logger.info("@ NUMERO CARTELLE TROVATE "+dlFolders.size());
 
 				Iterator<DLFolder> itProv   = dlFolders.iterator();
 				DLFolder actualFolder;
@@ -284,7 +284,7 @@ public class DocumentModelBean {
 					find = this.matchName(folderSearchName, folderName,groupId,actualFolder.getFolderId());
 
 					if(find){
-//						logger.info("@TROVATA LA CARTELLA delle tavole ");
+//						//logger.info("@TROVATA LA CARTELLA delle tavole ");
 						folderFounded = actualFolder.getFolderId();
 						this.getFileInFolder(groupId, actualFolder.getFolderId(),"no", listFolder);
 					}
@@ -301,14 +301,14 @@ public class DocumentModelBean {
 		
 		private void searchFileInFolder(String siteName,long groupId,long folderBase,String show,List<FolderToView> listFolder) throws SystemException{
 		
-		   logger.info(">>>  SEARCH FILE IN FOLDER START per "+folderBase);
+		   //logger.info(">>>  SEARCH FILE IN FOLDER START per "+folderBase);
 			
 			List<DLFolder> dlFolders = DLFolderLocalServiceUtil.getFolders(groupId, folderBase);
 			List<DLFolder> dlFoldersComune =null;
 			
 					
 			if(dlFolders.size()>0){
-				logger.info("@ NUMERO PROVINCE ( CARTELLE DI PRIMO LIVELLO ) TROVATE "+dlFolders.size());
+				//logger.info("@ NUMERO PROVINCE ( CARTELLE DI PRIMO LIVELLO ) TROVATE "+dlFolders.size());
 				
 				Iterator<DLFolder> itProv   = dlFolders.iterator();
 				Iterator<DLFolder> itComune =null;;
@@ -327,12 +327,12 @@ public class DocumentModelBean {
 					find = this.matchName(siteName, folderName,groupId,actualFolder.getFolderId());
 					
 					if(find){	
-						logger.info("@TROVATA LA CARTELLA COME PROVINCIA");
+						//logger.info("@TROVATA LA CARTELLA COME PROVINCIA");
 						 this.getFileInFolder(groupId, actualFolder.getFolderId(),show,listFolder);
 			     	}
 					else{
 					
-					// Prendiamo tutte le cartelle compresa se stessa per questo è impostata a true 
+					// Prendiamo tutte le cartelle compresa se stessa per questo Ã¨ impostata a true 
 					
 					dlFoldersComune = DLFolderLocalServiceUtil.getFolders(groupId,folderId , true);
 					
@@ -369,7 +369,7 @@ public class DocumentModelBean {
 		   folder = folder.toLowerCase().trim().replace(" ", "").replaceAll("(?m)(:?\\d+) \\* x\\^(:?\\d+)", "$1x<sup>$2</sup>");;
 		   
 		   if(site.equalsIgnoreCase(folder)){
-			   logger.info("TROVATA UNA  CARTELLA CHE METCHA CON IL NOME DEL SITO"+folder);
+			   //logger.info("TROVATA UNA  CARTELLA CHE METCHA CON IL NOME DEL SITO"+folder);
 			   match= true;
 			   
 			  
@@ -385,11 +385,11 @@ public class DocumentModelBean {
 		   List<DLFileEntry> fileEntryService = null;     
 		   FolderToView folder;
 		   
-		   logger.info("@@@ CERCO I FILE NELLA CARTELLA  "+folderId +" con groupId"+groupId);
+		   //logger.info("@@@ CERCO I FILE NELLA CARTELLA  "+folderId +" con groupId"+groupId);
 		 
 		   try {  
 		       fileEntryService = DLFileEntryLocalServiceUtil.getFileEntries(groupId,folderId); 
-		       logger.info("Numero Di File trovati "+fileEntryService.size());
+		       //logger.info("Numero Di File trovati "+fileEntryService.size());
 		       
 		       if(fileEntryService.size()>0){   show="si";  }else{ show="no"; }
 		       
@@ -399,7 +399,7 @@ public class DocumentModelBean {
 			    	   url    = formatUrl(fileEntryObj.getUuid(), Long.toString(groupId));
 			    	   folder = new FolderToView(fileEntryObj.getUuid(), fileEntryObj.getTitle(),fileEntryObj.getDescription(), url);
 			    	   file.add(folder);
-			  		   logger.info(folder.toString());   
+			  		   //logger.info(folder.toString());   
 		    	   }
 		       } 
 		   }catch (SystemException e) {  

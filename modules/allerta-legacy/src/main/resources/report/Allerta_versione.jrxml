@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Autorizzazione" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="881969b9-1e7c-419e-be23-86f3a873466d">
-	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
+	<property name="ireport.y" value="2352"/>
 	<parameter name="ID_RICHIESTA" class="java.math.BigDecimal">
 		<defaultValueExpression><![CDATA[new BigDecimal(0)]]></defaultValueExpression>
 	</parameter>
@@ -703,22 +703,22 @@ where $P{ID_RICHIESTA} = a.allertaid]]>
 			</rectangle>
 			<rectangle>
 				<reportElement x="175" y="6" width="8" height="8" backcolor="#000000" uuid="f7d22c78-533c-4c5d-a9ad-19f8579010fa">
-					<printWhenExpression><![CDATA[new Boolean($F{tendenza}.intValue()==1)]]></printWhenExpression>
+					<printWhenExpression><![CDATA[new Boolean($F{tendenza2}.intValue()==1)]]></printWhenExpression>
 				</reportElement>
 			</rectangle>
 			<rectangle>
 				<reportElement x="4" y="26" width="8" height="8" backcolor="#000000" uuid="6e4aef39-987c-4936-996f-f449f1165b24">
-					<printWhenExpression><![CDATA[new Boolean($F{tendenza}.intValue()==2)]]></printWhenExpression>
+					<printWhenExpression><![CDATA[new Boolean($F{tendenza2}.intValue()==2)]]></printWhenExpression>
 				</reportElement>
 			</rectangle>
 			<rectangle>
 				<reportElement x="96" y="26" width="8" height="8" backcolor="#000000" uuid="21cde000-5545-409b-ab53-2cef13a3560a">
-					<printWhenExpression><![CDATA[new Boolean($F{tendenza}.intValue()==3)]]></printWhenExpression>
+					<printWhenExpression><![CDATA[new Boolean($F{tendenza2}.intValue()==3)]]></printWhenExpression>
 				</reportElement>
 			</rectangle>
 			<rectangle>
 				<reportElement x="188" y="26" width="8" height="8" backcolor="#000000" uuid="7c960c27-abdf-4191-8493-3383c252add1">
-					<printWhenExpression><![CDATA[new Boolean($F{tendenza}.intValue()==4)]]></printWhenExpression>
+					<printWhenExpression><![CDATA[new Boolean($F{tendenza2}.intValue()==4)]]></printWhenExpression>
 				</reportElement>
 			</rectangle>
 			<staticText>
@@ -770,22 +770,22 @@ where $P{ID_RICHIESTA} = a.allertaid]]>
 			</rectangle>
 			<rectangle>
 				<reportElement x="455" y="6" width="8" height="8" backcolor="#000000" uuid="f7d22c78-533c-4c5d-a9ad-19f8579010fa">
-					<printWhenExpression><![CDATA[new Boolean($F{tendenza2}.intValue()==1)]]></printWhenExpression>
+					<printWhenExpression><![CDATA[new Boolean($F{tendenza}.intValue()==1)]]></printWhenExpression>
 				</reportElement>
 			</rectangle>
 			<rectangle>
 				<reportElement x="284" y="26" width="8" height="8" backcolor="#000000" uuid="6e4aef39-987c-4936-996f-f449f1165b24">
-					<printWhenExpression><![CDATA[new Boolean($F{tendenza2}.intValue()==2)]]></printWhenExpression>
+					<printWhenExpression><![CDATA[new Boolean($F{tendenza}.intValue()==2)]]></printWhenExpression>
 				</reportElement>
 			</rectangle>
 			<rectangle>
 				<reportElement x="376" y="26" width="8" height="8" backcolor="#000000" uuid="21cde000-5545-409b-ab53-2cef13a3560a">
-					<printWhenExpression><![CDATA[new Boolean($F{tendenza2}.intValue()==3)]]></printWhenExpression>
+					<printWhenExpression><![CDATA[new Boolean($F{tendenza}.intValue()==3)]]></printWhenExpression>
 				</reportElement>
 			</rectangle>
 			<rectangle>
 				<reportElement x="468" y="26" width="8" height="8" backcolor="#000000" uuid="7c960c27-abdf-4191-8493-3383c252add1">
-					<printWhenExpression><![CDATA[new Boolean($F{tendenza2}.intValue()==4)]]></printWhenExpression>
+					<printWhenExpression><![CDATA[new Boolean($F{tendenza}.intValue()==4)]]></printWhenExpression>
 				</reportElement>
 			</rectangle>
 		</band>

@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.Map;
 
 import allerta.search.filter.DateFilter;
+import allerta.search.filter.MenuFilter;
 import allerta.search.objects.Searchable;
 
 public class VerificaSettimanaleSearchable extends Searchable {
@@ -28,6 +29,70 @@ public class VerificaSettimanaleSearchable extends Searchable {
 	
 	
 	public VerificaSettimanaleSearchable() {
+		
+		super();
+		
+		MenuFilter mf = new MenuFilter("evento", "Evento", 4, "", "", null);
+		mf.addOption("", "");
+		mf.addOption("1", "Piene dei fiumi");
+		mf.addOption("2", "Frane e piene dei fiumi minori");
+		mf.addOption("3", "Temporali");
+		mf.addOption("4", "Vento");
+		mf.addOption("5", "Temperature estreme");
+		mf.addOption("6", "Neve");
+		mf.addOption("7", "Pioggia che gela");
+		mf.addOption("8", "Stato del mare");
+		mf.addOption("9", "Criticità costiera");
+		
+		filters.add(mf);
+		
+		 mf = new MenuFilter("zona", "Zona", 2, "", "", null);
+		String zn[] = {"A1","A2","B1","B2","C1","C2","D1","D2","E1","E2","F1","F2","F3","G1","G2","H1","H2"};
+		mf.addOption("", "");
+		for (String z : zn)
+			mf.addOption(z, z);
+		filters.add(mf);
+		
+		mf = new MenuFilter("colorePre", "Colore previsto", 3, "", "", null);
+		mf.addOption("", "");
+		mf.addOption("VERDE", "VERDE");
+		mf.addOption("GIALLO", "GIALLO");
+		mf.addOption("ARANCIONE", "ARANCIONE");
+		mf.addOption("ROSSO", "ROSSO");
+		filters.add(mf);
+		
+		mf = new MenuFilter("colorePost", "Colore osservato", 3, "", "", null);
+		mf.addOption("", "");
+		mf.addOption("VERDE", "VERDE");
+		mf.addOption("GIALLO", "GIALLO");
+		mf.addOption("ARANCIONE", "ARANCIONE");
+		mf.addOption("ROSSO", "ROSSO");
+		filters.add(mf);
+		
+		mf = new MenuFilter("correttezza", "Correttezza", 2, "", "", null);
+		mf.addOption("", "");
+		mf.addOption("C", "C");
+		mf.addOption("PC", "PC");
+		mf.addOption("FA", "FA");
+		mf.addOption("MA", "MA");
+		filters.add(mf);
+		
+		mf = new MenuFilter("magnitudo", "Magnitudo", 2, "", "", null);
+		mf.addOption("", "");
+		mf.addOption("+", "+");
+		mf.addOption("++", "++");
+		mf.addOption("-", "-");
+		mf.addOption("--", "--");
+		filters.add(mf);
+		
+		mf = new MenuFilter("localizzazione", "Localizzazione", 2, "", "", null);
+		mf.addOption("", "");
+		mf.addOption("+", "+");
+		mf.addOption("++", "++");
+		mf.addOption("-", "-");
+		mf.addOption("--", "--");
+		filters.add(mf);
+	
 	}
 
 	@Override
@@ -71,6 +136,34 @@ public class VerificaSettimanaleSearchable extends Searchable {
 		if (criteria.containsKey("mese")) {
 			String s = criteria.get("mese");
 			out += " and date_part('month',datainiziovera)="+s;
+		}
+		
+		String subq = "";
+		if (criteria.containsKey("zona") && !"".equals(criteria.get("zona"))) {
+			subq+=" and v.zona='"+criteria.get("zona")+"' ";
+		}
+		if (criteria.containsKey("evento") && !"".equals(criteria.get("evento"))) {
+			subq+=" and v.evento="+criteria.get("evento")+" ";
+		}
+		if (criteria.containsKey("correttezza") && !"".equals(criteria.get("correttezza"))) {
+			subq+=" and v.correttezza='"+criteria.get("correttezza")+"' ";
+		}
+		if (criteria.containsKey("magnitudo") && !"".equals(criteria.get("magnitudo"))) {
+			subq+=" and v.magnitudo='"+criteria.get("magnitudo")+"' ";
+		}
+		if (criteria.containsKey("localizzazione") && !"".equals(criteria.get("localizzazione"))) {
+			subq+=" and v.localizzazione='"+criteria.get("localizzazione")+"' ";
+		}
+		if (criteria.containsKey("colorePre") && !"".equals(criteria.get("colorePre"))) {
+			subq+=" and v.pre='"+criteria.get("colorePre")+"' ";
+		}
+		if (criteria.containsKey("colorePost") && !"".equals(criteria.get("colorePost"))) {
+			subq+=" and v.post='"+criteria.get("colorePost")+"' ";
+		}
+		
+		if (!"".equals(subq)) {
+			out += "and exists (select * from verifica_filtri_vw v where v.giorno>=verifica_settimanale_vw.datainiziovera " + 
+					"			and v.giorno<verifica_settimanale_vw.datainiziovera+cast('7 day' as interval) "+subq+" )";
 		}
 
 		

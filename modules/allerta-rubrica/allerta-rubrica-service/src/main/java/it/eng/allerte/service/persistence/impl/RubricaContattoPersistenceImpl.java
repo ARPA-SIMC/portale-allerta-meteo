@@ -1,21 +1,12 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerte.service.persistence.impl;
 
-import aQute.bnd.annotation.ProviderType;
-
+import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
@@ -23,19 +14,24 @@ import com.liferay.portal.kernel.dao.orm.Query;
 import com.liferay.portal.kernel.dao.orm.QueryPos;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
+import com.liferay.portal.kernel.dao.orm.SessionFactory;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.kernel.util.PropsKeys;
+import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.ProxyUtil;
-import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.spring.extender.service.ServiceReference;
 
 import it.eng.allerte.exception.NoSuchRubricaContattoException;
 import it.eng.allerte.model.RubricaContatto;
+import it.eng.allerte.model.RubricaContattoTable;
 import it.eng.allerte.model.impl.RubricaContattoImpl;
 import it.eng.allerte.model.impl.RubricaContattoModelImpl;
 import it.eng.allerte.service.persistence.RubricaContattoPersistence;
+import it.eng.allerte.service.persistence.RubricaContattoUtil;
+import it.eng.allerte.service.persistence.impl.constants.rubricaPersistenceConstants;
 
 import java.io.Serializable;
 
@@ -43,15 +39,18 @@ import java.lang.reflect.InvocationHandler;
 
 import java.sql.Timestamp;
 
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+
+import javax.sql.DataSource;
+
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The persistence implementation for the rubrica contatto service.
@@ -63,7 +62,7 @@ import java.util.Set;
  * @author Pratola_L
  * @generated
  */
-@ProviderType
+@Component(service = RubricaContattoPersistence.class)
 public class RubricaContattoPersistenceImpl
 	extends BasePersistenceImpl<RubricaContatto>
 	implements RubricaContattoPersistence {
@@ -108,7 +107,7 @@ public class RubricaContattoPersistenceImpl
 	 * Returns a range of all the rubrica contattos where FK_UTENTE_CREAZIONE = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaContattoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaContattoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param FK_UTENTE_CREAZIONE the fk_utente_creazione
@@ -128,7 +127,7 @@ public class RubricaContattoPersistenceImpl
 	 * Returns an ordered range of all the rubrica contattos where FK_UTENTE_CREAZIONE = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaContattoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaContattoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param FK_UTENTE_CREAZIONE the fk_utente_creazione
@@ -150,35 +149,35 @@ public class RubricaContattoPersistenceImpl
 	 * Returns an ordered range of all the rubrica contattos where FK_UTENTE_CREAZIONE = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaContattoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaContattoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param FK_UTENTE_CREAZIONE the fk_utente_creazione
 	 * @param start the lower bound of the range of rubrica contattos
 	 * @param end the upper bound of the range of rubrica contattos (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching rubrica contattos
 	 */
 	@Override
 	public List<RubricaContatto> findByUtenteCreazioneContatto(
 		long FK_UTENTE_CREAZIONE, int start, int end,
 		OrderByComparator<RubricaContatto> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath =
-				_finderPathWithoutPaginationFindByUtenteCreazioneContatto;
-			finderArgs = new Object[] {FK_UTENTE_CREAZIONE};
+			if (useFinderCache) {
+				finderPath =
+					_finderPathWithoutPaginationFindByUtenteCreazioneContatto;
+				finderArgs = new Object[] {FK_UTENTE_CREAZIONE};
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByUtenteCreazioneContatto;
 			finderArgs = new Object[] {
 				FK_UTENTE_CREAZIONE, start, end, orderByComparator
@@ -187,14 +186,14 @@ public class RubricaContattoPersistenceImpl
 
 		List<RubricaContatto> list = null;
 
-		if (retrieveFromCache) {
-			list = (List<RubricaContatto>)finderCache.getResult(
+		if (useFinderCache) {
+			list = (List<RubricaContatto>)dummyFinderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (RubricaContatto rubricaContatto : list) {
-					if ((FK_UTENTE_CREAZIONE !=
-							rubricaContatto.getFK_UTENTE_CREAZIONE())) {
+					if (FK_UTENTE_CREAZIONE !=
+							rubricaContatto.getFK_UTENTE_CREAZIONE()) {
 
 						list = null;
 
@@ -205,63 +204,53 @@ public class RubricaContattoPersistenceImpl
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					3 + (orderByComparator.getOrderByFields().length * 2));
 			}
 			else {
-				query = new StringBundler(3);
+				sb = new StringBundler(3);
 			}
 
-			query.append(_SQL_SELECT_RUBRICACONTATTO_WHERE);
+			sb.append(_SQL_SELECT_RUBRICACONTATTO_WHERE);
 
-			query.append(
+			sb.append(
 				_FINDER_COLUMN_UTENTECREAZIONECONTATTO_FK_UTENTE_CREAZIONE_2);
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 			}
-			else if (pagination) {
-				query.append(RubricaContattoModelImpl.ORDER_BY_JPQL);
+			else {
+				sb.append(RubricaContattoModelImpl.ORDER_BY_JPQL);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
-				qPos.add(FK_UTENTE_CREAZIONE);
+				queryPos.add(FK_UTENTE_CREAZIONE);
 
-				if (!pagination) {
-					list = (List<RubricaContatto>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<RubricaContatto>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<RubricaContatto>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					dummyFinderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -292,16 +281,16 @@ public class RubricaContattoPersistenceImpl
 			return rubricaContatto;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("FK_UTENTE_CREAZIONE=");
-		msg.append(FK_UTENTE_CREAZIONE);
+		sb.append("FK_UTENTE_CREAZIONE=");
+		sb.append(FK_UTENTE_CREAZIONE);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchRubricaContattoException(msg.toString());
+		throw new NoSuchRubricaContattoException(sb.toString());
 	}
 
 	/**
@@ -347,16 +336,16 @@ public class RubricaContattoPersistenceImpl
 			return rubricaContatto;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("FK_UTENTE_CREAZIONE=");
-		msg.append(FK_UTENTE_CREAZIONE);
+		sb.append("FK_UTENTE_CREAZIONE=");
+		sb.append(FK_UTENTE_CREAZIONE);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchRubricaContattoException(msg.toString());
+		throw new NoSuchRubricaContattoException(sb.toString());
 	}
 
 	/**
@@ -423,8 +412,8 @@ public class RubricaContattoPersistenceImpl
 
 			return array;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -437,103 +426,102 @@ public class RubricaContattoPersistenceImpl
 		OrderByComparator<RubricaContatto> orderByComparator,
 		boolean previous) {
 
-		StringBundler query = null;
+		StringBundler sb = null;
 
 		if (orderByComparator != null) {
-			query = new StringBundler(
+			sb = new StringBundler(
 				4 + (orderByComparator.getOrderByConditionFields().length * 3) +
 					(orderByComparator.getOrderByFields().length * 3));
 		}
 		else {
-			query = new StringBundler(3);
+			sb = new StringBundler(3);
 		}
 
-		query.append(_SQL_SELECT_RUBRICACONTATTO_WHERE);
+		sb.append(_SQL_SELECT_RUBRICACONTATTO_WHERE);
 
-		query.append(
-			_FINDER_COLUMN_UTENTECREAZIONECONTATTO_FK_UTENTE_CREAZIONE_2);
+		sb.append(_FINDER_COLUMN_UTENTECREAZIONECONTATTO_FK_UTENTE_CREAZIONE_2);
 
 		if (orderByComparator != null) {
 			String[] orderByConditionFields =
 				orderByComparator.getOrderByConditionFields();
 
 			if (orderByConditionFields.length > 0) {
-				query.append(WHERE_AND);
+				sb.append(WHERE_AND);
 			}
 
 			for (int i = 0; i < orderByConditionFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByConditionFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByConditionFields[i]);
 
 				if ((i + 1) < orderByConditionFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+						sb.append(WHERE_GREATER_THAN_HAS_NEXT);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+						sb.append(WHERE_LESSER_THAN_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN);
+						sb.append(WHERE_GREATER_THAN);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN);
+						sb.append(WHERE_LESSER_THAN);
 					}
 				}
 			}
 
-			query.append(ORDER_BY_CLAUSE);
+			sb.append(ORDER_BY_CLAUSE);
 
 			String[] orderByFields = orderByComparator.getOrderByFields();
 
 			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByFields[i]);
 
 				if ((i + 1) < orderByFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC_HAS_NEXT);
+						sb.append(ORDER_BY_ASC_HAS_NEXT);
 					}
 					else {
-						query.append(ORDER_BY_DESC_HAS_NEXT);
+						sb.append(ORDER_BY_DESC_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC);
+						sb.append(ORDER_BY_ASC);
 					}
 					else {
-						query.append(ORDER_BY_DESC);
+						sb.append(ORDER_BY_DESC);
 					}
 				}
 			}
 		}
 		else {
-			query.append(RubricaContattoModelImpl.ORDER_BY_JPQL);
+			sb.append(RubricaContattoModelImpl.ORDER_BY_JPQL);
 		}
 
-		String sql = query.toString();
+		String sql = sb.toString();
 
-		Query q = session.createQuery(sql);
+		Query query = session.createQuery(sql);
 
-		q.setFirstResult(0);
-		q.setMaxResults(2);
+		query.setFirstResult(0);
+		query.setMaxResults(2);
 
-		QueryPos qPos = QueryPos.getInstance(q);
+		QueryPos queryPos = QueryPos.getInstance(query);
 
-		qPos.add(FK_UTENTE_CREAZIONE);
+		queryPos.add(FK_UTENTE_CREAZIONE);
 
 		if (orderByComparator != null) {
 			for (Object orderByConditionValue :
 					orderByComparator.getOrderByConditionValues(
 						rubricaContatto)) {
 
-				qPos.add(orderByConditionValue);
+				queryPos.add(orderByConditionValue);
 			}
 		}
 
-		List<RubricaContatto> list = q.list();
+		List<RubricaContatto> list = query.list();
 
 		if (list.size() == 2) {
 			return list.get(1);
@@ -571,37 +559,36 @@ public class RubricaContattoPersistenceImpl
 
 		Object[] finderArgs = new Object[] {FK_UTENTE_CREAZIONE};
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = (Long)dummyFinderCache.getResult(
+			finderPath, finderArgs, this);
 
 		if (count == null) {
-			StringBundler query = new StringBundler(2);
+			StringBundler sb = new StringBundler(2);
 
-			query.append(_SQL_COUNT_RUBRICACONTATTO_WHERE);
+			sb.append(_SQL_COUNT_RUBRICACONTATTO_WHERE);
 
-			query.append(
+			sb.append(
 				_FINDER_COLUMN_UTENTECREAZIONECONTATTO_FK_UTENTE_CREAZIONE_2);
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
-				qPos.add(FK_UTENTE_CREAZIONE);
+				queryPos.add(FK_UTENTE_CREAZIONE);
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
-				finderCache.putResult(finderPath, finderArgs, count);
+				dummyFinderCache.putResult(finderPath, finderArgs, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -637,7 +624,7 @@ public class RubricaContattoPersistenceImpl
 	 * Returns a range of all the rubrica contattos where FK_UTENTE_MODIFICA = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaContattoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaContattoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param FK_UTENTE_MODIFICA the fk_utente_modifica
@@ -657,7 +644,7 @@ public class RubricaContattoPersistenceImpl
 	 * Returns an ordered range of all the rubrica contattos where FK_UTENTE_MODIFICA = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaContattoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaContattoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param FK_UTENTE_MODIFICA the fk_utente_modifica
@@ -679,35 +666,35 @@ public class RubricaContattoPersistenceImpl
 	 * Returns an ordered range of all the rubrica contattos where FK_UTENTE_MODIFICA = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaContattoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaContattoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param FK_UTENTE_MODIFICA the fk_utente_modifica
 	 * @param start the lower bound of the range of rubrica contattos
 	 * @param end the upper bound of the range of rubrica contattos (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching rubrica contattos
 	 */
 	@Override
 	public List<RubricaContatto> findByUtenteModificaContatto(
 		long FK_UTENTE_MODIFICA, int start, int end,
 		OrderByComparator<RubricaContatto> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath =
-				_finderPathWithoutPaginationFindByUtenteModificaContatto;
-			finderArgs = new Object[] {FK_UTENTE_MODIFICA};
+			if (useFinderCache) {
+				finderPath =
+					_finderPathWithoutPaginationFindByUtenteModificaContatto;
+				finderArgs = new Object[] {FK_UTENTE_MODIFICA};
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByUtenteModificaContatto;
 			finderArgs = new Object[] {
 				FK_UTENTE_MODIFICA, start, end, orderByComparator
@@ -716,14 +703,14 @@ public class RubricaContattoPersistenceImpl
 
 		List<RubricaContatto> list = null;
 
-		if (retrieveFromCache) {
-			list = (List<RubricaContatto>)finderCache.getResult(
+		if (useFinderCache) {
+			list = (List<RubricaContatto>)dummyFinderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (RubricaContatto rubricaContatto : list) {
-					if ((FK_UTENTE_MODIFICA !=
-							rubricaContatto.getFK_UTENTE_MODIFICA())) {
+					if (FK_UTENTE_MODIFICA !=
+							rubricaContatto.getFK_UTENTE_MODIFICA()) {
 
 						list = null;
 
@@ -734,63 +721,53 @@ public class RubricaContattoPersistenceImpl
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					3 + (orderByComparator.getOrderByFields().length * 2));
 			}
 			else {
-				query = new StringBundler(3);
+				sb = new StringBundler(3);
 			}
 
-			query.append(_SQL_SELECT_RUBRICACONTATTO_WHERE);
+			sb.append(_SQL_SELECT_RUBRICACONTATTO_WHERE);
 
-			query.append(
+			sb.append(
 				_FINDER_COLUMN_UTENTEMODIFICACONTATTO_FK_UTENTE_MODIFICA_2);
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 			}
-			else if (pagination) {
-				query.append(RubricaContattoModelImpl.ORDER_BY_JPQL);
+			else {
+				sb.append(RubricaContattoModelImpl.ORDER_BY_JPQL);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
-				qPos.add(FK_UTENTE_MODIFICA);
+				queryPos.add(FK_UTENTE_MODIFICA);
 
-				if (!pagination) {
-					list = (List<RubricaContatto>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<RubricaContatto>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<RubricaContatto>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					dummyFinderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -821,16 +798,16 @@ public class RubricaContattoPersistenceImpl
 			return rubricaContatto;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("FK_UTENTE_MODIFICA=");
-		msg.append(FK_UTENTE_MODIFICA);
+		sb.append("FK_UTENTE_MODIFICA=");
+		sb.append(FK_UTENTE_MODIFICA);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchRubricaContattoException(msg.toString());
+		throw new NoSuchRubricaContattoException(sb.toString());
 	}
 
 	/**
@@ -876,16 +853,16 @@ public class RubricaContattoPersistenceImpl
 			return rubricaContatto;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("FK_UTENTE_MODIFICA=");
-		msg.append(FK_UTENTE_MODIFICA);
+		sb.append("FK_UTENTE_MODIFICA=");
+		sb.append(FK_UTENTE_MODIFICA);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchRubricaContattoException(msg.toString());
+		throw new NoSuchRubricaContattoException(sb.toString());
 	}
 
 	/**
@@ -952,8 +929,8 @@ public class RubricaContattoPersistenceImpl
 
 			return array;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -966,103 +943,102 @@ public class RubricaContattoPersistenceImpl
 		OrderByComparator<RubricaContatto> orderByComparator,
 		boolean previous) {
 
-		StringBundler query = null;
+		StringBundler sb = null;
 
 		if (orderByComparator != null) {
-			query = new StringBundler(
+			sb = new StringBundler(
 				4 + (orderByComparator.getOrderByConditionFields().length * 3) +
 					(orderByComparator.getOrderByFields().length * 3));
 		}
 		else {
-			query = new StringBundler(3);
+			sb = new StringBundler(3);
 		}
 
-		query.append(_SQL_SELECT_RUBRICACONTATTO_WHERE);
+		sb.append(_SQL_SELECT_RUBRICACONTATTO_WHERE);
 
-		query.append(
-			_FINDER_COLUMN_UTENTEMODIFICACONTATTO_FK_UTENTE_MODIFICA_2);
+		sb.append(_FINDER_COLUMN_UTENTEMODIFICACONTATTO_FK_UTENTE_MODIFICA_2);
 
 		if (orderByComparator != null) {
 			String[] orderByConditionFields =
 				orderByComparator.getOrderByConditionFields();
 
 			if (orderByConditionFields.length > 0) {
-				query.append(WHERE_AND);
+				sb.append(WHERE_AND);
 			}
 
 			for (int i = 0; i < orderByConditionFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByConditionFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByConditionFields[i]);
 
 				if ((i + 1) < orderByConditionFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+						sb.append(WHERE_GREATER_THAN_HAS_NEXT);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+						sb.append(WHERE_LESSER_THAN_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN);
+						sb.append(WHERE_GREATER_THAN);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN);
+						sb.append(WHERE_LESSER_THAN);
 					}
 				}
 			}
 
-			query.append(ORDER_BY_CLAUSE);
+			sb.append(ORDER_BY_CLAUSE);
 
 			String[] orderByFields = orderByComparator.getOrderByFields();
 
 			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByFields[i]);
 
 				if ((i + 1) < orderByFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC_HAS_NEXT);
+						sb.append(ORDER_BY_ASC_HAS_NEXT);
 					}
 					else {
-						query.append(ORDER_BY_DESC_HAS_NEXT);
+						sb.append(ORDER_BY_DESC_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC);
+						sb.append(ORDER_BY_ASC);
 					}
 					else {
-						query.append(ORDER_BY_DESC);
+						sb.append(ORDER_BY_DESC);
 					}
 				}
 			}
 		}
 		else {
-			query.append(RubricaContattoModelImpl.ORDER_BY_JPQL);
+			sb.append(RubricaContattoModelImpl.ORDER_BY_JPQL);
 		}
 
-		String sql = query.toString();
+		String sql = sb.toString();
 
-		Query q = session.createQuery(sql);
+		Query query = session.createQuery(sql);
 
-		q.setFirstResult(0);
-		q.setMaxResults(2);
+		query.setFirstResult(0);
+		query.setMaxResults(2);
 
-		QueryPos qPos = QueryPos.getInstance(q);
+		QueryPos queryPos = QueryPos.getInstance(query);
 
-		qPos.add(FK_UTENTE_MODIFICA);
+		queryPos.add(FK_UTENTE_MODIFICA);
 
 		if (orderByComparator != null) {
 			for (Object orderByConditionValue :
 					orderByComparator.getOrderByConditionValues(
 						rubricaContatto)) {
 
-				qPos.add(orderByConditionValue);
+				queryPos.add(orderByConditionValue);
 			}
 		}
 
-		List<RubricaContatto> list = q.list();
+		List<RubricaContatto> list = query.list();
 
 		if (list.size() == 2) {
 			return list.get(1);
@@ -1100,37 +1076,36 @@ public class RubricaContattoPersistenceImpl
 
 		Object[] finderArgs = new Object[] {FK_UTENTE_MODIFICA};
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = (Long)dummyFinderCache.getResult(
+			finderPath, finderArgs, this);
 
 		if (count == null) {
-			StringBundler query = new StringBundler(2);
+			StringBundler sb = new StringBundler(2);
 
-			query.append(_SQL_COUNT_RUBRICACONTATTO_WHERE);
+			sb.append(_SQL_COUNT_RUBRICACONTATTO_WHERE);
 
-			query.append(
+			sb.append(
 				_FINDER_COLUMN_UTENTEMODIFICACONTATTO_FK_UTENTE_MODIFICA_2);
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
-				qPos.add(FK_UTENTE_MODIFICA);
+				queryPos.add(FK_UTENTE_MODIFICA);
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
-				finderCache.putResult(finderPath, finderArgs, count);
+				dummyFinderCache.putResult(finderPath, finderArgs, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -1164,7 +1139,7 @@ public class RubricaContattoPersistenceImpl
 	 * Returns a range of all the rubrica contattos where FK_CANALE = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaContattoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaContattoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param FK_CANALE the fk_canale
@@ -1183,7 +1158,7 @@ public class RubricaContattoPersistenceImpl
 	 * Returns an ordered range of all the rubrica contattos where FK_CANALE = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaContattoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaContattoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param FK_CANALE the fk_canale
@@ -1205,34 +1180,34 @@ public class RubricaContattoPersistenceImpl
 	 * Returns an ordered range of all the rubrica contattos where FK_CANALE = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaContattoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaContattoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param FK_CANALE the fk_canale
 	 * @param start the lower bound of the range of rubrica contattos
 	 * @param end the upper bound of the range of rubrica contattos (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching rubrica contattos
 	 */
 	@Override
 	public List<RubricaContatto> findByContattoCanale(
 		long FK_CANALE, int start, int end,
 		OrderByComparator<RubricaContatto> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindByContattoCanale;
-			finderArgs = new Object[] {FK_CANALE};
+			if (useFinderCache) {
+				finderPath = _finderPathWithoutPaginationFindByContattoCanale;
+				finderArgs = new Object[] {FK_CANALE};
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByContattoCanale;
 			finderArgs = new Object[] {
 				FK_CANALE, start, end, orderByComparator
@@ -1241,13 +1216,13 @@ public class RubricaContattoPersistenceImpl
 
 		List<RubricaContatto> list = null;
 
-		if (retrieveFromCache) {
-			list = (List<RubricaContatto>)finderCache.getResult(
+		if (useFinderCache) {
+			list = (List<RubricaContatto>)dummyFinderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (RubricaContatto rubricaContatto : list) {
-					if ((FK_CANALE != rubricaContatto.getFK_CANALE())) {
+					if (FK_CANALE != rubricaContatto.getFK_CANALE()) {
 						list = null;
 
 						break;
@@ -1257,62 +1232,52 @@ public class RubricaContattoPersistenceImpl
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					3 + (orderByComparator.getOrderByFields().length * 2));
 			}
 			else {
-				query = new StringBundler(3);
+				sb = new StringBundler(3);
 			}
 
-			query.append(_SQL_SELECT_RUBRICACONTATTO_WHERE);
+			sb.append(_SQL_SELECT_RUBRICACONTATTO_WHERE);
 
-			query.append(_FINDER_COLUMN_CONTATTOCANALE_FK_CANALE_2);
+			sb.append(_FINDER_COLUMN_CONTATTOCANALE_FK_CANALE_2);
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 			}
-			else if (pagination) {
-				query.append(RubricaContattoModelImpl.ORDER_BY_JPQL);
+			else {
+				sb.append(RubricaContattoModelImpl.ORDER_BY_JPQL);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
-				qPos.add(FK_CANALE);
+				queryPos.add(FK_CANALE);
 
-				if (!pagination) {
-					list = (List<RubricaContatto>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<RubricaContatto>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<RubricaContatto>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					dummyFinderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -1343,16 +1308,16 @@ public class RubricaContattoPersistenceImpl
 			return rubricaContatto;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("FK_CANALE=");
-		msg.append(FK_CANALE);
+		sb.append("FK_CANALE=");
+		sb.append(FK_CANALE);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchRubricaContattoException(msg.toString());
+		throw new NoSuchRubricaContattoException(sb.toString());
 	}
 
 	/**
@@ -1397,16 +1362,16 @@ public class RubricaContattoPersistenceImpl
 			return rubricaContatto;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("FK_CANALE=");
-		msg.append(FK_CANALE);
+		sb.append("FK_CANALE=");
+		sb.append(FK_CANALE);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchRubricaContattoException(msg.toString());
+		throw new NoSuchRubricaContattoException(sb.toString());
 	}
 
 	/**
@@ -1470,8 +1435,8 @@ public class RubricaContattoPersistenceImpl
 
 			return array;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -1483,102 +1448,102 @@ public class RubricaContattoPersistenceImpl
 		OrderByComparator<RubricaContatto> orderByComparator,
 		boolean previous) {
 
-		StringBundler query = null;
+		StringBundler sb = null;
 
 		if (orderByComparator != null) {
-			query = new StringBundler(
+			sb = new StringBundler(
 				4 + (orderByComparator.getOrderByConditionFields().length * 3) +
 					(orderByComparator.getOrderByFields().length * 3));
 		}
 		else {
-			query = new StringBundler(3);
+			sb = new StringBundler(3);
 		}
 
-		query.append(_SQL_SELECT_RUBRICACONTATTO_WHERE);
+		sb.append(_SQL_SELECT_RUBRICACONTATTO_WHERE);
 
-		query.append(_FINDER_COLUMN_CONTATTOCANALE_FK_CANALE_2);
+		sb.append(_FINDER_COLUMN_CONTATTOCANALE_FK_CANALE_2);
 
 		if (orderByComparator != null) {
 			String[] orderByConditionFields =
 				orderByComparator.getOrderByConditionFields();
 
 			if (orderByConditionFields.length > 0) {
-				query.append(WHERE_AND);
+				sb.append(WHERE_AND);
 			}
 
 			for (int i = 0; i < orderByConditionFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByConditionFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByConditionFields[i]);
 
 				if ((i + 1) < orderByConditionFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+						sb.append(WHERE_GREATER_THAN_HAS_NEXT);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+						sb.append(WHERE_LESSER_THAN_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN);
+						sb.append(WHERE_GREATER_THAN);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN);
+						sb.append(WHERE_LESSER_THAN);
 					}
 				}
 			}
 
-			query.append(ORDER_BY_CLAUSE);
+			sb.append(ORDER_BY_CLAUSE);
 
 			String[] orderByFields = orderByComparator.getOrderByFields();
 
 			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByFields[i]);
 
 				if ((i + 1) < orderByFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC_HAS_NEXT);
+						sb.append(ORDER_BY_ASC_HAS_NEXT);
 					}
 					else {
-						query.append(ORDER_BY_DESC_HAS_NEXT);
+						sb.append(ORDER_BY_DESC_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC);
+						sb.append(ORDER_BY_ASC);
 					}
 					else {
-						query.append(ORDER_BY_DESC);
+						sb.append(ORDER_BY_DESC);
 					}
 				}
 			}
 		}
 		else {
-			query.append(RubricaContattoModelImpl.ORDER_BY_JPQL);
+			sb.append(RubricaContattoModelImpl.ORDER_BY_JPQL);
 		}
 
-		String sql = query.toString();
+		String sql = sb.toString();
 
-		Query q = session.createQuery(sql);
+		Query query = session.createQuery(sql);
 
-		q.setFirstResult(0);
-		q.setMaxResults(2);
+		query.setFirstResult(0);
+		query.setMaxResults(2);
 
-		QueryPos qPos = QueryPos.getInstance(q);
+		QueryPos queryPos = QueryPos.getInstance(query);
 
-		qPos.add(FK_CANALE);
+		queryPos.add(FK_CANALE);
 
 		if (orderByComparator != null) {
 			for (Object orderByConditionValue :
 					orderByComparator.getOrderByConditionValues(
 						rubricaContatto)) {
 
-				qPos.add(orderByConditionValue);
+				queryPos.add(orderByConditionValue);
 			}
 		}
 
-		List<RubricaContatto> list = q.list();
+		List<RubricaContatto> list = query.list();
 
 		if (list.size() == 2) {
 			return list.get(1);
@@ -1615,36 +1580,35 @@ public class RubricaContattoPersistenceImpl
 
 		Object[] finderArgs = new Object[] {FK_CANALE};
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = (Long)dummyFinderCache.getResult(
+			finderPath, finderArgs, this);
 
 		if (count == null) {
-			StringBundler query = new StringBundler(2);
+			StringBundler sb = new StringBundler(2);
 
-			query.append(_SQL_COUNT_RUBRICACONTATTO_WHERE);
+			sb.append(_SQL_COUNT_RUBRICACONTATTO_WHERE);
 
-			query.append(_FINDER_COLUMN_CONTATTOCANALE_FK_CANALE_2);
+			sb.append(_FINDER_COLUMN_CONTATTOCANALE_FK_CANALE_2);
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
-				qPos.add(FK_CANALE);
+				queryPos.add(FK_CANALE);
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
-				finderCache.putResult(finderPath, finderArgs, count);
+				dummyFinderCache.putResult(finderPath, finderArgs, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -1677,7 +1641,7 @@ public class RubricaContattoPersistenceImpl
 	 * Returns a range of all the rubrica contattos where FK_NOMINATIVO = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaContattoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaContattoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param FK_NOMINATIVO the fk_nominativo
@@ -1696,7 +1660,7 @@ public class RubricaContattoPersistenceImpl
 	 * Returns an ordered range of all the rubrica contattos where FK_NOMINATIVO = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaContattoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaContattoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param FK_NOMINATIVO the fk_nominativo
@@ -1718,34 +1682,35 @@ public class RubricaContattoPersistenceImpl
 	 * Returns an ordered range of all the rubrica contattos where FK_NOMINATIVO = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaContattoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaContattoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param FK_NOMINATIVO the fk_nominativo
 	 * @param start the lower bound of the range of rubrica contattos
 	 * @param end the upper bound of the range of rubrica contattos (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching rubrica contattos
 	 */
 	@Override
 	public List<RubricaContatto> findByContattoNominativo(
 		long FK_NOMINATIVO, int start, int end,
 		OrderByComparator<RubricaContatto> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindByContattoNominativo;
-			finderArgs = new Object[] {FK_NOMINATIVO};
+			if (useFinderCache) {
+				finderPath =
+					_finderPathWithoutPaginationFindByContattoNominativo;
+				finderArgs = new Object[] {FK_NOMINATIVO};
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByContattoNominativo;
 			finderArgs = new Object[] {
 				FK_NOMINATIVO, start, end, orderByComparator
@@ -1754,13 +1719,13 @@ public class RubricaContattoPersistenceImpl
 
 		List<RubricaContatto> list = null;
 
-		if (retrieveFromCache) {
-			list = (List<RubricaContatto>)finderCache.getResult(
+		if (useFinderCache) {
+			list = (List<RubricaContatto>)dummyFinderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (RubricaContatto rubricaContatto : list) {
-					if ((FK_NOMINATIVO != rubricaContatto.getFK_NOMINATIVO())) {
+					if (FK_NOMINATIVO != rubricaContatto.getFK_NOMINATIVO()) {
 						list = null;
 
 						break;
@@ -1770,62 +1735,52 @@ public class RubricaContattoPersistenceImpl
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					3 + (orderByComparator.getOrderByFields().length * 2));
 			}
 			else {
-				query = new StringBundler(3);
+				sb = new StringBundler(3);
 			}
 
-			query.append(_SQL_SELECT_RUBRICACONTATTO_WHERE);
+			sb.append(_SQL_SELECT_RUBRICACONTATTO_WHERE);
 
-			query.append(_FINDER_COLUMN_CONTATTONOMINATIVO_FK_NOMINATIVO_2);
+			sb.append(_FINDER_COLUMN_CONTATTONOMINATIVO_FK_NOMINATIVO_2);
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 			}
-			else if (pagination) {
-				query.append(RubricaContattoModelImpl.ORDER_BY_JPQL);
+			else {
+				sb.append(RubricaContattoModelImpl.ORDER_BY_JPQL);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
-				qPos.add(FK_NOMINATIVO);
+				queryPos.add(FK_NOMINATIVO);
 
-				if (!pagination) {
-					list = (List<RubricaContatto>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<RubricaContatto>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<RubricaContatto>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					dummyFinderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -1856,16 +1811,16 @@ public class RubricaContattoPersistenceImpl
 			return rubricaContatto;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("FK_NOMINATIVO=");
-		msg.append(FK_NOMINATIVO);
+		sb.append("FK_NOMINATIVO=");
+		sb.append(FK_NOMINATIVO);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchRubricaContattoException(msg.toString());
+		throw new NoSuchRubricaContattoException(sb.toString());
 	}
 
 	/**
@@ -1911,16 +1866,16 @@ public class RubricaContattoPersistenceImpl
 			return rubricaContatto;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("FK_NOMINATIVO=");
-		msg.append(FK_NOMINATIVO);
+		sb.append("FK_NOMINATIVO=");
+		sb.append(FK_NOMINATIVO);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchRubricaContattoException(msg.toString());
+		throw new NoSuchRubricaContattoException(sb.toString());
 	}
 
 	/**
@@ -1987,8 +1942,8 @@ public class RubricaContattoPersistenceImpl
 
 			return array;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -2000,102 +1955,102 @@ public class RubricaContattoPersistenceImpl
 		OrderByComparator<RubricaContatto> orderByComparator,
 		boolean previous) {
 
-		StringBundler query = null;
+		StringBundler sb = null;
 
 		if (orderByComparator != null) {
-			query = new StringBundler(
+			sb = new StringBundler(
 				4 + (orderByComparator.getOrderByConditionFields().length * 3) +
 					(orderByComparator.getOrderByFields().length * 3));
 		}
 		else {
-			query = new StringBundler(3);
+			sb = new StringBundler(3);
 		}
 
-		query.append(_SQL_SELECT_RUBRICACONTATTO_WHERE);
+		sb.append(_SQL_SELECT_RUBRICACONTATTO_WHERE);
 
-		query.append(_FINDER_COLUMN_CONTATTONOMINATIVO_FK_NOMINATIVO_2);
+		sb.append(_FINDER_COLUMN_CONTATTONOMINATIVO_FK_NOMINATIVO_2);
 
 		if (orderByComparator != null) {
 			String[] orderByConditionFields =
 				orderByComparator.getOrderByConditionFields();
 
 			if (orderByConditionFields.length > 0) {
-				query.append(WHERE_AND);
+				sb.append(WHERE_AND);
 			}
 
 			for (int i = 0; i < orderByConditionFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByConditionFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByConditionFields[i]);
 
 				if ((i + 1) < orderByConditionFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+						sb.append(WHERE_GREATER_THAN_HAS_NEXT);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+						sb.append(WHERE_LESSER_THAN_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN);
+						sb.append(WHERE_GREATER_THAN);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN);
+						sb.append(WHERE_LESSER_THAN);
 					}
 				}
 			}
 
-			query.append(ORDER_BY_CLAUSE);
+			sb.append(ORDER_BY_CLAUSE);
 
 			String[] orderByFields = orderByComparator.getOrderByFields();
 
 			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByFields[i]);
 
 				if ((i + 1) < orderByFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC_HAS_NEXT);
+						sb.append(ORDER_BY_ASC_HAS_NEXT);
 					}
 					else {
-						query.append(ORDER_BY_DESC_HAS_NEXT);
+						sb.append(ORDER_BY_DESC_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC);
+						sb.append(ORDER_BY_ASC);
 					}
 					else {
-						query.append(ORDER_BY_DESC);
+						sb.append(ORDER_BY_DESC);
 					}
 				}
 			}
 		}
 		else {
-			query.append(RubricaContattoModelImpl.ORDER_BY_JPQL);
+			sb.append(RubricaContattoModelImpl.ORDER_BY_JPQL);
 		}
 
-		String sql = query.toString();
+		String sql = sb.toString();
 
-		Query q = session.createQuery(sql);
+		Query query = session.createQuery(sql);
 
-		q.setFirstResult(0);
-		q.setMaxResults(2);
+		query.setFirstResult(0);
+		query.setMaxResults(2);
 
-		QueryPos qPos = QueryPos.getInstance(q);
+		QueryPos queryPos = QueryPos.getInstance(query);
 
-		qPos.add(FK_NOMINATIVO);
+		queryPos.add(FK_NOMINATIVO);
 
 		if (orderByComparator != null) {
 			for (Object orderByConditionValue :
 					orderByComparator.getOrderByConditionValues(
 						rubricaContatto)) {
 
-				qPos.add(orderByConditionValue);
+				queryPos.add(orderByConditionValue);
 			}
 		}
 
-		List<RubricaContatto> list = q.list();
+		List<RubricaContatto> list = query.list();
 
 		if (list.size() == 2) {
 			return list.get(1);
@@ -2133,36 +2088,35 @@ public class RubricaContattoPersistenceImpl
 
 		Object[] finderArgs = new Object[] {FK_NOMINATIVO};
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = (Long)dummyFinderCache.getResult(
+			finderPath, finderArgs, this);
 
 		if (count == null) {
-			StringBundler query = new StringBundler(2);
+			StringBundler sb = new StringBundler(2);
 
-			query.append(_SQL_COUNT_RUBRICACONTATTO_WHERE);
+			sb.append(_SQL_COUNT_RUBRICACONTATTO_WHERE);
 
-			query.append(_FINDER_COLUMN_CONTATTONOMINATIVO_FK_NOMINATIVO_2);
+			sb.append(_FINDER_COLUMN_CONTATTONOMINATIVO_FK_NOMINATIVO_2);
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
-				qPos.add(FK_NOMINATIVO);
+				queryPos.add(FK_NOMINATIVO);
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
-				finderCache.putResult(finderPath, finderArgs, count);
+				dummyFinderCache.putResult(finderPath, finderArgs, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -2198,7 +2152,7 @@ public class RubricaContattoPersistenceImpl
 	 * Returns a range of all the rubrica contattos where DATA_CREAZIONE = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaContattoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaContattoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param DATA_CREAZIONE the data_creazione
@@ -2217,7 +2171,7 @@ public class RubricaContattoPersistenceImpl
 	 * Returns an ordered range of all the rubrica contattos where DATA_CREAZIONE = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaContattoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaContattoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param DATA_CREAZIONE the data_creazione
@@ -2239,35 +2193,35 @@ public class RubricaContattoPersistenceImpl
 	 * Returns an ordered range of all the rubrica contattos where DATA_CREAZIONE = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaContattoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaContattoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param DATA_CREAZIONE the data_creazione
 	 * @param start the lower bound of the range of rubrica contattos
 	 * @param end the upper bound of the range of rubrica contattos (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching rubrica contattos
 	 */
 	@Override
 	public List<RubricaContatto> findByDataCreazioneContatto(
 		Date DATA_CREAZIONE, int start, int end,
 		OrderByComparator<RubricaContatto> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath =
-				_finderPathWithoutPaginationFindByDataCreazioneContatto;
-			finderArgs = new Object[] {_getTime(DATA_CREAZIONE)};
+			if (useFinderCache) {
+				finderPath =
+					_finderPathWithoutPaginationFindByDataCreazioneContatto;
+				finderArgs = new Object[] {_getTime(DATA_CREAZIONE)};
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByDataCreazioneContatto;
 			finderArgs = new Object[] {
 				_getTime(DATA_CREAZIONE), start, end, orderByComparator
@@ -2276,8 +2230,8 @@ public class RubricaContattoPersistenceImpl
 
 		List<RubricaContatto> list = null;
 
-		if (retrieveFromCache) {
-			list = (List<RubricaContatto>)finderCache.getResult(
+		if (useFinderCache) {
+			list = (List<RubricaContatto>)dummyFinderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
@@ -2295,75 +2249,65 @@ public class RubricaContattoPersistenceImpl
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					3 + (orderByComparator.getOrderByFields().length * 2));
 			}
 			else {
-				query = new StringBundler(3);
+				sb = new StringBundler(3);
 			}
 
-			query.append(_SQL_SELECT_RUBRICACONTATTO_WHERE);
+			sb.append(_SQL_SELECT_RUBRICACONTATTO_WHERE);
 
 			boolean bindDATA_CREAZIONE = false;
 
 			if (DATA_CREAZIONE == null) {
-				query.append(
+				sb.append(
 					_FINDER_COLUMN_DATACREAZIONECONTATTO_DATA_CREAZIONE_1);
 			}
 			else {
 				bindDATA_CREAZIONE = true;
 
-				query.append(
+				sb.append(
 					_FINDER_COLUMN_DATACREAZIONECONTATTO_DATA_CREAZIONE_2);
 			}
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 			}
-			else if (pagination) {
-				query.append(RubricaContattoModelImpl.ORDER_BY_JPQL);
+			else {
+				sb.append(RubricaContattoModelImpl.ORDER_BY_JPQL);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindDATA_CREAZIONE) {
-					qPos.add(new Timestamp(DATA_CREAZIONE.getTime()));
+					queryPos.add(new Timestamp(DATA_CREAZIONE.getTime()));
 				}
 
-				if (!pagination) {
-					list = (List<RubricaContatto>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<RubricaContatto>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<RubricaContatto>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					dummyFinderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -2394,16 +2338,16 @@ public class RubricaContattoPersistenceImpl
 			return rubricaContatto;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("DATA_CREAZIONE=");
-		msg.append(DATA_CREAZIONE);
+		sb.append("DATA_CREAZIONE=");
+		sb.append(DATA_CREAZIONE);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchRubricaContattoException(msg.toString());
+		throw new NoSuchRubricaContattoException(sb.toString());
 	}
 
 	/**
@@ -2449,16 +2393,16 @@ public class RubricaContattoPersistenceImpl
 			return rubricaContatto;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("DATA_CREAZIONE=");
-		msg.append(DATA_CREAZIONE);
+		sb.append("DATA_CREAZIONE=");
+		sb.append(DATA_CREAZIONE);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchRubricaContattoException(msg.toString());
+		throw new NoSuchRubricaContattoException(sb.toString());
 	}
 
 	/**
@@ -2525,8 +2469,8 @@ public class RubricaContattoPersistenceImpl
 
 			return array;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -2538,28 +2482,28 @@ public class RubricaContattoPersistenceImpl
 		OrderByComparator<RubricaContatto> orderByComparator,
 		boolean previous) {
 
-		StringBundler query = null;
+		StringBundler sb = null;
 
 		if (orderByComparator != null) {
-			query = new StringBundler(
+			sb = new StringBundler(
 				4 + (orderByComparator.getOrderByConditionFields().length * 3) +
 					(orderByComparator.getOrderByFields().length * 3));
 		}
 		else {
-			query = new StringBundler(3);
+			sb = new StringBundler(3);
 		}
 
-		query.append(_SQL_SELECT_RUBRICACONTATTO_WHERE);
+		sb.append(_SQL_SELECT_RUBRICACONTATTO_WHERE);
 
 		boolean bindDATA_CREAZIONE = false;
 
 		if (DATA_CREAZIONE == null) {
-			query.append(_FINDER_COLUMN_DATACREAZIONECONTATTO_DATA_CREAZIONE_1);
+			sb.append(_FINDER_COLUMN_DATACREAZIONECONTATTO_DATA_CREAZIONE_1);
 		}
 		else {
 			bindDATA_CREAZIONE = true;
 
-			query.append(_FINDER_COLUMN_DATACREAZIONECONTATTO_DATA_CREAZIONE_2);
+			sb.append(_FINDER_COLUMN_DATACREAZIONECONTATTO_DATA_CREAZIONE_2);
 		}
 
 		if (orderByComparator != null) {
@@ -2567,72 +2511,72 @@ public class RubricaContattoPersistenceImpl
 				orderByComparator.getOrderByConditionFields();
 
 			if (orderByConditionFields.length > 0) {
-				query.append(WHERE_AND);
+				sb.append(WHERE_AND);
 			}
 
 			for (int i = 0; i < orderByConditionFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByConditionFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByConditionFields[i]);
 
 				if ((i + 1) < orderByConditionFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+						sb.append(WHERE_GREATER_THAN_HAS_NEXT);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+						sb.append(WHERE_LESSER_THAN_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN);
+						sb.append(WHERE_GREATER_THAN);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN);
+						sb.append(WHERE_LESSER_THAN);
 					}
 				}
 			}
 
-			query.append(ORDER_BY_CLAUSE);
+			sb.append(ORDER_BY_CLAUSE);
 
 			String[] orderByFields = orderByComparator.getOrderByFields();
 
 			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByFields[i]);
 
 				if ((i + 1) < orderByFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC_HAS_NEXT);
+						sb.append(ORDER_BY_ASC_HAS_NEXT);
 					}
 					else {
-						query.append(ORDER_BY_DESC_HAS_NEXT);
+						sb.append(ORDER_BY_DESC_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC);
+						sb.append(ORDER_BY_ASC);
 					}
 					else {
-						query.append(ORDER_BY_DESC);
+						sb.append(ORDER_BY_DESC);
 					}
 				}
 			}
 		}
 		else {
-			query.append(RubricaContattoModelImpl.ORDER_BY_JPQL);
+			sb.append(RubricaContattoModelImpl.ORDER_BY_JPQL);
 		}
 
-		String sql = query.toString();
+		String sql = sb.toString();
 
-		Query q = session.createQuery(sql);
+		Query query = session.createQuery(sql);
 
-		q.setFirstResult(0);
-		q.setMaxResults(2);
+		query.setFirstResult(0);
+		query.setMaxResults(2);
 
-		QueryPos qPos = QueryPos.getInstance(q);
+		QueryPos queryPos = QueryPos.getInstance(query);
 
 		if (bindDATA_CREAZIONE) {
-			qPos.add(new Timestamp(DATA_CREAZIONE.getTime()));
+			queryPos.add(new Timestamp(DATA_CREAZIONE.getTime()));
 		}
 
 		if (orderByComparator != null) {
@@ -2640,11 +2584,11 @@ public class RubricaContattoPersistenceImpl
 					orderByComparator.getOrderByConditionValues(
 						rubricaContatto)) {
 
-				qPos.add(orderByConditionValue);
+				queryPos.add(orderByConditionValue);
 			}
 		}
 
-		List<RubricaContatto> list = q.list();
+		List<RubricaContatto> list = query.list();
 
 		if (list.size() == 2) {
 			return list.get(1);
@@ -2682,49 +2626,48 @@ public class RubricaContattoPersistenceImpl
 
 		Object[] finderArgs = new Object[] {_getTime(DATA_CREAZIONE)};
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = (Long)dummyFinderCache.getResult(
+			finderPath, finderArgs, this);
 
 		if (count == null) {
-			StringBundler query = new StringBundler(2);
+			StringBundler sb = new StringBundler(2);
 
-			query.append(_SQL_COUNT_RUBRICACONTATTO_WHERE);
+			sb.append(_SQL_COUNT_RUBRICACONTATTO_WHERE);
 
 			boolean bindDATA_CREAZIONE = false;
 
 			if (DATA_CREAZIONE == null) {
-				query.append(
+				sb.append(
 					_FINDER_COLUMN_DATACREAZIONECONTATTO_DATA_CREAZIONE_1);
 			}
 			else {
 				bindDATA_CREAZIONE = true;
 
-				query.append(
+				sb.append(
 					_FINDER_COLUMN_DATACREAZIONECONTATTO_DATA_CREAZIONE_2);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindDATA_CREAZIONE) {
-					qPos.add(new Timestamp(DATA_CREAZIONE.getTime()));
+					queryPos.add(new Timestamp(DATA_CREAZIONE.getTime()));
 				}
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
-				finderCache.putResult(finderPath, finderArgs, count);
+				dummyFinderCache.putResult(finderPath, finderArgs, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -2764,7 +2707,7 @@ public class RubricaContattoPersistenceImpl
 	 * Returns a range of all the rubrica contattos where DATA_MODIFICA = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaContattoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaContattoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param DATA_MODIFICA the data_modifica
@@ -2783,7 +2726,7 @@ public class RubricaContattoPersistenceImpl
 	 * Returns an ordered range of all the rubrica contattos where DATA_MODIFICA = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaContattoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaContattoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param DATA_MODIFICA the data_modifica
@@ -2805,34 +2748,35 @@ public class RubricaContattoPersistenceImpl
 	 * Returns an ordered range of all the rubrica contattos where DATA_MODIFICA = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaContattoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaContattoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param DATA_MODIFICA the data_modifica
 	 * @param start the lower bound of the range of rubrica contattos
 	 * @param end the upper bound of the range of rubrica contattos (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching rubrica contattos
 	 */
 	@Override
 	public List<RubricaContatto> findByDataModificaContatto(
 		Date DATA_MODIFICA, int start, int end,
 		OrderByComparator<RubricaContatto> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindByDataModificaContatto;
-			finderArgs = new Object[] {_getTime(DATA_MODIFICA)};
+			if (useFinderCache) {
+				finderPath =
+					_finderPathWithoutPaginationFindByDataModificaContatto;
+				finderArgs = new Object[] {_getTime(DATA_MODIFICA)};
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByDataModificaContatto;
 			finderArgs = new Object[] {
 				_getTime(DATA_MODIFICA), start, end, orderByComparator
@@ -2841,8 +2785,8 @@ public class RubricaContattoPersistenceImpl
 
 		List<RubricaContatto> list = null;
 
-		if (retrieveFromCache) {
-			list = (List<RubricaContatto>)finderCache.getResult(
+		if (useFinderCache) {
+			list = (List<RubricaContatto>)dummyFinderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
@@ -2860,75 +2804,63 @@ public class RubricaContattoPersistenceImpl
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					3 + (orderByComparator.getOrderByFields().length * 2));
 			}
 			else {
-				query = new StringBundler(3);
+				sb = new StringBundler(3);
 			}
 
-			query.append(_SQL_SELECT_RUBRICACONTATTO_WHERE);
+			sb.append(_SQL_SELECT_RUBRICACONTATTO_WHERE);
 
 			boolean bindDATA_MODIFICA = false;
 
 			if (DATA_MODIFICA == null) {
-				query.append(
-					_FINDER_COLUMN_DATAMODIFICACONTATTO_DATA_MODIFICA_1);
+				sb.append(_FINDER_COLUMN_DATAMODIFICACONTATTO_DATA_MODIFICA_1);
 			}
 			else {
 				bindDATA_MODIFICA = true;
 
-				query.append(
-					_FINDER_COLUMN_DATAMODIFICACONTATTO_DATA_MODIFICA_2);
+				sb.append(_FINDER_COLUMN_DATAMODIFICACONTATTO_DATA_MODIFICA_2);
 			}
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 			}
-			else if (pagination) {
-				query.append(RubricaContattoModelImpl.ORDER_BY_JPQL);
+			else {
+				sb.append(RubricaContattoModelImpl.ORDER_BY_JPQL);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindDATA_MODIFICA) {
-					qPos.add(new Timestamp(DATA_MODIFICA.getTime()));
+					queryPos.add(new Timestamp(DATA_MODIFICA.getTime()));
 				}
 
-				if (!pagination) {
-					list = (List<RubricaContatto>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<RubricaContatto>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<RubricaContatto>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					dummyFinderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -2959,16 +2891,16 @@ public class RubricaContattoPersistenceImpl
 			return rubricaContatto;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("DATA_MODIFICA=");
-		msg.append(DATA_MODIFICA);
+		sb.append("DATA_MODIFICA=");
+		sb.append(DATA_MODIFICA);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchRubricaContattoException(msg.toString());
+		throw new NoSuchRubricaContattoException(sb.toString());
 	}
 
 	/**
@@ -3014,16 +2946,16 @@ public class RubricaContattoPersistenceImpl
 			return rubricaContatto;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("DATA_MODIFICA=");
-		msg.append(DATA_MODIFICA);
+		sb.append("DATA_MODIFICA=");
+		sb.append(DATA_MODIFICA);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchRubricaContattoException(msg.toString());
+		throw new NoSuchRubricaContattoException(sb.toString());
 	}
 
 	/**
@@ -3090,8 +3022,8 @@ public class RubricaContattoPersistenceImpl
 
 			return array;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -3103,28 +3035,28 @@ public class RubricaContattoPersistenceImpl
 		OrderByComparator<RubricaContatto> orderByComparator,
 		boolean previous) {
 
-		StringBundler query = null;
+		StringBundler sb = null;
 
 		if (orderByComparator != null) {
-			query = new StringBundler(
+			sb = new StringBundler(
 				4 + (orderByComparator.getOrderByConditionFields().length * 3) +
 					(orderByComparator.getOrderByFields().length * 3));
 		}
 		else {
-			query = new StringBundler(3);
+			sb = new StringBundler(3);
 		}
 
-		query.append(_SQL_SELECT_RUBRICACONTATTO_WHERE);
+		sb.append(_SQL_SELECT_RUBRICACONTATTO_WHERE);
 
 		boolean bindDATA_MODIFICA = false;
 
 		if (DATA_MODIFICA == null) {
-			query.append(_FINDER_COLUMN_DATAMODIFICACONTATTO_DATA_MODIFICA_1);
+			sb.append(_FINDER_COLUMN_DATAMODIFICACONTATTO_DATA_MODIFICA_1);
 		}
 		else {
 			bindDATA_MODIFICA = true;
 
-			query.append(_FINDER_COLUMN_DATAMODIFICACONTATTO_DATA_MODIFICA_2);
+			sb.append(_FINDER_COLUMN_DATAMODIFICACONTATTO_DATA_MODIFICA_2);
 		}
 
 		if (orderByComparator != null) {
@@ -3132,72 +3064,72 @@ public class RubricaContattoPersistenceImpl
 				orderByComparator.getOrderByConditionFields();
 
 			if (orderByConditionFields.length > 0) {
-				query.append(WHERE_AND);
+				sb.append(WHERE_AND);
 			}
 
 			for (int i = 0; i < orderByConditionFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByConditionFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByConditionFields[i]);
 
 				if ((i + 1) < orderByConditionFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+						sb.append(WHERE_GREATER_THAN_HAS_NEXT);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+						sb.append(WHERE_LESSER_THAN_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN);
+						sb.append(WHERE_GREATER_THAN);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN);
+						sb.append(WHERE_LESSER_THAN);
 					}
 				}
 			}
 
-			query.append(ORDER_BY_CLAUSE);
+			sb.append(ORDER_BY_CLAUSE);
 
 			String[] orderByFields = orderByComparator.getOrderByFields();
 
 			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByFields[i]);
 
 				if ((i + 1) < orderByFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC_HAS_NEXT);
+						sb.append(ORDER_BY_ASC_HAS_NEXT);
 					}
 					else {
-						query.append(ORDER_BY_DESC_HAS_NEXT);
+						sb.append(ORDER_BY_DESC_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC);
+						sb.append(ORDER_BY_ASC);
 					}
 					else {
-						query.append(ORDER_BY_DESC);
+						sb.append(ORDER_BY_DESC);
 					}
 				}
 			}
 		}
 		else {
-			query.append(RubricaContattoModelImpl.ORDER_BY_JPQL);
+			sb.append(RubricaContattoModelImpl.ORDER_BY_JPQL);
 		}
 
-		String sql = query.toString();
+		String sql = sb.toString();
 
-		Query q = session.createQuery(sql);
+		Query query = session.createQuery(sql);
 
-		q.setFirstResult(0);
-		q.setMaxResults(2);
+		query.setFirstResult(0);
+		query.setMaxResults(2);
 
-		QueryPos qPos = QueryPos.getInstance(q);
+		QueryPos queryPos = QueryPos.getInstance(query);
 
 		if (bindDATA_MODIFICA) {
-			qPos.add(new Timestamp(DATA_MODIFICA.getTime()));
+			queryPos.add(new Timestamp(DATA_MODIFICA.getTime()));
 		}
 
 		if (orderByComparator != null) {
@@ -3205,11 +3137,11 @@ public class RubricaContattoPersistenceImpl
 					orderByComparator.getOrderByConditionValues(
 						rubricaContatto)) {
 
-				qPos.add(orderByConditionValue);
+				queryPos.add(orderByConditionValue);
 			}
 		}
 
-		List<RubricaContatto> list = q.list();
+		List<RubricaContatto> list = query.list();
 
 		if (list.size() == 2) {
 			return list.get(1);
@@ -3247,49 +3179,46 @@ public class RubricaContattoPersistenceImpl
 
 		Object[] finderArgs = new Object[] {_getTime(DATA_MODIFICA)};
 
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+		Long count = (Long)dummyFinderCache.getResult(
+			finderPath, finderArgs, this);
 
 		if (count == null) {
-			StringBundler query = new StringBundler(2);
+			StringBundler sb = new StringBundler(2);
 
-			query.append(_SQL_COUNT_RUBRICACONTATTO_WHERE);
+			sb.append(_SQL_COUNT_RUBRICACONTATTO_WHERE);
 
 			boolean bindDATA_MODIFICA = false;
 
 			if (DATA_MODIFICA == null) {
-				query.append(
-					_FINDER_COLUMN_DATAMODIFICACONTATTO_DATA_MODIFICA_1);
+				sb.append(_FINDER_COLUMN_DATAMODIFICACONTATTO_DATA_MODIFICA_1);
 			}
 			else {
 				bindDATA_MODIFICA = true;
 
-				query.append(
-					_FINDER_COLUMN_DATAMODIFICACONTATTO_DATA_MODIFICA_2);
+				sb.append(_FINDER_COLUMN_DATAMODIFICACONTATTO_DATA_MODIFICA_2);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindDATA_MODIFICA) {
-					qPos.add(new Timestamp(DATA_MODIFICA.getTime()));
+					queryPos.add(new Timestamp(DATA_MODIFICA.getTime()));
 				}
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
-				finderCache.putResult(finderPath, finderArgs, count);
+				dummyFinderCache.putResult(finderPath, finderArgs, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -3309,6 +3238,11 @@ public class RubricaContattoPersistenceImpl
 
 	public RubricaContattoPersistenceImpl() {
 		setModelClass(RubricaContatto.class);
+
+		setModelImplClass(RubricaContattoImpl.class);
+		setModelPKClass(long.class);
+
+		setTable(RubricaContattoTable.INSTANCE);
 	}
 
 	/**
@@ -3318,13 +3252,12 @@ public class RubricaContattoPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(RubricaContatto rubricaContatto) {
-		entityCache.putResult(
-			RubricaContattoModelImpl.ENTITY_CACHE_ENABLED,
+		dummyEntityCache.putResult(
 			RubricaContattoImpl.class, rubricaContatto.getPrimaryKey(),
 			rubricaContatto);
-
-		rubricaContatto.resetOriginalValues();
 	}
+
+	private int _valueObjectFinderCacheListThreshold;
 
 	/**
 	 * Caches the rubrica contattos in the entity cache if it is enabled.
@@ -3333,16 +3266,20 @@ public class RubricaContattoPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(List<RubricaContatto> rubricaContattos) {
+		if ((_valueObjectFinderCacheListThreshold == 0) ||
+			((_valueObjectFinderCacheListThreshold > 0) &&
+			 (rubricaContattos.size() >
+				 _valueObjectFinderCacheListThreshold))) {
+
+			return;
+		}
+
 		for (RubricaContatto rubricaContatto : rubricaContattos) {
-			if (entityCache.getResult(
-					RubricaContattoModelImpl.ENTITY_CACHE_ENABLED,
+			if (dummyEntityCache.getResult(
 					RubricaContattoImpl.class,
 					rubricaContatto.getPrimaryKey()) == null) {
 
 				cacheResult(rubricaContatto);
-			}
-			else {
-				rubricaContatto.resetOriginalValues();
 			}
 		}
 	}
@@ -3356,11 +3293,9 @@ public class RubricaContattoPersistenceImpl
 	 */
 	@Override
 	public void clearCache() {
-		entityCache.clearCache(RubricaContattoImpl.class);
+		dummyEntityCache.clearCache(RubricaContattoImpl.class);
 
-		finderCache.clearCache(FINDER_CLASS_NAME_ENTITY);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		dummyFinderCache.clearCache(RubricaContattoImpl.class);
 	}
 
 	/**
@@ -3372,23 +3307,25 @@ public class RubricaContattoPersistenceImpl
 	 */
 	@Override
 	public void clearCache(RubricaContatto rubricaContatto) {
-		entityCache.removeResult(
-			RubricaContattoModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaContattoImpl.class, rubricaContatto.getPrimaryKey());
-
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		dummyEntityCache.removeResult(
+			RubricaContattoImpl.class, rubricaContatto);
 	}
 
 	@Override
 	public void clearCache(List<RubricaContatto> rubricaContattos) {
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
-
 		for (RubricaContatto rubricaContatto : rubricaContattos) {
-			entityCache.removeResult(
-				RubricaContattoModelImpl.ENTITY_CACHE_ENABLED,
-				RubricaContattoImpl.class, rubricaContatto.getPrimaryKey());
+			dummyEntityCache.removeResult(
+				RubricaContattoImpl.class, rubricaContatto);
+		}
+	}
+
+	@Override
+	public void clearCache(Set<Serializable> primaryKeys) {
+		dummyFinderCache.clearCache(RubricaContattoImpl.class);
+
+		for (Serializable primaryKey : primaryKeys) {
+			dummyEntityCache.removeResult(
+				RubricaContattoImpl.class, primaryKey);
 		}
 	}
 
@@ -3452,11 +3389,11 @@ public class RubricaContattoPersistenceImpl
 
 			return remove(rubricaContatto);
 		}
-		catch (NoSuchRubricaContattoException nsee) {
-			throw nsee;
+		catch (NoSuchRubricaContattoException noSuchEntityException) {
+			throw noSuchEntityException;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -3480,8 +3417,8 @@ public class RubricaContattoPersistenceImpl
 				session.delete(rubricaContatto);
 			}
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -3523,229 +3460,27 @@ public class RubricaContattoPersistenceImpl
 		try {
 			session = openSession();
 
-			if (rubricaContatto.isNew()) {
+			if (isNew) {
 				session.save(rubricaContatto);
-
-				rubricaContatto.setNew(false);
 			}
 			else {
 				rubricaContatto = (RubricaContatto)session.merge(
 					rubricaContatto);
 			}
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
 		}
 
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		dummyEntityCache.putResult(
+			RubricaContattoImpl.class, rubricaContattoModelImpl, false, true);
 
-		if (!RubricaContattoModelImpl.COLUMN_BITMASK_ENABLED) {
-			finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		if (isNew) {
+			rubricaContatto.setNew(false);
 		}
-		else if (isNew) {
-			Object[] args = new Object[] {
-				rubricaContattoModelImpl.getFK_UTENTE_CREAZIONE()
-			};
-
-			finderCache.removeResult(
-				_finderPathCountByUtenteCreazioneContatto, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByUtenteCreazioneContatto,
-				args);
-
-			args = new Object[] {
-				rubricaContattoModelImpl.getFK_UTENTE_MODIFICA()
-			};
-
-			finderCache.removeResult(
-				_finderPathCountByUtenteModificaContatto, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByUtenteModificaContatto, args);
-
-			args = new Object[] {rubricaContattoModelImpl.getFK_CANALE()};
-
-			finderCache.removeResult(_finderPathCountByContattoCanale, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByContattoCanale, args);
-
-			args = new Object[] {rubricaContattoModelImpl.getFK_NOMINATIVO()};
-
-			finderCache.removeResult(
-				_finderPathCountByContattoNominativo, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByContattoNominativo, args);
-
-			args = new Object[] {rubricaContattoModelImpl.getDATA_CREAZIONE()};
-
-			finderCache.removeResult(
-				_finderPathCountByDataCreazioneContatto, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByDataCreazioneContatto, args);
-
-			args = new Object[] {rubricaContattoModelImpl.getDATA_MODIFICA()};
-
-			finderCache.removeResult(
-				_finderPathCountByDataModificaContatto, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByDataModificaContatto, args);
-
-			finderCache.removeResult(_finderPathCountAll, FINDER_ARGS_EMPTY);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindAll, FINDER_ARGS_EMPTY);
-		}
-		else {
-			if ((rubricaContattoModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByUtenteCreazioneContatto.
-					 getColumnBitmask()) != 0) {
-
-				Object[] args = new Object[] {
-					rubricaContattoModelImpl.getOriginalFK_UTENTE_CREAZIONE()
-				};
-
-				finderCache.removeResult(
-					_finderPathCountByUtenteCreazioneContatto, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByUtenteCreazioneContatto,
-					args);
-
-				args = new Object[] {
-					rubricaContattoModelImpl.getFK_UTENTE_CREAZIONE()
-				};
-
-				finderCache.removeResult(
-					_finderPathCountByUtenteCreazioneContatto, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByUtenteCreazioneContatto,
-					args);
-			}
-
-			if ((rubricaContattoModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByUtenteModificaContatto.
-					 getColumnBitmask()) != 0) {
-
-				Object[] args = new Object[] {
-					rubricaContattoModelImpl.getOriginalFK_UTENTE_MODIFICA()
-				};
-
-				finderCache.removeResult(
-					_finderPathCountByUtenteModificaContatto, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByUtenteModificaContatto,
-					args);
-
-				args = new Object[] {
-					rubricaContattoModelImpl.getFK_UTENTE_MODIFICA()
-				};
-
-				finderCache.removeResult(
-					_finderPathCountByUtenteModificaContatto, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByUtenteModificaContatto,
-					args);
-			}
-
-			if ((rubricaContattoModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByContattoCanale.
-					 getColumnBitmask()) != 0) {
-
-				Object[] args = new Object[] {
-					rubricaContattoModelImpl.getOriginalFK_CANALE()
-				};
-
-				finderCache.removeResult(
-					_finderPathCountByContattoCanale, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByContattoCanale, args);
-
-				args = new Object[] {rubricaContattoModelImpl.getFK_CANALE()};
-
-				finderCache.removeResult(
-					_finderPathCountByContattoCanale, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByContattoCanale, args);
-			}
-
-			if ((rubricaContattoModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByContattoNominativo.
-					 getColumnBitmask()) != 0) {
-
-				Object[] args = new Object[] {
-					rubricaContattoModelImpl.getOriginalFK_NOMINATIVO()
-				};
-
-				finderCache.removeResult(
-					_finderPathCountByContattoNominativo, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByContattoNominativo, args);
-
-				args = new Object[] {
-					rubricaContattoModelImpl.getFK_NOMINATIVO()
-				};
-
-				finderCache.removeResult(
-					_finderPathCountByContattoNominativo, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByContattoNominativo, args);
-			}
-
-			if ((rubricaContattoModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByDataCreazioneContatto.
-					 getColumnBitmask()) != 0) {
-
-				Object[] args = new Object[] {
-					rubricaContattoModelImpl.getOriginalDATA_CREAZIONE()
-				};
-
-				finderCache.removeResult(
-					_finderPathCountByDataCreazioneContatto, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByDataCreazioneContatto,
-					args);
-
-				args = new Object[] {
-					rubricaContattoModelImpl.getDATA_CREAZIONE()
-				};
-
-				finderCache.removeResult(
-					_finderPathCountByDataCreazioneContatto, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByDataCreazioneContatto,
-					args);
-			}
-
-			if ((rubricaContattoModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByDataModificaContatto.
-					 getColumnBitmask()) != 0) {
-
-				Object[] args = new Object[] {
-					rubricaContattoModelImpl.getOriginalDATA_MODIFICA()
-				};
-
-				finderCache.removeResult(
-					_finderPathCountByDataModificaContatto, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByDataModificaContatto,
-					args);
-
-				args = new Object[] {
-					rubricaContattoModelImpl.getDATA_MODIFICA()
-				};
-
-				finderCache.removeResult(
-					_finderPathCountByDataModificaContatto, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByDataModificaContatto,
-					args);
-			}
-		}
-
-		entityCache.putResult(
-			RubricaContattoModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaContattoImpl.class, rubricaContatto.getPrimaryKey(),
-			rubricaContatto, false);
 
 		rubricaContatto.resetOriginalValues();
 
@@ -3794,163 +3529,12 @@ public class RubricaContattoPersistenceImpl
 	/**
 	 * Returns the rubrica contatto with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the rubrica contatto
-	 * @return the rubrica contatto, or <code>null</code> if a rubrica contatto with the primary key could not be found
-	 */
-	@Override
-	public RubricaContatto fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(
-			RubricaContattoModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaContattoImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		RubricaContatto rubricaContatto = (RubricaContatto)serializable;
-
-		if (rubricaContatto == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				rubricaContatto = (RubricaContatto)session.get(
-					RubricaContattoImpl.class, primaryKey);
-
-				if (rubricaContatto != null) {
-					cacheResult(rubricaContatto);
-				}
-				else {
-					entityCache.putResult(
-						RubricaContattoModelImpl.ENTITY_CACHE_ENABLED,
-						RubricaContattoImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(
-					RubricaContattoModelImpl.ENTITY_CACHE_ENABLED,
-					RubricaContattoImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return rubricaContatto;
-	}
-
-	/**
-	 * Returns the rubrica contatto with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param ID_CONTATTO the primary key of the rubrica contatto
 	 * @return the rubrica contatto, or <code>null</code> if a rubrica contatto with the primary key could not be found
 	 */
 	@Override
 	public RubricaContatto fetchByPrimaryKey(long ID_CONTATTO) {
 		return fetchByPrimaryKey((Serializable)ID_CONTATTO);
-	}
-
-	@Override
-	public Map<Serializable, RubricaContatto> fetchByPrimaryKeys(
-		Set<Serializable> primaryKeys) {
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, RubricaContatto> map =
-			new HashMap<Serializable, RubricaContatto>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			RubricaContatto rubricaContatto = fetchByPrimaryKey(primaryKey);
-
-			if (rubricaContatto != null) {
-				map.put(primaryKey, rubricaContatto);
-			}
-
-			return map;
-		}
-
-		Set<Serializable> uncachedPrimaryKeys = null;
-
-		for (Serializable primaryKey : primaryKeys) {
-			Serializable serializable = entityCache.getResult(
-				RubricaContattoModelImpl.ENTITY_CACHE_ENABLED,
-				RubricaContattoImpl.class, primaryKey);
-
-			if (serializable != nullModel) {
-				if (serializable == null) {
-					if (uncachedPrimaryKeys == null) {
-						uncachedPrimaryKeys = new HashSet<Serializable>();
-					}
-
-					uncachedPrimaryKeys.add(primaryKey);
-				}
-				else {
-					map.put(primaryKey, (RubricaContatto)serializable);
-				}
-			}
-		}
-
-		if (uncachedPrimaryKeys == null) {
-			return map;
-		}
-
-		StringBundler query = new StringBundler(
-			uncachedPrimaryKeys.size() * 2 + 1);
-
-		query.append(_SQL_SELECT_RUBRICACONTATTO_WHERE_PKS_IN);
-
-		for (Serializable primaryKey : uncachedPrimaryKeys) {
-			query.append((long)primaryKey);
-
-			query.append(",");
-		}
-
-		query.setIndex(query.index() - 1);
-
-		query.append(")");
-
-		String sql = query.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query q = session.createQuery(sql);
-
-			for (RubricaContatto rubricaContatto :
-					(List<RubricaContatto>)q.list()) {
-
-				map.put(rubricaContatto.getPrimaryKeyObj(), rubricaContatto);
-
-				cacheResult(rubricaContatto);
-
-				uncachedPrimaryKeys.remove(rubricaContatto.getPrimaryKeyObj());
-			}
-
-			for (Serializable primaryKey : uncachedPrimaryKeys) {
-				entityCache.putResult(
-					RubricaContattoModelImpl.ENTITY_CACHE_ENABLED,
-					RubricaContattoImpl.class, primaryKey, nullModel);
-			}
-		}
-		catch (Exception e) {
-			throw processException(e);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**
@@ -3967,7 +3551,7 @@ public class RubricaContattoPersistenceImpl
 	 * Returns a range of all the rubrica contattos.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaContattoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaContattoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of rubrica contattos
@@ -3983,7 +3567,7 @@ public class RubricaContattoPersistenceImpl
 	 * Returns an ordered range of all the rubrica contattos.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaContattoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaContattoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of rubrica contattos
@@ -4003,65 +3587,63 @@ public class RubricaContattoPersistenceImpl
 	 * Returns an ordered range of all the rubrica contattos.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaContattoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaContattoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of rubrica contattos
 	 * @param end the upper bound of the range of rubrica contattos (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of rubrica contattos
 	 */
 	@Override
 	public List<RubricaContatto> findAll(
 		int start, int end,
 		OrderByComparator<RubricaContatto> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindAll;
-			finderArgs = FINDER_ARGS_EMPTY;
+			if (useFinderCache) {
+				finderPath = _finderPathWithoutPaginationFindAll;
+				finderArgs = FINDER_ARGS_EMPTY;
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
 			finderArgs = new Object[] {start, end, orderByComparator};
 		}
 
 		List<RubricaContatto> list = null;
 
-		if (retrieveFromCache) {
-			list = (List<RubricaContatto>)finderCache.getResult(
+		if (useFinderCache) {
+			list = (List<RubricaContatto>)dummyFinderCache.getResult(
 				finderPath, finderArgs, this);
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 			String sql = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					2 + (orderByComparator.getOrderByFields().length * 2));
 
-				query.append(_SQL_SELECT_RUBRICACONTATTO);
+				sb.append(_SQL_SELECT_RUBRICACONTATTO);
 
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 
-				sql = query.toString();
+				sql = sb.toString();
 			}
 			else {
 				sql = _SQL_SELECT_RUBRICACONTATTO;
 
-				if (pagination) {
-					sql = sql.concat(RubricaContattoModelImpl.ORDER_BY_JPQL);
-				}
+				sql = sql.concat(RubricaContattoModelImpl.ORDER_BY_JPQL);
 			}
 
 			Session session = null;
@@ -4069,29 +3651,19 @@ public class RubricaContattoPersistenceImpl
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				if (!pagination) {
-					list = (List<RubricaContatto>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<RubricaContatto>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<RubricaContatto>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					dummyFinderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -4119,7 +3691,7 @@ public class RubricaContattoPersistenceImpl
 	 */
 	@Override
 	public int countAll() {
-		Long count = (Long)finderCache.getResult(
+		Long count = (Long)dummyFinderCache.getResult(
 			_finderPathCountAll, FINDER_ARGS_EMPTY, this);
 
 		if (count == null) {
@@ -4128,18 +3700,15 @@ public class RubricaContattoPersistenceImpl
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(_SQL_COUNT_RUBRICACONTATTO);
+				Query query = session.createQuery(_SQL_COUNT_RUBRICACONTATTO);
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
-				finderCache.putResult(
+				dummyFinderCache.putResult(
 					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -4150,6 +3719,21 @@ public class RubricaContattoPersistenceImpl
 	}
 
 	@Override
+	protected EntityCache getEntityCache() {
+		return dummyEntityCache;
+	}
+
+	@Override
+	protected String getPKDBName() {
+		return "ID_CONTATTO";
+	}
+
+	@Override
+	protected String getSelectSQL() {
+		return _SQL_SELECT_RUBRICACONTATTO;
+	}
+
+	@Override
 	protected Map<String, Integer> getTableColumnsMap() {
 		return RubricaContattoModelImpl.TABLE_COLUMNS_MAP;
 	}
@@ -4157,194 +3741,180 @@ public class RubricaContattoPersistenceImpl
 	/**
 	 * Initializes the rubrica contatto persistence.
 	 */
-	public void afterPropertiesSet() {
+	@Activate
+	public void activate() {
+		_valueObjectFinderCacheListThreshold = GetterUtil.getInteger(
+			PropsUtil.get(PropsKeys.VALUE_OBJECT_FINDER_CACHE_LIST_THRESHOLD));
+
 		_finderPathWithPaginationFindAll = new FinderPath(
-			RubricaContattoModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaContattoModelImpl.FINDER_CACHE_ENABLED,
-			RubricaContattoImpl.class, FINDER_CLASS_NAME_LIST_WITH_PAGINATION,
-			"findAll", new String[0]);
+			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findAll", new String[0],
+			new String[0], true);
 
 		_finderPathWithoutPaginationFindAll = new FinderPath(
-			RubricaContattoModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaContattoModelImpl.FINDER_CACHE_ENABLED,
-			RubricaContattoImpl.class,
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findAll",
-			new String[0]);
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findAll", new String[0],
+			new String[0], true);
 
 		_finderPathCountAll = new FinderPath(
-			RubricaContattoModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaContattoModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countAll",
-			new String[0]);
+			new String[0], new String[0], false);
 
 		_finderPathWithPaginationFindByUtenteCreazioneContatto = new FinderPath(
-			RubricaContattoModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaContattoModelImpl.FINDER_CACHE_ENABLED,
-			RubricaContattoImpl.class, FINDER_CLASS_NAME_LIST_WITH_PAGINATION,
+			FINDER_CLASS_NAME_LIST_WITH_PAGINATION,
 			"findByUtenteCreazioneContatto",
 			new String[] {
 				Long.class.getName(), Integer.class.getName(),
 				Integer.class.getName(), OrderByComparator.class.getName()
-			});
+			},
+			new String[] {"FK_UTENTE_CREAZIONE"}, true);
 
 		_finderPathWithoutPaginationFindByUtenteCreazioneContatto =
 			new FinderPath(
-				RubricaContattoModelImpl.ENTITY_CACHE_ENABLED,
-				RubricaContattoModelImpl.FINDER_CACHE_ENABLED,
-				RubricaContattoImpl.class,
 				FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
 				"findByUtenteCreazioneContatto",
 				new String[] {Long.class.getName()},
-				RubricaContattoModelImpl.FK_UTENTE_CREAZIONE_COLUMN_BITMASK);
+				new String[] {"FK_UTENTE_CREAZIONE"}, true);
 
 		_finderPathCountByUtenteCreazioneContatto = new FinderPath(
-			RubricaContattoModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaContattoModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
 			"countByUtenteCreazioneContatto",
-			new String[] {Long.class.getName()});
+			new String[] {Long.class.getName()},
+			new String[] {"FK_UTENTE_CREAZIONE"}, false);
 
 		_finderPathWithPaginationFindByUtenteModificaContatto = new FinderPath(
-			RubricaContattoModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaContattoModelImpl.FINDER_CACHE_ENABLED,
-			RubricaContattoImpl.class, FINDER_CLASS_NAME_LIST_WITH_PAGINATION,
+			FINDER_CLASS_NAME_LIST_WITH_PAGINATION,
 			"findByUtenteModificaContatto",
 			new String[] {
 				Long.class.getName(), Integer.class.getName(),
 				Integer.class.getName(), OrderByComparator.class.getName()
-			});
+			},
+			new String[] {"FK_UTENTE_MODIFICA"}, true);
 
 		_finderPathWithoutPaginationFindByUtenteModificaContatto =
 			new FinderPath(
-				RubricaContattoModelImpl.ENTITY_CACHE_ENABLED,
-				RubricaContattoModelImpl.FINDER_CACHE_ENABLED,
-				RubricaContattoImpl.class,
 				FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
 				"findByUtenteModificaContatto",
 				new String[] {Long.class.getName()},
-				RubricaContattoModelImpl.FK_UTENTE_MODIFICA_COLUMN_BITMASK);
+				new String[] {"FK_UTENTE_MODIFICA"}, true);
 
 		_finderPathCountByUtenteModificaContatto = new FinderPath(
-			RubricaContattoModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaContattoModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
 			"countByUtenteModificaContatto",
-			new String[] {Long.class.getName()});
+			new String[] {Long.class.getName()},
+			new String[] {"FK_UTENTE_MODIFICA"}, false);
 
 		_finderPathWithPaginationFindByContattoCanale = new FinderPath(
-			RubricaContattoModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaContattoModelImpl.FINDER_CACHE_ENABLED,
-			RubricaContattoImpl.class, FINDER_CLASS_NAME_LIST_WITH_PAGINATION,
-			"findByContattoCanale",
+			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByContattoCanale",
 			new String[] {
 				Long.class.getName(), Integer.class.getName(),
 				Integer.class.getName(), OrderByComparator.class.getName()
-			});
+			},
+			new String[] {"FK_CANALE"}, true);
 
 		_finderPathWithoutPaginationFindByContattoCanale = new FinderPath(
-			RubricaContattoModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaContattoModelImpl.FINDER_CACHE_ENABLED,
-			RubricaContattoImpl.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByContattoCanale",
-			new String[] {Long.class.getName()},
-			RubricaContattoModelImpl.FK_CANALE_COLUMN_BITMASK);
+			new String[] {Long.class.getName()}, new String[] {"FK_CANALE"},
+			true);
 
 		_finderPathCountByContattoCanale = new FinderPath(
-			RubricaContattoModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaContattoModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByContattoCanale",
-			new String[] {Long.class.getName()});
+			new String[] {Long.class.getName()}, new String[] {"FK_CANALE"},
+			false);
 
 		_finderPathWithPaginationFindByContattoNominativo = new FinderPath(
-			RubricaContattoModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaContattoModelImpl.FINDER_CACHE_ENABLED,
-			RubricaContattoImpl.class, FINDER_CLASS_NAME_LIST_WITH_PAGINATION,
-			"findByContattoNominativo",
+			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByContattoNominativo",
 			new String[] {
 				Long.class.getName(), Integer.class.getName(),
 				Integer.class.getName(), OrderByComparator.class.getName()
-			});
+			},
+			new String[] {"FK_NOMINATIVO"}, true);
 
 		_finderPathWithoutPaginationFindByContattoNominativo = new FinderPath(
-			RubricaContattoModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaContattoModelImpl.FINDER_CACHE_ENABLED,
-			RubricaContattoImpl.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
 			"findByContattoNominativo", new String[] {Long.class.getName()},
-			RubricaContattoModelImpl.FK_NOMINATIVO_COLUMN_BITMASK);
+			new String[] {"FK_NOMINATIVO"}, true);
 
 		_finderPathCountByContattoNominativo = new FinderPath(
-			RubricaContattoModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaContattoModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
-			"countByContattoNominativo", new String[] {Long.class.getName()});
+			"countByContattoNominativo", new String[] {Long.class.getName()},
+			new String[] {"FK_NOMINATIVO"}, false);
 
 		_finderPathWithPaginationFindByDataCreazioneContatto = new FinderPath(
-			RubricaContattoModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaContattoModelImpl.FINDER_CACHE_ENABLED,
-			RubricaContattoImpl.class, FINDER_CLASS_NAME_LIST_WITH_PAGINATION,
+			FINDER_CLASS_NAME_LIST_WITH_PAGINATION,
 			"findByDataCreazioneContatto",
 			new String[] {
 				Date.class.getName(), Integer.class.getName(),
 				Integer.class.getName(), OrderByComparator.class.getName()
-			});
+			},
+			new String[] {"DATA_CREAZIONE"}, true);
 
 		_finderPathWithoutPaginationFindByDataCreazioneContatto =
 			new FinderPath(
-				RubricaContattoModelImpl.ENTITY_CACHE_ENABLED,
-				RubricaContattoModelImpl.FINDER_CACHE_ENABLED,
-				RubricaContattoImpl.class,
 				FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
 				"findByDataCreazioneContatto",
 				new String[] {Date.class.getName()},
-				RubricaContattoModelImpl.DATA_CREAZIONE_COLUMN_BITMASK);
+				new String[] {"DATA_CREAZIONE"}, true);
 
 		_finderPathCountByDataCreazioneContatto = new FinderPath(
-			RubricaContattoModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaContattoModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
-			"countByDataCreazioneContatto",
-			new String[] {Date.class.getName()});
+			"countByDataCreazioneContatto", new String[] {Date.class.getName()},
+			new String[] {"DATA_CREAZIONE"}, false);
 
 		_finderPathWithPaginationFindByDataModificaContatto = new FinderPath(
-			RubricaContattoModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaContattoModelImpl.FINDER_CACHE_ENABLED,
-			RubricaContattoImpl.class, FINDER_CLASS_NAME_LIST_WITH_PAGINATION,
+			FINDER_CLASS_NAME_LIST_WITH_PAGINATION,
 			"findByDataModificaContatto",
 			new String[] {
 				Date.class.getName(), Integer.class.getName(),
 				Integer.class.getName(), OrderByComparator.class.getName()
-			});
+			},
+			new String[] {"DATA_MODIFICA"}, true);
 
 		_finderPathWithoutPaginationFindByDataModificaContatto = new FinderPath(
-			RubricaContattoModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaContattoModelImpl.FINDER_CACHE_ENABLED,
-			RubricaContattoImpl.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
 			"findByDataModificaContatto", new String[] {Date.class.getName()},
-			RubricaContattoModelImpl.DATA_MODIFICA_COLUMN_BITMASK);
+			new String[] {"DATA_MODIFICA"}, true);
 
 		_finderPathCountByDataModificaContatto = new FinderPath(
-			RubricaContattoModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaContattoModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
-			"countByDataModificaContatto", new String[] {Date.class.getName()});
+			"countByDataModificaContatto", new String[] {Date.class.getName()},
+			new String[] {"DATA_MODIFICA"}, false);
+
+		RubricaContattoUtil.setPersistence(this);
 	}
 
-	public void destroy() {
-		entityCache.removeCache(RubricaContattoImpl.class.getName());
-		finderCache.removeCache(FINDER_CLASS_NAME_ENTITY);
-		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+	@Deactivate
+	public void deactivate() {
+		RubricaContattoUtil.setPersistence(null);
+
+		dummyEntityCache.removeCache(RubricaContattoImpl.class.getName());
 	}
 
-	@ServiceReference(type = EntityCache.class)
-	protected EntityCache entityCache;
+	@Override
+	@Reference(
+		target = rubricaPersistenceConstants.SERVICE_CONFIGURATION_FILTER,
+		unbind = "-"
+	)
+	public void setConfiguration(Configuration configuration) {
+	}
 
-	@ServiceReference(type = FinderCache.class)
-	protected FinderCache finderCache;
+	@Override
+	@Reference(
+		target = rubricaPersistenceConstants.ORIGIN_BUNDLE_SYMBOLIC_NAME_FILTER,
+		unbind = "-"
+	)
+	public void setDataSource(DataSource dataSource) {
+		super.setDataSource(dataSource);
+	}
 
-	private Long _getTime(Date date) {
+	@Override
+	@Reference(
+		target = rubricaPersistenceConstants.ORIGIN_BUNDLE_SYMBOLIC_NAME_FILTER,
+		unbind = "-"
+	)
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		super.setSessionFactory(sessionFactory);
+	}
+
+	private static Long _getTime(Date date) {
 		if (date == null) {
 			return null;
 		}
@@ -4354,9 +3924,6 @@ public class RubricaContattoPersistenceImpl
 
 	private static final String _SQL_SELECT_RUBRICACONTATTO =
 		"SELECT rubricaContatto FROM RubricaContatto rubricaContatto";
-
-	private static final String _SQL_SELECT_RUBRICACONTATTO_WHERE_PKS_IN =
-		"SELECT rubricaContatto FROM RubricaContatto rubricaContatto WHERE ID_CONTATTO IN (";
 
 	private static final String _SQL_SELECT_RUBRICACONTATTO_WHERE =
 		"SELECT rubricaContatto FROM RubricaContatto rubricaContatto WHERE ";
@@ -4377,5 +3944,10 @@ public class RubricaContattoPersistenceImpl
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		RubricaContattoPersistenceImpl.class);
+
+	@Override
+	protected FinderCache getFinderCache() {
+		return dummyFinderCache;
+	}
 
 }

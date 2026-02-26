@@ -1,3 +1,7 @@
 Bundle-Name: allerta-bollettino-web
 Bundle-SymbolicName: it.eng.bollettino.web
 Bundle-Version: 1.0.0
+Export-Package: allerta.bollettino.web.constants
+Provide-Capability:\
+	liferay.language.resources;\
+		resource.bundle.base.name="content.Language"

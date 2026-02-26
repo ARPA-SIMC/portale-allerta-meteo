@@ -1,27 +1,21 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package allerta.catasto.service.persistence.impl;
 
-import aQute.bnd.annotation.ProviderType;
-
 import allerta.catasto.exception.NoSuchSegnalazioneException;
 import allerta.catasto.model.Segnalazione;
+import allerta.catasto.model.SegnalazioneTable;
 import allerta.catasto.model.impl.SegnalazioneImpl;
 import allerta.catasto.model.impl.SegnalazioneModelImpl;
 import allerta.catasto.service.persistence.SegnalazionePersistence;
+import allerta.catasto.service.persistence.SegnalazioneUtil;
+import allerta.catasto.service.persistence.impl.constants.CATASTOPersistenceConstants;
 
+import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
@@ -29,32 +23,36 @@ import com.liferay.portal.kernel.dao.orm.Query;
 import com.liferay.portal.kernel.dao.orm.QueryPos;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
+import com.liferay.portal.kernel.dao.orm.SessionFactory;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
-import com.liferay.portal.kernel.service.persistence.CompanyProvider;
-import com.liferay.portal.kernel.service.persistence.CompanyProviderWrapper;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.kernel.util.PropsKeys;
+import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.SetUtil;
-import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.spring.extender.service.ServiceReference;
 
 import java.io.Serializable;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.sql.DataSource;
+
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The persistence implementation for the segnalazione service.
@@ -66,7 +64,7 @@ import java.util.Set;
  * @author Brian Wing Shun Chan
  * @generated
  */
-@ProviderType
+@Component(service = SegnalazionePersistence.class)
 public class SegnalazionePersistenceImpl
 	extends BasePersistenceImpl<Segnalazione>
 	implements SegnalazionePersistence {
@@ -110,7 +108,7 @@ public class SegnalazionePersistenceImpl
 	 * Returns a range of all the segnalaziones where documentoAssociato = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>SegnalazioneModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>SegnalazioneModelImpl</code>.
 	 * </p>
 	 *
 	 * @param documentoAssociato the documento associato
@@ -129,7 +127,7 @@ public class SegnalazionePersistenceImpl
 	 * Returns an ordered range of all the segnalaziones where documentoAssociato = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>SegnalazioneModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>SegnalazioneModelImpl</code>.
 	 * </p>
 	 *
 	 * @param documentoAssociato the documento associato
@@ -151,34 +149,35 @@ public class SegnalazionePersistenceImpl
 	 * Returns an ordered range of all the segnalaziones where documentoAssociato = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>SegnalazioneModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>SegnalazioneModelImpl</code>.
 	 * </p>
 	 *
 	 * @param documentoAssociato the documento associato
 	 * @param start the lower bound of the range of segnalaziones
 	 * @param end the upper bound of the range of segnalaziones (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching segnalaziones
 	 */
 	@Override
 	public List<Segnalazione> findByDocumentoAssociato(
 		long documentoAssociato, int start, int end,
 		OrderByComparator<Segnalazione> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindByDocumentoAssociato;
-			finderArgs = new Object[] {documentoAssociato};
+			if (useFinderCache) {
+				finderPath =
+					_finderPathWithoutPaginationFindByDocumentoAssociato;
+				finderArgs = new Object[] {documentoAssociato};
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByDocumentoAssociato;
 			finderArgs = new Object[] {
 				documentoAssociato, start, end, orderByComparator
@@ -187,14 +186,14 @@ public class SegnalazionePersistenceImpl
 
 		List<Segnalazione> list = null;
 
-		if (retrieveFromCache) {
+		if (useFinderCache) {
 			list = (List<Segnalazione>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
 			if ((list != null) && !list.isEmpty()) {
 				for (Segnalazione segnalazione : list) {
-					if ((documentoAssociato !=
-							segnalazione.getDocumentoAssociato())) {
+					if (documentoAssociato !=
+							segnalazione.getDocumentoAssociato()) {
 
 						list = null;
 
@@ -205,63 +204,52 @@ public class SegnalazionePersistenceImpl
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					3 + (orderByComparator.getOrderByFields().length * 2));
 			}
 			else {
-				query = new StringBundler(3);
+				sb = new StringBundler(3);
 			}
 
-			query.append(_SQL_SELECT_SEGNALAZIONE_WHERE);
+			sb.append(_SQL_SELECT_SEGNALAZIONE_WHERE);
 
-			query.append(
-				_FINDER_COLUMN_DOCUMENTOASSOCIATO_DOCUMENTOASSOCIATO_2);
+			sb.append(_FINDER_COLUMN_DOCUMENTOASSOCIATO_DOCUMENTOASSOCIATO_2);
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 			}
-			else if (pagination) {
-				query.append(SegnalazioneModelImpl.ORDER_BY_JPQL);
+			else {
+				sb.append(SegnalazioneModelImpl.ORDER_BY_JPQL);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
-				qPos.add(documentoAssociato);
+				queryPos.add(documentoAssociato);
 
-				if (!pagination) {
-					list = (List<Segnalazione>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<Segnalazione>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<Segnalazione>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					finderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -292,16 +280,16 @@ public class SegnalazionePersistenceImpl
 			return segnalazione;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("documentoAssociato=");
-		msg.append(documentoAssociato);
+		sb.append("documentoAssociato=");
+		sb.append(documentoAssociato);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchSegnalazioneException(msg.toString());
+		throw new NoSuchSegnalazioneException(sb.toString());
 	}
 
 	/**
@@ -347,16 +335,16 @@ public class SegnalazionePersistenceImpl
 			return segnalazione;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("documentoAssociato=");
-		msg.append(documentoAssociato);
+		sb.append("documentoAssociato=");
+		sb.append(documentoAssociato);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchSegnalazioneException(msg.toString());
+		throw new NoSuchSegnalazioneException(sb.toString());
 	}
 
 	/**
@@ -423,8 +411,8 @@ public class SegnalazionePersistenceImpl
 
 			return array;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -435,101 +423,101 @@ public class SegnalazionePersistenceImpl
 		Session session, Segnalazione segnalazione, long documentoAssociato,
 		OrderByComparator<Segnalazione> orderByComparator, boolean previous) {
 
-		StringBundler query = null;
+		StringBundler sb = null;
 
 		if (orderByComparator != null) {
-			query = new StringBundler(
+			sb = new StringBundler(
 				4 + (orderByComparator.getOrderByConditionFields().length * 3) +
 					(orderByComparator.getOrderByFields().length * 3));
 		}
 		else {
-			query = new StringBundler(3);
+			sb = new StringBundler(3);
 		}
 
-		query.append(_SQL_SELECT_SEGNALAZIONE_WHERE);
+		sb.append(_SQL_SELECT_SEGNALAZIONE_WHERE);
 
-		query.append(_FINDER_COLUMN_DOCUMENTOASSOCIATO_DOCUMENTOASSOCIATO_2);
+		sb.append(_FINDER_COLUMN_DOCUMENTOASSOCIATO_DOCUMENTOASSOCIATO_2);
 
 		if (orderByComparator != null) {
 			String[] orderByConditionFields =
 				orderByComparator.getOrderByConditionFields();
 
 			if (orderByConditionFields.length > 0) {
-				query.append(WHERE_AND);
+				sb.append(WHERE_AND);
 			}
 
 			for (int i = 0; i < orderByConditionFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByConditionFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByConditionFields[i]);
 
 				if ((i + 1) < orderByConditionFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+						sb.append(WHERE_GREATER_THAN_HAS_NEXT);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+						sb.append(WHERE_LESSER_THAN_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN);
+						sb.append(WHERE_GREATER_THAN);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN);
+						sb.append(WHERE_LESSER_THAN);
 					}
 				}
 			}
 
-			query.append(ORDER_BY_CLAUSE);
+			sb.append(ORDER_BY_CLAUSE);
 
 			String[] orderByFields = orderByComparator.getOrderByFields();
 
 			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByFields[i]);
 
 				if ((i + 1) < orderByFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC_HAS_NEXT);
+						sb.append(ORDER_BY_ASC_HAS_NEXT);
 					}
 					else {
-						query.append(ORDER_BY_DESC_HAS_NEXT);
+						sb.append(ORDER_BY_DESC_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC);
+						sb.append(ORDER_BY_ASC);
 					}
 					else {
-						query.append(ORDER_BY_DESC);
+						sb.append(ORDER_BY_DESC);
 					}
 				}
 			}
 		}
 		else {
-			query.append(SegnalazioneModelImpl.ORDER_BY_JPQL);
+			sb.append(SegnalazioneModelImpl.ORDER_BY_JPQL);
 		}
 
-		String sql = query.toString();
+		String sql = sb.toString();
 
-		Query q = session.createQuery(sql);
+		Query query = session.createQuery(sql);
 
-		q.setFirstResult(0);
-		q.setMaxResults(2);
+		query.setFirstResult(0);
+		query.setMaxResults(2);
 
-		QueryPos qPos = QueryPos.getInstance(q);
+		QueryPos queryPos = QueryPos.getInstance(query);
 
-		qPos.add(documentoAssociato);
+		queryPos.add(documentoAssociato);
 
 		if (orderByComparator != null) {
 			for (Object orderByConditionValue :
 					orderByComparator.getOrderByConditionValues(segnalazione)) {
 
-				qPos.add(orderByConditionValue);
+				queryPos.add(orderByConditionValue);
 			}
 		}
 
-		List<Segnalazione> list = q.list();
+		List<Segnalazione> list = query.list();
 
 		if (list.size() == 2) {
 			return list.get(1);
@@ -570,34 +558,31 @@ public class SegnalazionePersistenceImpl
 		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
-			StringBundler query = new StringBundler(2);
+			StringBundler sb = new StringBundler(2);
 
-			query.append(_SQL_COUNT_SEGNALAZIONE_WHERE);
+			sb.append(_SQL_COUNT_SEGNALAZIONE_WHERE);
 
-			query.append(
-				_FINDER_COLUMN_DOCUMENTOASSOCIATO_DOCUMENTOASSOCIATO_2);
+			sb.append(_FINDER_COLUMN_DOCUMENTOASSOCIATO_DOCUMENTOASSOCIATO_2);
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
-				qPos.add(documentoAssociato);
+				queryPos.add(documentoAssociato);
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
 				finderCache.putResult(finderPath, finderArgs, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -612,25 +597,18 @@ public class SegnalazionePersistenceImpl
 			"segnalazione.documentoAssociato = ?";
 
 	public SegnalazionePersistenceImpl() {
-		setModelClass(Segnalazione.class);
-
 		Map<String, String> dbColumnNames = new HashMap<String, String>();
 
 		dbColumnNames.put("id", "id_");
 
-		try {
-			Field field = BasePersistenceImpl.class.getDeclaredField(
-				"_dbColumnNames");
+		setDBColumnNames(dbColumnNames);
 
-			field.setAccessible(true);
+		setModelClass(Segnalazione.class);
 
-			field.set(this, dbColumnNames);
-		}
-		catch (Exception e) {
-			if (_log.isDebugEnabled()) {
-				_log.debug(e, e);
-			}
-		}
+		setModelImplClass(SegnalazioneImpl.class);
+		setModelPKClass(long.class);
+
+		setTable(SegnalazioneTable.INSTANCE);
 	}
 
 	/**
@@ -641,11 +619,10 @@ public class SegnalazionePersistenceImpl
 	@Override
 	public void cacheResult(Segnalazione segnalazione) {
 		entityCache.putResult(
-			SegnalazioneModelImpl.ENTITY_CACHE_ENABLED, SegnalazioneImpl.class,
-			segnalazione.getPrimaryKey(), segnalazione);
-
-		segnalazione.resetOriginalValues();
+			SegnalazioneImpl.class, segnalazione.getPrimaryKey(), segnalazione);
 	}
+
+	private int _valueObjectFinderCacheListThreshold;
 
 	/**
 	 * Caches the segnalaziones in the entity cache if it is enabled.
@@ -654,16 +631,19 @@ public class SegnalazionePersistenceImpl
 	 */
 	@Override
 	public void cacheResult(List<Segnalazione> segnalaziones) {
+		if ((_valueObjectFinderCacheListThreshold == 0) ||
+			((_valueObjectFinderCacheListThreshold > 0) &&
+			 (segnalaziones.size() > _valueObjectFinderCacheListThreshold))) {
+
+			return;
+		}
+
 		for (Segnalazione segnalazione : segnalaziones) {
 			if (entityCache.getResult(
-					SegnalazioneModelImpl.ENTITY_CACHE_ENABLED,
 					SegnalazioneImpl.class, segnalazione.getPrimaryKey()) ==
 						null) {
 
 				cacheResult(segnalazione);
-			}
-			else {
-				segnalazione.resetOriginalValues();
 			}
 		}
 	}
@@ -679,9 +659,7 @@ public class SegnalazionePersistenceImpl
 	public void clearCache() {
 		entityCache.clearCache(SegnalazioneImpl.class);
 
-		finderCache.clearCache(FINDER_CLASS_NAME_ENTITY);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		finderCache.clearCache(SegnalazioneImpl.class);
 	}
 
 	/**
@@ -693,23 +671,22 @@ public class SegnalazionePersistenceImpl
 	 */
 	@Override
 	public void clearCache(Segnalazione segnalazione) {
-		entityCache.removeResult(
-			SegnalazioneModelImpl.ENTITY_CACHE_ENABLED, SegnalazioneImpl.class,
-			segnalazione.getPrimaryKey());
-
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		entityCache.removeResult(SegnalazioneImpl.class, segnalazione);
 	}
 
 	@Override
 	public void clearCache(List<Segnalazione> segnalaziones) {
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
-
 		for (Segnalazione segnalazione : segnalaziones) {
-			entityCache.removeResult(
-				SegnalazioneModelImpl.ENTITY_CACHE_ENABLED,
-				SegnalazioneImpl.class, segnalazione.getPrimaryKey());
+			entityCache.removeResult(SegnalazioneImpl.class, segnalazione);
+		}
+	}
+
+	@Override
+	public void clearCache(Set<Serializable> primaryKeys) {
+		finderCache.clearCache(SegnalazioneImpl.class);
+
+		for (Serializable primaryKey : primaryKeys) {
+			entityCache.removeResult(SegnalazioneImpl.class, primaryKey);
 		}
 	}
 
@@ -726,7 +703,7 @@ public class SegnalazionePersistenceImpl
 		segnalazione.setNew(true);
 		segnalazione.setPrimaryKey(id);
 
-		segnalazione.setCompanyId(companyProvider.getCompanyId());
+		segnalazione.setCompanyId(CompanyThreadLocal.getCompanyId());
 
 		return segnalazione;
 	}
@@ -773,11 +750,11 @@ public class SegnalazionePersistenceImpl
 
 			return remove(segnalazione);
 		}
-		catch (NoSuchSegnalazioneException nsee) {
-			throw nsee;
+		catch (NoSuchSegnalazioneException noSuchEntityException) {
+			throw noSuchEntityException;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -800,8 +777,8 @@ public class SegnalazionePersistenceImpl
 				session.delete(segnalazione);
 			}
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -841,24 +818,24 @@ public class SegnalazionePersistenceImpl
 		ServiceContext serviceContext =
 			ServiceContextThreadLocal.getServiceContext();
 
-		Date now = new Date();
+		Date date = new Date();
 
 		if (isNew && (segnalazione.getCreateDate() == null)) {
 			if (serviceContext == null) {
-				segnalazione.setCreateDate(now);
+				segnalazione.setCreateDate(date);
 			}
 			else {
-				segnalazione.setCreateDate(serviceContext.getCreateDate(now));
+				segnalazione.setCreateDate(serviceContext.getCreateDate(date));
 			}
 		}
 
 		if (!segnalazioneModelImpl.hasSetModifiedDate()) {
 			if (serviceContext == null) {
-				segnalazione.setModifiedDate(now);
+				segnalazione.setModifiedDate(date);
 			}
 			else {
 				segnalazione.setModifiedDate(
-					serviceContext.getModifiedDate(now));
+					serviceContext.getModifiedDate(date));
 			}
 		}
 
@@ -867,69 +844,26 @@ public class SegnalazionePersistenceImpl
 		try {
 			session = openSession();
 
-			if (segnalazione.isNew()) {
+			if (isNew) {
 				session.save(segnalazione);
-
-				segnalazione.setNew(false);
 			}
 			else {
 				segnalazione = (Segnalazione)session.merge(segnalazione);
 			}
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
 		}
 
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-
-		if (!SegnalazioneModelImpl.COLUMN_BITMASK_ENABLED) {
-			finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
-		}
-		else if (isNew) {
-			Object[] args = new Object[] {
-				segnalazioneModelImpl.getDocumentoAssociato()
-			};
-
-			finderCache.removeResult(
-				_finderPathCountByDocumentoAssociato, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByDocumentoAssociato, args);
-
-			finderCache.removeResult(_finderPathCountAll, FINDER_ARGS_EMPTY);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindAll, FINDER_ARGS_EMPTY);
-		}
-		else {
-			if ((segnalazioneModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByDocumentoAssociato.
-					 getColumnBitmask()) != 0) {
-
-				Object[] args = new Object[] {
-					segnalazioneModelImpl.getOriginalDocumentoAssociato()
-				};
-
-				finderCache.removeResult(
-					_finderPathCountByDocumentoAssociato, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByDocumentoAssociato, args);
-
-				args = new Object[] {
-					segnalazioneModelImpl.getDocumentoAssociato()
-				};
-
-				finderCache.removeResult(
-					_finderPathCountByDocumentoAssociato, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByDocumentoAssociato, args);
-			}
-		}
-
 		entityCache.putResult(
-			SegnalazioneModelImpl.ENTITY_CACHE_ENABLED, SegnalazioneImpl.class,
-			segnalazione.getPrimaryKey(), segnalazione, false);
+			SegnalazioneImpl.class, segnalazioneModelImpl, false, true);
+
+		if (isNew) {
+			segnalazione.setNew(false);
+		}
 
 		segnalazione.resetOriginalValues();
 
@@ -978,161 +912,12 @@ public class SegnalazionePersistenceImpl
 	/**
 	 * Returns the segnalazione with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the segnalazione
-	 * @return the segnalazione, or <code>null</code> if a segnalazione with the primary key could not be found
-	 */
-	@Override
-	public Segnalazione fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(
-			SegnalazioneModelImpl.ENTITY_CACHE_ENABLED, SegnalazioneImpl.class,
-			primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		Segnalazione segnalazione = (Segnalazione)serializable;
-
-		if (segnalazione == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				segnalazione = (Segnalazione)session.get(
-					SegnalazioneImpl.class, primaryKey);
-
-				if (segnalazione != null) {
-					cacheResult(segnalazione);
-				}
-				else {
-					entityCache.putResult(
-						SegnalazioneModelImpl.ENTITY_CACHE_ENABLED,
-						SegnalazioneImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(
-					SegnalazioneModelImpl.ENTITY_CACHE_ENABLED,
-					SegnalazioneImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return segnalazione;
-	}
-
-	/**
-	 * Returns the segnalazione with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param id the primary key of the segnalazione
 	 * @return the segnalazione, or <code>null</code> if a segnalazione with the primary key could not be found
 	 */
 	@Override
 	public Segnalazione fetchByPrimaryKey(long id) {
 		return fetchByPrimaryKey((Serializable)id);
-	}
-
-	@Override
-	public Map<Serializable, Segnalazione> fetchByPrimaryKeys(
-		Set<Serializable> primaryKeys) {
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, Segnalazione> map =
-			new HashMap<Serializable, Segnalazione>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			Segnalazione segnalazione = fetchByPrimaryKey(primaryKey);
-
-			if (segnalazione != null) {
-				map.put(primaryKey, segnalazione);
-			}
-
-			return map;
-		}
-
-		Set<Serializable> uncachedPrimaryKeys = null;
-
-		for (Serializable primaryKey : primaryKeys) {
-			Serializable serializable = entityCache.getResult(
-				SegnalazioneModelImpl.ENTITY_CACHE_ENABLED,
-				SegnalazioneImpl.class, primaryKey);
-
-			if (serializable != nullModel) {
-				if (serializable == null) {
-					if (uncachedPrimaryKeys == null) {
-						uncachedPrimaryKeys = new HashSet<Serializable>();
-					}
-
-					uncachedPrimaryKeys.add(primaryKey);
-				}
-				else {
-					map.put(primaryKey, (Segnalazione)serializable);
-				}
-			}
-		}
-
-		if (uncachedPrimaryKeys == null) {
-			return map;
-		}
-
-		StringBundler query = new StringBundler(
-			uncachedPrimaryKeys.size() * 2 + 1);
-
-		query.append(_SQL_SELECT_SEGNALAZIONE_WHERE_PKS_IN);
-
-		for (Serializable primaryKey : uncachedPrimaryKeys) {
-			query.append((long)primaryKey);
-
-			query.append(",");
-		}
-
-		query.setIndex(query.index() - 1);
-
-		query.append(")");
-
-		String sql = query.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query q = session.createQuery(sql);
-
-			for (Segnalazione segnalazione : (List<Segnalazione>)q.list()) {
-				map.put(segnalazione.getPrimaryKeyObj(), segnalazione);
-
-				cacheResult(segnalazione);
-
-				uncachedPrimaryKeys.remove(segnalazione.getPrimaryKeyObj());
-			}
-
-			for (Serializable primaryKey : uncachedPrimaryKeys) {
-				entityCache.putResult(
-					SegnalazioneModelImpl.ENTITY_CACHE_ENABLED,
-					SegnalazioneImpl.class, primaryKey, nullModel);
-			}
-		}
-		catch (Exception e) {
-			throw processException(e);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**
@@ -1149,7 +934,7 @@ public class SegnalazionePersistenceImpl
 	 * Returns a range of all the segnalaziones.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>SegnalazioneModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>SegnalazioneModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of segnalaziones
@@ -1165,7 +950,7 @@ public class SegnalazionePersistenceImpl
 	 * Returns an ordered range of all the segnalaziones.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>SegnalazioneModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>SegnalazioneModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of segnalaziones
@@ -1184,64 +969,62 @@ public class SegnalazionePersistenceImpl
 	 * Returns an ordered range of all the segnalaziones.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>SegnalazioneModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>SegnalazioneModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of segnalaziones
 	 * @param end the upper bound of the range of segnalaziones (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of segnalaziones
 	 */
 	@Override
 	public List<Segnalazione> findAll(
 		int start, int end, OrderByComparator<Segnalazione> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindAll;
-			finderArgs = FINDER_ARGS_EMPTY;
+			if (useFinderCache) {
+				finderPath = _finderPathWithoutPaginationFindAll;
+				finderArgs = FINDER_ARGS_EMPTY;
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
 			finderArgs = new Object[] {start, end, orderByComparator};
 		}
 
 		List<Segnalazione> list = null;
 
-		if (retrieveFromCache) {
+		if (useFinderCache) {
 			list = (List<Segnalazione>)finderCache.getResult(
 				finderPath, finderArgs, this);
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 			String sql = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					2 + (orderByComparator.getOrderByFields().length * 2));
 
-				query.append(_SQL_SELECT_SEGNALAZIONE);
+				sb.append(_SQL_SELECT_SEGNALAZIONE);
 
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 
-				sql = query.toString();
+				sql = sb.toString();
 			}
 			else {
 				sql = _SQL_SELECT_SEGNALAZIONE;
 
-				if (pagination) {
-					sql = sql.concat(SegnalazioneModelImpl.ORDER_BY_JPQL);
-				}
+				sql = sql.concat(SegnalazioneModelImpl.ORDER_BY_JPQL);
 			}
 
 			Session session = null;
@@ -1249,29 +1032,19 @@ public class SegnalazionePersistenceImpl
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				if (!pagination) {
-					list = (List<Segnalazione>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<Segnalazione>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<Segnalazione>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					finderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -1308,18 +1081,15 @@ public class SegnalazionePersistenceImpl
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(_SQL_COUNT_SEGNALAZIONE);
+				Query query = session.createQuery(_SQL_COUNT_SEGNALAZIONE);
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
 				finderCache.putResult(
 					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -1335,6 +1105,21 @@ public class SegnalazionePersistenceImpl
 	}
 
 	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
+	}
+
+	@Override
+	protected String getPKDBName() {
+		return "id_";
+	}
+
+	@Override
+	protected String getSelectSQL() {
+		return _SQL_SELECT_SEGNALAZIONE;
+	}
+
+	@Override
 	protected Map<String, Integer> getTableColumnsMap() {
 		return SegnalazioneModelImpl.TABLE_COLUMNS_MAP;
 	}
@@ -1342,68 +1127,85 @@ public class SegnalazionePersistenceImpl
 	/**
 	 * Initializes the segnalazione persistence.
 	 */
-	public void afterPropertiesSet() {
+	@Activate
+	public void activate() {
+		_valueObjectFinderCacheListThreshold = GetterUtil.getInteger(
+			PropsUtil.get(PropsKeys.VALUE_OBJECT_FINDER_CACHE_LIST_THRESHOLD));
+
 		_finderPathWithPaginationFindAll = new FinderPath(
-			SegnalazioneModelImpl.ENTITY_CACHE_ENABLED,
-			SegnalazioneModelImpl.FINDER_CACHE_ENABLED, SegnalazioneImpl.class,
-			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findAll", new String[0]);
+			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findAll", new String[0],
+			new String[0], true);
 
 		_finderPathWithoutPaginationFindAll = new FinderPath(
-			SegnalazioneModelImpl.ENTITY_CACHE_ENABLED,
-			SegnalazioneModelImpl.FINDER_CACHE_ENABLED, SegnalazioneImpl.class,
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findAll",
-			new String[0]);
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findAll", new String[0],
+			new String[0], true);
 
 		_finderPathCountAll = new FinderPath(
-			SegnalazioneModelImpl.ENTITY_CACHE_ENABLED,
-			SegnalazioneModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countAll",
-			new String[0]);
+			new String[0], new String[0], false);
 
 		_finderPathWithPaginationFindByDocumentoAssociato = new FinderPath(
-			SegnalazioneModelImpl.ENTITY_CACHE_ENABLED,
-			SegnalazioneModelImpl.FINDER_CACHE_ENABLED, SegnalazioneImpl.class,
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByDocumentoAssociato",
 			new String[] {
 				Long.class.getName(), Integer.class.getName(),
 				Integer.class.getName(), OrderByComparator.class.getName()
-			});
+			},
+			new String[] {"documentoAssociato"}, true);
 
 		_finderPathWithoutPaginationFindByDocumentoAssociato = new FinderPath(
-			SegnalazioneModelImpl.ENTITY_CACHE_ENABLED,
-			SegnalazioneModelImpl.FINDER_CACHE_ENABLED, SegnalazioneImpl.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
 			"findByDocumentoAssociato", new String[] {Long.class.getName()},
-			SegnalazioneModelImpl.DOCUMENTOASSOCIATO_COLUMN_BITMASK);
+			new String[] {"documentoAssociato"}, true);
 
 		_finderPathCountByDocumentoAssociato = new FinderPath(
-			SegnalazioneModelImpl.ENTITY_CACHE_ENABLED,
-			SegnalazioneModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
-			"countByDocumentoAssociato", new String[] {Long.class.getName()});
+			"countByDocumentoAssociato", new String[] {Long.class.getName()},
+			new String[] {"documentoAssociato"}, false);
+
+		SegnalazioneUtil.setPersistence(this);
 	}
 
-	public void destroy() {
+	@Deactivate
+	public void deactivate() {
+		SegnalazioneUtil.setPersistence(null);
+
 		entityCache.removeCache(SegnalazioneImpl.class.getName());
-		finderCache.removeCache(FINDER_CLASS_NAME_ENTITY);
-		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 	}
 
-	@ServiceReference(type = CompanyProviderWrapper.class)
-	protected CompanyProvider companyProvider;
+	@Override
+	@Reference(
+		target = CATASTOPersistenceConstants.SERVICE_CONFIGURATION_FILTER,
+		unbind = "-"
+	)
+	public void setConfiguration(Configuration configuration) {
+	}
 
-	@ServiceReference(type = EntityCache.class)
+	@Override
+	@Reference(
+		target = CATASTOPersistenceConstants.ORIGIN_BUNDLE_SYMBOLIC_NAME_FILTER,
+		unbind = "-"
+	)
+	public void setDataSource(DataSource dataSource) {
+		super.setDataSource(dataSource);
+	}
+
+	@Override
+	@Reference(
+		target = CATASTOPersistenceConstants.ORIGIN_BUNDLE_SYMBOLIC_NAME_FILTER,
+		unbind = "-"
+	)
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		super.setSessionFactory(sessionFactory);
+	}
+
+	@Reference
 	protected EntityCache entityCache;
 
-	@ServiceReference(type = FinderCache.class)
+	@Reference
 	protected FinderCache finderCache;
 
 	private static final String _SQL_SELECT_SEGNALAZIONE =
 		"SELECT segnalazione FROM Segnalazione segnalazione";
-
-	private static final String _SQL_SELECT_SEGNALAZIONE_WHERE_PKS_IN =
-		"SELECT segnalazione FROM Segnalazione segnalazione WHERE id_ IN (";
 
 	private static final String _SQL_SELECT_SEGNALAZIONE_WHERE =
 		"SELECT segnalazione FROM Segnalazione segnalazione WHERE ";
@@ -1427,5 +1229,10 @@ public class SegnalazionePersistenceImpl
 
 	private static final Set<String> _badColumnNames = SetUtil.fromArray(
 		new String[] {"id"});
+
+	@Override
+	protected FinderCache getFinderCache() {
+		return finderCache;
+	}
 
 }

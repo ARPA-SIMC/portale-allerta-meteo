@@ -28,11 +28,7 @@ import net.sf.jasperreports.engine.export.JRXlsExporterParameter;
 //import net.sf.jasperreports.engine.util.JRProperties;
 
 @Component(
-	    immediate = true,
-	    property = {
-	        "osgi.http.whiteboard.context.path=/",
-	        "osgi.http.whiteboard.servlet.pattern=/report/sms"
-	    },
+	    property = "osgi.http.whiteboard.servlet.pattern=/report/sms",
 	    service = Servlet.class
 	)
 public class SMSPDFReport extends HttpServlet {

@@ -1,31 +1,16 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerte.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -36,22 +21,12 @@ import java.util.Objects;
  * @see RubricaNominativo
  * @generated
  */
-@ProviderType
 public class RubricaNominativoWrapper
-	implements RubricaNominativo, ModelWrapper<RubricaNominativo> {
+	extends BaseModelWrapper<RubricaNominativo>
+	implements ModelWrapper<RubricaNominativo>, RubricaNominativo {
 
 	public RubricaNominativoWrapper(RubricaNominativo rubricaNominativo) {
-		_rubricaNominativo = rubricaNominativo;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return RubricaNominativo.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return RubricaNominativo.class.getName();
+		super(rubricaNominativo);
 	}
 
 	@Override
@@ -151,16 +126,8 @@ public class RubricaNominativoWrapper
 	}
 
 	@Override
-	public Object clone() {
-		return new RubricaNominativoWrapper(
-			(RubricaNominativo)_rubricaNominativo.clone());
-	}
-
-	@Override
-	public int compareTo(
-		it.eng.allerte.model.RubricaNominativo rubricaNominativo) {
-
-		return _rubricaNominativo.compareTo(rubricaNominativo);
+	public RubricaNominativo cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -170,7 +137,7 @@ public class RubricaNominativoWrapper
 	 */
 	@Override
 	public String getCOGNOME() {
-		return _rubricaNominativo.getCOGNOME();
+		return model.getCOGNOME();
 	}
 
 	/**
@@ -180,7 +147,7 @@ public class RubricaNominativoWrapper
 	 */
 	@Override
 	public Date getDATA_CREAZIONE() {
-		return _rubricaNominativo.getDATA_CREAZIONE();
+		return model.getDATA_CREAZIONE();
 	}
 
 	/**
@@ -190,7 +157,7 @@ public class RubricaNominativoWrapper
 	 */
 	@Override
 	public Date getDATA_MODIFICA() {
-		return _rubricaNominativo.getDATA_MODIFICA();
+		return model.getDATA_MODIFICA();
 	}
 
 	/**
@@ -200,12 +167,7 @@ public class RubricaNominativoWrapper
 	 */
 	@Override
 	public boolean getDISABLED() {
-		return _rubricaNominativo.getDISABLED();
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _rubricaNominativo.getExpandoBridge();
+		return model.getDISABLED();
 	}
 
 	/**
@@ -215,7 +177,7 @@ public class RubricaNominativoWrapper
 	 */
 	@Override
 	public long getFK_SITO_PROPRIETARIO() {
-		return _rubricaNominativo.getFK_SITO_PROPRIETARIO();
+		return model.getFK_SITO_PROPRIETARIO();
 	}
 
 	/**
@@ -225,7 +187,7 @@ public class RubricaNominativoWrapper
 	 */
 	@Override
 	public long getFK_UTENTE_CREAZIONE() {
-		return _rubricaNominativo.getFK_UTENTE_CREAZIONE();
+		return model.getFK_UTENTE_CREAZIONE();
 	}
 
 	/**
@@ -235,7 +197,7 @@ public class RubricaNominativoWrapper
 	 */
 	@Override
 	public long getFK_UTENTE_MODIFICA() {
-		return _rubricaNominativo.getFK_UTENTE_MODIFICA();
+		return model.getFK_UTENTE_MODIFICA();
 	}
 
 	/**
@@ -245,7 +207,7 @@ public class RubricaNominativoWrapper
 	 */
 	@Override
 	public long getFK_UTENTE_PORTALE() {
-		return _rubricaNominativo.getFK_UTENTE_PORTALE();
+		return model.getFK_UTENTE_PORTALE();
 	}
 
 	/**
@@ -255,7 +217,7 @@ public class RubricaNominativoWrapper
 	 */
 	@Override
 	public long getID_NOMINATIVO() {
-		return _rubricaNominativo.getID_NOMINATIVO();
+		return model.getID_NOMINATIVO();
 	}
 
 	/**
@@ -265,7 +227,7 @@ public class RubricaNominativoWrapper
 	 */
 	@Override
 	public String getINDIRIZZO() {
-		return _rubricaNominativo.getINDIRIZZO();
+		return model.getINDIRIZZO();
 	}
 
 	/**
@@ -275,7 +237,7 @@ public class RubricaNominativoWrapper
 	 */
 	@Override
 	public boolean getMODIFICA_MINORE() {
-		return _rubricaNominativo.getMODIFICA_MINORE();
+		return model.getMODIFICA_MINORE();
 	}
 
 	/**
@@ -285,7 +247,7 @@ public class RubricaNominativoWrapper
 	 */
 	@Override
 	public String getNOME() {
-		return _rubricaNominativo.getNOME();
+		return model.getNOME();
 	}
 
 	/**
@@ -295,22 +257,7 @@ public class RubricaNominativoWrapper
 	 */
 	@Override
 	public long getPrimaryKey() {
-		return _rubricaNominativo.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _rubricaNominativo.getPrimaryKeyObj();
-	}
-
-	@Override
-	public int hashCode() {
-		return _rubricaNominativo.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _rubricaNominativo.isCachedModel();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -320,12 +267,7 @@ public class RubricaNominativoWrapper
 	 */
 	@Override
 	public boolean isDISABLED() {
-		return _rubricaNominativo.isDISABLED();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _rubricaNominativo.isEscapedModel();
+		return model.isDISABLED();
 	}
 
 	/**
@@ -335,22 +277,12 @@ public class RubricaNominativoWrapper
 	 */
 	@Override
 	public boolean isMODIFICA_MINORE() {
-		return _rubricaNominativo.isMODIFICA_MINORE();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _rubricaNominativo.isNew();
+		return model.isMODIFICA_MINORE();
 	}
 
 	@Override
 	public void persist() {
-		_rubricaNominativo.persist();
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_rubricaNominativo.setCachedModel(cachedModel);
+		model.persist();
 	}
 
 	/**
@@ -360,7 +292,7 @@ public class RubricaNominativoWrapper
 	 */
 	@Override
 	public void setCOGNOME(String COGNOME) {
-		_rubricaNominativo.setCOGNOME(COGNOME);
+		model.setCOGNOME(COGNOME);
 	}
 
 	/**
@@ -370,7 +302,7 @@ public class RubricaNominativoWrapper
 	 */
 	@Override
 	public void setDATA_CREAZIONE(Date DATA_CREAZIONE) {
-		_rubricaNominativo.setDATA_CREAZIONE(DATA_CREAZIONE);
+		model.setDATA_CREAZIONE(DATA_CREAZIONE);
 	}
 
 	/**
@@ -380,7 +312,7 @@ public class RubricaNominativoWrapper
 	 */
 	@Override
 	public void setDATA_MODIFICA(Date DATA_MODIFICA) {
-		_rubricaNominativo.setDATA_MODIFICA(DATA_MODIFICA);
+		model.setDATA_MODIFICA(DATA_MODIFICA);
 	}
 
 	/**
@@ -390,24 +322,7 @@ public class RubricaNominativoWrapper
 	 */
 	@Override
 	public void setDISABLED(boolean DISABLED) {
-		_rubricaNominativo.setDISABLED(DISABLED);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_rubricaNominativo.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_rubricaNominativo.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_rubricaNominativo.setExpandoBridgeAttributes(serviceContext);
+		model.setDISABLED(DISABLED);
 	}
 
 	/**
@@ -417,7 +332,7 @@ public class RubricaNominativoWrapper
 	 */
 	@Override
 	public void setFK_SITO_PROPRIETARIO(long FK_SITO_PROPRIETARIO) {
-		_rubricaNominativo.setFK_SITO_PROPRIETARIO(FK_SITO_PROPRIETARIO);
+		model.setFK_SITO_PROPRIETARIO(FK_SITO_PROPRIETARIO);
 	}
 
 	/**
@@ -427,7 +342,7 @@ public class RubricaNominativoWrapper
 	 */
 	@Override
 	public void setFK_UTENTE_CREAZIONE(long FK_UTENTE_CREAZIONE) {
-		_rubricaNominativo.setFK_UTENTE_CREAZIONE(FK_UTENTE_CREAZIONE);
+		model.setFK_UTENTE_CREAZIONE(FK_UTENTE_CREAZIONE);
 	}
 
 	/**
@@ -437,7 +352,7 @@ public class RubricaNominativoWrapper
 	 */
 	@Override
 	public void setFK_UTENTE_MODIFICA(long FK_UTENTE_MODIFICA) {
-		_rubricaNominativo.setFK_UTENTE_MODIFICA(FK_UTENTE_MODIFICA);
+		model.setFK_UTENTE_MODIFICA(FK_UTENTE_MODIFICA);
 	}
 
 	/**
@@ -447,7 +362,7 @@ public class RubricaNominativoWrapper
 	 */
 	@Override
 	public void setFK_UTENTE_PORTALE(long FK_UTENTE_PORTALE) {
-		_rubricaNominativo.setFK_UTENTE_PORTALE(FK_UTENTE_PORTALE);
+		model.setFK_UTENTE_PORTALE(FK_UTENTE_PORTALE);
 	}
 
 	/**
@@ -457,7 +372,7 @@ public class RubricaNominativoWrapper
 	 */
 	@Override
 	public void setID_NOMINATIVO(long ID_NOMINATIVO) {
-		_rubricaNominativo.setID_NOMINATIVO(ID_NOMINATIVO);
+		model.setID_NOMINATIVO(ID_NOMINATIVO);
 	}
 
 	/**
@@ -467,7 +382,7 @@ public class RubricaNominativoWrapper
 	 */
 	@Override
 	public void setINDIRIZZO(String INDIRIZZO) {
-		_rubricaNominativo.setINDIRIZZO(INDIRIZZO);
+		model.setINDIRIZZO(INDIRIZZO);
 	}
 
 	/**
@@ -477,12 +392,7 @@ public class RubricaNominativoWrapper
 	 */
 	@Override
 	public void setMODIFICA_MINORE(boolean MODIFICA_MINORE) {
-		_rubricaNominativo.setMODIFICA_MINORE(MODIFICA_MINORE);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_rubricaNominativo.setNew(n);
+		model.setMODIFICA_MINORE(MODIFICA_MINORE);
 	}
 
 	/**
@@ -492,7 +402,7 @@ public class RubricaNominativoWrapper
 	 */
 	@Override
 	public void setNOME(String NOME) {
-		_rubricaNominativo.setNOME(NOME);
+		model.setNOME(NOME);
 	}
 
 	/**
@@ -502,86 +412,19 @@ public class RubricaNominativoWrapper
 	 */
 	@Override
 	public void setPrimaryKey(long primaryKey) {
-		_rubricaNominativo.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_rubricaNominativo.setPrimaryKeyObj(primaryKeyObj);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<it.eng.allerte.model.RubricaNominativo> toCacheModel() {
-
-		return _rubricaNominativo.toCacheModel();
-	}
-
-	@Override
-	public it.eng.allerte.model.RubricaNominativo toEscapedModel() {
-		return new RubricaNominativoWrapper(
-			_rubricaNominativo.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _rubricaNominativo.toString();
-	}
-
-	@Override
-	public it.eng.allerte.model.RubricaNominativo toUnescapedModel() {
-		return new RubricaNominativoWrapper(
-			_rubricaNominativo.toUnescapedModel());
+		model.setPrimaryKey(primaryKey);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _rubricaNominativo.toXmlString();
+		return model.toXmlString();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
+	protected RubricaNominativoWrapper wrap(
+		RubricaNominativo rubricaNominativo) {
 
-		if (!(obj instanceof RubricaNominativoWrapper)) {
-			return false;
-		}
-
-		RubricaNominativoWrapper rubricaNominativoWrapper =
-			(RubricaNominativoWrapper)obj;
-
-		if (Objects.equals(
-				_rubricaNominativo,
-				rubricaNominativoWrapper._rubricaNominativo)) {
-
-			return true;
-		}
-
-		return false;
+		return new RubricaNominativoWrapper(rubricaNominativo);
 	}
-
-	@Override
-	public RubricaNominativo getWrappedModel() {
-		return _rubricaNominativo;
-	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _rubricaNominativo.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _rubricaNominativo.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_rubricaNominativo.resetOriginalValues();
-	}
-
-	private final RubricaNominativo _rubricaNominativo;
 
 }

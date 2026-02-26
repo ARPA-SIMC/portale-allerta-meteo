@@ -1,30 +1,15 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.bollettino.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -35,22 +20,12 @@ import java.util.Objects;
  * @see RegolaAllarme
  * @generated
  */
-@ProviderType
 public class RegolaAllarmeWrapper
-	implements RegolaAllarme, ModelWrapper<RegolaAllarme> {
+	extends BaseModelWrapper<RegolaAllarme>
+	implements ModelWrapper<RegolaAllarme>, RegolaAllarme {
 
 	public RegolaAllarmeWrapper(RegolaAllarme regolaAllarme) {
-		_regolaAllarme = regolaAllarme;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return RegolaAllarme.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return RegolaAllarme.class.getName();
+		super(regolaAllarme);
 	}
 
 	@Override
@@ -114,13 +89,8 @@ public class RegolaAllarmeWrapper
 	}
 
 	@Override
-	public Object clone() {
-		return new RegolaAllarmeWrapper((RegolaAllarme)_regolaAllarme.clone());
-	}
-
-	@Override
-	public int compareTo(it.eng.bollettino.model.RegolaAllarme regolaAllarme) {
-		return _regolaAllarme.compareTo(regolaAllarme);
+	public RegolaAllarme cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -130,7 +100,7 @@ public class RegolaAllarmeWrapper
 	 */
 	@Override
 	public boolean getAttivo() {
-		return _regolaAllarme.getAttivo();
+		return model.getAttivo();
 	}
 
 	/**
@@ -140,7 +110,7 @@ public class RegolaAllarmeWrapper
 	 */
 	@Override
 	public int getColore() {
-		return _regolaAllarme.getColore();
+		return model.getColore();
 	}
 
 	/**
@@ -150,7 +120,7 @@ public class RegolaAllarmeWrapper
 	 */
 	@Override
 	public String getDescrizione() {
-		return _regolaAllarme.getDescrizione();
+		return model.getDescrizione();
 	}
 
 	/**
@@ -160,12 +130,7 @@ public class RegolaAllarmeWrapper
 	 */
 	@Override
 	public String getEspressione() {
-		return _regolaAllarme.getEspressione();
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _regolaAllarme.getExpandoBridge();
+		return model.getEspressione();
 	}
 
 	/**
@@ -175,7 +140,7 @@ public class RegolaAllarmeWrapper
 	 */
 	@Override
 	public long getId() {
-		return _regolaAllarme.getId();
+		return model.getId();
 	}
 
 	/**
@@ -185,7 +150,7 @@ public class RegolaAllarmeWrapper
 	 */
 	@Override
 	public String getNome() {
-		return _regolaAllarme.getNome();
+		return model.getNome();
 	}
 
 	/**
@@ -195,12 +160,7 @@ public class RegolaAllarmeWrapper
 	 */
 	@Override
 	public long getPrimaryKey() {
-		return _regolaAllarme.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _regolaAllarme.getPrimaryKeyObj();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -210,12 +170,7 @@ public class RegolaAllarmeWrapper
 	 */
 	@Override
 	public String getUuid() {
-		return _regolaAllarme.getUuid();
-	}
-
-	@Override
-	public int hashCode() {
-		return _regolaAllarme.hashCode();
+		return model.getUuid();
 	}
 
 	/**
@@ -225,27 +180,12 @@ public class RegolaAllarmeWrapper
 	 */
 	@Override
 	public boolean isAttivo() {
-		return _regolaAllarme.isAttivo();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _regolaAllarme.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _regolaAllarme.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _regolaAllarme.isNew();
+		return model.isAttivo();
 	}
 
 	@Override
 	public void persist() {
-		_regolaAllarme.persist();
+		model.persist();
 	}
 
 	/**
@@ -255,12 +195,7 @@ public class RegolaAllarmeWrapper
 	 */
 	@Override
 	public void setAttivo(boolean attivo) {
-		_regolaAllarme.setAttivo(attivo);
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_regolaAllarme.setCachedModel(cachedModel);
+		model.setAttivo(attivo);
 	}
 
 	/**
@@ -270,7 +205,7 @@ public class RegolaAllarmeWrapper
 	 */
 	@Override
 	public void setColore(int colore) {
-		_regolaAllarme.setColore(colore);
+		model.setColore(colore);
 	}
 
 	/**
@@ -280,7 +215,7 @@ public class RegolaAllarmeWrapper
 	 */
 	@Override
 	public void setDescrizione(String descrizione) {
-		_regolaAllarme.setDescrizione(descrizione);
+		model.setDescrizione(descrizione);
 	}
 
 	/**
@@ -290,24 +225,7 @@ public class RegolaAllarmeWrapper
 	 */
 	@Override
 	public void setEspressione(String espressione) {
-		_regolaAllarme.setEspressione(espressione);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_regolaAllarme.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_regolaAllarme.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_regolaAllarme.setExpandoBridgeAttributes(serviceContext);
+		model.setEspressione(espressione);
 	}
 
 	/**
@@ -317,12 +235,7 @@ public class RegolaAllarmeWrapper
 	 */
 	@Override
 	public void setId(long id) {
-		_regolaAllarme.setId(id);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_regolaAllarme.setNew(n);
+		model.setId(id);
 	}
 
 	/**
@@ -332,7 +245,7 @@ public class RegolaAllarmeWrapper
 	 */
 	@Override
 	public void setNome(String nome) {
-		_regolaAllarme.setNome(nome);
+		model.setNome(nome);
 	}
 
 	/**
@@ -342,12 +255,7 @@ public class RegolaAllarmeWrapper
 	 */
 	@Override
 	public void setPrimaryKey(long primaryKey) {
-		_regolaAllarme.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_regolaAllarme.setPrimaryKeyObj(primaryKeyObj);
+		model.setPrimaryKey(primaryKey);
 	}
 
 	/**
@@ -357,77 +265,17 @@ public class RegolaAllarmeWrapper
 	 */
 	@Override
 	public void setUuid(String uuid) {
-		_regolaAllarme.setUuid(uuid);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<it.eng.bollettino.model.RegolaAllarme> toCacheModel() {
-
-		return _regolaAllarme.toCacheModel();
-	}
-
-	@Override
-	public it.eng.bollettino.model.RegolaAllarme toEscapedModel() {
-		return new RegolaAllarmeWrapper(_regolaAllarme.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _regolaAllarme.toString();
-	}
-
-	@Override
-	public it.eng.bollettino.model.RegolaAllarme toUnescapedModel() {
-		return new RegolaAllarmeWrapper(_regolaAllarme.toUnescapedModel());
+		model.setUuid(uuid);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _regolaAllarme.toXmlString();
+		return model.toXmlString();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-
-		if (!(obj instanceof RegolaAllarmeWrapper)) {
-			return false;
-		}
-
-		RegolaAllarmeWrapper regolaAllarmeWrapper = (RegolaAllarmeWrapper)obj;
-
-		if (Objects.equals(
-				_regolaAllarme, regolaAllarmeWrapper._regolaAllarme)) {
-
-			return true;
-		}
-
-		return false;
+	protected RegolaAllarmeWrapper wrap(RegolaAllarme regolaAllarme) {
+		return new RegolaAllarmeWrapper(regolaAllarme);
 	}
-
-	@Override
-	public RegolaAllarme getWrappedModel() {
-		return _regolaAllarme;
-	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _regolaAllarme.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _regolaAllarme.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_regolaAllarme.resetOriginalValues();
-	}
-
-	private final RegolaAllarme _regolaAllarme;
 
 }

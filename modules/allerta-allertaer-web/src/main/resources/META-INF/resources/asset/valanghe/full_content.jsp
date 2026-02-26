@@ -1,3 +1,8 @@
+<%@page import="it.eng.allerter.service.LogInternoLocalServiceUtil"%>
+<%@page import="com.liferay.portal.kernel.workflow.WorkflowInstanceManagerUtil"%>
+<%@page import="com.liferay.portal.kernel.workflow.WorkflowInstance"%>
+<%@page import="com.liferay.portal.kernel.exception.NoSuchWorkflowInstanceLinkException"%>
+<%@page import="com.liferay.portal.kernel.model.WorkflowInstanceLink"%>
 <%@page import="it.eng.allerter.model.AllertaValanghe"%>
 <%@page import="com.liferay.portal.kernel.workflow.permission.WorkflowPermissionUtil"%>
 <%@page import="com.liferay.portal.kernel.workflow.WorkflowTaskManagerUtil"%>
@@ -34,7 +39,6 @@
 <%@page import="com.liferay.portal.kernel.servlet.SessionMessages"%>
 <%@page import="com.liferay.portal.kernel.portlet.LiferayWindowState"%>
 <%@page import="javax.portlet.ActionRequest"%>
-<%@page import="it.eng.allerter.model.Allerta"%>
 <%@taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet"%>
 <%@taglib uri="http://liferay.com/tld/theme" prefix="theme"%>
 <%@taglib uri="http://liferay.com/tld/portlet" prefix="liferay-portlet"%>
@@ -133,38 +137,6 @@
 
 		}
 
-		/*ap = AllertaParametroLocalServiceUtil.fetchAllertaParametro("ALLERTA_RUOLI_MODIFICA_LINK");
-
-		if (feedback.getStato() == WorkflowConstants.STATUS_DRAFT && ap != null && ap.getValore() != null
-				&& user != null) {
-
-			String[] ruoli = ap.getValore().split(",");
-
-			long roles[] = user.getRoleIds();
-
-			boolean trovato = false;
-
-			for (String s : ruoli)
-				for (long r : roles) {
-					if (r == Long.parseLong(s))
-						trovato = true;
-				}
-
-			if (trovato) {
-
-				AllertaParametro ap2 = AllertaParametroLocalServiceUtil
-						.fetchAllertaParametro("ALLERTA_MODIFICA_LINK");
-
-				if (ap2 != null && ap2.getValore() != null) {
-
-					modificaLink = ap2.getValore() + "?allerta=" + feedback.getAllertaId();
-					modificaLink = "<a href=\"" + modificaLink + "\">Modifica documento</a>";
-					modificaLink = "<div class=\"allerta-boll-documento__modifica\">" + modificaLink + "</div>";
-				}
-
-			}
-
-		}*/
 
 	} catch (Exception e) {
 		e.printStackTrace();
@@ -173,53 +145,65 @@
 	
 
 	long wflMonitoraggioPlid = PortalUtil.getPlidFromPortletId(feedback.getGroupId(), false, AllertaKeys.AllertaValangheCompilaSbPortlet);
-	long workflowTaskId = ParamUtil.getLong(request, "workflowTaskId");
-	long userNotificationEventId = ParamUtil.getLong(request, "userNotificationEventId");
-	
-	
-	if(feedback.getStato() == WorkflowConstants.STATUS_APPROVED || feedback.getStato() == WorkflowConstants.STATUS_DENIED) {
-		workflowTaskId = 0;
-		userNotificationEventId = 0;
-	}
-	
-	if( userNotificationEventId > 0) {
-		
-		DynamicQuery query = UserNotificationEventLocalServiceUtil.dynamicQuery();
-		query.add(PropertyFactoryUtil.forName("userNotificationEventId").eq(userNotificationEventId));
-		
-		List<UserNotificationEvent> unevt = UserNotificationEventLocalServiceUtil.dynamicQuery(query);
-		
-		if( unevt.size() > 0) {
-			
-			UserNotificationEvent evt = unevt.get(0);
-			
-			JSONObject payload = JSONFactoryUtil.createJSONObject(evt.getPayload());
-			workflowTaskId = payload.getLong("workflowTaskId");
-			
+	long workflowTaskId = 0;
+
+	try {
+		if (feedback.getStato()==1 || feedback.getStato()==1000) {
+			//in approvazione?
+			long allertaId = feedback.getAllertaValangheId();
 			boolean hasWfl = 
 					WorkflowInstanceLinkLocalServiceUtil.hasWorkflowInstanceLink(
-							themeDisplay.getCompanyId(), 
+							feedback.getCompanyId(), 
 							feedback.getGroupId(), 
 							AllertaValanghe.class.getName(), 
-							feedback.getAllertaValangheId());
-			
-			if( !hasWfl)
-				workflowTaskId = 0;
-			else {
-				 WorkflowTask task = WorkflowTaskManagerUtil.getWorkflowTask(themeDisplay.getCompanyId(), workflowTaskId);
-				 
-	             boolean taskPerm = WorkflowPermissionUtil.hasPermission(
-					                		themeDisplay.getPermissionChecker(), 
-					                		feedback.getGroupId(), 
-					                		AllertaValanghe.class.getName(), 
-					                		feedback.getAllertaValangheId(), 
-					                		task.getName());
-	             
-	             if( !taskPerm)
-	            	 workflowTaskId = 0;
+							allertaId);
+			if (hasWfl) {
+				WorkflowInstanceLink wil= null;
+				
+				try {
+					wil = WorkflowInstanceLinkLocalServiceUtil.getWorkflowInstanceLink(
+										feedback.getCompanyId(), 
+										feedback.getGroupId(), 
+										AllertaValanghe.class.getName(), 
+										allertaId);
+					
+				} catch( NoSuchWorkflowInstanceLinkException nse) {
+					
+				}
+				
+				if( wil != null) { 
+					WorkflowInstance workflowInstance = 
+	           			 WorkflowInstanceManagerUtil.getWorkflowInstance(themeDisplay.getCompanyId(), wil.getWorkflowInstanceId());
+					List<WorkflowTask> ls = WorkflowTaskManagerUtil.getWorkflowTasksByWorkflowInstance(themeDisplay.getCompanyId(), 0L, workflowInstance.getWorkflowInstanceId(), false, -1, -1, null);
+					if (ls!=null) {
+	       			 for (WorkflowTask wt : ls) { 
+	       				 if (!wt.isCompleted()) {
+	       					 
+	       					boolean taskPerm = WorkflowPermissionUtil.hasPermission(
+			                		themeDisplay.getPermissionChecker(), 
+			                		feedback.getGroupId(), 
+			                		AllertaValanghe.class.getName(), 
+			                		allertaId, 
+			                		wt.getName());
+	       					
+	       					if (!taskPerm) continue;
+	       					 
+	           				 LogInternoLocalServiceUtil.log("workflowValanghe", "test", "taskId->"+wt.getWorkflowTaskId(), null);
+	           				 workflowTaskId = wt.getWorkflowTaskId();
+	       					 break;
+	       				 }
+	       			 }
+	       		 }
+				}
 			}
 		}
+
+	} catch (Exception e) {
+		LogInternoLocalServiceUtil.log("bottettinoValangheJsp", "task", e, "");
 	}
+	
+
+	
 %>
 
 <style type="text/css">
@@ -290,10 +274,10 @@
 		<div class="row">
 	
 			<%if( workflowTaskId > 0) { %>
-			<div class="col-6 ">
+			<div class="col-6 " style="text-align: center;">
 				<a href="<%=approveUrl %>" class="btn btn-primary"> Approva </a>
 			</div>
-			<div class="col-6 ">
+			<div class="col-6 " style="text-align: center;">
 				<a href="<%=rejectUrl %>" class="btn btn-primary"> Rifiuta </a>
 			</div>
 			<%} %>
@@ -331,9 +315,28 @@
 						Hash del file (SHA-256):
 						<%=feedback.getHash()%></div>
 						
+					<c:if test="<%=feedback.getStato()!=0 %>">
+					<div class="row">
+						<div class="col-12" style="min-height:600px;">
+							
+							<object class="pdf-viewer" data-beforeload="pdf-viewer"
+								data="<%=pdfLink%>" type="application/pdf" style="width:100%;height:100%">
+								<p class="p-3">
+									Sembra che il tuo browser non riesca a visualizzare i PDF qui
+									dentro. <a data-beforeload="pdf-url" href="<%=previewPdfLink%>"
+										class="btn btn-sm btn-default"> <span
+										class="icon i-download" aria-hidden="true"></span>>Scarica il
+										PDF sul tuo dispositivo
+									</a>
+								</p>
+							</object>
+						</div>
+					</div>
+					</c:if>
+					<c:if test="<%=feedback.getStato()==0 %>">
 					<div class="page--single-doc__cta">
 						<a href="<%=pdfLink%>" class="btn btn-lg btn-primary"
-							data-toggle="pdf-viewer"> <span class="icon i-file-pdf-o"
+							data-toggle="liferay-modal"> <span class="icon i-file-pdf-o"
 							aria-hidden="true"></span> <%=vedi%>
 						</a>
 					</div>
@@ -381,6 +384,7 @@
 							</div>
 						</div>
 					</div>
+					</c:if>
 					
 				</div>
 			</div>

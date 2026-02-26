@@ -1,14 +1,9 @@
 dependencies {
-	compileOnly group: "com.liferay.portal", name: "com.liferay.portal.kernel"
-	compileOnly group: "com.liferay.portal", name: "com.liferay.util.taglib"
-	compileOnly group: "javax.portlet", name: "portlet-api"
-	compileOnly group: "javax.servlet", name: "javax.servlet-api"
-	compileOnly group: "jstl", name: "jstl"
-	compileOnly group: "org.osgi", name: "org.osgi.service.component.annotations"
-	
-	compileOnly group: "biz.aQute.bnd", name: "biz.aQute.bndlib", version: "3.1.0"
+	compileOnly group: "com.liferay.portal", name: "release.dxp.api"
 
-	compileOnly project(":modules:allerta-base")
+	cssBuilder group: "com.liferay", name: "com.liferay.css.builder", version: "3.1.4"
+
+	compileOnly project(":modules:allerta-base") 
 	compileOnly project(":modules:allerta-legacy")
 	compileOnly project(":modules:allerta-allertaer:allerta-allertaer-api")
 	compileOnly project(":modules:allerta-allertaer:allerta-allertaer-service")
@@ -22,7 +17,8 @@ dependencies {
 	compileOnly 'com.liferay:com.liferay.journal.api'
 	compileOnly 'com.liferay:com.liferay.journal.service'
 	compileOnly 'com.liferay:com.liferay.dynamic.data.mapping.api'	
+	compileOnly group: "com.liferay.portal", name: "com.liferay.util.taglib"
+	compileOnly group: "javax.portlet", name: "portlet-api"
+	compileOnly group: "jstl", name: "jstl"
 
-	
-	
 }

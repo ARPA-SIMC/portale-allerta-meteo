@@ -1,24 +1,22 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerter.service;
 
-import aQute.bnd.annotation.ProviderType;
+import com.liferay.petra.sql.dsl.query.DSLQuery;
+import com.liferay.portal.kernel.dao.orm.DynamicQuery;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.model.PersistedModel;
+import com.liferay.portal.kernel.module.service.Snapshot;
+import com.liferay.portal.kernel.util.OrderByComparator;
 
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.util.tracker.ServiceTracker;
+import it.eng.allerter.model.Allerta;
+
+import java.io.Serializable;
+
+import java.util.List;
 
 /**
  * Provides the local service utility for Allerta. This utility wraps
@@ -32,7 +30,6 @@ import org.osgi.util.tracker.ServiceTracker;
  * @see AllertaLocalService
  * @generated
  */
-@ProviderType
 public class AllertaLocalServiceUtil {
 
 	/*
@@ -44,12 +41,14 @@ public class AllertaLocalServiceUtil {
 	/**
 	 * Adds the allerta to the database. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect AllertaLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param allerta the allerta
 	 * @return the allerta that was added
 	 */
-	public static it.eng.allerter.model.Allerta addAllerta(
-		it.eng.allerter.model.Allerta allerta) {
-
+	public static Allerta addAllerta(Allerta allerta) {
 		return getService().addAllerta(allerta);
 	}
 
@@ -59,49 +58,68 @@ public class AllertaLocalServiceUtil {
 	 * @param allertaId the primary key for the new allerta
 	 * @return the new allerta
 	 */
-	public static it.eng.allerter.model.Allerta createAllerta(long allertaId) {
+	public static Allerta createAllerta(long allertaId) {
 		return getService().createAllerta(allertaId);
+	}
+
+	/**
+	 * @throws PortalException
+	 */
+	public static PersistedModel createPersistedModel(
+			Serializable primaryKeyObj)
+		throws PortalException {
+
+		return getService().createPersistedModel(primaryKeyObj);
 	}
 
 	/**
 	 * Deletes the allerta from the database. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect AllertaLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param allerta the allerta
 	 * @return the allerta that was removed
 	 */
-	public static it.eng.allerter.model.Allerta deleteAllerta(
-		it.eng.allerter.model.Allerta allerta) {
-
+	public static Allerta deleteAllerta(Allerta allerta) {
 		return getService().deleteAllerta(allerta);
 	}
 
 	/**
 	 * Deletes the allerta with the primary key from the database. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect AllertaLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param allertaId the primary key of the allerta
 	 * @return the allerta that was removed
 	 * @throws PortalException if a allerta with the primary key could not be found
 	 */
-	public static it.eng.allerter.model.Allerta deleteAllerta(long allertaId)
-		throws com.liferay.portal.kernel.exception.PortalException {
-
+	public static Allerta deleteAllerta(long allertaId) throws PortalException {
 		return getService().deleteAllerta(allertaId);
 	}
 
 	/**
 	 * @throws PortalException
 	 */
-	public static com.liferay.portal.kernel.model.PersistedModel
-			deletePersistedModel(
-				com.liferay.portal.kernel.model.PersistedModel persistedModel)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	public static PersistedModel deletePersistedModel(
+			PersistedModel persistedModel)
+		throws PortalException {
 
 		return getService().deletePersistedModel(persistedModel);
 	}
 
-	public static com.liferay.portal.kernel.dao.orm.DynamicQuery
-		dynamicQuery() {
+	public static <T> T dslQuery(DSLQuery dslQuery) {
+		return getService().dslQuery(dslQuery);
+	}
 
+	public static int dslQueryCount(DSLQuery dslQuery) {
+		return getService().dslQueryCount(dslQuery);
+	}
+
+	public static DynamicQuery dynamicQuery() {
 		return getService().dynamicQuery();
 	}
 
@@ -111,9 +129,7 @@ public class AllertaLocalServiceUtil {
 	 * @param dynamicQuery the dynamic query
 	 * @return the matching rows
 	 */
-	public static <T> java.util.List<T> dynamicQuery(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery) {
-
+	public static <T> List<T> dynamicQuery(DynamicQuery dynamicQuery) {
 		return getService().dynamicQuery(dynamicQuery);
 	}
 
@@ -121,7 +137,7 @@ public class AllertaLocalServiceUtil {
 	 * Performs a dynamic query on the database and returns a range of the matching rows.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>it.eng.allerter.model.impl.AllertaModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>it.eng.allerter.model.impl.AllertaModelImpl</code>.
 	 * </p>
 	 *
 	 * @param dynamicQuery the dynamic query
@@ -129,9 +145,8 @@ public class AllertaLocalServiceUtil {
 	 * @param end the upper bound of the range of model instances (not inclusive)
 	 * @return the range of matching rows
 	 */
-	public static <T> java.util.List<T> dynamicQuery(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery, int start,
-		int end) {
+	public static <T> List<T> dynamicQuery(
+		DynamicQuery dynamicQuery, int start, int end) {
 
 		return getService().dynamicQuery(dynamicQuery, start, end);
 	}
@@ -140,7 +155,7 @@ public class AllertaLocalServiceUtil {
 	 * Performs a dynamic query on the database and returns an ordered range of the matching rows.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>it.eng.allerter.model.impl.AllertaModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>it.eng.allerter.model.impl.AllertaModelImpl</code>.
 	 * </p>
 	 *
 	 * @param dynamicQuery the dynamic query
@@ -149,10 +164,9 @@ public class AllertaLocalServiceUtil {
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching rows
 	 */
-	public static <T> java.util.List<T> dynamicQuery(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery, int start,
-		int end,
-		com.liferay.portal.kernel.util.OrderByComparator<T> orderByComparator) {
+	public static <T> List<T> dynamicQuery(
+		DynamicQuery dynamicQuery, int start, int end,
+		OrderByComparator<T> orderByComparator) {
 
 		return getService().dynamicQuery(
 			dynamicQuery, start, end, orderByComparator);
@@ -164,9 +178,7 @@ public class AllertaLocalServiceUtil {
 	 * @param dynamicQuery the dynamic query
 	 * @return the number of rows matching the dynamic query
 	 */
-	public static long dynamicQueryCount(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery) {
-
+	public static long dynamicQueryCount(DynamicQuery dynamicQuery) {
 		return getService().dynamicQueryCount(dynamicQuery);
 	}
 
@@ -178,13 +190,13 @@ public class AllertaLocalServiceUtil {
 	 * @return the number of rows matching the dynamic query
 	 */
 	public static long dynamicQueryCount(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery,
+		DynamicQuery dynamicQuery,
 		com.liferay.portal.kernel.dao.orm.Projection projection) {
 
 		return getService().dynamicQueryCount(dynamicQuery, projection);
 	}
 
-	public static it.eng.allerter.model.Allerta fetchAllerta(long allertaId) {
+	public static Allerta fetchAllerta(long allertaId) {
 		return getService().fetchAllerta(allertaId);
 	}
 
@@ -195,7 +207,7 @@ public class AllertaLocalServiceUtil {
 	 * @param groupId the primary key of the group
 	 * @return the matching allerta, or <code>null</code> if a matching allerta could not be found
 	 */
-	public static it.eng.allerter.model.Allerta fetchAllertaByUuidAndGroupId(
+	public static Allerta fetchAllertaByUuidAndGroupId(
 		String uuid, long groupId) {
 
 		return getService().fetchAllertaByUuidAndGroupId(uuid, groupId);
@@ -230,9 +242,7 @@ public class AllertaLocalServiceUtil {
 	 * @return the allerta
 	 * @throws PortalException if a allerta with the primary key could not be found
 	 */
-	public static it.eng.allerter.model.Allerta getAllerta(long allertaId)
-		throws com.liferay.portal.kernel.exception.PortalException {
-
+	public static Allerta getAllerta(long allertaId) throws PortalException {
 		return getService().getAllerta(allertaId);
 	}
 
@@ -244,9 +254,8 @@ public class AllertaLocalServiceUtil {
 	 * @return the matching allerta
 	 * @throws PortalException if a matching allerta could not be found
 	 */
-	public static it.eng.allerter.model.Allerta getAllertaByUuidAndGroupId(
-			String uuid, long groupId)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	public static Allerta getAllertaByUuidAndGroupId(String uuid, long groupId)
+		throws PortalException {
 
 		return getService().getAllertaByUuidAndGroupId(uuid, groupId);
 	}
@@ -255,16 +264,14 @@ public class AllertaLocalServiceUtil {
 	 * Returns a range of all the allertas.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>it.eng.allerter.model.impl.AllertaModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>it.eng.allerter.model.impl.AllertaModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of allertas
 	 * @param end the upper bound of the range of allertas (not inclusive)
 	 * @return the range of allertas
 	 */
-	public static java.util.List<it.eng.allerter.model.Allerta> getAllertas(
-		int start, int end) {
-
+	public static List<Allerta> getAllertas(int start, int end) {
 		return getService().getAllertas(start, end);
 	}
 
@@ -275,8 +282,8 @@ public class AllertaLocalServiceUtil {
 	 * @param companyId the primary key of the company
 	 * @return the matching allertas, or an empty list if no matches were found
 	 */
-	public static java.util.List<it.eng.allerter.model.Allerta>
-		getAllertasByUuidAndCompanyId(String uuid, long companyId) {
+	public static List<Allerta> getAllertasByUuidAndCompanyId(
+		String uuid, long companyId) {
 
 		return getService().getAllertasByUuidAndCompanyId(uuid, companyId);
 	}
@@ -291,11 +298,9 @@ public class AllertaLocalServiceUtil {
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the range of matching allertas, or an empty list if no matches were found
 	 */
-	public static java.util.List<it.eng.allerter.model.Allerta>
-		getAllertasByUuidAndCompanyId(
-			String uuid, long companyId, int start, int end,
-			com.liferay.portal.kernel.util.OrderByComparator
-				<it.eng.allerter.model.Allerta> orderByComparator) {
+	public static List<Allerta> getAllertasByUuidAndCompanyId(
+		String uuid, long companyId, int start, int end,
+		OrderByComparator<Allerta> orderByComparator) {
 
 		return getService().getAllertasByUuidAndCompanyId(
 			uuid, companyId, start, end, orderByComparator);
@@ -310,11 +315,8 @@ public class AllertaLocalServiceUtil {
 		return getService().getAllertasCount();
 	}
 
-	public static java.util.List<it.eng.allerter.model.Allerta>
-		getAllertasOrdered(
-			int start, int end,
-			com.liferay.portal.kernel.util.OrderByComparator
-				<it.eng.allerter.model.Allerta> comparator) {
+	public static List<Allerta> getAllertasOrdered(
+		int start, int end, OrderByComparator<Allerta> comparator) {
 
 		return getService().getAllertasOrdered(start, end, comparator);
 	}
@@ -352,9 +354,7 @@ public class AllertaLocalServiceUtil {
 		return getService().getIndexableActionableDynamicQuery();
 	}
 
-	public static java.util.List<it.eng.allerter.model.Allerta>
-		getListaAllerte() {
-
+	public static List<Allerta> getListaAllerte() {
 		return getService().getListaAllerte();
 	}
 
@@ -367,9 +367,11 @@ public class AllertaLocalServiceUtil {
 		return getService().getOSGiServiceIdentifier();
 	}
 
-	public static com.liferay.portal.kernel.model.PersistedModel
-			getPersistedModel(java.io.Serializable primaryKeyObj)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	/**
+	 * @throws PortalException
+	 */
+	public static PersistedModel getPersistedModel(Serializable primaryKeyObj)
+		throws PortalException {
 
 		return getService().getPersistedModel(primaryKeyObj);
 	}
@@ -380,7 +382,7 @@ public class AllertaLocalServiceUtil {
 
 	public static void spedisciNotifiche(
 		String tipo, String sottotipo, long l, String emailSubject,
-		String emailText, it.eng.allerter.model.Allerta a) {
+		String emailText, Allerta a) {
 
 		getService().spedisciNotifiche(
 			tipo, sottotipo, l, emailSubject, emailText, a);
@@ -389,33 +391,23 @@ public class AllertaLocalServiceUtil {
 	/**
 	 * Updates the allerta in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect AllertaLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param allerta the allerta
 	 * @return the allerta that was updated
 	 */
-	public static it.eng.allerter.model.Allerta updateAllerta(
-		it.eng.allerter.model.Allerta allerta) {
-
+	public static Allerta updateAllerta(Allerta allerta) {
 		return getService().updateAllerta(allerta);
 	}
 
 	public static AllertaLocalService getService() {
-		return _serviceTracker.getService();
+		return _serviceSnapshot.get();
 	}
 
-	private static ServiceTracker<AllertaLocalService, AllertaLocalService>
-		_serviceTracker;
-
-	static {
-		Bundle bundle = FrameworkUtil.getBundle(AllertaLocalService.class);
-
-		ServiceTracker<AllertaLocalService, AllertaLocalService>
-			serviceTracker =
-				new ServiceTracker<AllertaLocalService, AllertaLocalService>(
-					bundle.getBundleContext(), AllertaLocalService.class, null);
-
-		serviceTracker.open();
-
-		_serviceTracker = serviceTracker;
-	}
+	private static final Snapshot<AllertaLocalService> _serviceSnapshot =
+		new Snapshot<>(
+			AllertaLocalServiceUtil.class, AllertaLocalService.class);
 
 }

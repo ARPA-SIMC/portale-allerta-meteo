@@ -512,13 +512,16 @@ am.DataMap = (function ($) {
         
         this.wheelSwiper.removeAllSlides();
         var steps = 12*60/this.stepping;
-        var index=steps*2-1;
+        var index=steps-1;
         var x = 0;
         var offset = new Date().getTimezoneOffset() * MINUTES
-        for (var k=-steps; k<steps; k++) {
+        //for (var k=-steps; k<steps; k++) {
+        for (var k=-5; k<=steps && index>=0; k++) {
         	var lab = (-k*this.stepping)+"min";
         	if (k==0) x = index;
-            this.wheelSwiper.prependSlide(
+        	actualTs = moment(inputDateTime).subtract(k*this.stepping, 'minute').valueOf()
+        	
+            if (actualTs<Date.now()) this.wheelSwiper.prependSlide(
             		'<div class="swiper-slide"><a href="#" data-val="'+(offset+moment(inputDateTime).subtract(k*this.stepping, 'minute').valueOf())+'" data-slide="'+index+'">' + moment(inputDateTime).subtract(k*this.stepping, 'minute').format(RT_DATA_DATE_LABEL_FORMAT) + '</a></div>');
         	index--;
         }

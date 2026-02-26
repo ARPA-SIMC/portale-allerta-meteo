@@ -5,7 +5,6 @@
 <%@page import="allerta.catasto.bean.CatastoBean"%>
 <%@page import="java.util.Date"%>
 <%@page import="com.liferay.portal.kernel.util.ParamUtil"%>
-<%@page import="com.liferay.portal.kernel.util.StringPool"%>
 <%@page import="java.text.SimpleDateFormat"%>
 <%@page import="com.liferay.portal.kernel.util.PortalUtil"%>
 <%@page import="javax.portlet.PortletURL"%>
@@ -497,7 +496,7 @@ function rebuildEffettiSub() {
    		      if (window.location.href.lastIndexOf("catasto")!=-1) {
    		    	console.log("Mando heartbeat");
    		    	$.ajax({
-  			      url: '/o/api/heartbeat/'+new Date().getTime(),
+  			      url: '/o/heartbeat/'+new Date().getTime(),
   			      method: 'GET',
   			    }).then(function (resp) {
 			   

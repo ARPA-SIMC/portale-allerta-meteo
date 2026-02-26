@@ -112,7 +112,7 @@ public class WorkflowAllertaMVCActionCommand extends BaseMVCActionCommand {
 		            		 List<WorkflowTask> ls = WorkflowTaskManagerUtil.getWorkflowTasksByWorkflowInstance(themeDisplay.getCompanyId(), 0L, workflowInstance.getWorkflowInstanceId(), false, -1, -1, null);
 		            		 if (ls!=null) {
 		            			 for (WorkflowTask wt : ls) { 
-		            				 if (!wt.isCompleted() && wt.getName().equals(task.getName())) {
+		            				 if (!wt.isCompleted() && (wt.getName().equals(task.getName()) || wt.getName().equals("reviewstep2") )) {
 		            					 
 			            				 LogInternoLocalServiceUtil.log("workflow", "test", "taskId->"+taskId+"->"+wt.getWorkflowTaskId(), null);
 			            				 task = wt;

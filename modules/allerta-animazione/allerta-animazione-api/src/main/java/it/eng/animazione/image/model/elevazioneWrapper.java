@@ -1,30 +1,15 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.animazione.image.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -35,21 +20,12 @@ import java.util.Objects;
  * @see elevazione
  * @generated
  */
-@ProviderType
-public class elevazioneWrapper implements elevazione, ModelWrapper<elevazione> {
+public class elevazioneWrapper
+	extends BaseModelWrapper<elevazione>
+	implements elevazione, ModelWrapper<elevazione> {
 
 	public elevazioneWrapper(elevazione elevazione) {
-		_elevazione = elevazione;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return elevazione.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return elevazione.class.getName();
+		super(elevazione);
 	}
 
 	@Override
@@ -99,18 +75,8 @@ public class elevazioneWrapper implements elevazione, ModelWrapper<elevazione> {
 	}
 
 	@Override
-	public Object clone() {
-		return new elevazioneWrapper((elevazione)_elevazione.clone());
-	}
-
-	@Override
-	public int compareTo(it.eng.animazione.image.model.elevazione elevazione) {
-		return _elevazione.compareTo(elevazione);
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _elevazione.getExpandoBridge();
+	public elevazione cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -120,7 +86,7 @@ public class elevazioneWrapper implements elevazione, ModelWrapper<elevazione> {
 	 */
 	@Override
 	public long getId() {
-		return _elevazione.getId();
+		return model.getId();
 	}
 
 	/**
@@ -130,7 +96,7 @@ public class elevazioneWrapper implements elevazione, ModelWrapper<elevazione> {
 	 */
 	@Override
 	public String getIm() {
-		return _elevazione.getIm();
+		return model.getIm();
 	}
 
 	/**
@@ -140,7 +106,7 @@ public class elevazioneWrapper implements elevazione, ModelWrapper<elevazione> {
 	 */
 	@Override
 	public String getImgData() {
-		return _elevazione.getImgData();
+		return model.getImgData();
 	}
 
 	/**
@@ -150,12 +116,7 @@ public class elevazioneWrapper implements elevazione, ModelWrapper<elevazione> {
 	 */
 	@Override
 	public long getPrimaryKey() {
-		return _elevazione.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _elevazione.getPrimaryKeyObj();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -165,7 +126,7 @@ public class elevazioneWrapper implements elevazione, ModelWrapper<elevazione> {
 	 */
 	@Override
 	public String getText_LOC() {
-		return _elevazione.getText_LOC();
+		return model.getText_LOC();
 	}
 
 	/**
@@ -175,54 +136,12 @@ public class elevazioneWrapper implements elevazione, ModelWrapper<elevazione> {
 	 */
 	@Override
 	public long getTs_UTC() {
-		return _elevazione.getTs_UTC();
-	}
-
-	@Override
-	public int hashCode() {
-		return _elevazione.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _elevazione.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _elevazione.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _elevazione.isNew();
+		return model.getTs_UTC();
 	}
 
 	@Override
 	public void persist() {
-		_elevazione.persist();
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_elevazione.setCachedModel(cachedModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_elevazione.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_elevazione.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_elevazione.setExpandoBridgeAttributes(serviceContext);
+		model.persist();
 	}
 
 	/**
@@ -232,7 +151,7 @@ public class elevazioneWrapper implements elevazione, ModelWrapper<elevazione> {
 	 */
 	@Override
 	public void setId(long id) {
-		_elevazione.setId(id);
+		model.setId(id);
 	}
 
 	/**
@@ -242,7 +161,7 @@ public class elevazioneWrapper implements elevazione, ModelWrapper<elevazione> {
 	 */
 	@Override
 	public void setIm(String im) {
-		_elevazione.setIm(im);
+		model.setIm(im);
 	}
 
 	/**
@@ -252,12 +171,7 @@ public class elevazioneWrapper implements elevazione, ModelWrapper<elevazione> {
 	 */
 	@Override
 	public void setImgData(String imgData) {
-		_elevazione.setImgData(imgData);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_elevazione.setNew(n);
+		model.setImgData(imgData);
 	}
 
 	/**
@@ -267,12 +181,7 @@ public class elevazioneWrapper implements elevazione, ModelWrapper<elevazione> {
 	 */
 	@Override
 	public void setPrimaryKey(long primaryKey) {
-		_elevazione.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_elevazione.setPrimaryKeyObj(primaryKeyObj);
+		model.setPrimaryKey(primaryKey);
 	}
 
 	/**
@@ -282,7 +191,7 @@ public class elevazioneWrapper implements elevazione, ModelWrapper<elevazione> {
 	 */
 	@Override
 	public void setText_LOC(String text_LOC) {
-		_elevazione.setText_LOC(text_LOC);
+		model.setText_LOC(text_LOC);
 	}
 
 	/**
@@ -292,75 +201,17 @@ public class elevazioneWrapper implements elevazione, ModelWrapper<elevazione> {
 	 */
 	@Override
 	public void setTs_UTC(long ts_UTC) {
-		_elevazione.setTs_UTC(ts_UTC);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<it.eng.animazione.image.model.elevazione> toCacheModel() {
-
-		return _elevazione.toCacheModel();
-	}
-
-	@Override
-	public it.eng.animazione.image.model.elevazione toEscapedModel() {
-		return new elevazioneWrapper(_elevazione.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _elevazione.toString();
-	}
-
-	@Override
-	public it.eng.animazione.image.model.elevazione toUnescapedModel() {
-		return new elevazioneWrapper(_elevazione.toUnescapedModel());
+		model.setTs_UTC(ts_UTC);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _elevazione.toXmlString();
+		return model.toXmlString();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-
-		if (!(obj instanceof elevazioneWrapper)) {
-			return false;
-		}
-
-		elevazioneWrapper elevazioneWrapper = (elevazioneWrapper)obj;
-
-		if (Objects.equals(_elevazione, elevazioneWrapper._elevazione)) {
-			return true;
-		}
-
-		return false;
+	protected elevazioneWrapper wrap(elevazione elevazione) {
+		return new elevazioneWrapper(elevazione);
 	}
-
-	@Override
-	public elevazione getWrappedModel() {
-		return _elevazione;
-	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _elevazione.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _elevazione.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_elevazione.resetOriginalValues();
-	}
-
-	private final elevazione _elevazione;
 
 }

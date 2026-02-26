@@ -1,50 +1,54 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.cache.service.persistence.impl;
 
-import aQute.bnd.annotation.ProviderType;
-
+import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
 import com.liferay.portal.kernel.dao.orm.Query;
-import com.liferay.portal.kernel.dao.orm.QueryPos;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
+import com.liferay.portal.kernel.dao.orm.SessionFactory;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
-import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.spring.extender.service.ServiceReference;
+import com.liferay.portal.kernel.util.PropsKeys;
+import com.liferay.portal.kernel.util.PropsUtil;
+import com.liferay.portal.kernel.util.ProxyUtil;
 
 import it.eng.cache.exception.NoSuchDatiException;
 import it.eng.cache.model.Dati;
+import it.eng.cache.model.DatiTable;
 import it.eng.cache.model.impl.DatiImpl;
 import it.eng.cache.model.impl.DatiModelImpl;
 import it.eng.cache.service.persistence.DatiPersistence;
+import it.eng.cache.service.persistence.DatiUtil;
+import it.eng.cache.service.persistence.impl.constants.CACHEPersistenceConstants;
 
 import java.io.Serializable;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.lang.reflect.InvocationHandler;
+
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.sql.DataSource;
+
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The persistence implementation for the dati service.
@@ -56,7 +60,7 @@ import java.util.Set;
  * @author GFAVINI
  * @generated
  */
-@ProviderType
+@Component(service = DatiPersistence.class)
 public class DatiPersistenceImpl
 	extends BasePersistenceImpl<Dati> implements DatiPersistence {
 
@@ -80,6 +84,11 @@ public class DatiPersistenceImpl
 
 	public DatiPersistenceImpl() {
 		setModelClass(Dati.class);
+
+		setModelImplClass(DatiImpl.class);
+		setModelPKClass(String.class);
+
+		setTable(DatiTable.INSTANCE);
 	}
 
 	/**
@@ -89,12 +98,10 @@ public class DatiPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(Dati dati) {
-		entityCache.putResult(
-			DatiModelImpl.ENTITY_CACHE_ENABLED, DatiImpl.class,
-			dati.getPrimaryKey(), dati);
-
-		dati.resetOriginalValues();
+		dummyEntityCache.putResult(DatiImpl.class, dati.getPrimaryKey(), dati);
 	}
+
+	private int _valueObjectFinderCacheListThreshold;
 
 	/**
 	 * Caches the datis in the entity cache if it is enabled.
@@ -103,15 +110,18 @@ public class DatiPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(List<Dati> datis) {
+		if ((_valueObjectFinderCacheListThreshold == 0) ||
+			((_valueObjectFinderCacheListThreshold > 0) &&
+			 (datis.size() > _valueObjectFinderCacheListThreshold))) {
+
+			return;
+		}
+
 		for (Dati dati : datis) {
-			if (entityCache.getResult(
-					DatiModelImpl.ENTITY_CACHE_ENABLED, DatiImpl.class,
-					dati.getPrimaryKey()) == null) {
+			if (dummyEntityCache.getResult(
+					DatiImpl.class, dati.getPrimaryKey()) == null) {
 
 				cacheResult(dati);
-			}
-			else {
-				dati.resetOriginalValues();
 			}
 		}
 	}
@@ -125,11 +135,9 @@ public class DatiPersistenceImpl
 	 */
 	@Override
 	public void clearCache() {
-		entityCache.clearCache(DatiImpl.class);
+		dummyEntityCache.clearCache(DatiImpl.class);
 
-		finderCache.clearCache(FINDER_CLASS_NAME_ENTITY);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		dummyFinderCache.clearCache(DatiImpl.class);
 	}
 
 	/**
@@ -141,23 +149,22 @@ public class DatiPersistenceImpl
 	 */
 	@Override
 	public void clearCache(Dati dati) {
-		entityCache.removeResult(
-			DatiModelImpl.ENTITY_CACHE_ENABLED, DatiImpl.class,
-			dati.getPrimaryKey());
-
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		dummyEntityCache.removeResult(DatiImpl.class, dati);
 	}
 
 	@Override
 	public void clearCache(List<Dati> datis) {
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
-
 		for (Dati dati : datis) {
-			entityCache.removeResult(
-				DatiModelImpl.ENTITY_CACHE_ENABLED, DatiImpl.class,
-				dati.getPrimaryKey());
+			dummyEntityCache.removeResult(DatiImpl.class, dati);
+		}
+	}
+
+	@Override
+	public void clearCache(Set<Serializable> primaryKeys) {
+		dummyFinderCache.clearCache(DatiImpl.class);
+
+		for (Serializable primaryKey : primaryKeys) {
+			dummyEntityCache.removeResult(DatiImpl.class, primaryKey);
 		}
 	}
 
@@ -216,11 +223,11 @@ public class DatiPersistenceImpl
 
 			return remove(dati);
 		}
-		catch (NoSuchDatiException nsee) {
-			throw nsee;
+		catch (NoSuchDatiException noSuchEntityException) {
+			throw noSuchEntityException;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -243,8 +250,8 @@ public class DatiPersistenceImpl
 				session.delete(dati);
 			}
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -261,38 +268,62 @@ public class DatiPersistenceImpl
 	public Dati updateImpl(Dati dati) {
 		boolean isNew = dati.isNew();
 
+		if (!(dati instanceof DatiModelImpl)) {
+			InvocationHandler invocationHandler = null;
+
+			if (ProxyUtil.isProxyClass(dati.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(dati);
+
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in dati proxy " +
+						invocationHandler.getClass());
+			}
+
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom Dati implementation " +
+					dati.getClass());
+		}
+
+		DatiModelImpl datiModelImpl = (DatiModelImpl)dati;
+
+		if (isNew && (dati.getCreateDate() == null)) {
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			Date date = new Date();
+
+			if (serviceContext == null) {
+				dati.setCreateDate(date);
+			}
+			else {
+				dati.setCreateDate(serviceContext.getCreateDate(date));
+			}
+		}
+
 		Session session = null;
 
 		try {
 			session = openSession();
 
-			if (dati.isNew()) {
+			if (isNew) {
 				session.save(dati);
-
-				dati.setNew(false);
 			}
 			else {
 				dati = (Dati)session.merge(dati);
 			}
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
 		}
 
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		dummyEntityCache.putResult(DatiImpl.class, dati, false, true);
 
 		if (isNew) {
-			finderCache.removeResult(_finderPathCountAll, FINDER_ARGS_EMPTY);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindAll, FINDER_ARGS_EMPTY);
+			dati.setNew(false);
 		}
-
-		entityCache.putResult(
-			DatiModelImpl.ENTITY_CACHE_ENABLED, DatiImpl.class,
-			dati.getPrimaryKey(), dati, false);
 
 		dati.resetOriginalValues();
 
@@ -339,163 +370,12 @@ public class DatiPersistenceImpl
 	/**
 	 * Returns the dati with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the dati
-	 * @return the dati, or <code>null</code> if a dati with the primary key could not be found
-	 */
-	@Override
-	public Dati fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(
-			DatiModelImpl.ENTITY_CACHE_ENABLED, DatiImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		Dati dati = (Dati)serializable;
-
-		if (dati == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				dati = (Dati)session.get(DatiImpl.class, primaryKey);
-
-				if (dati != null) {
-					cacheResult(dati);
-				}
-				else {
-					entityCache.putResult(
-						DatiModelImpl.ENTITY_CACHE_ENABLED, DatiImpl.class,
-						primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(
-					DatiModelImpl.ENTITY_CACHE_ENABLED, DatiImpl.class,
-					primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return dati;
-	}
-
-	/**
-	 * Returns the dati with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param idDati the primary key of the dati
 	 * @return the dati, or <code>null</code> if a dati with the primary key could not be found
 	 */
 	@Override
 	public Dati fetchByPrimaryKey(String idDati) {
 		return fetchByPrimaryKey((Serializable)idDati);
-	}
-
-	@Override
-	public Map<Serializable, Dati> fetchByPrimaryKeys(
-		Set<Serializable> primaryKeys) {
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, Dati> map = new HashMap<Serializable, Dati>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			Dati dati = fetchByPrimaryKey(primaryKey);
-
-			if (dati != null) {
-				map.put(primaryKey, dati);
-			}
-
-			return map;
-		}
-
-		Set<Serializable> uncachedPrimaryKeys = null;
-
-		for (Serializable primaryKey : primaryKeys) {
-			Serializable serializable = entityCache.getResult(
-				DatiModelImpl.ENTITY_CACHE_ENABLED, DatiImpl.class, primaryKey);
-
-			if (serializable != nullModel) {
-				if (serializable == null) {
-					if (uncachedPrimaryKeys == null) {
-						uncachedPrimaryKeys = new HashSet<Serializable>();
-					}
-
-					uncachedPrimaryKeys.add(primaryKey);
-				}
-				else {
-					map.put(primaryKey, (Dati)serializable);
-				}
-			}
-		}
-
-		if (uncachedPrimaryKeys == null) {
-			return map;
-		}
-
-		StringBundler query = new StringBundler(
-			uncachedPrimaryKeys.size() * 2 + 1);
-
-		query.append(_SQL_SELECT_DATI_WHERE_PKS_IN);
-
-		for (int i = 0; i < uncachedPrimaryKeys.size(); i++) {
-			query.append("?");
-
-			query.append(",");
-		}
-
-		query.setIndex(query.index() - 1);
-
-		query.append(")");
-
-		String sql = query.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query q = session.createQuery(sql);
-
-			QueryPos qPos = QueryPos.getInstance(q);
-
-			for (Serializable primaryKey : uncachedPrimaryKeys) {
-				qPos.add((String)primaryKey);
-			}
-
-			for (Dati dati : (List<Dati>)q.list()) {
-				map.put(dati.getPrimaryKeyObj(), dati);
-
-				cacheResult(dati);
-
-				uncachedPrimaryKeys.remove(dati.getPrimaryKeyObj());
-			}
-
-			for (Serializable primaryKey : uncachedPrimaryKeys) {
-				entityCache.putResult(
-					DatiModelImpl.ENTITY_CACHE_ENABLED, DatiImpl.class,
-					primaryKey, nullModel);
-			}
-		}
-		catch (Exception e) {
-			throw processException(e);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**
@@ -512,7 +392,7 @@ public class DatiPersistenceImpl
 	 * Returns a range of all the datis.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>DatiModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>DatiModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of datis
@@ -528,7 +408,7 @@ public class DatiPersistenceImpl
 	 * Returns an ordered range of all the datis.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>DatiModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>DatiModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of datis
@@ -547,64 +427,62 @@ public class DatiPersistenceImpl
 	 * Returns an ordered range of all the datis.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>DatiModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>DatiModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of datis
 	 * @param end the upper bound of the range of datis (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of datis
 	 */
 	@Override
 	public List<Dati> findAll(
 		int start, int end, OrderByComparator<Dati> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindAll;
-			finderArgs = FINDER_ARGS_EMPTY;
+			if (useFinderCache) {
+				finderPath = _finderPathWithoutPaginationFindAll;
+				finderArgs = FINDER_ARGS_EMPTY;
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
 			finderArgs = new Object[] {start, end, orderByComparator};
 		}
 
 		List<Dati> list = null;
 
-		if (retrieveFromCache) {
-			list = (List<Dati>)finderCache.getResult(
+		if (useFinderCache) {
+			list = (List<Dati>)dummyFinderCache.getResult(
 				finderPath, finderArgs, this);
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 			String sql = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					2 + (orderByComparator.getOrderByFields().length * 2));
 
-				query.append(_SQL_SELECT_DATI);
+				sb.append(_SQL_SELECT_DATI);
 
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 
-				sql = query.toString();
+				sql = sb.toString();
 			}
 			else {
 				sql = _SQL_SELECT_DATI;
 
-				if (pagination) {
-					sql = sql.concat(DatiModelImpl.ORDER_BY_JPQL);
-				}
+				sql = sql.concat(DatiModelImpl.ORDER_BY_JPQL);
 			}
 
 			Session session = null;
@@ -612,29 +490,19 @@ public class DatiPersistenceImpl
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				if (!pagination) {
-					list = (List<Dati>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<Dati>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<Dati>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					dummyFinderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -662,7 +530,7 @@ public class DatiPersistenceImpl
 	 */
 	@Override
 	public int countAll() {
-		Long count = (Long)finderCache.getResult(
+		Long count = (Long)dummyFinderCache.getResult(
 			_finderPathCountAll, FINDER_ARGS_EMPTY, this);
 
 		if (count == null) {
@@ -671,18 +539,15 @@ public class DatiPersistenceImpl
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(_SQL_COUNT_DATI);
+				Query query = session.createQuery(_SQL_COUNT_DATI);
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
-				finderCache.putResult(
+				dummyFinderCache.putResult(
 					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -693,6 +558,21 @@ public class DatiPersistenceImpl
 	}
 
 	@Override
+	protected EntityCache getEntityCache() {
+		return dummyEntityCache;
+	}
+
+	@Override
+	protected String getPKDBName() {
+		return "idDati";
+	}
+
+	@Override
+	protected String getSelectSQL() {
+		return _SQL_SELECT_DATI;
+	}
+
+	@Override
 	protected Map<String, Integer> getTableColumnsMap() {
 		return DatiModelImpl.TABLE_COLUMNS_MAP;
 	}
@@ -700,42 +580,60 @@ public class DatiPersistenceImpl
 	/**
 	 * Initializes the dati persistence.
 	 */
-	public void afterPropertiesSet() {
+	@Activate
+	public void activate() {
+		_valueObjectFinderCacheListThreshold = GetterUtil.getInteger(
+			PropsUtil.get(PropsKeys.VALUE_OBJECT_FINDER_CACHE_LIST_THRESHOLD));
+
 		_finderPathWithPaginationFindAll = new FinderPath(
-			DatiModelImpl.ENTITY_CACHE_ENABLED,
-			DatiModelImpl.FINDER_CACHE_ENABLED, DatiImpl.class,
-			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findAll", new String[0]);
+			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findAll", new String[0],
+			new String[0], true);
 
 		_finderPathWithoutPaginationFindAll = new FinderPath(
-			DatiModelImpl.ENTITY_CACHE_ENABLED,
-			DatiModelImpl.FINDER_CACHE_ENABLED, DatiImpl.class,
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findAll",
-			new String[0]);
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findAll", new String[0],
+			new String[0], true);
 
 		_finderPathCountAll = new FinderPath(
-			DatiModelImpl.ENTITY_CACHE_ENABLED,
-			DatiModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countAll",
-			new String[0]);
+			new String[0], new String[0], false);
+
+		DatiUtil.setPersistence(this);
 	}
 
-	public void destroy() {
-		entityCache.removeCache(DatiImpl.class.getName());
-		finderCache.removeCache(FINDER_CLASS_NAME_ENTITY);
-		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+	@Deactivate
+	public void deactivate() {
+		DatiUtil.setPersistence(null);
+
+		dummyEntityCache.removeCache(DatiImpl.class.getName());
 	}
 
-	@ServiceReference(type = EntityCache.class)
-	protected EntityCache entityCache;
+	@Override
+	@Reference(
+		target = CACHEPersistenceConstants.SERVICE_CONFIGURATION_FILTER,
+		unbind = "-"
+	)
+	public void setConfiguration(Configuration configuration) {
+	}
 
-	@ServiceReference(type = FinderCache.class)
-	protected FinderCache finderCache;
+	@Override
+	@Reference(
+		target = CACHEPersistenceConstants.ORIGIN_BUNDLE_SYMBOLIC_NAME_FILTER,
+		unbind = "-"
+	)
+	public void setDataSource(DataSource dataSource) {
+		super.setDataSource(dataSource);
+	}
+
+	@Override
+	@Reference(
+		target = CACHEPersistenceConstants.ORIGIN_BUNDLE_SYMBOLIC_NAME_FILTER,
+		unbind = "-"
+	)
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		super.setSessionFactory(sessionFactory);
+	}
 
 	private static final String _SQL_SELECT_DATI = "SELECT dati FROM Dati dati";
-
-	private static final String _SQL_SELECT_DATI_WHERE_PKS_IN =
-		"SELECT dati FROM Dati dati WHERE idDati IN (";
 
 	private static final String _SQL_COUNT_DATI =
 		"SELECT COUNT(dati) FROM Dati dati";
@@ -747,5 +645,10 @@ public class DatiPersistenceImpl
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		DatiPersistenceImpl.class);
+
+	@Override
+	protected FinderCache getFinderCache() {
+		return dummyFinderCache;
+	}
 
 }

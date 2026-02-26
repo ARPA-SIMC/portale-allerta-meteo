@@ -4,8 +4,8 @@ create table prev_meteo_Bollettino (
 	timestamp LONG,
 	emissione VARCHAR(75) null,
 	validita VARCHAR(75) null,
-	xml_content TEXT null,
-	json TEXT null
+	xml_content VARCHAR(75) null,
+	json VARCHAR(75) null
 );
 
 create table prev_meteo_Img (
@@ -14,7 +14,7 @@ create table prev_meteo_Img (
 	day VARCHAR(75) null,
 	provincia VARCHAR(75) null,
 	inserted DATE null,
-	data_ TEXT null
+	data_ VARCHAR(75) null
 );
 
 create table prev_meteo_Storico (
@@ -23,5 +23,5 @@ create table prev_meteo_Storico (
 	nome VARCHAR(75) null,
 	sigla VARCHAR(75) null,
 	tipo VARCHAR(75) null,
-	xml TEXT null
+	xml VARCHAR(75) null
 );

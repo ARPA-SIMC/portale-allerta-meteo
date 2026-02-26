@@ -26,7 +26,7 @@
         // Init all map components
         var mapComponents = [];
         
-        $('[data-toggle="tab"]').on("click", function() {
+        $('[data-toggle$="tab"]').on("click", function() {
         	
         	var context = $(this).attr("href");
         	
@@ -139,7 +139,7 @@
         $('[data-toggle=monitoring-map]').removeAttr("data-initialized");
         $('[data-toggle=forecast-map]').removeAttr("data-initialized");
          
-        $('[data-toggle="tab"] :first ').click();
+        $('[data-toggle$="tab"] :first ').click();
 	
 	        // Resize handler
 	        $(window).resize(function(){
@@ -151,7 +151,7 @@
 	    
 	        // Load current active tab
 	        if( $(this).parent().hasClass("active") ){
-	            $('[data-toggle="tab"][href="#'+$(this).parent().attr("id")+'"]').trigger("shown.bs.tab"); 
+	            $('[data-toggle$="tab"][href="#'+$(this).parent().attr("id")+'"]').trigger("shown.bs.tab"); 
 	        }
 	    
 	        // Scroll to the correct viewport when clicking a tab

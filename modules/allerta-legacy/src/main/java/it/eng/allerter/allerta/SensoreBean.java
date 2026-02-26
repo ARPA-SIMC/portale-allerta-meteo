@@ -58,6 +58,7 @@ public class SensoreBean implements Serializable {
 		String name;
 		String basin;
 		String subbasin;
+		String manager;
 		boolean attivo;
 		boolean funzionante;
 		String comuni;
@@ -66,6 +67,9 @@ public class SensoreBean implements Serializable {
 		String variabileVera;
 		float sogliaSpike;
 		double soglia1, soglia2, soglia3;
+		String dataDisattivazione;
+		int motivazione;
+		
 		public String getIdStazione() {
 			return idStazione;
 		}
@@ -96,6 +100,13 @@ public class SensoreBean implements Serializable {
 		public void setSubbasin(String subbasin) {
 			this.subbasin = subbasin;
 		}
+		
+		public String getManager() {
+			return manager;
+		}
+		public void setManager(String manager) {
+			this.manager = manager;
+		}
 		public boolean isAttivo() {
 			return attivo;
 		}
@@ -117,6 +128,18 @@ public class SensoreBean implements Serializable {
 		
 		
 		
+		public String getDataDisattivazione() {
+			return dataDisattivazione;
+		}
+		public void setDataDisattivazione(String dataDisattivazione) {
+			this.dataDisattivazione = dataDisattivazione;
+		}
+		public int getMotivazione() {
+			return motivazione;
+		}
+		public void setMotivazione(int motivazione) {
+			this.motivazione = motivazione;
+		}
 		public double getSoglia1() {
 			return soglia1;
 		}
@@ -220,7 +243,11 @@ public class SensoreBean implements Serializable {
 	public void caricaRegole() {
 		
 		regole = new ArrayList<SensoreManager>();
-		List ll = BollettinoLocalServiceUtil.eseguiQueryGenericaLista("select * from sensori_comuni_vw");
+		//List ll = BollettinoLocalServiceUtil.eseguiQueryGenericaLista("select * from sensori_comuni2_vw");
+		List ll = BollettinoLocalServiceUtil.eseguiQueryGenericaLista("select x.*,y.data_disattivazione,y.motivazione from sensori_comuni2_vw x left join bollettino_log_sensori y " + 
+				"on x.id_=y.idstazione and x.idvariabile=y.idvariabile and " + 
+				"y.data_disattivazione=(select max(data_disattivazione) from bollettino_log_sensori z " + 
+				"					  where z.idstazione=y.idstazione and z.idvariabile=y.idvariabile)");
 		LogInternoLocalServiceUtil.log("SensoreBean", "caricaRegole", ""+ll.size(), "");
 		Calendar cal = Calendar.getInstance();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -242,10 +269,18 @@ public class SensoreBean implements Serializable {
 			if (o2[8]!=null) rm.setVariabileVera(o2[8].toString());
 			if (o2[9]!=null) rm.setFunzionante((Boolean)o2[9]);
 			if (o2[10]!=null) rm.setSogliaSpike((Float)o2[10]);
-			if (o2.length>=14) {
+			if (o2.length>=15) {
 				if (o2[11]!=null) rm.setSoglia1((Double)o2[11]);
 				if (o2[12]!=null) rm.setSoglia2((Double)o2[12]);
 				if (o2[13]!=null) rm.setSoglia3((Double)o2[13]);
+				if (o2[14]!=null) rm.setManager(o2[14].toString());
+				if (rm.getManager()!=null) {
+					if (rm.getManager().contains("@")) {
+						rm.setManager(rm.getManager().split("@")[1]);
+					} else rm.setManager("");
+				}
+				if (o2[15]!=null) rm.setDataDisattivazione(new SimpleDateFormat("dd/MM/yyyy HH:mm").format((Date)o2[15]));
+				if (o2[16]!=null) rm.setMotivazione(Integer.parseInt(o2[16].toString()));
 			}
 			
 			String url = "&r=" + rm.getIdStazione() + "/" + (rm.getVariabileVera()!=null?rm.getVariabileVera():rm.getIdVariabile())
@@ -460,6 +495,19 @@ public class SensoreBean implements Serializable {
 		String v = ParamUtil.getString(req,"idVariabile");  
 				
 		String att = ParamUtil.getString(req,"attivo");
+		
+		Integer motivazione = ParamUtil.getInteger(req,"motivazione");
+		//if (motivazione==null) motivazione = -1;
+		if (!att.equals("true")) motivazione = 0;
+		
+		String ts = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+		
+		try {
+			BollettinoLocalServiceUtil.eseguiQueryGenerica("insert into bollettino_log_sensori (idstazione,idvariabile,data_disattivazione,disattivazione,motivazione) values("+
+		"'"+s+"','"+v+"','"+ts+"',"+att+","+motivazione+")");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 				
 		if (att.equals("true")) {
 			

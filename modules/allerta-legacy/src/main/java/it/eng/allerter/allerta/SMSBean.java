@@ -23,6 +23,7 @@ import it.eng.allerter.model.AllertaStato;
 import it.eng.allerter.model.Email;
 import it.eng.allerter.model.SMS;
 import it.eng.allerter.service.AllertaStatoLocalServiceUtil;
+import it.eng.allerter.service.EmailLocalServiceUtil;
 import it.eng.allerter.service.SMSLocalServiceUtil;
 import it.eng.allerter.service.persistence.SMSUtil;
 
@@ -59,7 +60,8 @@ public class SMSBean implements Serializable {
 		
 		System.out.println("GetQueryEmail "+begin+" "+end);
 		
-		DynamicQuery dyn = DynamicQueryFactoryUtil.forClass(Email.class);
+		//DynamicQuery dyn = DynamicQueryFactoryUtil.forClass(Email.class);
+		DynamicQuery dyn = EmailLocalServiceUtil.dynamicQuery();
 		
 		if (tipo!=null && !tipo.equals("")) dyn = dyn.add(PropertyFactoryUtil.forName("tipo").eq(tipo));
 		if (sottotipo!=null && !sottotipo.equals("")) dyn = dyn.add(PropertyFactoryUtil.forName("sottotipo").eq(sottotipo));

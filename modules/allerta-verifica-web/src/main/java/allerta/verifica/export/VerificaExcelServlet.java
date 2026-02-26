@@ -9,6 +9,7 @@ import com.liferay.portal.kernel.util.Validator;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigInteger;
 import java.sql.Connection;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -58,24 +59,25 @@ import it.eng.bollettino.service.BollettinoLocalServiceUtil;
 	    service = Servlet.class
 	)
 public class VerificaExcelServlet extends HttpServlet {
-	
-	public String[] FOGLI = {"AllertaBollettino","Precipitazioni","Criticit‡ idraulica","Criticit‡ idrogeologica",
-			"Criticit‡ temporali","Vento","Temperature estreme","Neve","Pioggia che gela","Stato del mare","Criticit‡ costiera","Valutazione"};
-	
+
+	public String[] FOGLI = {"AllertaBollettino","Precipitazioni","Criticit√† idraulica","Criticit√† idrogeologica",
+			"Criticit√† temporali","Vento","Temperature estreme","Neve","Pioggia che gela","Stato del mare","Criticit√† costiera","Valutazione"};
+
 	String dataInizio = null;
 	String dataFine = null;
 	Date d1 = null;
 	Date d2 = null;
-	
+	Map<String, String> criteria = new HashMap<String, String>();
+
 	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 	SimpleDateFormat ora = new SimpleDateFormat("HH:mm");
-	
+
 	List<Verifica> verifiche = null;
 	List<VerificaDato> dati = null;
 	List<VerificaDato> datiPrecipitazioni = null;
 	List<Allerta> allerte = null;
 	List<Segnalazione> segnalazioni = null;
-	
+
 	Allerta currentAllerta;
 	Verifica currentVerifica;
 	int currentFenomeno;
@@ -83,20 +85,50 @@ public class VerificaExcelServlet extends HttpServlet {
 	String currentRiga1;
 	String currentRiga2;
 	String currentRiga3;
-	
-	static Map<String, String> labels = new HashMap<String, String>();
-	static Map<String, String> defaultStyles = new HashMap<String, String>();
-	static Map<String, String> intestazioneStyles = new HashMap<String, String>();
-	
+
+	 Map<String, String> labels = new HashMap<String, String>();
+	 Map<String, String> defaultStyles = new HashMap<String, String>();
+	 Map<String, String> intestazioneStyles = new HashMap<String, String>();
+
+	 Map<Date,List<VerificaDato>> cachedDati = new HashMap<Date, List<VerificaDato>>();
+	 Map<Date,List<VerificaDato>> cachedDatiPrecip = new HashMap<Date, List<VerificaDato>>();
+
+	 
+	 
 	Map<String,CellStyle> styles;
 	
-	static {
+	public List<VerificaDato> getDatiForRiga(List<VerificaDato> v,Date d) {
+		if (cachedDati.containsKey(d))
+			return cachedDati.get(d);
+		
+		List<VerificaDato> vd = VerificaAllertaBean.filtraDati(dati,
+				d,null,null,null,null);
+		cachedDati.put(d, vd);
+		return vd;
+		
+	}
+	
+	public List<VerificaDato> getDatiPrecipitazioniForRiga(List<VerificaDato> v,Date d) {
+		if (cachedDatiPrecip.containsKey(d))
+			return cachedDatiPrecip.get(d);
+		
+		List<VerificaDato> vd = VerificaAllertaBean.filtraDati(dati,
+				d,null,null,null,null);
+		cachedDatiPrecip.put(d, vd);
+		return vd;
+		
+	}
+
+	public VerificaExcelServlet() {
+
+		super();
+
 		labels.put("data_evento", "Data evento");
 		labels.put("numero_documento", "Numero documento");
 		labels.put("numero_documento_semplice", "Numero doc.");
 		labels.put("data_emissione", "Data emissione");
-		labels.put("inizio_validita_codice_colore", "Inizio validit‡ \ncodice colore");
-		labels.put("fine_validita_codice_colore", "Fine validit‡ \ncodice colore");
+		labels.put("inizio_validita_codice_colore", "Inizio validit√† \ncodice colore");
+		labels.put("fine_validita_codice_colore", "Fine validit√† \ncodice colore");
 		labels.put("data", "Data");
 		labels.put("ora", "Ora");
 		labels.put("post_briefing", "POST-BRIEFING");
@@ -106,20 +138,21 @@ public class VerificaExcelServlet extends HttpServlet {
 		labels.put("codice_osservato", "Codice osservato");
 		labels.put("segnalazioni_territorio", "Oggetti catasto");
 		labels.put("note_riga_fenomeno", "Note");
-		
-		
+
+
 		labels.put("allerta_bollettino", "Allerta/\nBollettino");
 		labels.put("durata", "Durata");
 		labels.put("codice_colore_max", "Codice colore max");
 		labels.put("note_allerta","Note verifica");
 		labels.put("fenomeni_descritti","Fenomeni descritti");
 		labels.put("fenomeni_allerta","Fenomeni allerta");
+		labels.put("meteo","Descrizione meteo");
 		labels.put("zone_fenomeno","ZONE");
 		labels.put("codice_colore_fenomeno","CODICE\nCOLORE");
-		
+
 		labels.put("previsto_24h","Previsto 24h");
 		labels.put("osservato_24h","Osservato 24h");
-		
+
 		labels.put("note_valutazione","SEGNALAZIONI DAL TERRITORIO");
 		labels.put("valutazione_descrittiva","VALUTAZIONE DESCRITTIVA");
 		labels.put("valutazione_codice_sintetico","VALUTAZIONE CODICE SINTETICO");
@@ -130,10 +163,10 @@ public class VerificaExcelServlet extends HttpServlet {
 		labels.put("magnitudo","Magnitudo");
 		labels.put("localizzazione","Localizzazione");
 		labels.put("cause","Cause");
-		
-		
-		
-		
+
+
+
+
 		defaultStyles.put(labels.get("data_evento"), " fontcolor56 bold");
 		defaultStyles.put(labels.get("numero_documento"), " fontcolor56 bold");
 		defaultStyles.put(labels.get("numero_documento_semplice"), " fontcolor56 bold");
@@ -149,19 +182,20 @@ public class VerificaExcelServlet extends HttpServlet {
 		defaultStyles.put(labels.get("codice_osservato"), " thin-right bold ");
 		defaultStyles.put(labels.get("segnalazioni_territorio"), "");
 		defaultStyles.put(labels.get("note_riga_fenomeno"), "");
-		
+
 		defaultStyles.put(labels.get("allerta_bollettino"), " bold");
 		defaultStyles.put(labels.get("durata"), "");
 		defaultStyles.put(labels.get("codice_colore_max"), " bold thin-right ");
 		defaultStyles.put(labels.get("note_allerta"),"");
 		defaultStyles.put(labels.get("fenomeni_descritti"),"");
 		defaultStyles.put(labels.get("fenomeni_allerta"),"");
+		defaultStyles.put(labels.get("meteo"),"");
 		defaultStyles.put(labels.get("zone_fenomeno")," thin-left ");
 		defaultStyles.put(labels.get("codice_colore_fenomeno")," thin-right bold ");
-		
+
 		defaultStyles.put(labels.get("previsto_24h")," thin-left ");
 		defaultStyles.put(labels.get("osservato_24h")," thin-right ");
-		
+
 		defaultStyles.put(labels.get("note_valutazione")," thin-left ");
 		defaultStyles.put(labels.get("valutazione_descrittiva"),"");
 		defaultStyles.put(labels.get("valutazione_codice_sintetico"),"");
@@ -172,19 +206,27 @@ public class VerificaExcelServlet extends HttpServlet {
 		defaultStyles.put(labels.get("magnitudo")," bold ");
 		defaultStyles.put(labels.get("localizzazione")," bold ");
 		defaultStyles.put(labels.get("cause")," thin-right bold ");
-		
-		
+
+
+
 	}
-	
+
+
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		
 
+		System.out.println(req.getQueryString());
 		String datada = req.getParameter("datada");
 		String dataa = req.getParameter("dataa");
 		
-		styles = new HashMap<String, CellStyle>();
+		criteria.clear();
+		String params[] = {"zona","evento","correttezza","magnitudo","localizzazione","colorePre","colorePost"};
+		for (String par : params)
+			if (req.getParameter(par)!=null && !"".equals(req.getParameter(par)))
+				criteria.put(par, req.getParameter(par).replaceAll("plus", "+"));
 		
+		styles = new HashMap<String, CellStyle>();
+
 		try {
 			if (datada!=null && !datada.equals("")) {
 				System.out.println("Datada="+datada.toString());
@@ -199,103 +241,220 @@ public class VerificaExcelServlet extends HttpServlet {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		byte[] b = null;
 
 		Connection connection = null;
 		InputStream stream = null;
-		
+
 		//PortletRequest r = (PortletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 		//String pathReports = r.getPortletSession().getPortletContext().getRealPath("report") + "/";
 		//String pathReports = AllertaBean.pathReports;
-		
+
 		try {
-			
+
 			getData();
-			
+
 	        DataSource ds = InfrastructureUtil.getDataSource();
 			connection = ds.getConnection();
-			
-			
 
-			
+
+
+
 			HSSFWorkbook report = creaExcel();
-			
+
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			
+
 			if (report!=null) {
 				report.write(baos);
-				byte[] output = baos.toByteArray(); 
+				byte[] output = baos.toByteArray();
 				resp.setContentType("application/vnd.ms-excel");
 				resp.setHeader("Content-Disposition", "attachment;filename=verifica.xls");
 				resp.setContentLength(output.length);
 				resp.getOutputStream().write(output);
 			}
-			
-			
+
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			LogInternoLocalServiceUtil.log("VerificaExcelServlet", "doGet", e, "");
 		} finally {
 			try {
-			if (connection!=null) connection.close();	
+			if (connection!=null) connection.close();
 			} catch (Exception e3) {}
 			try {
-				if (stream!=null) stream.close();	
+				if (stream!=null) stream.close();
 				} catch (Exception e3) {}
 		}
 	}
-	
+
 	private String getWhere() {
 		return "where 1=1 "+(dataInizio!=null?" and datafine>'"+dataInizio+"' ":"")+(dataFine!=null?" and datainizio<='"+dataFine+"' ":"");
 	}
-	
+
 	private String getOrderBy() {
-		return "order by createdate asc ";
+		return " order by createdate asc ";
 	}
 	
+	public String getCriteriaQuery() {
+		// TODO Auto-generated method stub
+		String out = " where 1=1";
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		if (d1!=null) {
+			out+=" and datafine>'"+sdf.format(d1)+"'";
+		}
+		if (d2!=null) {
+			// Add 23 hours to d2 to include the full day
+			/*Calendar cal = Calendar.getInstance();
+			cal.setTime(d2);
+			cal.add(Calendar.HOUR_OF_DAY, 23);
+			Date d2PlusHours = cal.getTime();
+			d2 = d2PlusHours;*/
+			out+=" and datainizio<'"+sdf.format(d2)+"'";
+
+		}
+		
+		
+		String subq = "";
+		if (criteria.containsKey("zona") && !"".equals(criteria.get("zona"))) {
+			subq+=" and v.zona='"+criteria.get("zona")+"' ";
+		}
+		if (criteria.containsKey("evento") && !"".equals(criteria.get("evento"))) {
+			subq+=" and v.evento="+criteria.get("evento")+" ";
+		}
+		if (criteria.containsKey("correttezza") && !"".equals(criteria.get("correttezza"))) {
+			subq+=" and v.correttezza='"+criteria.get("correttezza")+"' ";
+		}
+		if (criteria.containsKey("magnitudo") && !"".equals(criteria.get("magnitudo"))) {
+			subq+=" and v.magnitudo='"+criteria.get("magnitudo")+"' ";
+		}
+		if (criteria.containsKey("localizzazione") && !"".equals(criteria.get("localizzazione"))) {
+			subq+=" and v.localizzazione='"+criteria.get("localizzazione")+"' ";
+		}
+		if (criteria.containsKey("colorePre") && !"".equals(criteria.get("colorePre"))) {
+			subq+=" and v.pre='"+criteria.get("colorePre")+"' ";
+		}
+		if (criteria.containsKey("colorePost") && !"".equals(criteria.get("colorePost"))) {
+			subq+=" and v.post='"+criteria.get("colorePost")+"' ";
+		}
+		
+		if (!"".equals(subq)) {
+			out += " and exists (select * from verifica_filtri2_vw v where v.documento=verifica_verifica.id_ " + 
+					subq+" )";
+		}
+
+		return out;
+	}
+
 	private void getData() {
+		//le query dinamiche non supportano le sottoquery complesse che ci servono,
+		//ma non vogliamo caricare gli oggetti uno alla volta. Quindi carichiamo
+		//il range di oggetti nell'intervallo di date e poi selezioniamo gli id secondo
+		//la query SQL con tutti i filtri.
 		DynamicQuery dq = VerificaLocalServiceUtil.dynamicQuery();
 		try {
 			if (d1!=null)
 				dq = dq.add(PropertyFactoryUtil.forName("dataFine").gt(d1));
-			if (d2!=null)
-				dq = dq.add(PropertyFactoryUtil.forName("dataInizio").le(d2));
+			if (d2!=null) {
+				// Add 23 hours to d2 to include the full day
+				Calendar cal = Calendar.getInstance();
+				cal.setTime(d2);
+				cal.add(Calendar.HOUR_OF_DAY, 23);
+				Date d2PlusHours = cal.getTime();
+				dq = dq.add(PropertyFactoryUtil.forName("dataInizio").le(d2PlusHours));
+				d2 = d2PlusHours;
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		dq = dq.addOrder(OrderFactoryUtil.asc("dataInizio"));
-	
-		verifiche = VerificaLocalServiceUtil.dynamicQuery(dq);
 		
+		String info = "";
+		
+		dq = dq.addOrder(OrderFactoryUtil.asc("dataInizio"));
+		List<Verifica> verificheBase = VerificaLocalServiceUtil.dynamicQuery(dq);
+		info += "Verifiche base: "+verificheBase.size();
+		
+		String que = "select id_,stato from verifica_verifica " + getCriteriaQuery() + getOrderBy();
+		info += " Query: "+que;
+		List<Object[]> vers = BollettinoLocalServiceUtil.eseguiQueryGenericaLista(que);
+		info += " Verifiche filtrate: "+vers.size();
+
+		
+		//LogInternoLocalServiceUtil.log("verificaExcel", que, ""+vers.size(), "");
+		System.out.println(que);
+		System.out.println(""+vers.size());
+		verifiche = new ArrayList<Verifica>();
+		
+		HashMap<Long,Boolean> incluse = new HashMap<Long, Boolean>();
+		HashMap<String,Boolean> dateIncluse = new HashMap<String, Boolean>();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+		
+		for (Object[] v : vers) {
+			long idv = ((BigInteger)v[0]).longValue();
+			for (Verifica ver : verificheBase)
+				if (ver.getId()==idv) {
+					verifiche.add(ver);
+					incluse.put(ver.getId(), true);
+					dateIncluse.put(sdf.format(ver.getDataInizio()), true);
+					dateIncluse.put(sdf.format(new Date(ver.getDataFine().getTime()-1)), true);
+				}
+			//verifiche.add(VerificaLocalServiceUtil.fetchVerifica((Long)v[0]));
+		}
+		info += " Verifiche utilizzate: "+verifiche.size();
+
+
+		//verifiche = VerificaLocalServiceUtil.dynamicQuery(dq);
+
+		
+		 //dq = VerificaLocalServiceUtil.dynamicQuery();
+
 		dq = VerificaDatoLocalServiceUtil.dynamicQuery();
 		try {
 			if (d1!=null)
-				dq = dq.add(PropertyFactoryUtil.forName("giorno").gt(d1));
+				dq = dq.add(PropertyFactoryUtil.forName("giorno").gt(new Date(d1.getTime()-24*3600*1000)));
 			if (d2!=null)
 				dq = dq.add(PropertyFactoryUtil.forName("giorno").le(d2));
-			
+
 			dq = dq.addOrder(OrderFactoryUtil.asc("giorno"));
 			dq = dq.addOrder(OrderFactoryUtil.asc("zona"));
 			dq = dq.addOrder(OrderFactoryUtil.asc("evento"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		dati = VerificaDatoLocalServiceUtil.dynamicQuery(dq);
-		
+		info+=" Dati totali: "+dati.size();
 		datiPrecipitazioni = new ArrayList<VerificaDato>();
-		if (dati!=null) {
+		
+		List<VerificaDato> dati2 = new ArrayList<VerificaDato>();
+		for (VerificaDato vd : dati) {
+			if (vd.getDocumento()==0) {
+				if (dateIncluse.containsKey(sdf.format(vd.getGiorno()))) datiPrecipitazioni.add(vd);
+			}
+			else {
+				if (incluse.containsKey(vd.getDocumento()))
+					dati2.add(vd);
+			}
+		}
+		dati = dati2;
+		info+=" Dati utilizzati: "+dati.size();
+		info+=" Dati precipitazioni: "+datiPrecipitazioni.size();
+
+
+		
+		/*if (dati!=null) {
 			for (VerificaDato vd : dati) {
 				if (vd.getDocumento()==0) datiPrecipitazioni.add(vd);
 			}
-		}
+		}*/
 		
+
+
 		dq = AllertaLocalServiceUtil.dynamicQuery();
 		try {
-			
+
 			dq = dq.add(PropertyFactoryUtil.forName("stato").eq(0));
-			
+
 			if (d1!=null)
 				dq = dq.add(PropertyFactoryUtil.forName("dataFine").gt(d1));
 			if (d2!=null)
@@ -304,12 +463,26 @@ public class VerificaExcelServlet extends HttpServlet {
 			e.printStackTrace();
 		}
 		dq = dq.addOrder(OrderFactoryUtil.asc("dataInizio"));
+
 	
-		allerte = AllertaLocalServiceUtil.dynamicQuery(dq);
+		List<Allerta> allerteBase = AllertaLocalServiceUtil.dynamicQuery(dq);
+		info += " Allerte totali: "+allerteBase.size();
+
+		
+		allerte = new ArrayList<Allerta>();
+		
+		for (Allerta aaa : allerteBase)
+			if (incluse.containsKey(aaa.getAllertaId())) {
+				allerte.add(aaa);
+			}
+		
+		info += " Allerte utilizzate: "+allerte.size();
+		LogInternoLocalServiceUtil.log("VerificaExcelServlet", "doGet", info, "");
+
 		
 		dq = SegnalazioneLocalServiceUtil.dynamicQuery();
 		try {
-						
+
 			if (d1!=null)
 				dq = dq.add(PropertyFactoryUtil.forName("dataEvento").ge(d1));
 			if (d2!=null)
@@ -318,17 +491,18 @@ public class VerificaExcelServlet extends HttpServlet {
 			e.printStackTrace();
 		}
 		dq = dq.addOrder(OrderFactoryUtil.asc("dataEvento"));
-	
+
 		segnalazioni = SegnalazioneLocalServiceUtil.dynamicQuery(dq);
 	}
-	
+
 	private List<Object> getRighe(String foglio) {
 		ArrayList<Object> out = new ArrayList<Object>();
-		
-		
-		List<VerificaDato> dat = foglio.equals(FOGLI[1])? datiPrecipitazioni : dati;
+
+
+		//List<VerificaDato> dat = foglio.equals(FOGLI[1])? datiPrecipitazioni : dati;
+		List<VerificaDato> dat = dati;
 		if (dat==null || dat.size()==0) return out;
-		
+
 		Date giorno = null;
 		for (VerificaDato vd : dat) {
 			if (giorno==null || (vd.getGiorno()!=null && vd.getGiorno().after(giorno))) {
@@ -336,11 +510,11 @@ public class VerificaExcelServlet extends HttpServlet {
 				giorno = vd.getGiorno();
 			}
 		}
-		
+
 		return out;
-		
+
 	}
-	
+
 	private int fenomenoForFoglio(String foglio) {
 		if (foglio.equals(FOGLI[2])) return 1;
 		if (foglio.equals(FOGLI[3])) return 2;
@@ -351,29 +525,33 @@ public class VerificaExcelServlet extends HttpServlet {
 		if (foglio.equals(FOGLI[8])) return 7;
 		if (foglio.equals(FOGLI[9])) return 8;
 		if (foglio.equals(FOGLI[10])) return 9;
-		
+
 		return 0;
 	}
-	
+
 	private List<Object> getRiga(String foglio, Object idRiga, List<Object[]> intestazione) {
-		
+
 		ArrayList<Object> out = new ArrayList<Object>();
 		if (intestazione==null || intestazione.size()==0 || intestazione.get(0).length==0) return out;
+
+		//List<VerificaDato> d = VerificaAllertaBean.filtraDati(dati,
+				//(Date)idRiga,null,null,null,null);
 		
-		List<VerificaDato> d = VerificaAllertaBean.filtraDati(dati,
-				(Date)idRiga,null,null,null,null);
+		List<VerificaDato> d = getDatiForRiga(dati, (Date)idRiga);
+
+		//List<VerificaDato> d2 = VerificaAllertaBean.filtraDati(datiPrecipitazioni,
+		//		(Date)idRiga,null,null,null,null);
 		
-		List<VerificaDato> d2 = VerificaAllertaBean.filtraDati(datiPrecipitazioni,
-				(Date)idRiga,null,null,null,null);
-		
+		List<VerificaDato> d2 = getDatiPrecipitazioniForRiga(dati, (Date)idRiga);
+
 		Verifica v = null;
 		Allerta a = null;
 		List<Segnalazione> segn = new ArrayList<Segnalazione>();
 		Date giorno = (Date)idRiga;
 		Date startOfGiorno = null;
 		Date startOfTomorrow = null;
-		
-		
+
+
 		Calendar c = Calendar.getInstance();
 		c.setTime(giorno);
 		c.set(Calendar.HOUR_OF_DAY, 0);
@@ -384,16 +562,16 @@ public class VerificaExcelServlet extends HttpServlet {
 		c.add(Calendar.DAY_OF_YEAR, 1);
 		startOfTomorrow = c.getTime();
 		String stringOfGiorno = sdf.format(startOfGiorno);
-		
+
 		long fenomeno = fenomenoForFoglio(foglio);
 		String[] colonne = null;
 		if (fenomeno>0) {
 			colonne=CostantiVerificaAllerte.EVENTI_COLONNE.get(""+fenomeno);
 		}
-		
+
 		long id = 0;
-		
-		
+
+
 			for (VerificaDato vd : d) {
 				if (vd.getDocumento()!=0) {
 					id = vd.getDocumento();
@@ -412,33 +590,33 @@ public class VerificaExcelServlet extends HttpServlet {
 					break;
 				}
 			}
-		
-			
-		
-		
+
+
+
+
 		if (fenomeno>0 && a!=null) {
 			for (Segnalazione s : segnalazioni) {
 				if (/*s.getDocumentoAssociato()==id && */ s.getDataEvento()!=null && sdf.format(s.getDataEvento()).equals(stringOfGiorno))
 					segn.add(s);
 			}
 		}
-		
+
 		//riempi le colonne
 		for (int k=0; k<intestazione.get(0).length; k++) {
 			String riga1 = intestazione.get(0)[k].toString();
 			String riga2 = (intestazione.size()>1?intestazione.get(1)[k].toString():"");
 			String riga3 = (intestazione.size()>2?intestazione.get(2)[k].toString():"");
-			
+
 			for (int ff=0; ff<CostantiVerificaAllerte.EVENTI.length; ff++)
 				if (riga1.equals(CostantiVerificaAllerte.EVENTI[ff])) fenomeno = ff+1;
-			
-			
+
+
 			String cella = "";
 			String zona = riga1.startsWith("ZONA")?riga1.split(" ")[1]:null;
 			if (zona==null && (riga2.endsWith("1") || riga2.endsWith("2") || riga2.endsWith("3")))
 				zona = riga2;
-			
-			
+
+
 			currentFenomeno=(int)fenomeno;
 			currentZona=zona;
 			currentVerifica=v;
@@ -446,8 +624,8 @@ public class VerificaExcelServlet extends HttpServlet {
 			currentRiga1=riga1;
 			currentRiga2=riga2;
 			currentRiga3=riga3;
-			
-			
+
+
 			if (riga3.equals(labels.get("data_evento"))) {
 				cella = sdf.format(giorno);
 			}
@@ -455,19 +633,19 @@ public class VerificaExcelServlet extends HttpServlet {
 			if (riga3.equals(labels.get("numero_documento"))) {
 				cella = (a!=null?(a.getTipoAllerta()?"A ":"B ")+a.getNumero():"");
 			}
-			
+
 			if (riga3.equals(labels.get("numero_documento_semplice"))) {
 				cella = (a!=null?a.getNumero():"");
 			}
-			
+
 			if (riga3.equals(labels.get("allerta_bollettino"))) {
 				cella = (a!=null?(a.getTipoAllerta()?"A":"B"):"");
 			}
-			
+
 			if (riga3.equals(labels.get("durata"))) {
 				cella = (giorno.getTime()==startOfGiorno.getTime()?"1":"0,5");
 			}
-			
+
 			if (riga3.equals(labels.get("codice_colore_max"))) {
 				int max = 0;
 				for (VerificaDato vd : d) {
@@ -484,14 +662,14 @@ public class VerificaExcelServlet extends HttpServlet {
 				else if (max==1) cella = "G";
 				else if (max==2) cella = "A";
 				else if (max==3) cella = "R";
-				
+
 			}
-			
+
 			if (riga3.equals(labels.get("codice_colore_fenomeno"))) {
 				int fen = 0;
 				for (int ee=0; ee<9; ee++) if (riga1.equals(CostantiVerificaAllerte.EVENTI[ee]))
 					fen = ee+1;
-				
+
 				int max = 0;
 				for (VerificaDato vd : d) {
 					if ("colore_pre".equals(vd.getNomeDato()) && vd.getEvento()==fen) {
@@ -507,58 +685,62 @@ public class VerificaExcelServlet extends HttpServlet {
 				else if (max==1) cella = "G";
 				else if (max==2) cella = "A";
 				else if (max==3) cella = "R";
-				
+
 			}
-			
+
 			if (riga3.equals(labels.get("zone_fenomeno"))) {
 				int fen = 0;
 				for (int ee=0; ee<9; ee++) if (riga1.equals(CostantiVerificaAllerte.EVENTI[ee]))
 					fen = ee+1;
-				
+
 				cella = "";
 				for (VerificaDato vd : d) {
 					if ("colore_pre".equals(vd.getNomeDato()) && vd.getEvento()==fen) {
 						String ssss = CostruttoreVerificaDato.getDato(vd);
-						
+
 						if ("GIALLO".equals(ssss) ||
 						"ARANCIONE".equals(ssss) ||
 						"ROSSO".equals(ssss)) {
 							if (!"".equals(cella)) cella+=",";
 							cella += vd.getZona();
 						}
-					
+
 					}
 				}
-				
+
 			}
 
 			if (riga3.equals(labels.get("note_allerta")) && v!=null) {
 				cella = v.getNote();
 			}
-			
+
 			if (riga3.equals(labels.get("fenomeni_descritti")) && v!=null) {
 				cella = v.getFenomeniDescritti();
 			}
-			
+
 			if (riga3.equals(labels.get("fenomeni_allerta")) && v!=null) {
 				cella = v.getFenomeni();
 			}
-			
+
+			if (riga3.equals(labels.get("meteo")) && a!=null) {
+				cella = a.getDescrizioneMeteo();
+			}
+
 			if (riga3.equals(labels.get("data_emissione"))) {
 				cella = (a!=null && a.getDataEmissione()!=null?(sdf.format(a.getDataEmissione())):"");
 			}
-			
+
 			if (riga2.equals(labels.get("inizio_validita_codice_colore"))) {
 				if (riga3.equals(labels.get("data"))) cella = sdf.format(giorno);
 				if (riga3.equals(labels.get("ora"))) cella = ora.format(giorno);
 			}
-			
+
 			if (riga2.equals(labels.get("fine_validita_codice_colore"))) {
 
 				if (riga3.equals(labels.get("data"))) cella = sdf.format(startOfTomorrow);
 				if (riga3.equals(labels.get("ora"))) cella = ora.format(startOfTomorrow);
 			}
-			
+
 			if ((riga3.equals(labels.get("codice_previsto")) || riga3.equals(labels.get("prev_val"))) && zona!=null) {
 				VerificaDato vd = VerificaAllertaBean.filtraDatiUnico(d, giorno, zona, fenomeno, "colore_pre", null);
 				if (vd!=null) {
@@ -566,21 +748,21 @@ public class VerificaExcelServlet extends HttpServlet {
 					if (cella!=null && cella.length()>1) cella=cella.substring(0, 1);
 				}
 			}
-			
+
 			if (riga3.equals(labels.get("previsto_24h")) && zona!=null) {
 				VerificaDato vd = VerificaAllertaBean.filtraDatiUnico(d, giorno, zona, null, "precipitazioni_previste", null);
 				if (vd!=null) {
 					cella = CostruttoreVerificaDato.getDato(vd);
 				}
 			}
-			
+
 			if (riga3.equals(labels.get("osservato_24h")) && zona!=null) {
 				VerificaDato vd = VerificaAllertaBean.filtraDatiUnico(d, giorno, zona, null, "precipitazioni_osservate", null);
 				if (vd!=null) {
 					cella = CostruttoreVerificaDato.getDato(vd);
 				}
 			}
-			
+
 			if ((riga3.equals(labels.get("codice_osservato")) || riga3.equals(labels.get("oss_val"))) && zona!=null) {
 				VerificaDato vd = VerificaAllertaBean.filtraDatiUnico(d, giorno, zona, fenomeno, "colore_post", null);
 				if (vd!=null) {
@@ -588,7 +770,7 @@ public class VerificaExcelServlet extends HttpServlet {
 					if (cella!=null && cella.length()>1) cella=cella.substring(0, 1);
 				}
 			}
-			
+
 			if ((riga3.equals(labels.get("note_riga_fenomeno"))) && zona!=null) {
 				VerificaDato vd = VerificaAllertaBean.filtraDatiUnico(d, giorno, zona, fenomeno, "note", null);
 				if (vd!=null) {
@@ -596,7 +778,7 @@ public class VerificaExcelServlet extends HttpServlet {
 					if (cella!=null && cella.length()>1) cella=cella.substring(0, 1);
 				}
 			}
-			
+
 			if (riga3.equals(labels.get("segnalazioni_territorio")) && zona!=null && segn!=null && segn.size()>0) {
 				cella="";
 				for (Segnalazione s : segn) {
@@ -604,74 +786,74 @@ public class VerificaExcelServlet extends HttpServlet {
 						cella+="#"+s.getId()+": "+(s.getComune()!=null?s.getComune():"")+" ";
 				}
 			}
-			
-			
+
+
 			if (riga2.equals(labels.get("post_allerta")) && colonne!=null) {
 				for (String col : colonne) {
 					String lab = CostantiVerificaAllerte.NOMI_COLONNE.get(col);
 					if (lab.equals(riga3)) {
-						VerificaDato vd = VerificaAllertaBean.filtraDatiUnico(d, giorno, zona, fenomeno, col, null);		
+						VerificaDato vd = VerificaAllertaBean.filtraDatiUnico(d, giorno, zona, fenomeno, col, null);
 						if (vd!=null) {
 							cella = CostruttoreVerificaDato.getDato(vd);
 						}
 					}
 				}
 			}
-			
+
 			if (riga3.equals(labels.get("note_valutazione")) && fenomeno>0) {
 				VerificaDato vd = VerificaAllertaBean.filtraDatiUnico(d, giorno, null, fenomeno, "note_valutazione", null);
 				if (vd!=null) {
 					cella = CostruttoreVerificaDato.getDato(vd);
 				}
 			}
-			
+
 			if (riga3.equals(labels.get("valutazione_descrittiva")) && fenomeno>0) {
 				VerificaDato vd = VerificaAllertaBean.filtraDatiUnico(d, giorno, null, fenomeno, "valutazione_descrittiva", null);
 				if (vd!=null) {
 					cella = CostruttoreVerificaDato.getDato(vd);
 				}
 			}
-			
+
 			if (riga3.equals(labels.get("corretto")) && fenomeno>0) {
 				VerificaDato vd = VerificaAllertaBean.filtraDatiUnico(d, giorno, null, fenomeno, "correttezza", null);
 				if (vd!=null) {
 					cella = CostruttoreVerificaDato.getDato(vd);
 				}
 			}
-			
+
 			if (riga3.equals(labels.get("magnitudo")) && fenomeno>0) {
 				VerificaDato vd = VerificaAllertaBean.filtraDatiUnico(d, giorno, null, fenomeno, "magnitudo", null);
 				if (vd!=null) {
 					cella = CostruttoreVerificaDato.getDato(vd);
 				}
 			}
-			
+
 			if (riga3.equals(labels.get("localizzazione")) && fenomeno>0) {
 				VerificaDato vd = VerificaAllertaBean.filtraDatiUnico(d, giorno, null, fenomeno, "localizzazione", null);
 				if (vd!=null) {
 					cella = CostruttoreVerificaDato.getDato(vd);
 				}
 			}
-			
+
 			if (riga3.equals(labels.get("cause")) && fenomeno>0) {
 				VerificaDato vd = VerificaAllertaBean.filtraDatiUnico(d, giorno, null, fenomeno, "cause", null);
 				if (vd!=null) {
 					cella = CostruttoreVerificaDato.getDato(vd);
 				}
 			}
-			
+
 			if (cella==null) cella = "";
 			out.add(cella);
 		}
-		
+
 		return out;
 	}
-	
+
 	private List<Object[]> getIntestazioneSommario() {
-		
+
 		List<Object[]> out = new ArrayList<Object[]>();
 		List<String> l = new ArrayList<String>();
-		
+
 		l.add(labels.get("data_evento"));
 		l.add(labels.get("allerta_bollettino"));
 		l.add(labels.get("durata"));
@@ -682,21 +864,22 @@ public class VerificaExcelServlet extends HttpServlet {
 		l.add(labels.get("fine_validita_codice_colore"));
 		l.add(labels.get("fine_validita_codice_colore"));
 		l.add(labels.get("codice_colore_max"));
-		
+
 		for (String ev : CostantiVerificaAllerte.EVENTI) {
 			l.add(ev);
 			l.add(ev);
 		}
-		
+
 		l.add(labels.get("note_allerta"));
 		l.add(labels.get("fenomeni_descritti"));
 		l.add(labels.get("fenomeni_allerta"));
-		
+		l.add(labels.get("meteo"));
+
 		out.add(l.toArray());
 		out.add(l.toArray());
-		
+
 		l.clear();
-		
+
 		l.add(labels.get("data_evento"));
 		l.add(labels.get("allerta_bollettino"));
 		l.add(labels.get("durata"));
@@ -707,33 +890,34 @@ public class VerificaExcelServlet extends HttpServlet {
 		l.add(labels.get("data"));
 		l.add(labels.get("ora"));
 		l.add(labels.get("codice_colore_max"));
-		
+
 		for (String ev : CostantiVerificaAllerte.EVENTI) {
 			l.add(labels.get("zone_fenomeno"));
 			l.add(labels.get("codice_colore_fenomeno"));
 		}
-		
+
 		l.add(labels.get("note_allerta"));
 		l.add(labels.get("fenomeni_descritti"));
 		l.add(labels.get("fenomeni_allerta"));
+		l.add(labels.get("meteo"));
 		out.add(l.toArray());
-		
+
 		return out;
-		
+
 	}
-	
+
 	private List<Object[]> getIntestazioneValutazione() {
-		
+
 		List<Object[]> out = new ArrayList<Object[]>();
 		List<String> l = new ArrayList<String>();
-		
+
 		l.add(labels.get("data_evento"));
 		l.add(labels.get("numero_documento"));
 		l.add(labels.get("inizio_validita_codice_colore"));
 		l.add(labels.get("inizio_validita_codice_colore"));
 		l.add(labels.get("fine_validita_codice_colore"));
 		l.add(labels.get("fine_validita_codice_colore"));
-		
+
 		int k=1;
 		for (String ev : CostantiVerificaAllerte.EVENTI) {
 			int size = (k>=8?18:2);
@@ -741,29 +925,29 @@ public class VerificaExcelServlet extends HttpServlet {
 				//l.add(ev);
 				//l.add(ev);
 			}
-			
+
 			l.add(ev);
 			l.add(ev);
 			l.add(ev);
 			l.add(ev);
 			l.add(ev);
 			l.add(ev);
-			
-			
+
+
 			k++;
 		}
 
 		out.add(l.toArray());
-		
+
 		l.clear();
-		
+
 		l.add(labels.get("data_evento"));
 		l.add(labels.get("numero_documento"));
 		l.add(labels.get("inizio_validita_codice_colore"));
 		l.add(labels.get("inizio_validita_codice_colore"));
 		l.add(labels.get("fine_validita_codice_colore"));
 		l.add(labels.get("fine_validita_codice_colore"));
-		
+
 		k=1;
 		for (String ev : CostantiVerificaAllerte.EVENTI) {
 			int size = (k>=8?2:18);
@@ -772,33 +956,33 @@ public class VerificaExcelServlet extends HttpServlet {
 				//l.add(z[j]);
 				//l.add(z[j]);
 			}
-			
+
 			l.add(labels.get("note_valutazione"));
 			l.add(labels.get("valutazione_descrittiva"));
 			l.add(labels.get("valutazione_codice_sintetico"));
 			l.add(labels.get("valutazione_codice_sintetico"));
 			l.add(labels.get("valutazione_codice_sintetico"));
 			l.add(labels.get("valutazione_codice_sintetico"));
-			
-			
+
+
 			k++;
 		}
-		
+
 		out.add(l.toArray());
-		
+
 		l.clear();
-		
+
 		l.add(labels.get("data_evento"));
 		l.add(labels.get("numero_documento"));
 		l.add(labels.get("data"));
 		l.add(labels.get("ora"));
 		l.add(labels.get("data"));
 		l.add(labels.get("ora"));
-		
+
 		for (String ev : CostantiVerificaAllerte.EVENTI) {
 			//l.add(labels.get("prev_val"));
 			//l.add(labels.get("oss_val"));
-			
+
 			l.add(labels.get("note_valutazione"));
 			l.add(labels.get("valutazione_descrittiva"));
 			l.add(labels.get("corretto"));
@@ -806,19 +990,19 @@ public class VerificaExcelServlet extends HttpServlet {
 			l.add(labels.get("localizzazione"));
 			l.add(labels.get("cause"));
 		}
-		
-		
+
+
 		out.add(l.toArray());
-		
+
 		return out;
-		
+
 	}
-	
+
 private List<Object[]> getIntestazionePrecipitazioni() {
-		
+
 		List<Object[]> out = new ArrayList<Object[]>();
 		List<String> l = new ArrayList<String>();
-		
+
 		l.add(labels.get("data_evento"));
 		l.add(labels.get("allerta_bollettino"));
 		l.add(labels.get("numero_documento_semplice"));
@@ -827,18 +1011,18 @@ private List<Object[]> getIntestazionePrecipitazioni() {
 		l.add(labels.get("inizio_validita_codice_colore"));
 		l.add(labels.get("fine_validita_codice_colore"));
 		l.add(labels.get("fine_validita_codice_colore"));
-		
-		
+
+
 		for (String ev : CostantiVerificaAllerte.ZONE) {
 			l.add("ZONA "+ev);
 			l.add("ZONA "+ev);
 		}
-		
+
 		out.add(l.toArray());
 		out.add(l.toArray());
-		
+
 		l.clear();
-		
+
 		l.add(labels.get("data_evento"));
 		l.add(labels.get("allerta_bollettino"));
 		l.add(labels.get("numero_documento_semplice"));
@@ -847,26 +1031,26 @@ private List<Object[]> getIntestazionePrecipitazioni() {
 		l.add(labels.get("ora"));
 		l.add(labels.get("data"));
 		l.add(labels.get("ora"));
-		
+
 		for (String ev : CostantiVerificaAllerte.ZONE) {
 			l.add(labels.get("previsto_24h"));
 			l.add(labels.get("osservato_24h"));
 		}
-		
+
 		out.add(l.toArray());
-		
+
 		return out;
-		
+
 	}
-	
+
 	private List<Object[]> getIntestazioneFenomeno(int fenomeno) {
-		
+
 		List<Object[]> out = new ArrayList<Object[]>();
 		List<String> l = new ArrayList<String>();
 		String zone[] = (fenomeno>=8?CostantiVerificaAllerte.SOTTOZONE_COSTA:CostantiVerificaAllerte.SOTTOZONE);
 		String custom[] = CostantiVerificaAllerte.EVENTI_COLONNE.get(""+fenomeno);
 		int customs = custom.length;
-		
+
 		l.add(labels.get("data_evento"));
 		l.add(labels.get("numero_documento"));
 		l.add(labels.get("data_emissione"));
@@ -874,7 +1058,7 @@ private List<Object[]> getIntestazionePrecipitazioni() {
 		l.add(labels.get("inizio_validita_codice_colore"));
 		l.add(labels.get("fine_validita_codice_colore"));
 		l.add(labels.get("fine_validita_codice_colore"));
-		
+
 		for (String zona : zone) {
 			String z = "ZONA "+zona;
 			l.add(z);
@@ -883,11 +1067,11 @@ private List<Object[]> getIntestazionePrecipitazioni() {
 			l.add(z);
 			l.add(z);
 		}
-		
+
 		out.add(l.toArray());
-		
+
 		l.clear();
-		
+
 		l.add(labels.get("data_evento"));
 		l.add(labels.get("numero_documento"));
 		l.add(labels.get("data_emissione"));
@@ -895,7 +1079,7 @@ private List<Object[]> getIntestazionePrecipitazioni() {
 		l.add(labels.get("inizio_validita_codice_colore"));
 		l.add(labels.get("fine_validita_codice_colore"));
 		l.add(labels.get("fine_validita_codice_colore"));
-		
+
 		for (String zona : zone) {
 
 			l.add(labels.get("post_briefing"));
@@ -904,11 +1088,11 @@ private List<Object[]> getIntestazionePrecipitazioni() {
 			l.add(labels.get("post_allerta"));
 			l.add(labels.get("post_verifica"));
 		}
-		
+
 		out.add(l.toArray());
-		
+
 		l.clear();
-		
+
 		l.add(labels.get("data_evento"));
 		l.add(labels.get("numero_documento"));
 		l.add(labels.get("data_emissione"));
@@ -916,51 +1100,52 @@ private List<Object[]> getIntestazionePrecipitazioni() {
 		l.add(labels.get("ora"));
 		l.add(labels.get("data"));
 		l.add(labels.get("ora"));
-		
+
 		for (String zona : zone) {
 
 			l.add(labels.get("codice_previsto"));
 			for (int k=0; k<customs; k++) l.add(CostantiVerificaAllerte.NOMI_COLONNE.get(custom[k]));
 			l.add(labels.get("segnalazioni_territorio"));
-			l.add(labels.get("noteXXX"));
+			l.add(labels.get("note_riga_fenomeno"));
 			l.add(labels.get("codice_osservato"));
 		}
-		
+
 		out.add(l.toArray());
-		
+
 		return out;
-		
+
 	}
-	
+
 	private List<Object[]> getIntestazione(String foglio) {
 		List<Object[]> out = new ArrayList<Object[]>();
-		
+
 		if (foglio.equals(FOGLI[0])) return getIntestazioneSommario();
 		if (foglio.equals(FOGLI[1])) return getIntestazionePrecipitazioni();
 		if (foglio.equals(FOGLI[11])) return getIntestazioneValutazione();
 		if (fenomenoForFoglio(foglio)!=0)
 			return getIntestazioneFenomeno(fenomenoForFoglio(foglio));
-		
-		
+
+
 		return out;
-		
-		
+
+
 	}
-	
-	
+
+
 	private List<Object[]> makeIntestazione(String foglio, HSSFWorkbook wb, HSSFSheet s) {
 		List<Object[]> celle = getIntestazione(foglio);
-		
+
 		for (int k=0; k<celle.size(); k++) {
 			Object[] o = celle.get(k);
 			Row r = s.createRow(k);
 			for (int j=0; j<o.length; j++) {
 				Cell cell = r.createCell(j);
+			     if (o[j]==null) System.out.println("CELLA NULL "+j+" FOGLIO "+foglio);
 				 if (o[j]!=null) cell.setCellValue(o[j].toString());
-				 cell.setCellStyle(buildStyle(wb, getIntestazioneStyle(foglio, o[j].toString())));
+				 if (o[j]!=null) cell.setCellStyle(buildStyle(wb, getIntestazioneStyle(foglio, o[j].toString())));
 			}
 		}
-		
+
 		for (int k=0; k<celle.size(); k++) {
 			Object[] o = celle.get(k);
 			for (int j=0; j<o.length; j++) {
@@ -974,15 +1159,15 @@ private List<Object[]> getIntestazionePrecipitazioni() {
 				if (finek>k || finej>j) s.addMergedRegion(new CellRangeAddress(k, finek, j, finej));
 			}
 		}
-		
+
 		s.getRow(0).setHeight((short)-1);
 		s.getRow(1).setHeight((short)-1);
 		s.getRow(2).setHeight((short)-1);
-		
+
 		return celle;
 	}
 
-	
+
 	private HSSFWorkbook creaExcel() {
 		HSSFWorkbook wb = HSSFWorkbookFactory.createWorkbook();
 		for (int k=0; k<FOGLI.length; k++) {
@@ -990,17 +1175,17 @@ private List<Object[]> getIntestazionePrecipitazioni() {
 
 			 List<Object[]> intestaz = makeIntestazione(FOGLI[k], wb, sheet);
 			 int rownum = intestaz.size();
-			 
+
 			 List<Object> righe = getRighe(FOGLI[k]);
 			 if (righe==null || righe.size()==0) continue;
-			 
+
 			 int widths[] = new int[intestaz.get(0).length];
 			 for (int col=0; col<widths.length; col++) {
 				 String[] split = intestaz.get(2)[col].toString().split("\n");
 				 String x2 = split[split.length-1];
 				 widths[col] = x2.length();
 			 }
-			 
+
 			 for (Object riga : righe) {
 				 List<Object> celle = getRiga(FOGLI[k], riga, intestaz);
 				 Row r = sheet.createRow(rownum++);
@@ -1008,18 +1193,18 @@ private List<Object[]> getIntestazionePrecipitazioni() {
 				 int cellnum = 0;
 				 for (Object c : celle) {
 					 Cell cell = r.createCell(cellnum++);
-					
+
 					 if (c!=null) {
 						 cell.setCellValue(c.toString());
 						int len = c.toString().length();
 						if (len>widths[cellnum-1]) widths[cellnum-1] = len;
 					 }
-					 cell.setCellStyle(buildStyle(wb, getCellStyle(FOGLI[k], 
+					 cell.setCellStyle(buildStyle(wb, getCellStyle(FOGLI[k],
 							 currentVerifica, currentAllerta, (Date)riga, intestaz.get(0)[cellnum-1].toString(),
 							 intestaz.get(1)[cellnum-1].toString(), intestaz.get(2)[cellnum-1].toString(), currentFenomeno, c)));
 				 }
 			 }
-			 
+
 			 for (int col=0; col<widths.length; col++) {
 				 int xx = widths[col]+2;
 				 if (xx>64) xx = 64;
@@ -1027,45 +1212,45 @@ private List<Object[]> getIntestazionePrecipitazioni() {
 				 sheet.setColumnWidth(col, xx*256);
 				 //System.out.println("setting column width "+col+" "+xx);
 			 }
-			 
+
 		}
-		
+
 		return wb;
 	}
-	
+
 	private String getIntestazioneStyle(String foglio,String riga) {
 		String style = "align-center align-middle bold grey wrap thin-right thin-bottom ";
-		
+
 		if (intestazioneStyles.containsKey(riga))
 			style+=intestazioneStyles.get(riga);
-		
+
 		return style;
 	}
-	
+
 	private String getCellStyle(String foglio, Verifica v, Allerta a, Date giorno, String riga1, String riga2, String riga3, int fenomeno, Object valore) {
 		String style= "align-center align-middle wrap ";
-		
+
 		if (defaultStyles.containsKey(riga1))
 			style+=defaultStyles.get(riga1);
 		if (defaultStyles.containsKey(riga2))
 			style+=defaultStyles.get(riga2);
 		if (defaultStyles.containsKey(riga3))
 			style+=defaultStyles.get(riga3);
-		
+
 		if (!foglio.equals(FOGLI[11]) && a!=null && a.getTipoAllerta()) style+=" bgcolor47";
-		
+
 		return style;
 	}
-	
+
 	   private CellStyle buildStyle(HSSFWorkbook wb, String st) {
-		   
+
 		   if (styles.containsKey(st)) return styles.get(st);
 
 	        CellStyle header1 = wb.createCellStyle();
 	        if (st == null) st = "";
 	        HSSFFont f = wb.createFont();
 	        f.setFontName("Calibri");
-	        
+
 	        if (st.contains("align-center")) header1.setAlignment(HorizontalAlignment.CENTER);
 	        if (st.contains("align-left")) header1.setAlignment(HorizontalAlignment.LEFT);
 	        if (st.contains("align-right")) header1.setAlignment(HorizontalAlignment.RIGHT);
@@ -1087,15 +1272,15 @@ private List<Object[]> getIntestazionePrecipitazioni() {
 	                header1.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
 	                header1.setFillForegroundColor((short) k);
-	               
+
 	            }
 	            if (st.contains("fontcolor" + (k<10?"0":"") + k)) {
 	                f.setColor((short)k);
-	              
+
 	            }
 	        }
-	        
-	      
+
+
 
 	        if (st.contains("grey")) {
 	            header1.setFillPattern(FillPatternType.SOLID_FOREGROUND);
@@ -1107,7 +1292,7 @@ private List<Object[]> getIntestazionePrecipitazioni() {
 	        if (st.contains("italic")) f.setItalic(true);
 	        if (st.contains("big")) f.setFontHeight((short) 300);
 	        if (st.contains("huge")) f.setFontHeight((short) 500);
-	       
+
 
 	        header1.setFont(f);
 
@@ -1116,9 +1301,9 @@ private List<Object[]> getIntestazionePrecipitazioni() {
 	            header1.setDataFormat(format.getFormat("#,##0.00"));
 	        } else if (st.contains("currency")) {
 	            DataFormat format = wb.createDataFormat();
-	            header1.setDataFormat(format.getFormat("Ä #,##0.00"));
+	            header1.setDataFormat(format.getFormat("√Ø¬ø¬Ω #,##0.00"));
 	        }
-	        
+
 	        System.out.println("inserisco stile "+st);
 	        styles.put(st, header1);
 	        return header1;

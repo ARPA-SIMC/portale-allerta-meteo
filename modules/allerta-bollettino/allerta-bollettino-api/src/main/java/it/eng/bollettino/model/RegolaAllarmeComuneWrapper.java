@@ -1,30 +1,15 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.bollettino.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -35,22 +20,12 @@ import java.util.Objects;
  * @see RegolaAllarmeComune
  * @generated
  */
-@ProviderType
 public class RegolaAllarmeComuneWrapper
-	implements RegolaAllarmeComune, ModelWrapper<RegolaAllarmeComune> {
+	extends BaseModelWrapper<RegolaAllarmeComune>
+	implements ModelWrapper<RegolaAllarmeComune>, RegolaAllarmeComune {
 
 	public RegolaAllarmeComuneWrapper(RegolaAllarmeComune regolaAllarmeComune) {
-		_regolaAllarmeComune = regolaAllarmeComune;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return RegolaAllarmeComune.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return RegolaAllarmeComune.class.getName();
+		super(regolaAllarmeComune);
 	}
 
 	@Override
@@ -93,21 +68,8 @@ public class RegolaAllarmeComuneWrapper
 	}
 
 	@Override
-	public Object clone() {
-		return new RegolaAllarmeComuneWrapper(
-			(RegolaAllarmeComune)_regolaAllarmeComune.clone());
-	}
-
-	@Override
-	public int compareTo(
-		it.eng.bollettino.model.RegolaAllarmeComune regolaAllarmeComune) {
-
-		return _regolaAllarmeComune.compareTo(regolaAllarmeComune);
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _regolaAllarmeComune.getExpandoBridge();
+	public RegolaAllarmeComune cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -117,7 +79,7 @@ public class RegolaAllarmeComuneWrapper
 	 */
 	@Override
 	public long getId() {
-		return _regolaAllarmeComune.getId();
+		return model.getId();
 	}
 
 	/**
@@ -127,7 +89,7 @@ public class RegolaAllarmeComuneWrapper
 	 */
 	@Override
 	public long getIdComune() {
-		return _regolaAllarmeComune.getIdComune();
+		return model.getIdComune();
 	}
 
 	/**
@@ -137,7 +99,7 @@ public class RegolaAllarmeComuneWrapper
 	 */
 	@Override
 	public long getIdRegola() {
-		return _regolaAllarmeComune.getIdRegola();
+		return model.getIdRegola();
 	}
 
 	/**
@@ -147,12 +109,7 @@ public class RegolaAllarmeComuneWrapper
 	 */
 	@Override
 	public long getPrimaryKey() {
-		return _regolaAllarmeComune.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _regolaAllarmeComune.getPrimaryKeyObj();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -162,54 +119,12 @@ public class RegolaAllarmeComuneWrapper
 	 */
 	@Override
 	public String getUuid() {
-		return _regolaAllarmeComune.getUuid();
-	}
-
-	@Override
-	public int hashCode() {
-		return _regolaAllarmeComune.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _regolaAllarmeComune.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _regolaAllarmeComune.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _regolaAllarmeComune.isNew();
+		return model.getUuid();
 	}
 
 	@Override
 	public void persist() {
-		_regolaAllarmeComune.persist();
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_regolaAllarmeComune.setCachedModel(cachedModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_regolaAllarmeComune.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_regolaAllarmeComune.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_regolaAllarmeComune.setExpandoBridgeAttributes(serviceContext);
+		model.persist();
 	}
 
 	/**
@@ -219,7 +134,7 @@ public class RegolaAllarmeComuneWrapper
 	 */
 	@Override
 	public void setId(long id) {
-		_regolaAllarmeComune.setId(id);
+		model.setId(id);
 	}
 
 	/**
@@ -229,7 +144,7 @@ public class RegolaAllarmeComuneWrapper
 	 */
 	@Override
 	public void setIdComune(long idComune) {
-		_regolaAllarmeComune.setIdComune(idComune);
+		model.setIdComune(idComune);
 	}
 
 	/**
@@ -239,12 +154,7 @@ public class RegolaAllarmeComuneWrapper
 	 */
 	@Override
 	public void setIdRegola(long idRegola) {
-		_regolaAllarmeComune.setIdRegola(idRegola);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_regolaAllarmeComune.setNew(n);
+		model.setIdRegola(idRegola);
 	}
 
 	/**
@@ -254,12 +164,7 @@ public class RegolaAllarmeComuneWrapper
 	 */
 	@Override
 	public void setPrimaryKey(long primaryKey) {
-		_regolaAllarmeComune.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_regolaAllarmeComune.setPrimaryKeyObj(primaryKeyObj);
+		model.setPrimaryKey(primaryKey);
 	}
 
 	/**
@@ -269,81 +174,19 @@ public class RegolaAllarmeComuneWrapper
 	 */
 	@Override
 	public void setUuid(String uuid) {
-		_regolaAllarmeComune.setUuid(uuid);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<it.eng.bollettino.model.RegolaAllarmeComune> toCacheModel() {
-
-		return _regolaAllarmeComune.toCacheModel();
-	}
-
-	@Override
-	public it.eng.bollettino.model.RegolaAllarmeComune toEscapedModel() {
-		return new RegolaAllarmeComuneWrapper(
-			_regolaAllarmeComune.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _regolaAllarmeComune.toString();
-	}
-
-	@Override
-	public it.eng.bollettino.model.RegolaAllarmeComune toUnescapedModel() {
-		return new RegolaAllarmeComuneWrapper(
-			_regolaAllarmeComune.toUnescapedModel());
+		model.setUuid(uuid);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _regolaAllarmeComune.toXmlString();
+		return model.toXmlString();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
+	protected RegolaAllarmeComuneWrapper wrap(
+		RegolaAllarmeComune regolaAllarmeComune) {
 
-		if (!(obj instanceof RegolaAllarmeComuneWrapper)) {
-			return false;
-		}
-
-		RegolaAllarmeComuneWrapper regolaAllarmeComuneWrapper =
-			(RegolaAllarmeComuneWrapper)obj;
-
-		if (Objects.equals(
-				_regolaAllarmeComune,
-				regolaAllarmeComuneWrapper._regolaAllarmeComune)) {
-
-			return true;
-		}
-
-		return false;
+		return new RegolaAllarmeComuneWrapper(regolaAllarmeComune);
 	}
-
-	@Override
-	public RegolaAllarmeComune getWrappedModel() {
-		return _regolaAllarmeComune;
-	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _regolaAllarmeComune.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _regolaAllarmeComune.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_regolaAllarmeComune.resetOriginalValues();
-	}
-
-	private final RegolaAllarmeComune _regolaAllarmeComune;
 
 }

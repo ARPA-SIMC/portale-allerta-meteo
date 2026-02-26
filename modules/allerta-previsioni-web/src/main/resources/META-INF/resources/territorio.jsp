@@ -56,17 +56,17 @@
       	<div class="col-12 page__content" id="page-content">
           <ul class="nav nav-tabs" role="tablist">
               <li class="nav-item" role="presentation">
-                  <a class="nav-link active" href="#previsioni-tab-oggi" aria-controls="previsioni-tab-oggi" role="tab" data-toggle="tab">
+                  <a class="nav-link active" href="#previsioni-tab-oggi" aria-controls="previsioni-tab-oggi" role="tab" data-toggle="liferay-tab">
                   	<%=((Giorno) gestioneBean.getPrevisioni().get("oggi")).getNome()%>
                   </a>
               </li>
               <li class="nav-item" role="presentation">
-                  <a class="nav-link " href="#previsioni-tab-domani" aria-controls="previsioni-tab-domani" role="tab" data-toggle="tab">
+                  <a class="nav-link " href="#previsioni-tab-domani" aria-controls="previsioni-tab-domani" role="tab" data-toggle="liferay-tab">
                   	<%=((Giorno) gestioneBean.getPrevisioni().get("domani")).getNome()%>
                   </a>
               </li>
               <li class="nav-item" role="presentation">
-                  <a class="nav-link " href="#previsioni-tab-dopodomani" aria-controls="previsioni-tab-dopodomani" role="tab" data-toggle="tab">
+                  <a class="nav-link " href="#previsioni-tab-dopodomani" aria-controls="previsioni-tab-dopodomani" role="tab" data-toggle="liferay-tab">
                   	<%=((Giorno) gestioneBean.getPrevisioni().get("dopodomani")).getNome()%>
                   </a>
               </li>

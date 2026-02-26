@@ -35,12 +35,17 @@ public class AllertaJSDynamicInclude extends BaseJSPDynamicInclude{
 		return LogFactoryUtil.getLog(AllertaJSDynamicInclude.class);
 	}
 
+
+
+	@Override
+	protected ServletContext getServletContext() {
+		return _servletContext;
+	}
+	
 	@Reference(
 			target = "(osgi.web.symbolicname=it.eng.allerta.frontend.js)",
 			unbind = "-"
 		)
-		protected void setServletContext(ServletContext servletContext) {
-			super.setServletContext(servletContext);
-		}
+	private ServletContext _servletContext;
 
 }

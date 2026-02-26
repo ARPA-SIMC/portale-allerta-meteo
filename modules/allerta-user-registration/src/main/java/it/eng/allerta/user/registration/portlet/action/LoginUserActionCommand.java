@@ -11,7 +11,7 @@ import org.osgi.service.component.annotations.Reference;
 import com.liferay.portal.kernel.model.CompanyConstants;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
-import com.liferay.portal.kernel.security.auth.session.AuthenticatedSessionManager;
+import com.liferay.portal.security.auth.session.AuthenticatedSessionManagerUtil;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.struts.LastPath;
 import com.liferay.portal.kernel.util.ParamUtil;
@@ -61,7 +61,7 @@ public class LoginUserActionCommand extends BaseMVCActionCommand {
 			
 			String authType = CompanyConstants.AUTH_TYPE_SN;
 			
-			authenticatedSessionManager.login(request, response, username, password, ricordami, authType);
+			AuthenticatedSessionManagerUtil.login(request, response, username, password, ricordami, authType);
 			
 			authenticated = true;
 			
@@ -87,8 +87,5 @@ public class LoginUserActionCommand extends BaseMVCActionCommand {
 		}
 
 	}
-	
-	@Reference
-	private AuthenticatedSessionManager authenticatedSessionManager;
 
 }

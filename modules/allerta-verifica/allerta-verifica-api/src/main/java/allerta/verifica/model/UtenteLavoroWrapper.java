@@ -1,31 +1,16 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package allerta.verifica.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -36,22 +21,12 @@ import java.util.Objects;
  * @see UtenteLavoro
  * @generated
  */
-@ProviderType
 public class UtenteLavoroWrapper
-	implements UtenteLavoro, ModelWrapper<UtenteLavoro> {
+	extends BaseModelWrapper<UtenteLavoro>
+	implements ModelWrapper<UtenteLavoro>, UtenteLavoro {
 
 	public UtenteLavoroWrapper(UtenteLavoro utenteLavoro) {
-		_utenteLavoro = utenteLavoro;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return UtenteLavoro.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return UtenteLavoro.class.getName();
+		super(utenteLavoro);
 	}
 
 	@Override
@@ -101,13 +76,8 @@ public class UtenteLavoroWrapper
 	}
 
 	@Override
-	public Object clone() {
-		return new UtenteLavoroWrapper((UtenteLavoro)_utenteLavoro.clone());
-	}
-
-	@Override
-	public int compareTo(allerta.verifica.model.UtenteLavoro utenteLavoro) {
-		return _utenteLavoro.compareTo(utenteLavoro);
+	public UtenteLavoro cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -117,7 +87,7 @@ public class UtenteLavoroWrapper
 	 */
 	@Override
 	public String getAttivita() {
-		return _utenteLavoro.getAttivita();
+		return model.getAttivita();
 	}
 
 	/**
@@ -127,12 +97,7 @@ public class UtenteLavoroWrapper
 	 */
 	@Override
 	public long getDocumento() {
-		return _utenteLavoro.getDocumento();
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _utenteLavoro.getExpandoBridge();
+		return model.getDocumento();
 	}
 
 	/**
@@ -142,7 +107,7 @@ public class UtenteLavoroWrapper
 	 */
 	@Override
 	public long getId() {
-		return _utenteLavoro.getId();
+		return model.getId();
 	}
 
 	/**
@@ -152,12 +117,7 @@ public class UtenteLavoroWrapper
 	 */
 	@Override
 	public long getPrimaryKey() {
-		return _utenteLavoro.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _utenteLavoro.getPrimaryKeyObj();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -167,7 +127,7 @@ public class UtenteLavoroWrapper
 	 */
 	@Override
 	public Date getTs() {
-		return _utenteLavoro.getTs();
+		return model.getTs();
 	}
 
 	/**
@@ -177,32 +137,12 @@ public class UtenteLavoroWrapper
 	 */
 	@Override
 	public String getUtente() {
-		return _utenteLavoro.getUtente();
-	}
-
-	@Override
-	public int hashCode() {
-		return _utenteLavoro.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _utenteLavoro.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _utenteLavoro.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _utenteLavoro.isNew();
+		return model.getUtente();
 	}
 
 	@Override
 	public void persist() {
-		_utenteLavoro.persist();
+		model.persist();
 	}
 
 	/**
@@ -212,12 +152,7 @@ public class UtenteLavoroWrapper
 	 */
 	@Override
 	public void setAttivita(String attivita) {
-		_utenteLavoro.setAttivita(attivita);
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_utenteLavoro.setCachedModel(cachedModel);
+		model.setAttivita(attivita);
 	}
 
 	/**
@@ -227,24 +162,7 @@ public class UtenteLavoroWrapper
 	 */
 	@Override
 	public void setDocumento(long documento) {
-		_utenteLavoro.setDocumento(documento);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_utenteLavoro.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_utenteLavoro.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_utenteLavoro.setExpandoBridgeAttributes(serviceContext);
+		model.setDocumento(documento);
 	}
 
 	/**
@@ -254,12 +172,7 @@ public class UtenteLavoroWrapper
 	 */
 	@Override
 	public void setId(long id) {
-		_utenteLavoro.setId(id);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_utenteLavoro.setNew(n);
+		model.setId(id);
 	}
 
 	/**
@@ -269,12 +182,7 @@ public class UtenteLavoroWrapper
 	 */
 	@Override
 	public void setPrimaryKey(long primaryKey) {
-		_utenteLavoro.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_utenteLavoro.setPrimaryKeyObj(primaryKeyObj);
+		model.setPrimaryKey(primaryKey);
 	}
 
 	/**
@@ -284,7 +192,7 @@ public class UtenteLavoroWrapper
 	 */
 	@Override
 	public void setTs(Date ts) {
-		_utenteLavoro.setTs(ts);
+		model.setTs(ts);
 	}
 
 	/**
@@ -294,75 +202,17 @@ public class UtenteLavoroWrapper
 	 */
 	@Override
 	public void setUtente(String utente) {
-		_utenteLavoro.setUtente(utente);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<allerta.verifica.model.UtenteLavoro> toCacheModel() {
-
-		return _utenteLavoro.toCacheModel();
-	}
-
-	@Override
-	public allerta.verifica.model.UtenteLavoro toEscapedModel() {
-		return new UtenteLavoroWrapper(_utenteLavoro.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _utenteLavoro.toString();
-	}
-
-	@Override
-	public allerta.verifica.model.UtenteLavoro toUnescapedModel() {
-		return new UtenteLavoroWrapper(_utenteLavoro.toUnescapedModel());
+		model.setUtente(utente);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _utenteLavoro.toXmlString();
+		return model.toXmlString();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-
-		if (!(obj instanceof UtenteLavoroWrapper)) {
-			return false;
-		}
-
-		UtenteLavoroWrapper utenteLavoroWrapper = (UtenteLavoroWrapper)obj;
-
-		if (Objects.equals(_utenteLavoro, utenteLavoroWrapper._utenteLavoro)) {
-			return true;
-		}
-
-		return false;
+	protected UtenteLavoroWrapper wrap(UtenteLavoro utenteLavoro) {
+		return new UtenteLavoroWrapper(utenteLavoro);
 	}
-
-	@Override
-	public UtenteLavoro getWrappedModel() {
-		return _utenteLavoro;
-	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _utenteLavoro.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _utenteLavoro.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_utenteLavoro.resetOriginalValues();
-	}
-
-	private final UtenteLavoro _utenteLavoro;
 
 }

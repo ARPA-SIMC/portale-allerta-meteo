@@ -1,4 +1,7 @@
 Bundle-Name: allerta-compila-sb-web
 Bundle-SymbolicName: it.eng.allerta.compila
 Bundle-Version: 1.0.0
-Export-Package: it.eng.allerta.compila.constants
+Export-Package: allerta.compila.sb.web.constants
+Provide-Capability:\
+	liferay.language.resources;\
+		resource.bundle.base.name="content.Language"

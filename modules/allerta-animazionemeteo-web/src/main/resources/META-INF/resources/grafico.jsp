@@ -15,7 +15,7 @@ RadarBean graficoBean = (RadarBean) renderRequest.getAttribute("GraficoBean");
 <script src="<%=request.getContextPath()%>/js/d3.v3.min.js"></script>
 <script src="<%=request.getContextPath()%>/js/jstorage.js?v=0.1c"></script>
 <script src='<%=request.getContextPath()%>/js/common.js?v=1.1'></script>
-<script src='<%=request.getContextPath()%>/js/grafico.js?v=0.2'></script>
+<script src='<%=request.getContextPath()%>/js/grafico.js?v=0.3'></script>
 
 <h1 style="font-size:1.5rem"></h1>
 <table id='infoMinime'>

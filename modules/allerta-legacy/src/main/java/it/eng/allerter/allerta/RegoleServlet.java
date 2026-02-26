@@ -24,11 +24,7 @@ import it.eng.allerta.utils.AllertaTracker;
 //import net.sf.jasperreports.engine.util.JRProperties;
 
 @Component(
-	    immediate = true,
-	    property = {
-	        "osgi.http.whiteboard.context.path=/",
-	        "osgi.http.whiteboard.servlet.pattern=/report/regole"
-	    },
+	    property = "osgi.http.whiteboard.servlet.pattern=/report/regole",
 	    service = Servlet.class
 	)
 public class RegoleServlet extends HttpServlet {

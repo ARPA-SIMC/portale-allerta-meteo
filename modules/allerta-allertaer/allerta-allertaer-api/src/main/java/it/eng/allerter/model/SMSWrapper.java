@@ -1,31 +1,16 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerter.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -36,21 +21,11 @@ import java.util.Objects;
  * @see SMS
  * @generated
  */
-@ProviderType
-public class SMSWrapper implements SMS, ModelWrapper<SMS> {
+public class SMSWrapper
+	extends BaseModelWrapper<SMS> implements ModelWrapper<SMS>, SMS {
 
 	public SMSWrapper(SMS sms) {
-		_sms = sms;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return SMS.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return SMS.class.getName();
+		super(sms);
 	}
 
 	@Override
@@ -191,13 +166,8 @@ public class SMSWrapper implements SMS, ModelWrapper<SMS> {
 	}
 
 	@Override
-	public Object clone() {
-		return new SMSWrapper((SMS)_sms.clone());
-	}
-
-	@Override
-	public int compareTo(it.eng.allerter.model.SMS sms) {
-		return _sms.compareTo(sms);
+	public SMS cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -207,7 +177,7 @@ public class SMSWrapper implements SMS, ModelWrapper<SMS> {
 	 */
 	@Override
 	public String getCodiceErrore() {
-		return _sms.getCodiceErrore();
+		return model.getCodiceErrore();
 	}
 
 	/**
@@ -217,7 +187,7 @@ public class SMSWrapper implements SMS, ModelWrapper<SMS> {
 	 */
 	@Override
 	public Date getDataAck() {
-		return _sms.getDataAck();
+		return model.getDataAck();
 	}
 
 	/**
@@ -227,7 +197,7 @@ public class SMSWrapper implements SMS, ModelWrapper<SMS> {
 	 */
 	@Override
 	public Date getDataInvio() {
-		return _sms.getDataInvio();
+		return model.getDataInvio();
 	}
 
 	/**
@@ -237,7 +207,7 @@ public class SMSWrapper implements SMS, ModelWrapper<SMS> {
 	 */
 	@Override
 	public Date getDataRicevuta() {
-		return _sms.getDataRicevuta();
+		return model.getDataRicevuta();
 	}
 
 	/**
@@ -247,7 +217,7 @@ public class SMSWrapper implements SMS, ModelWrapper<SMS> {
 	 */
 	@Override
 	public String getDescrizioneErrore() {
-		return _sms.getDescrizioneErrore();
+		return model.getDescrizioneErrore();
 	}
 
 	/**
@@ -257,12 +227,7 @@ public class SMSWrapper implements SMS, ModelWrapper<SMS> {
 	 */
 	@Override
 	public long getDestinatario() {
-		return _sms.getDestinatario();
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _sms.getExpandoBridge();
+		return model.getDestinatario();
 	}
 
 	/**
@@ -272,7 +237,7 @@ public class SMSWrapper implements SMS, ModelWrapper<SMS> {
 	 */
 	@Override
 	public long getId() {
-		return _sms.getId();
+		return model.getId();
 	}
 
 	/**
@@ -282,7 +247,7 @@ public class SMSWrapper implements SMS, ModelWrapper<SMS> {
 	 */
 	@Override
 	public String getNomeDestinatario() {
-		return _sms.getNomeDestinatario();
+		return model.getNomeDestinatario();
 	}
 
 	/**
@@ -292,7 +257,7 @@ public class SMSWrapper implements SMS, ModelWrapper<SMS> {
 	 */
 	@Override
 	public String getNumero() {
-		return _sms.getNumero();
+		return model.getNumero();
 	}
 
 	/**
@@ -302,7 +267,7 @@ public class SMSWrapper implements SMS, ModelWrapper<SMS> {
 	 */
 	@Override
 	public String getNumeroDa() {
-		return _sms.getNumeroDa();
+		return model.getNumeroDa();
 	}
 
 	/**
@@ -312,7 +277,7 @@ public class SMSWrapper implements SMS, ModelWrapper<SMS> {
 	 */
 	@Override
 	public long getParam() {
-		return _sms.getParam();
+		return model.getParam();
 	}
 
 	/**
@@ -322,12 +287,7 @@ public class SMSWrapper implements SMS, ModelWrapper<SMS> {
 	 */
 	@Override
 	public long getPrimaryKey() {
-		return _sms.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _sms.getPrimaryKeyObj();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -337,7 +297,7 @@ public class SMSWrapper implements SMS, ModelWrapper<SMS> {
 	 */
 	@Override
 	public Date getProssimoInvio() {
-		return _sms.getProssimoInvio();
+		return model.getProssimoInvio();
 	}
 
 	/**
@@ -347,7 +307,7 @@ public class SMSWrapper implements SMS, ModelWrapper<SMS> {
 	 */
 	@Override
 	public String getSottotipo() {
-		return _sms.getSottotipo();
+		return model.getSottotipo();
 	}
 
 	/**
@@ -357,7 +317,7 @@ public class SMSWrapper implements SMS, ModelWrapper<SMS> {
 	 */
 	@Override
 	public long getStato() {
-		return _sms.getStato();
+		return model.getStato();
 	}
 
 	/**
@@ -367,7 +327,7 @@ public class SMSWrapper implements SMS, ModelWrapper<SMS> {
 	 */
 	@Override
 	public long getTentativi() {
-		return _sms.getTentativi();
+		return model.getTentativi();
 	}
 
 	/**
@@ -377,7 +337,7 @@ public class SMSWrapper implements SMS, ModelWrapper<SMS> {
 	 */
 	@Override
 	public String getTesto() {
-		return _sms.getTesto();
+		return model.getTesto();
 	}
 
 	/**
@@ -387,7 +347,7 @@ public class SMSWrapper implements SMS, ModelWrapper<SMS> {
 	 */
 	@Override
 	public String getTimestamp() {
-		return _sms.getTimestamp();
+		return model.getTimestamp();
 	}
 
 	/**
@@ -397,37 +357,12 @@ public class SMSWrapper implements SMS, ModelWrapper<SMS> {
 	 */
 	@Override
 	public String getTipo() {
-		return _sms.getTipo();
-	}
-
-	@Override
-	public int hashCode() {
-		return _sms.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _sms.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _sms.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _sms.isNew();
+		return model.getTipo();
 	}
 
 	@Override
 	public void persist() {
-		_sms.persist();
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_sms.setCachedModel(cachedModel);
+		model.persist();
 	}
 
 	/**
@@ -437,7 +372,7 @@ public class SMSWrapper implements SMS, ModelWrapper<SMS> {
 	 */
 	@Override
 	public void setCodiceErrore(String codiceErrore) {
-		_sms.setCodiceErrore(codiceErrore);
+		model.setCodiceErrore(codiceErrore);
 	}
 
 	/**
@@ -447,7 +382,7 @@ public class SMSWrapper implements SMS, ModelWrapper<SMS> {
 	 */
 	@Override
 	public void setDataAck(Date dataAck) {
-		_sms.setDataAck(dataAck);
+		model.setDataAck(dataAck);
 	}
 
 	/**
@@ -457,7 +392,7 @@ public class SMSWrapper implements SMS, ModelWrapper<SMS> {
 	 */
 	@Override
 	public void setDataInvio(Date dataInvio) {
-		_sms.setDataInvio(dataInvio);
+		model.setDataInvio(dataInvio);
 	}
 
 	/**
@@ -467,7 +402,7 @@ public class SMSWrapper implements SMS, ModelWrapper<SMS> {
 	 */
 	@Override
 	public void setDataRicevuta(Date dataRicevuta) {
-		_sms.setDataRicevuta(dataRicevuta);
+		model.setDataRicevuta(dataRicevuta);
 	}
 
 	/**
@@ -477,7 +412,7 @@ public class SMSWrapper implements SMS, ModelWrapper<SMS> {
 	 */
 	@Override
 	public void setDescrizioneErrore(String descrizioneErrore) {
-		_sms.setDescrizioneErrore(descrizioneErrore);
+		model.setDescrizioneErrore(descrizioneErrore);
 	}
 
 	/**
@@ -487,24 +422,7 @@ public class SMSWrapper implements SMS, ModelWrapper<SMS> {
 	 */
 	@Override
 	public void setDestinatario(long destinatario) {
-		_sms.setDestinatario(destinatario);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_sms.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_sms.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_sms.setExpandoBridgeAttributes(serviceContext);
+		model.setDestinatario(destinatario);
 	}
 
 	/**
@@ -514,12 +432,7 @@ public class SMSWrapper implements SMS, ModelWrapper<SMS> {
 	 */
 	@Override
 	public void setId(long id) {
-		_sms.setId(id);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_sms.setNew(n);
+		model.setId(id);
 	}
 
 	/**
@@ -529,7 +442,7 @@ public class SMSWrapper implements SMS, ModelWrapper<SMS> {
 	 */
 	@Override
 	public void setNomeDestinatario(String nomeDestinatario) {
-		_sms.setNomeDestinatario(nomeDestinatario);
+		model.setNomeDestinatario(nomeDestinatario);
 	}
 
 	/**
@@ -539,7 +452,7 @@ public class SMSWrapper implements SMS, ModelWrapper<SMS> {
 	 */
 	@Override
 	public void setNumero(String numero) {
-		_sms.setNumero(numero);
+		model.setNumero(numero);
 	}
 
 	/**
@@ -549,7 +462,7 @@ public class SMSWrapper implements SMS, ModelWrapper<SMS> {
 	 */
 	@Override
 	public void setNumeroDa(String numeroDa) {
-		_sms.setNumeroDa(numeroDa);
+		model.setNumeroDa(numeroDa);
 	}
 
 	/**
@@ -559,7 +472,7 @@ public class SMSWrapper implements SMS, ModelWrapper<SMS> {
 	 */
 	@Override
 	public void setParam(long param) {
-		_sms.setParam(param);
+		model.setParam(param);
 	}
 
 	/**
@@ -569,12 +482,7 @@ public class SMSWrapper implements SMS, ModelWrapper<SMS> {
 	 */
 	@Override
 	public void setPrimaryKey(long primaryKey) {
-		_sms.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_sms.setPrimaryKeyObj(primaryKeyObj);
+		model.setPrimaryKey(primaryKey);
 	}
 
 	/**
@@ -584,7 +492,7 @@ public class SMSWrapper implements SMS, ModelWrapper<SMS> {
 	 */
 	@Override
 	public void setProssimoInvio(Date prossimoInvio) {
-		_sms.setProssimoInvio(prossimoInvio);
+		model.setProssimoInvio(prossimoInvio);
 	}
 
 	/**
@@ -594,7 +502,7 @@ public class SMSWrapper implements SMS, ModelWrapper<SMS> {
 	 */
 	@Override
 	public void setSottotipo(String sottotipo) {
-		_sms.setSottotipo(sottotipo);
+		model.setSottotipo(sottotipo);
 	}
 
 	/**
@@ -604,7 +512,7 @@ public class SMSWrapper implements SMS, ModelWrapper<SMS> {
 	 */
 	@Override
 	public void setStato(long stato) {
-		_sms.setStato(stato);
+		model.setStato(stato);
 	}
 
 	/**
@@ -614,7 +522,7 @@ public class SMSWrapper implements SMS, ModelWrapper<SMS> {
 	 */
 	@Override
 	public void setTentativi(long tentativi) {
-		_sms.setTentativi(tentativi);
+		model.setTentativi(tentativi);
 	}
 
 	/**
@@ -624,7 +532,7 @@ public class SMSWrapper implements SMS, ModelWrapper<SMS> {
 	 */
 	@Override
 	public void setTesto(String testo) {
-		_sms.setTesto(testo);
+		model.setTesto(testo);
 	}
 
 	/**
@@ -634,7 +542,7 @@ public class SMSWrapper implements SMS, ModelWrapper<SMS> {
 	 */
 	@Override
 	public void setTimestamp(String timestamp) {
-		_sms.setTimestamp(timestamp);
+		model.setTimestamp(timestamp);
 	}
 
 	/**
@@ -644,75 +552,17 @@ public class SMSWrapper implements SMS, ModelWrapper<SMS> {
 	 */
 	@Override
 	public void setTipo(String tipo) {
-		_sms.setTipo(tipo);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel<it.eng.allerter.model.SMS>
-		toCacheModel() {
-
-		return _sms.toCacheModel();
-	}
-
-	@Override
-	public it.eng.allerter.model.SMS toEscapedModel() {
-		return new SMSWrapper(_sms.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _sms.toString();
-	}
-
-	@Override
-	public it.eng.allerter.model.SMS toUnescapedModel() {
-		return new SMSWrapper(_sms.toUnescapedModel());
+		model.setTipo(tipo);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _sms.toXmlString();
+		return model.toXmlString();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-
-		if (!(obj instanceof SMSWrapper)) {
-			return false;
-		}
-
-		SMSWrapper smsWrapper = (SMSWrapper)obj;
-
-		if (Objects.equals(_sms, smsWrapper._sms)) {
-			return true;
-		}
-
-		return false;
+	protected SMSWrapper wrap(SMS sms) {
+		return new SMSWrapper(sms);
 	}
-
-	@Override
-	public SMS getWrappedModel() {
-		return _sms;
-	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _sms.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _sms.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_sms.resetOriginalValues();
-	}
-
-	private final SMS _sms;
 
 }

@@ -15,6 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import it.eng.bollettino.model.BollettinoParametro;
+import it.eng.bollettino.service.BollettinoParametroLocalServiceUtil;
+
 public class DownloaderDati {
 	
 	private static Log logger = LogFactoryUtil.getLog(DownloaderDati.class);
@@ -67,7 +70,14 @@ public class DownloaderDati {
 	
 	public static String download(String service) {
 		
-		String url = "https://portaleallerte:Phu9ka@simc.arpae.it/" + service;
+		String base = "https://portaleallerte:Phu9ka@simc.arpae.it/";
+		
+		BollettinoParametro bp = BollettinoParametroLocalServiceUtil.fetchBollettinoParametro("ARPAE_SENSORI_URL");
+		if (bp!=null && bp.getValore()!=null) base = bp.getValore();
+		
+		String url = base + service;
+		
+		
 		return downloadUrl(url);
 		
 	}

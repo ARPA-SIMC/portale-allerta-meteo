@@ -1,3 +1,13 @@
+<%@page import="it.eng.allerter.service.LogInternoLocalServiceUtil"%>
+<%@page import="com.liferay.portal.kernel.workflow.permission.WorkflowPermissionUtil"%>
+<%@page import="com.liferay.portal.kernel.workflow.WorkflowTask"%>
+<%@page import="java.util.List"%>
+<%@page import="com.liferay.portal.kernel.workflow.WorkflowTaskManagerUtil"%>
+<%@page import="com.liferay.portal.kernel.workflow.WorkflowInstanceManagerUtil"%>
+<%@page import="com.liferay.portal.kernel.workflow.WorkflowInstance"%>
+<%@page import="com.liferay.portal.kernel.exception.NoSuchWorkflowInstanceLinkException"%>
+<%@page import="com.liferay.portal.kernel.model.WorkflowInstanceLink"%>
+<%@page import="com.liferay.portal.kernel.service.WorkflowInstanceLinkLocalServiceUtil"%>
 <%@page import="com.liferay.journal.model.JournalArticleDisplay"%>
 <%@page import="com.liferay.journal.service.JournalArticleLocalServiceUtil"%>
 <%@page import="com.liferay.journal.model.JournalArticle"%>
@@ -36,6 +46,7 @@ try {
 } catch (Exception e) {
 	e.printStackTrace();
 }
+String previewPdfLink = pdfLink += "?previewFile=1";
 
 //long loginPlid = PortalUtil.getPlidFromPortletId(themeDisplay.getScopeGroupId(), false, AllertaKeys.AllertaLogin);
 
@@ -43,35 +54,64 @@ String loginPortletId = AllertaKeys.AllertaLogin;
 
 String socialPortletId = AllertaKeys.AllertaSocialPortlet;
 
+long wflMonitoraggioPlid = PortalUtil.getPlidFromPortletId(feedback.getGroupId(), false, AllertaKeys.AllertaCompilaMonitoraggioPortlet);
+long workflowTaskId = 0;
 
-JournalArticle previsioniDatiArticle = 
-						JournalArticleLocalServiceUtil.fetchArticleByUrlTitle(themeDisplay.getScopeGroupId(), "menu-previsione-e-da-1");
+try {
+	if (feedback.getStato()==1 || feedback.getStato()==1000) {
+		//in approvazione?
+		long allertaId = feedback.getBollettinoId();
+		boolean hasWfl = 
+				WorkflowInstanceLinkLocalServiceUtil.hasWorkflowInstanceLink(
+						feedback.getCompanyId(), 
+						feedback.getGroupId(), 
+						Bollettino.class.getName(), 
+						allertaId);
+		if (hasWfl) {
+			WorkflowInstanceLink wil= null;
+			
+			try {
+				wil = WorkflowInstanceLinkLocalServiceUtil.getWorkflowInstanceLink(
+									feedback.getCompanyId(), 
+									feedback.getGroupId(), 
+									Bollettino.class.getName(), 
+									allertaId);
+				
+			} catch( NoSuchWorkflowInstanceLinkException nse) {
+				
+			}
+			
+			if( wil != null) { 
+				WorkflowInstance workflowInstance = 
+           			 WorkflowInstanceManagerUtil.getWorkflowInstance(themeDisplay.getCompanyId(), wil.getWorkflowInstanceId());
+				List<WorkflowTask> ls = WorkflowTaskManagerUtil.getWorkflowTasksByWorkflowInstance(themeDisplay.getCompanyId(), 0L, workflowInstance.getWorkflowInstanceId(), false, -1, -1, null);
+				if (ls!=null) {
+       			 for (WorkflowTask wt : ls) { 
+       				 if (!wt.isCompleted()) {
+       					 
+       					boolean taskPerm = WorkflowPermissionUtil.hasPermission(
+		                		themeDisplay.getPermissionChecker(), 
+		                		feedback.getGroupId(), 
+		                		Bollettino.class.getName(), 
+		                		allertaId, 
+		                		wt.getName());
+       					
+       					if (!taskPerm) continue;
+       					 
+           				 LogInternoLocalServiceUtil.log("workflowMonitoraggio", "test", "taskId->"+wt.getWorkflowTaskId(), null);
+           				 workflowTaskId = wt.getWorkflowTaskId();
+       					 break;
+       				 }
+       			 }
+       		 }
+			}
+		}
+	}
 
-JournalArticleDisplay previsioniDatiDisplay = null;
+} catch (Exception e) {
+	LogInternoLocalServiceUtil.log("bottettinoMonitoraggioJsp", "task", e, "");
+}
 
-if (previsioniDatiArticle != null)
-	previsioniDatiDisplay = 
-						JournalArticleLocalServiceUtil.getArticleDisplay(
-									themeDisplay.getScopeGroupId(), 
-									previsioniDatiArticle.getArticleId(), 
-									"VIEW", 
-									"IT", 
-									themeDisplay
-							);
-
-JournalArticle mappeRischioArticle = 
-					JournalArticleLocalServiceUtil.fetchArticleByUrlTitle(themeDisplay.getScopeGroupId(), "menu-mappe-di-rischio");
-
-JournalArticleDisplay mappeRischioDisplay = null;
-if (mappeRischioArticle != null)
-	mappeRischioDisplay = 
-				JournalArticleLocalServiceUtil.getArticleDisplay(
-							themeDisplay.getScopeGroupId(),
-							mappeRischioArticle.getArticleId(), 
-							"VIEW", 
-							"IT", 
-							themeDisplay
-						);
 
 %>
 
@@ -99,6 +139,25 @@ if (mappeRischioArticle != null)
 		
 </style>
 
+<liferay-portlet:actionURL 
+	 	var="approveUrl" 
+	 	name="/allertaer/monitoraggio/workflow"
+	 	portletName="<%=AllertaKeys.AllertaCompilaMonitoraggioPortlet%>"
+		plid="<%=wflMonitoraggioPlid %>">
+	<liferay-portlet:param name="cmd" value="approve"/> 	
+	<liferay-portlet:param name="bollettinoId" value="<%=String.valueOf(feedback.getBollettinoId()) %>"/>
+		<liferay-portlet:param name="taskId" value="<%=String.valueOf(workflowTaskId) %>" />
+</liferay-portlet:actionURL>
+
+ <liferay-portlet:actionURL 
+	 	var="rejectUrl" 
+	 	name="/allertaer/monitoraggio/workflow"
+	 	portletName="<%=AllertaKeys.AllertaCompilaMonitoraggioPortlet%>"
+		plid="<%=wflMonitoraggioPlid %>">
+	<liferay-portlet:param name="cmd" value="reject"/> 	
+	<liferay-portlet:param name="bollettinoId" value="<%=String.valueOf(feedback.getBollettinoId()) %>"/>
+		<liferay-portlet:param name="taskId" value="<%=String.valueOf(workflowTaskId) %>" />
+</liferay-portlet:actionURL>
 
 <main class="page main page--single-doc" id="main-content">
 
@@ -124,6 +183,15 @@ if (mappeRischioArticle != null)
 
 	<div class="container page__body">
 		<div class="row">
+		
+			<%if( workflowTaskId > 0) { %>
+			<div class="col-6 " style="text-align: center;">
+				<a href="<%=approveUrl %>" class="btn btn-primary"> Approva </a>
+			</div>
+			<div class="col-6 " style="text-align: center;">
+				<a href="<%=rejectUrl %>" class="btn btn-primary"> Rifiuta </a>
+			</div>
+			<%} %>
 	
 			<div class="col-12 col-md-9 col-lg-10">
 				<div class="page__content" id="page-content">
@@ -152,11 +220,29 @@ if (mappeRischioArticle != null)
 					
 					<div class="page--single-doc__hash">Hash del file (SHA-256): <%=feedback.getHash()%></div>
 	
-	
+					<c:if test="<%=feedback.getStato()!=0 %>">
+					<div class="row">
+						<div class="col-12" style="min-height:600px;">
+							
+							<object class="pdf-viewer" data-beforeload="pdf-viewer"
+								data="<%=pdfLink%>" type="application/pdf" style="width:100%;height:100%">
+								<p class="p-3">
+									Sembra che il tuo browser non riesca a visualizzare i PDF qui
+									dentro. <a data-beforeload="pdf-url" href="<%=previewPdfLink%>"
+										class="btn btn-sm btn-default"> <span
+										class="icon i-download" aria-hidden="true"></span>>Scarica il
+										PDF sul tuo dispositivo
+									</a>
+								</p>
+							</object>
+						</div>
+					</div>
+					</c:if>
+					<c:if test="<%=feedback.getStato()==0 %>">
 					<div class="page--single-doc__cta">
 						<a
 							href="<%=pdfLink %>"
-							class="btn btn-lg btn-primary" data-toggle="pdf-viewer"> <span
+							class="btn btn-lg btn-primary" data-toggle="liferay-modal"> <span
 							class="icon i-file-pdf-o" aria-hidden="true"></span> VEDI IL MONITORAGGIO
 						</a>
 					</div>
@@ -165,23 +251,6 @@ if (mappeRischioArticle != null)
 					<hr>
 			
 			
-					
-					<c:if
-						test="<%=previsioniDatiDisplay != null && mappeRischioDisplay != null%>">
-
-						<section class="px-lg-3">
-							<p class="sr-only">Di seguito ulteriori risorse e strumenti
-								utili correlati a questo documento.</p>
-							<div class="row">
-								<div class="col-12 col-md-6">
-									<%=previsioniDatiDisplay.getContent()%>
-								</div>
-								<div class="col-12 col-md-6">
-								</div>
-							</div>
-						</section>
-
-					</c:if>
                    
 					<section class="px-lg-3">
 						<p class="sr-only">Di seguito ulteriori risorse e strumenti
@@ -230,6 +299,7 @@ if (mappeRischioArticle != null)
 							</div>
 						</div>
 					</div>
+					</c:if>
 				</div>
 			</div>
 		

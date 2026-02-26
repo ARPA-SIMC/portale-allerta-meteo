@@ -1,18 +1,11 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.bollettino.service.impl;
+
+import com.liferay.portal.aop.AopService;
 
 import com.liferay.asset.kernel.model.AssetEntry;
 import com.liferay.asset.kernel.service.AssetEntryLocalServiceUtil;
@@ -55,23 +48,19 @@ import it.eng.bollettino.service.StazioneLocalServiceUtil;
 import it.eng.bollettino.service.StazioneVariabileLocalServiceUtil;
 import it.eng.bollettino.service.ValoreSensoreLocalServiceUtil;
 import it.eng.bollettino.service.base.RegolaAllarmeLocalServiceBaseImpl;
+import org.osgi.service.component.annotations.Component;
 
 /**
- * The implementation of the regola allarme local service.
- *
- * <p>
- * All custom service methods should be put in this class. Whenever methods are added, rerun ServiceBuilder to copy their definitions into the <code>it.eng.bollettino.service.RegolaAllarmeLocalService</code> interface.
- *
- * <p>
- * This is a local service. Methods of this service will not have security checks based on the propagated JAAS credentials because this service can only be accessed from within the same VM.
- * </p>
- *
  * @author GFAVINI
- * @see RegolaAllarmeLocalServiceBaseImpl
  */
+@Component(
+	property = "model.class.name=it.eng.bollettino.model.RegolaAllarme",
+	service = AopService.class
+)
 public class RegolaAllarmeLocalServiceImpl
 	extends RegolaAllarmeLocalServiceBaseImpl {
 	
+
 	private Log logger = LogFactoryUtil.getLog(RegolaAllarmeLocalServiceImpl.class);
 
 	/*
@@ -179,7 +168,7 @@ public class RegolaAllarmeLocalServiceImpl
 				espressione = espressione.replaceAll("or", "#");
 				espressione = espressione.replaceAll("not", "@");
 
-				DynamicQuery dyn = regolaAllarmeCondizioneLocalService.dynamicQuery()
+				DynamicQuery dyn = RegolaAllarmeCondizioneLocalServiceUtil.dynamicQuery()
 						.add(PropertyFactoryUtil.forName("idRegola").eq(r.getId()))
 						.addOrder(OrderFactoryUtil.asc("id"));
 				List<RegolaAllarmeCondizione> rac = RegolaAllarmeCondizioneLocalServiceUtil.dynamicQuery(dyn);
@@ -250,7 +239,7 @@ public class RegolaAllarmeLocalServiceImpl
 						}
 					}
 
-					DynamicQuery sens = valoreSensoreLocalService.dynamicQuery()
+					DynamicQuery sens = ValoreSensoreLocalServiceUtil.dynamicQuery()
 							.add(PropertyFactoryUtil.forName("idStazione").eq(st))
 							.add(PropertyFactoryUtil.forName("idVariabile").eq(var))
 							.addOrder(OrderFactoryUtil.desc("datetime"));
@@ -263,9 +252,9 @@ public class RegolaAllarmeLocalServiceImpl
 
 					ValoreSensore val = vs.get(0);
 					
-					/*GPF 2020-03-05 Se il valore del dato Ë vecchio rischiamo di
+					/*GPF 2020-03-05 Se il valore del dato √® vecchio rischiamo di
 					 * generare un allarme per un sensore inattivo il cui ultimo
-					 * valore era in superamento soglia. Limitiamo l'et‡ del dato.
+					 * valore era in superamento soglia. Limitiamo l'et√† del dato.
 					 */
 					if (val.getDatetime().getTime()<cutoffTime) {
 						espressione = espressione.replaceAll(id, "0");
@@ -274,7 +263,7 @@ public class RegolaAllarmeLocalServiceImpl
 					
 					double valoreSoglia = 1000000.0;
 
-					DynamicQuery varStaz = stazioneVariabileLocalService.dynamicQuery()
+					DynamicQuery varStaz = StazioneVariabileLocalServiceUtil.dynamicQuery()
 							.add(PropertyFactoryUtil.forName("idStazione").eq(st))
 							.add(PropertyFactoryUtil.forName("idVariabile").eq(var));
 					List<StazioneVariabile> stazVar = StazioneVariabileLocalServiceUtil.dynamicQuery(varStaz);
@@ -374,7 +363,7 @@ public class RegolaAllarmeLocalServiceImpl
 			try {
 				
 			// carica gli allarmi attivi per disattivarli se necessario
-			DynamicQuery all = allarmeLocalService.dynamicQuery()
+			DynamicQuery all = AllarmeLocalServiceUtil.dynamicQuery()
 					.add(PropertyFactoryUtil.forName("dataFine").isNull());
 			List<Allarme> allarmi = AllarmeLocalServiceUtil.dynamicQuery(all);
 
@@ -415,7 +404,7 @@ public class RegolaAllarmeLocalServiceImpl
 			 * }
 			 */
 
-			// cerca gli allarmi gi‡ collegati alle regole, per crearne di nuovi
+			// cerca gli allarmi gi√† collegati alle regole, per crearne di nuovi
 			// dove non presenti
 			for (RegolaAllarme ra : regoleSoddisfatte) {
 

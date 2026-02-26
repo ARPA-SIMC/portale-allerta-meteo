@@ -1,24 +1,15 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerte.service;
 
-import aQute.bnd.annotation.ProviderType;
+import com.liferay.portal.kernel.module.service.Snapshot;
 
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.util.tracker.ServiceTracker;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Provides the remote service utility for RubricaGruppoNominativi. This utility wraps
@@ -32,7 +23,6 @@ import org.osgi.util.tracker.ServiceTracker;
  * @see RubricaGruppoNominativiService
  * @generated
  */
-@ProviderType
 public class RubricaGruppoNominativiServiceUtil {
 
 	/*
@@ -40,25 +30,23 @@ public class RubricaGruppoNominativiServiceUtil {
 	 *
 	 * Never modify this class directly. Add custom service methods to <code>it.eng.allerte.service.impl.RubricaGruppoNominativiServiceImpl</code> and rerun ServiceBuilder to regenerate this class.
 	 */
-	public static java.util.Map<String, Object> addGroupNominatives(
-		int id, String data) {
-
+	public static Map<String, Object> addGroupNominatives(int id, String data) {
 		return getService().addGroupNominatives(id, data);
 	}
 
-	public static java.util.Map<String, Object> addGroupNominativesMulti(
+	public static Map<String, Object> addGroupNominativesMulti(
 		int id, String data) {
 
 		return getService().addGroupNominativesMulti(id, data);
 	}
 
-	public static java.util.Map<String, Object> deleteGroupNominatives(
+	public static Map<String, Object> deleteGroupNominatives(
 		int id, String data) {
 
 		return getService().deleteGroupNominatives(id, data);
 	}
 
-	public static java.util.Map<String, Object> deleteGroupNominativesMulti(
+	public static Map<String, Object> deleteGroupNominativesMulti(
 		int id, String data) {
 
 		return getService().deleteGroupNominativesMulti(id, data);
@@ -71,7 +59,7 @@ public class RubricaGruppoNominativiServiceUtil {
 	 * @param groupId
 	 * @return
 	 */
-	public static java.util.Set<it.eng.allerte.model.RubricaNominativo>
+	public static Set<it.eng.allerte.model.RubricaNominativo>
 		getNominativeForGroup(Long ownerId, Long groupId) {
 
 		return getService().getNominativeForGroup(ownerId, groupId);
@@ -83,7 +71,7 @@ public class RubricaGruppoNominativiServiceUtil {
 	 * @param ownerId
 	 * @return
 	 */
-	public static java.util.List<it.eng.allerte.model.RubricaNominativo>
+	public static List<it.eng.allerte.model.RubricaNominativo>
 		getNominativeForGroupPortal(Long ownerId) {
 
 		return getService().getNominativeForGroupPortal(ownerId);
@@ -98,36 +86,17 @@ public class RubricaGruppoNominativiServiceUtil {
 		return getService().getOSGiServiceIdentifier();
 	}
 
-	public static java.util.Map<String, Object> nominativeGroupRole(
-		String data) {
-
+	public static Map<String, Object> nominativeGroupRole(String data) {
 		return getService().nominativeGroupRole(data);
 	}
 
 	public static RubricaGruppoNominativiService getService() {
-		return _serviceTracker.getService();
+		return _serviceSnapshot.get();
 	}
 
-	private static ServiceTracker
-		<RubricaGruppoNominativiService, RubricaGruppoNominativiService>
-			_serviceTracker;
-
-	static {
-		Bundle bundle = FrameworkUtil.getBundle(
+	private static final Snapshot<RubricaGruppoNominativiService>
+		_serviceSnapshot = new Snapshot<>(
+			RubricaGruppoNominativiServiceUtil.class,
 			RubricaGruppoNominativiService.class);
-
-		ServiceTracker
-			<RubricaGruppoNominativiService, RubricaGruppoNominativiService>
-				serviceTracker =
-					new ServiceTracker
-						<RubricaGruppoNominativiService,
-						 RubricaGruppoNominativiService>(
-							 bundle.getBundleContext(),
-							 RubricaGruppoNominativiService.class, null);
-
-		serviceTracker.open();
-
-		_serviceTracker = serviceTracker;
-	}
 
 }

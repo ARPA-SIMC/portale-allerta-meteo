@@ -9,6 +9,8 @@ import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -64,6 +66,18 @@ public class CatastoBean {
 				"and tipo='M' and provincia is not null order by nome");
 		
 		sottocategorie = SottocategoriaLocalServiceUtil.getSottocategorias(-1, -1);
+		
+		sottocategorie = new ArrayList<Sottocategoria>(sottocategorie);
+		
+		sottocategorie.sort(new Comparator<Sottocategoria>() {
+
+			@Override
+			public int compare(Sottocategoria arg0, Sottocategoria arg1) {
+				// TODO Auto-generated method stub
+				return arg0.getDescrizione().compareTo(arg1.getDescrizione());
+			}
+		});
+		
 		effetti = EffettiLocalServiceUtil.getEffettis(-1, -1);
 		effettiSub = EffettiSubLocalServiceUtil.getEffettiSubs(-1, -1);
 		

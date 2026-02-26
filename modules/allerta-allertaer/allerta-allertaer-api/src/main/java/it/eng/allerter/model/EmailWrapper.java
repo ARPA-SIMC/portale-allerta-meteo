@@ -1,31 +1,16 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerter.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -36,21 +21,11 @@ import java.util.Objects;
  * @see Email
  * @generated
  */
-@ProviderType
-public class EmailWrapper implements Email, ModelWrapper<Email> {
+public class EmailWrapper
+	extends BaseModelWrapper<Email> implements Email, ModelWrapper<Email> {
 
 	public EmailWrapper(Email email) {
-		_email = email;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return Email.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return Email.class.getName();
+		super(email);
 	}
 
 	@Override
@@ -142,13 +117,8 @@ public class EmailWrapper implements Email, ModelWrapper<Email> {
 	}
 
 	@Override
-	public Object clone() {
-		return new EmailWrapper((Email)_email.clone());
-	}
-
-	@Override
-	public int compareTo(it.eng.allerter.model.Email email) {
-		return _email.compareTo(email);
+	public Email cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -158,7 +128,7 @@ public class EmailWrapper implements Email, ModelWrapper<Email> {
 	 */
 	@Override
 	public Date getDataInvio() {
-		return _email.getDataInvio();
+		return model.getDataInvio();
 	}
 
 	/**
@@ -168,12 +138,7 @@ public class EmailWrapper implements Email, ModelWrapper<Email> {
 	 */
 	@Override
 	public long getDestinatario() {
-		return _email.getDestinatario();
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _email.getExpandoBridge();
+		return model.getDestinatario();
 	}
 
 	/**
@@ -183,7 +148,7 @@ public class EmailWrapper implements Email, ModelWrapper<Email> {
 	 */
 	@Override
 	public long getId() {
-		return _email.getId();
+		return model.getId();
 	}
 
 	/**
@@ -193,7 +158,7 @@ public class EmailWrapper implements Email, ModelWrapper<Email> {
 	 */
 	@Override
 	public String getIndirizzo() {
-		return _email.getIndirizzo();
+		return model.getIndirizzo();
 	}
 
 	/**
@@ -203,7 +168,7 @@ public class EmailWrapper implements Email, ModelWrapper<Email> {
 	 */
 	@Override
 	public String getNomeDestinatario() {
-		return _email.getNomeDestinatario();
+		return model.getNomeDestinatario();
 	}
 
 	/**
@@ -213,7 +178,7 @@ public class EmailWrapper implements Email, ModelWrapper<Email> {
 	 */
 	@Override
 	public String getOggetto() {
-		return _email.getOggetto();
+		return model.getOggetto();
 	}
 
 	/**
@@ -223,7 +188,7 @@ public class EmailWrapper implements Email, ModelWrapper<Email> {
 	 */
 	@Override
 	public long getParam() {
-		return _email.getParam();
+		return model.getParam();
 	}
 
 	/**
@@ -233,12 +198,7 @@ public class EmailWrapper implements Email, ModelWrapper<Email> {
 	 */
 	@Override
 	public long getPrimaryKey() {
-		return _email.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _email.getPrimaryKeyObj();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -248,7 +208,7 @@ public class EmailWrapper implements Email, ModelWrapper<Email> {
 	 */
 	@Override
 	public String getSottotipo() {
-		return _email.getSottotipo();
+		return model.getSottotipo();
 	}
 
 	/**
@@ -258,7 +218,7 @@ public class EmailWrapper implements Email, ModelWrapper<Email> {
 	 */
 	@Override
 	public long getStato() {
-		return _email.getStato();
+		return model.getStato();
 	}
 
 	/**
@@ -268,7 +228,7 @@ public class EmailWrapper implements Email, ModelWrapper<Email> {
 	 */
 	@Override
 	public String getTesto() {
-		return _email.getTesto();
+		return model.getTesto();
 	}
 
 	/**
@@ -278,37 +238,12 @@ public class EmailWrapper implements Email, ModelWrapper<Email> {
 	 */
 	@Override
 	public String getTipo() {
-		return _email.getTipo();
-	}
-
-	@Override
-	public int hashCode() {
-		return _email.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _email.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _email.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _email.isNew();
+		return model.getTipo();
 	}
 
 	@Override
 	public void persist() {
-		_email.persist();
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_email.setCachedModel(cachedModel);
+		model.persist();
 	}
 
 	/**
@@ -318,7 +253,7 @@ public class EmailWrapper implements Email, ModelWrapper<Email> {
 	 */
 	@Override
 	public void setDataInvio(Date dataInvio) {
-		_email.setDataInvio(dataInvio);
+		model.setDataInvio(dataInvio);
 	}
 
 	/**
@@ -328,24 +263,7 @@ public class EmailWrapper implements Email, ModelWrapper<Email> {
 	 */
 	@Override
 	public void setDestinatario(long destinatario) {
-		_email.setDestinatario(destinatario);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_email.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_email.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_email.setExpandoBridgeAttributes(serviceContext);
+		model.setDestinatario(destinatario);
 	}
 
 	/**
@@ -355,7 +273,7 @@ public class EmailWrapper implements Email, ModelWrapper<Email> {
 	 */
 	@Override
 	public void setId(long id) {
-		_email.setId(id);
+		model.setId(id);
 	}
 
 	/**
@@ -365,12 +283,7 @@ public class EmailWrapper implements Email, ModelWrapper<Email> {
 	 */
 	@Override
 	public void setIndirizzo(String indirizzo) {
-		_email.setIndirizzo(indirizzo);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_email.setNew(n);
+		model.setIndirizzo(indirizzo);
 	}
 
 	/**
@@ -380,7 +293,7 @@ public class EmailWrapper implements Email, ModelWrapper<Email> {
 	 */
 	@Override
 	public void setNomeDestinatario(String nomeDestinatario) {
-		_email.setNomeDestinatario(nomeDestinatario);
+		model.setNomeDestinatario(nomeDestinatario);
 	}
 
 	/**
@@ -390,7 +303,7 @@ public class EmailWrapper implements Email, ModelWrapper<Email> {
 	 */
 	@Override
 	public void setOggetto(String oggetto) {
-		_email.setOggetto(oggetto);
+		model.setOggetto(oggetto);
 	}
 
 	/**
@@ -400,7 +313,7 @@ public class EmailWrapper implements Email, ModelWrapper<Email> {
 	 */
 	@Override
 	public void setParam(long param) {
-		_email.setParam(param);
+		model.setParam(param);
 	}
 
 	/**
@@ -410,12 +323,7 @@ public class EmailWrapper implements Email, ModelWrapper<Email> {
 	 */
 	@Override
 	public void setPrimaryKey(long primaryKey) {
-		_email.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_email.setPrimaryKeyObj(primaryKeyObj);
+		model.setPrimaryKey(primaryKey);
 	}
 
 	/**
@@ -425,7 +333,7 @@ public class EmailWrapper implements Email, ModelWrapper<Email> {
 	 */
 	@Override
 	public void setSottotipo(String sottotipo) {
-		_email.setSottotipo(sottotipo);
+		model.setSottotipo(sottotipo);
 	}
 
 	/**
@@ -435,7 +343,7 @@ public class EmailWrapper implements Email, ModelWrapper<Email> {
 	 */
 	@Override
 	public void setStato(long stato) {
-		_email.setStato(stato);
+		model.setStato(stato);
 	}
 
 	/**
@@ -445,7 +353,7 @@ public class EmailWrapper implements Email, ModelWrapper<Email> {
 	 */
 	@Override
 	public void setTesto(String testo) {
-		_email.setTesto(testo);
+		model.setTesto(testo);
 	}
 
 	/**
@@ -455,75 +363,17 @@ public class EmailWrapper implements Email, ModelWrapper<Email> {
 	 */
 	@Override
 	public void setTipo(String tipo) {
-		_email.setTipo(tipo);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<it.eng.allerter.model.Email> toCacheModel() {
-
-		return _email.toCacheModel();
-	}
-
-	@Override
-	public it.eng.allerter.model.Email toEscapedModel() {
-		return new EmailWrapper(_email.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _email.toString();
-	}
-
-	@Override
-	public it.eng.allerter.model.Email toUnescapedModel() {
-		return new EmailWrapper(_email.toUnescapedModel());
+		model.setTipo(tipo);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _email.toXmlString();
+		return model.toXmlString();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-
-		if (!(obj instanceof EmailWrapper)) {
-			return false;
-		}
-
-		EmailWrapper emailWrapper = (EmailWrapper)obj;
-
-		if (Objects.equals(_email, emailWrapper._email)) {
-			return true;
-		}
-
-		return false;
+	protected EmailWrapper wrap(Email email) {
+		return new EmailWrapper(email);
 	}
-
-	@Override
-	public Email getWrappedModel() {
-		return _email;
-	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _email.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _email.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_email.resetOriginalValues();
-	}
-
-	private final Email _email;
 
 }

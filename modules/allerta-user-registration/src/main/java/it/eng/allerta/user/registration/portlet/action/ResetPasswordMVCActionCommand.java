@@ -55,10 +55,9 @@ public class ResetPasswordMVCActionCommand extends BaseMVCActionCommand {
 			
 			Company company = themeDisplay.getCompany();
 
-			if (!company.isSendPassword() && !company.isSendPasswordResetLink()) {
+			if (!company.isSendPasswordResetLink()) {
 					throw new PrincipalException.MustBeEnabled(
 						company.getCompanyId(),
-						PropsKeys.COMPANY_SECURITY_SEND_PASSWORD,
 						PropsKeys.COMPANY_SECURITY_SEND_PASSWORD_RESET_LINK);
 			}
 

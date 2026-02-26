@@ -46,9 +46,9 @@ create table BOLLETTINO_Bollettino (
 	dataEmissione DATE null,
 	dataInizio DATE null,
 	dataFine DATE null,
-	noteMeteo TEXT null,
-	stringaMeteo TEXT null,
-	link VARCHAR(256) null,
+	noteMeteo VARCHAR(75) null,
+	stringaMeteo VARCHAR(75) null,
+	link VARCHAR(75) null,
 	ultimo BOOLEAN,
 	hash VARCHAR(75) null
 );
@@ -61,7 +61,7 @@ create table BOLLETTINO_BollettinoBacino (
 	idBacino VARCHAR(75) null,
 	nomeBacino VARCHAR(75) null,
 	oreOsservazione VARCHAR(75) null,
-	note TEXT null
+	note VARCHAR(75) null
 );
 
 create table BOLLETTINO_BollettinoIcona (
@@ -75,7 +75,7 @@ create table BOLLETTINO_BollettinoIcona (
 
 create table BOLLETTINO_BollettinoParametro (
 	parametroId VARCHAR(75) not null primary key,
-	valore TEXT null
+	valore VARCHAR(75) null
 );
 
 create table BOLLETTINO_BollettinoSensore (
@@ -113,15 +113,6 @@ create table BOLLETTINO_Idrometro (
 	sogliaSpike DOUBLE
 );
 
-create table BOLLETTINO_Img (
-	id_ LONG not null primary key,
-	daypart VARCHAR(75) null,
-	day VARCHAR(75) null,
-	provincia VARCHAR(75) null,
-	inserted DATE null,
-	data_ VARCHAR(75) null
-);
-
 create table BOLLETTINO_Pluviometro (
 	stazioneId VARCHAR(75) not null primary key,
 	nomeGruppo VARCHAR(75) null,
@@ -132,7 +123,7 @@ create table BOLLETTINO_RegolaAllarme (
 	uuid_ VARCHAR(75) null,
 	id_ LONG not null primary key,
 	nome VARCHAR(75) null,
-	espressione VARCHAR(1024) null,
+	espressione VARCHAR(75) null,
 	descrizione VARCHAR(75) null,
 	colore INTEGER,
 	attivo BOOLEAN
@@ -208,7 +199,7 @@ create table BOLLETTINO_ValoreSensore (
 create table BOLLETTINO_Variabile (
 	uuid_ VARCHAR(75) null,
 	id_ VARCHAR(75) not null primary key,
-	description_it TEXT null,
+	description_it VARCHAR(75) null,
 	level_t1 INTEGER,
 	level_t2 INTEGER,
 	level_v1 INTEGER,

@@ -1,24 +1,13 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.bollettino.service;
 
-import aQute.bnd.annotation.ProviderType;
+import com.liferay.portal.kernel.module.service.Snapshot;
 
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.util.tracker.ServiceTracker;
+import java.util.Map;
 
 /**
  * Provides the remote service utility for Bollettino. This utility wraps
@@ -32,7 +21,6 @@ import org.osgi.util.tracker.ServiceTracker;
  * @see BollettinoService
  * @generated
  */
-@ProviderType
 public class BollettinoServiceUtil {
 
 	/*
@@ -40,9 +28,7 @@ public class BollettinoServiceUtil {
 	 *
 	 * Never modify this class directly. Add custom service methods to <code>it.eng.bollettino.service.impl.BollettinoServiceImpl</code> and rerun ServiceBuilder to regenerate this class.
 	 */
-	public static java.util.ArrayList<java.util.Map<String, String>>
-		getAllarmi() {
-
+	public static java.util.ArrayList<Map<String, String>> getAllarmi() {
 		return getService().getAllarmi();
 	}
 
@@ -56,22 +42,10 @@ public class BollettinoServiceUtil {
 	}
 
 	public static BollettinoService getService() {
-		return _serviceTracker.getService();
+		return _serviceSnapshot.get();
 	}
 
-	private static ServiceTracker<BollettinoService, BollettinoService>
-		_serviceTracker;
-
-	static {
-		Bundle bundle = FrameworkUtil.getBundle(BollettinoService.class);
-
-		ServiceTracker<BollettinoService, BollettinoService> serviceTracker =
-			new ServiceTracker<BollettinoService, BollettinoService>(
-				bundle.getBundleContext(), BollettinoService.class, null);
-
-		serviceTracker.open();
-
-		_serviceTracker = serviceTracker;
-	}
+	private static final Snapshot<BollettinoService> _serviceSnapshot =
+		new Snapshot<>(BollettinoServiceUtil.class, BollettinoService.class);
 
 }

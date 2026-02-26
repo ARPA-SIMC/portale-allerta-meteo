@@ -19,11 +19,7 @@ import org.osgi.service.component.annotations.Reference;
 import it.eng.allerter.service.AllertaService;
 
 @Component(
-	    immediate = true,
-	    property = {
-	        "osgi.http.whiteboard.context.path=/",
-	        "osgi.http.whiteboard.servlet.pattern=/primes/get-primes-domani"
-	    },
+	    property = "osgi.http.whiteboard.servlet.pattern=/primes/get-primes-domani",
 	    service = Servlet.class
 	)
 public class PrimesDomaniServlet extends HttpServlet {

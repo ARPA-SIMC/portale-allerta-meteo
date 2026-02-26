@@ -1,18 +1,12 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.bollettino.service.impl;
+
+import com.liferay.portal.aop.AopService;
+
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -53,21 +47,17 @@ import it.eng.bollettino.service.AttivazioneFiumeLocalServiceUtil;
 import it.eng.bollettino.service.BollettinoLocalServiceUtil;
 import it.eng.bollettino.service.BollettinoParametroLocalServiceUtil;
 import it.eng.bollettino.service.base.BollettinoLocalServiceBaseImpl;
+import org.osgi.service.component.annotations.Component;
 
 /**
- * The implementation of the bollettino local service.
- *
- * <p>
- * All custom service methods should be put in this class. Whenever methods are added, rerun ServiceBuilder to copy their definitions into the <code>it.eng.bollettino.service.BollettinoLocalService</code> interface.
- *
- * <p>
- * This is a local service. Methods of this service will not have security checks based on the propagated JAAS credentials because this service can only be accessed from within the same VM.
- * </p>
- *
  * @author GFAVINI
- * @see BollettinoLocalServiceBaseImpl
  */
+@Component(
+	property = "model.class.name=it.eng.bollettino.model.Bollettino",
+	service = AopService.class
+)
 public class BollettinoLocalServiceImpl extends BollettinoLocalServiceBaseImpl {
+
 
 	/*
 	 * NOTE FOR DEVELOPERS:
@@ -261,7 +251,7 @@ public void fileDeleteByApp(String file, String folderName, ServiceContext servi
 			
 			System.out.println("Folder NULL create: " + parentFolderId + " " + serviceContext.getScopeGroupId());
 			try {
-				folder = DLAppServiceUtil.addFolder(serviceContext.getScopeGroupId(), parentFolderId, folderName, "bollettini", serviceContext);
+				folder = DLAppServiceUtil.addFolder ("",serviceContext.getScopeGroupId(), parentFolderId, folderName, "bollettini", serviceContext);
 			} catch (PortalException e1) {
 				
 			}
@@ -272,8 +262,8 @@ public void fileDeleteByApp(String file, String folderName, ServiceContext servi
 			InputStream is = new FileInputStream(file);
 			ServiceContext dlServiceContext = serviceContext.getRequest()!=null?ServiceContextFactory.getInstance(
 					DLFileEntry.class.getName(), serviceContext.getRequest()):serviceContext;
-			FileEntry f = DLAppServiceUtil.addFileEntry(repositoryId, folder.getFolderId(), file.getName(), mimeType,
-					title, description, changeLog, is, file.length(), dlServiceContext);
+			FileEntry f = DLAppServiceUtil.addFileEntry(folderName+"_"+title,repositoryId, folder.getFolderId(), file.getName(), mimeType,
+					title, title, description, changeLog, is, file.length(), null, null, null, dlServiceContext);
 
 			Role guestRole = RoleLocalServiceUtil.getRole(serviceContext.getCompanyId(), RoleConstants.GUEST);
 			ResourcePermissionLocalServiceUtil.setResourcePermissions(serviceContext.getCompanyId(),
@@ -299,5 +289,5 @@ public void fileDeleteByApp(String file, String folderName, ServiceContext servi
 	}
 	
 	private Log _log = LogFactoryUtil.getLog(BollettinoLocalServiceImpl.class);
-	
+
 }

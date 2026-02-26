@@ -1,11 +1,15 @@
+<%@page import="com.liferay.portal.kernel.language.LanguageUtil"%>
 <%@page import="it.eng.allerta.utils.AllertaTracker"%>
 <%@page import="it.eng.allerta.configuration.DocumentazioneConfiguration"%>
+<%@
+taglib uri="http://liferay.com/tld/ui" prefix="liferay-ui" %>
 <%
 DocumentazioneConfiguration doc = AllertaTracker.getDocumentazioneConfiguration();
-
+String currentLanguage = LanguageUtil.getLanguageId(request);
+boolean isEnglish = currentLanguage.startsWith("en");
 %>
 
-<h4 class="sr-only">Guide e supporto</h4>
+<h4 class="sr-only"><liferay-ui:message key="allertaprevisioniweb_guida6" /></h4>
 	<!-- Guida Mappa Previsioni -->
 	<div class="modal  fade modal--map-guide modal--map-guide--forecast"
 		id="modal--guida-mappa-previsioni" tabindex="-1" role="dialog"
@@ -14,77 +18,73 @@ DocumentazioneConfiguration doc = AllertaTracker.getDocumentazioneConfiguration(
 		<div class="modal-dialog modal-lg" role="document">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title" id="modal-guida-mappa-previsioni-title">Guida
-						alla mappa</h5>
+					<h5 class="modal-title" id="modal-guida-mappa-previsioni-title"><liferay-ui:message key="allertaprevisioniweb_guidaallamappa" /></h5>
 					<button type="button" class="close" data-dismiss="modal"
 						aria-label="Close">
 						<span aria-hidden="true">×</span>
 					</button>
 				</div>
 				<div class="modal-lead">
-					I livelli di criticità di ogni fenomeno si basano su soglie e
-					valutazioni differenti.<br> Questa è una breve guida alla
-					lettura della mappa.
+					<liferay-ui:message key="allertaprevisioniweb_guida7" />
 				</div>
 				<div class="modal-body">
 					<div class="row flex-lg-column">
 
 
 						<div class="col-12 col-lg-7 mb-4">
-							<h6>Legenda colori</h6>
+							<h6><liferay-ui:message key="allertaprevisioniweb_guida5" /></h6>
 							<div>
 								<div class="d-flex flex-row align-items-center my-md-2">
 									<div data-toggle="tooltip" title=""
 										class="alert-sign alert-sign--red"
-										data-original-title="Fenomeni ingenti ed estesi">
+										data-original-title="<liferay-ui:message key="allertaprevisioniweb_int4" />">
 										<div></div>
 										<div></div>
 										<div></div>
 										<div></div>
 									</div>
-									<div>Fenomeni ingenti ed estesi</div>
+									<div><liferay-ui:message key="allertaprevisioniweb_int4" /></div>
 								</div>
 								<div class="d-flex flex-row align-items-center my-md-2">
 									<div data-toggle="tooltip" title=""
 										class="alert-sign alert-sign--orange"
-										data-original-title="Fenomeni diffusi">
+										data-original-title="<liferay-ui:message key="allertaprevisioniweb_int3" />">
 										<div></div>
 										<div></div>
 										<div></div>
 										<div></div>
 									</div>
-									<div>Fenomeni diffusi</div>
+									<div><liferay-ui:message key="allertaprevisioniweb_int3" /></div>
 								</div>
 								<div class="d-flex flex-row align-items-center my-md-2">
 									<div data-toggle="tooltip" title=""
 										class="alert-sign alert-sign--yellow"
-										data-original-title="Fenomeni localizzati">
+										data-original-title="<liferay-ui:message key="allertaprevisioniweb_int2" />">
 										<div></div>
 										<div></div>
 										<div></div>
 										<div></div>
 									</div>
-									<div>Fenomeni localizzati</div>
+									<div><liferay-ui:message key="allertaprevisioniweb_int2" /></div>
 								</div>
 								<div class="d-flex flex-row align-items-center my-md-2">
 									<div data-toggle="tooltip" title=""
 										class="alert-sign alert-sign--green"
-										data-original-title="Assenza di fenomeni significativi prevedibili">
+										data-original-title="<liferay-ui:message key="allertaprevisioniweb_int1" />">
 										<div></div>
 										<div></div>
 										<div></div>
 										<div></div>
 									</div>
-									<div>Assenza di fenomeni significativi prevedibili</div>
+									<div><liferay-ui:message key="allertaprevisioniweb_int1" /></div>
 								</div>
 							</div>
 						</div>
 
 						<div class="col-12 col-lg-7 mb-4" data-if="legend"
 							data-when="rtdata">
-							<h6>Legenda dati in tempo reale</h6>
-							<p class="lead">Visibili sulla mappa presente nella pagine
-								dei singoli comuni, agendo sull'apposito menu a tendina.</p>
+							<h6><liferay-ui:message key="allertaprevisioniweb_guida4" /></h6>
+							<p class="lead"><liferay-ui:message key="allertaprevisioniweb_guida8" /></p>
 							<ul class="mb-md-2 nav map-legend__rtdata-guides flex-column">
 								<li class="nav-item" data-if="legend" data-when="radar">
 									<div class="nav-span d-flex flex-column mb-3">
@@ -180,46 +180,40 @@ DocumentazioneConfiguration doc = AllertaTracker.getDocumentazioneConfiguration(
 
 
 						<div class="col-12 col-lg-5 mb-4">
-							<h6>Guide di utilità</h6>
+							<h6><liferay-ui:message key="allertaprevisioniweb_guida3" /></h6>
 							<ul class="mb-md-2 nav map-legend__utility-guides flex-column">
-								<li class="nav-item"><a class="nav-link" href="<%=doc.linkGuidaMappa() %>"
-									target="_blank"><span class="icon i-file-pdf-o"></span>Guida
-										alla lettura della mappa</a></li>
+								<li class="nav-item"><a class="nav-link" href="<%=isEnglish? "/documents/d/guest/Mappa_allerta_ENG" : doc.linkGuidaMappa() %>"
+									target="_blank"><span class="icon i-file-pdf-o"></span><liferay-ui:message key="allertaprevisioniweb_guida2" /></a></li>
 							</ul>
 						</div>
 
 						<div class="col-12 col-lg-5 mb-4">
-							<h6>Guide al rischio per i fenomeni</h6>
+							<h6><liferay-ui:message key="allertaprevisioniweb_guida1" /></h6>
 							<ul class="mb-md-2 nav map-legend__phenomenon-guides flex-column">
-								<li class="nav-item"><a class="nav-link" href="<%=doc.linkPieneFiumi() %>"
-									target="_blank"><span class="icon i-file-pdf-o"></span>Piene
-										dei fiumi</a></li>
-								<li class="nav-item"><a class="nav-link" href="<%=doc.linkFrane() %>"
-									target="_blank"><span class="icon i-file-pdf-o"></span>Frane
-										e piene dei corsi minori</a></li>
-								<li class="nav-item"><a class="nav-link" href="<%=doc.linkTemporali() %>"
-									target="_blank"><span class="icon i-file-pdf-o"></span>Temporali</a>
+								<li class="nav-item"><a class="nav-link" href="<%=isEnglish? "/documents/d/guest/tabella_scenari_criticita_idraulica_eng" : doc.linkPieneFiumi() %>"
+									target="_blank"><span class="icon i-file-pdf-o"></span><liferay-ui:message key="allertaprevisioniweb_evento1" /></a></li>
+								<li class="nav-item"><a class="nav-link" href="<%=isEnglish? "/documents/d/guest/tabella_scenari_criticita_idrogeologica_eng" : doc.linkFrane() %>"
+									target="_blank"><span class="icon i-file-pdf-o"></span><liferay-ui:message key="allertaprevisioniweb_evento2" /></a></li>
+								<li class="nav-item"><a class="nav-link" href="<%=isEnglish? "/documents/d/guest/tabella_scenari_criticita_temporali_eng" : doc.linkTemporali() %>"
+									target="_blank"><span class="icon i-file-pdf-o"></span><liferay-ui:message key="allertaprevisioniweb_evento3" /></a>
 								</li>
-								<li class="nav-item"><a class="nav-link" href="<%=doc.linkVento() %>"
-									target="_blank"><span class="icon i-file-pdf-o"></span>Vento</a>
+								<li class="nav-item"><a class="nav-link" href="<%=isEnglish? "/documents/d/guest/tabella_scenari_vento_eng" : doc.linkVento() %>"
+									target="_blank"><span class="icon i-file-pdf-o"></span><liferay-ui:message key="allertaprevisioniweb_evento4" /></a>
 								</li>
-								<li class="nav-item"><a class="nav-link" href="<%=doc.linkNeve() %>"
-									target="_blank"><span class="icon i-file-pdf-o"></span>Neve</a>
+								<li class="nav-item"><a class="nav-link" href="<%=isEnglish? "/documents/d/guest/tabella_scenari_neve_eng" : doc.linkNeve() %>"
+									target="_blank"><span class="icon i-file-pdf-o"></span><liferay-ui:message key="allertaprevisioniweb_evento5" /></a>
 								</li>
-								<li class="nav-item"><a class="nav-link" href="<%=doc.linkPioggiaGela() %>"
-									target="_blank"><span class="icon i-file-pdf-o"></span>Pioggia
-										che gela</a></li>
-								<li class="nav-item"><a class="nav-link" href="<%=doc.linkTemperature() %>"
-									target="_blank"><span class="icon i-file-pdf-o"></span>Temperature
-										estreme</a></li>
-								<li class="nav-item"><a class="nav-link" href="<%=doc.linkStatoMare() %>"
-									target="_blank"><span class="icon i-file-pdf-o"></span>Stato
-										del mare</a></li>
-								<li class="nav-item"><a class="nav-link" href="<%=doc.linkMareggiate() %>"
-									target="_blank"><span class="icon i-file-pdf-o"></span>Mareggiate</a>
+								<li class="nav-item"><a class="nav-link" href="<%=isEnglish? "/documents/d/guest/tabella_scenari_pioggia_che_gela_eng" : doc.linkPioggiaGela() %>"
+									target="_blank"><span class="icon i-file-pdf-o"></span><liferay-ui:message key="allertaprevisioniweb_evento6" /></a></li>
+								<li class="nav-item"><a class="nav-link" href="<%=isEnglish? "/documents/d/guest/tabella_scenari_temperature_estreme_eng" : doc.linkTemperature() %>"
+									target="_blank"><span class="icon i-file-pdf-o"></span><liferay-ui:message key="allertaprevisioniweb_evento7" /></a></li>
+								<li class="nav-item"><a class="nav-link" href="<%=isEnglish? "/documents/d/guest/tabella_scenari_stato_del_mare_eng" : doc.linkStatoMare() %>"
+									target="_blank"><span class="icon i-file-pdf-o"></span><liferay-ui:message key="allertaprevisioniweb_evento8" /></a></li>
+								<li class="nav-item"><a class="nav-link" href="<%=isEnglish? "/documents/d/guest/tabella_scenari_stato_del_mare_eng" : doc.linkMareggiate() %>"
+									target="_blank"><span class="icon i-file-pdf-o"></span><liferay-ui:message key="allertaprevisioniweb_evento9" /></a>
 								</li>
-								<li class="nav-item"><a class="nav-link" href="<%=doc.linkValanghe() %>"
-									target="_blank"><span class="icon i-file-pdf-o"></span>Valanghe</a>
+								<li class="nav-item"><a class="nav-link" href="<%=isEnglish? "/documents/d/guest/tabella_scenari_valanghe_eng" : doc.linkValanghe() %>"
+									target="_blank"><span class="icon i-file-pdf-o"></span><liferay-ui:message key="allertaprevisioniweb_evento10" /></a>
 								</li>
 							</ul>
 						</div>

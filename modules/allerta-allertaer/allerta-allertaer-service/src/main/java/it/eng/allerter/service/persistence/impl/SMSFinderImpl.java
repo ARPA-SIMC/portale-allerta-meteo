@@ -2,10 +2,14 @@ package it.eng.allerter.service.persistence.impl;
 
 import java.util.List;
 
+import org.osgi.service.component.annotations.Component;
+
 import com.liferay.portal.kernel.dao.orm.SQLQuery;
 import com.liferay.portal.kernel.dao.orm.Session;
+
 import it.eng.allerter.service.persistence.SMSFinder;
 
+@Component(service = SMSFinder.class)
 public class SMSFinderImpl extends SMSFinderBaseImpl implements SMSFinder  {
 	
 	

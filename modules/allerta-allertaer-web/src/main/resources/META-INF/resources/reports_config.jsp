@@ -1,6 +1,5 @@
 <%@page import="com.liferay.portal.kernel.util.Constants"%>
 <%@page import="com.liferay.portal.kernel.util.Validator"%>
-<%@page import="com.liferay.portal.kernel.util.StringPool"%>
 <%@page import="it.eng.allertaer.allertebollettini.portlet.config.ReportPostEventoConfiguration"%>
 	
 <%@ include file="./init.jsp"%>
@@ -8,7 +7,7 @@
 ReportPostEventoConfiguration myConfiguration=
         				(ReportPostEventoConfiguration) renderRequest.getAttribute(ReportPostEventoConfiguration.class.getName());
 
-String myConfigurationItem= StringPool.BLANK;
+String myConfigurationItem= "";
 String defaultValue = "";
 
   if (Validator.isNotNull(myConfiguration)) {

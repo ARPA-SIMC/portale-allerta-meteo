@@ -36,12 +36,12 @@ public class JobActionActionCommand implements MVCActionCommand {
             if (jobAction.equals(QuartzSchedulerUtil.ACTION_REFRESH)) {
                 // None action here for now. just going to render phase
             } else if (jobAction.equals(QuartzSchedulerUtil.ACTION_SHUTDOWN)) {
-                try {
+                /*try {
                     QuartzSchedulerUtil.scheduleJobServiceAction(jobAction);
                 } catch (SchedulerException e) {
                     _log.error(e);
                     SessionErrors.add(actionRequest, SESSION_MESSAGE_ERROR);
-                }
+                }*/
             } else {
                 try {
                     QuartzSchedulerUtil.scheduleJobAction(actionRequest, jobAction);

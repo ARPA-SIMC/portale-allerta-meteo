@@ -1,30 +1,15 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.previsioni.meteo.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -35,21 +20,12 @@ import java.util.Objects;
  * @see Bollettino
  * @generated
  */
-@ProviderType
-public class BollettinoWrapper implements Bollettino, ModelWrapper<Bollettino> {
+public class BollettinoWrapper
+	extends BaseModelWrapper<Bollettino>
+	implements Bollettino, ModelWrapper<Bollettino> {
 
 	public BollettinoWrapper(Bollettino bollettino) {
-		_bollettino = bollettino;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return Bollettino.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return Bollettino.class.getName();
+		super(bollettino);
 	}
 
 	@Override
@@ -113,13 +89,8 @@ public class BollettinoWrapper implements Bollettino, ModelWrapper<Bollettino> {
 	}
 
 	@Override
-	public Object clone() {
-		return new BollettinoWrapper((Bollettino)_bollettino.clone());
-	}
-
-	@Override
-	public int compareTo(it.eng.previsioni.meteo.model.Bollettino bollettino) {
-		return _bollettino.compareTo(bollettino);
+	public Bollettino cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -129,12 +100,7 @@ public class BollettinoWrapper implements Bollettino, ModelWrapper<Bollettino> {
 	 */
 	@Override
 	public String getEmissione() {
-		return _bollettino.getEmissione();
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _bollettino.getExpandoBridge();
+		return model.getEmissione();
 	}
 
 	/**
@@ -144,7 +110,7 @@ public class BollettinoWrapper implements Bollettino, ModelWrapper<Bollettino> {
 	 */
 	@Override
 	public long getId() {
-		return _bollettino.getId();
+		return model.getId();
 	}
 
 	/**
@@ -154,7 +120,7 @@ public class BollettinoWrapper implements Bollettino, ModelWrapper<Bollettino> {
 	 */
 	@Override
 	public String getJson() {
-		return _bollettino.getJson();
+		return model.getJson();
 	}
 
 	/**
@@ -164,12 +130,7 @@ public class BollettinoWrapper implements Bollettino, ModelWrapper<Bollettino> {
 	 */
 	@Override
 	public long getPrimaryKey() {
-		return _bollettino.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _bollettino.getPrimaryKeyObj();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -179,7 +140,7 @@ public class BollettinoWrapper implements Bollettino, ModelWrapper<Bollettino> {
 	 */
 	@Override
 	public long getTimestamp() {
-		return _bollettino.getTimestamp();
+		return model.getTimestamp();
 	}
 
 	/**
@@ -189,7 +150,7 @@ public class BollettinoWrapper implements Bollettino, ModelWrapper<Bollettino> {
 	 */
 	@Override
 	public String getTipo() {
-		return _bollettino.getTipo();
+		return model.getTipo();
 	}
 
 	/**
@@ -199,7 +160,7 @@ public class BollettinoWrapper implements Bollettino, ModelWrapper<Bollettino> {
 	 */
 	@Override
 	public String getValidita() {
-		return _bollettino.getValidita();
+		return model.getValidita();
 	}
 
 	/**
@@ -209,37 +170,12 @@ public class BollettinoWrapper implements Bollettino, ModelWrapper<Bollettino> {
 	 */
 	@Override
 	public String getXml_content() {
-		return _bollettino.getXml_content();
-	}
-
-	@Override
-	public int hashCode() {
-		return _bollettino.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _bollettino.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _bollettino.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _bollettino.isNew();
+		return model.getXml_content();
 	}
 
 	@Override
 	public void persist() {
-		_bollettino.persist();
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_bollettino.setCachedModel(cachedModel);
+		model.persist();
 	}
 
 	/**
@@ -249,24 +185,7 @@ public class BollettinoWrapper implements Bollettino, ModelWrapper<Bollettino> {
 	 */
 	@Override
 	public void setEmissione(String emissione) {
-		_bollettino.setEmissione(emissione);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_bollettino.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_bollettino.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_bollettino.setExpandoBridgeAttributes(serviceContext);
+		model.setEmissione(emissione);
 	}
 
 	/**
@@ -276,7 +195,7 @@ public class BollettinoWrapper implements Bollettino, ModelWrapper<Bollettino> {
 	 */
 	@Override
 	public void setId(long id) {
-		_bollettino.setId(id);
+		model.setId(id);
 	}
 
 	/**
@@ -286,12 +205,7 @@ public class BollettinoWrapper implements Bollettino, ModelWrapper<Bollettino> {
 	 */
 	@Override
 	public void setJson(String json) {
-		_bollettino.setJson(json);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_bollettino.setNew(n);
+		model.setJson(json);
 	}
 
 	/**
@@ -301,12 +215,7 @@ public class BollettinoWrapper implements Bollettino, ModelWrapper<Bollettino> {
 	 */
 	@Override
 	public void setPrimaryKey(long primaryKey) {
-		_bollettino.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_bollettino.setPrimaryKeyObj(primaryKeyObj);
+		model.setPrimaryKey(primaryKey);
 	}
 
 	/**
@@ -316,7 +225,7 @@ public class BollettinoWrapper implements Bollettino, ModelWrapper<Bollettino> {
 	 */
 	@Override
 	public void setTimestamp(long timestamp) {
-		_bollettino.setTimestamp(timestamp);
+		model.setTimestamp(timestamp);
 	}
 
 	/**
@@ -326,7 +235,7 @@ public class BollettinoWrapper implements Bollettino, ModelWrapper<Bollettino> {
 	 */
 	@Override
 	public void setTipo(String tipo) {
-		_bollettino.setTipo(tipo);
+		model.setTipo(tipo);
 	}
 
 	/**
@@ -336,7 +245,7 @@ public class BollettinoWrapper implements Bollettino, ModelWrapper<Bollettino> {
 	 */
 	@Override
 	public void setValidita(String validita) {
-		_bollettino.setValidita(validita);
+		model.setValidita(validita);
 	}
 
 	/**
@@ -346,75 +255,17 @@ public class BollettinoWrapper implements Bollettino, ModelWrapper<Bollettino> {
 	 */
 	@Override
 	public void setXml_content(String xml_content) {
-		_bollettino.setXml_content(xml_content);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<it.eng.previsioni.meteo.model.Bollettino> toCacheModel() {
-
-		return _bollettino.toCacheModel();
-	}
-
-	@Override
-	public it.eng.previsioni.meteo.model.Bollettino toEscapedModel() {
-		return new BollettinoWrapper(_bollettino.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _bollettino.toString();
-	}
-
-	@Override
-	public it.eng.previsioni.meteo.model.Bollettino toUnescapedModel() {
-		return new BollettinoWrapper(_bollettino.toUnescapedModel());
+		model.setXml_content(xml_content);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _bollettino.toXmlString();
+		return model.toXmlString();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-
-		if (!(obj instanceof BollettinoWrapper)) {
-			return false;
-		}
-
-		BollettinoWrapper bollettinoWrapper = (BollettinoWrapper)obj;
-
-		if (Objects.equals(_bollettino, bollettinoWrapper._bollettino)) {
-			return true;
-		}
-
-		return false;
+	protected BollettinoWrapper wrap(Bollettino bollettino) {
+		return new BollettinoWrapper(bollettino);
 	}
-
-	@Override
-	public Bollettino getWrappedModel() {
-		return _bollettino;
-	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _bollettino.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _bollettino.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_bollettino.resetOriginalValues();
-	}
-
-	private final Bollettino _bollettino;
 
 }

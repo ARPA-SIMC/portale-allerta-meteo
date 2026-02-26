@@ -3,14 +3,14 @@ package it.eng.allerter.allerta.utils;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import facebook4j.Facebook;
+/*import facebook4j.Facebook;
 import facebook4j.FacebookException;
 import facebook4j.FacebookFactory;
 import facebook4j.PostUpdate;
-import facebook4j.auth.AccessToken;
+import facebook4j.auth.AccessToken;*/
 
 public class FacebookConnector {
-	private  Facebook facebook = null;
+	/*private  Facebook facebook = null;
 
 	public FacebookConnector(String appID,String appSecret,String permToken){
 
@@ -115,5 +115,5 @@ public class FacebookConnector {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
+	}*/
 }

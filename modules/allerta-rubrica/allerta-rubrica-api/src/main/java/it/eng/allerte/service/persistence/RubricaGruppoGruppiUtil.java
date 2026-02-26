@@ -1,20 +1,9 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerte.service.persistence;
-
-import aQute.bnd.annotation.ProviderType;
 
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
 import com.liferay.portal.kernel.service.ServiceContext;
@@ -28,10 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.util.tracker.ServiceTracker;
-
 /**
  * The persistence utility for the rubrica gruppo gruppi service. This utility wraps <code>it.eng.allerte.service.persistence.impl.RubricaGruppoGruppiPersistenceImpl</code> and provides direct access to the database for CRUD operations. This utility should only be used by the service layer, as it must operate within a transaction. Never access this utility in a JSP, controller, model, or other front-end class.
  *
@@ -43,7 +28,6 @@ import org.osgi.util.tracker.ServiceTracker;
  * @see RubricaGruppoGruppiPersistence
  * @generated
  */
-@ProviderType
 public class RubricaGruppoGruppiUtil {
 
 	/*
@@ -147,7 +131,7 @@ public class RubricaGruppoGruppiUtil {
 	 * Returns a range of all the rubrica gruppo gruppis where FK_GRUPPO_PADRE = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaGruppoGruppiModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaGruppoGruppiModelImpl</code>.
 	 * </p>
 	 *
 	 * @param FK_GRUPPO_PADRE the fk_gruppo_padre
@@ -166,7 +150,7 @@ public class RubricaGruppoGruppiUtil {
 	 * Returns an ordered range of all the rubrica gruppo gruppis where FK_GRUPPO_PADRE = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaGruppoGruppiModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaGruppoGruppiModelImpl</code>.
 	 * </p>
 	 *
 	 * @param FK_GRUPPO_PADRE the fk_gruppo_padre
@@ -187,23 +171,23 @@ public class RubricaGruppoGruppiUtil {
 	 * Returns an ordered range of all the rubrica gruppo gruppis where FK_GRUPPO_PADRE = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaGruppoGruppiModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaGruppoGruppiModelImpl</code>.
 	 * </p>
 	 *
 	 * @param FK_GRUPPO_PADRE the fk_gruppo_padre
 	 * @param start the lower bound of the range of rubrica gruppo gruppis
 	 * @param end the upper bound of the range of rubrica gruppo gruppis (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching rubrica gruppo gruppis
 	 */
 	public static List<RubricaGruppoGruppi> findByRubricaGruppoGruppoByPadre(
 		long FK_GRUPPO_PADRE, int start, int end,
 		OrderByComparator<RubricaGruppoGruppi> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
 		return getPersistence().findByRubricaGruppoGruppoByPadre(
-			FK_GRUPPO_PADRE, start, end, orderByComparator, retrieveFromCache);
+			FK_GRUPPO_PADRE, start, end, orderByComparator, useFinderCache);
 	}
 
 	/**
@@ -281,8 +265,7 @@ public class RubricaGruppoGruppiUtil {
 	 */
 	public static RubricaGruppoGruppi[]
 			findByRubricaGruppoGruppoByPadre_PrevAndNext(
-				it.eng.allerte.service.persistence.RubricaGruppoGruppiPK
-					rubricaGruppoGruppiPK,
+				RubricaGruppoGruppiPK rubricaGruppoGruppiPK,
 				long FK_GRUPPO_PADRE,
 				OrderByComparator<RubricaGruppoGruppi> orderByComparator)
 		throws it.eng.allerte.exception.NoSuchRubricaGruppoGruppiException {
@@ -330,7 +313,7 @@ public class RubricaGruppoGruppiUtil {
 	 * Returns a range of all the rubrica gruppo gruppis where FK_GRUPPO_FIGLIO = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaGruppoGruppiModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaGruppoGruppiModelImpl</code>.
 	 * </p>
 	 *
 	 * @param FK_GRUPPO_FIGLIO the fk_gruppo_figlio
@@ -349,7 +332,7 @@ public class RubricaGruppoGruppiUtil {
 	 * Returns an ordered range of all the rubrica gruppo gruppis where FK_GRUPPO_FIGLIO = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaGruppoGruppiModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaGruppoGruppiModelImpl</code>.
 	 * </p>
 	 *
 	 * @param FK_GRUPPO_FIGLIO the fk_gruppo_figlio
@@ -370,23 +353,23 @@ public class RubricaGruppoGruppiUtil {
 	 * Returns an ordered range of all the rubrica gruppo gruppis where FK_GRUPPO_FIGLIO = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaGruppoGruppiModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaGruppoGruppiModelImpl</code>.
 	 * </p>
 	 *
 	 * @param FK_GRUPPO_FIGLIO the fk_gruppo_figlio
 	 * @param start the lower bound of the range of rubrica gruppo gruppis
 	 * @param end the upper bound of the range of rubrica gruppo gruppis (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching rubrica gruppo gruppis
 	 */
 	public static List<RubricaGruppoGruppi> findByRubricaGruppoGruppoByFiglio(
 		long FK_GRUPPO_FIGLIO, int start, int end,
 		OrderByComparator<RubricaGruppoGruppi> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
 		return getPersistence().findByRubricaGruppoGruppoByFiglio(
-			FK_GRUPPO_FIGLIO, start, end, orderByComparator, retrieveFromCache);
+			FK_GRUPPO_FIGLIO, start, end, orderByComparator, useFinderCache);
 	}
 
 	/**
@@ -464,8 +447,7 @@ public class RubricaGruppoGruppiUtil {
 	 */
 	public static RubricaGruppoGruppi[]
 			findByRubricaGruppoGruppoByFiglio_PrevAndNext(
-				it.eng.allerte.service.persistence.RubricaGruppoGruppiPK
-					rubricaGruppoGruppiPK,
+				RubricaGruppoGruppiPK rubricaGruppoGruppiPK,
 				long FK_GRUPPO_FIGLIO,
 				OrderByComparator<RubricaGruppoGruppi> orderByComparator)
 		throws it.eng.allerte.exception.NoSuchRubricaGruppoGruppiException {
@@ -525,8 +507,7 @@ public class RubricaGruppoGruppiUtil {
 	 * @return the new rubrica gruppo gruppi
 	 */
 	public static RubricaGruppoGruppi create(
-		it.eng.allerte.service.persistence.RubricaGruppoGruppiPK
-			rubricaGruppoGruppiPK) {
+		RubricaGruppoGruppiPK rubricaGruppoGruppiPK) {
 
 		return getPersistence().create(rubricaGruppoGruppiPK);
 	}
@@ -539,8 +520,7 @@ public class RubricaGruppoGruppiUtil {
 	 * @throws NoSuchRubricaGruppoGruppiException if a rubrica gruppo gruppi with the primary key could not be found
 	 */
 	public static RubricaGruppoGruppi remove(
-			it.eng.allerte.service.persistence.RubricaGruppoGruppiPK
-				rubricaGruppoGruppiPK)
+			RubricaGruppoGruppiPK rubricaGruppoGruppiPK)
 		throws it.eng.allerte.exception.NoSuchRubricaGruppoGruppiException {
 
 		return getPersistence().remove(rubricaGruppoGruppiPK);
@@ -560,8 +540,7 @@ public class RubricaGruppoGruppiUtil {
 	 * @throws NoSuchRubricaGruppoGruppiException if a rubrica gruppo gruppi with the primary key could not be found
 	 */
 	public static RubricaGruppoGruppi findByPrimaryKey(
-			it.eng.allerte.service.persistence.RubricaGruppoGruppiPK
-				rubricaGruppoGruppiPK)
+			RubricaGruppoGruppiPK rubricaGruppoGruppiPK)
 		throws it.eng.allerte.exception.NoSuchRubricaGruppoGruppiException {
 
 		return getPersistence().findByPrimaryKey(rubricaGruppoGruppiPK);
@@ -574,8 +553,7 @@ public class RubricaGruppoGruppiUtil {
 	 * @return the rubrica gruppo gruppi, or <code>null</code> if a rubrica gruppo gruppi with the primary key could not be found
 	 */
 	public static RubricaGruppoGruppi fetchByPrimaryKey(
-		it.eng.allerte.service.persistence.RubricaGruppoGruppiPK
-			rubricaGruppoGruppiPK) {
+		RubricaGruppoGruppiPK rubricaGruppoGruppiPK) {
 
 		return getPersistence().fetchByPrimaryKey(rubricaGruppoGruppiPK);
 	}
@@ -593,7 +571,7 @@ public class RubricaGruppoGruppiUtil {
 	 * Returns a range of all the rubrica gruppo gruppis.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaGruppoGruppiModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaGruppoGruppiModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of rubrica gruppo gruppis
@@ -608,7 +586,7 @@ public class RubricaGruppoGruppiUtil {
 	 * Returns an ordered range of all the rubrica gruppo gruppis.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaGruppoGruppiModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaGruppoGruppiModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of rubrica gruppo gruppis
@@ -627,22 +605,22 @@ public class RubricaGruppoGruppiUtil {
 	 * Returns an ordered range of all the rubrica gruppo gruppis.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaGruppoGruppiModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaGruppoGruppiModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of rubrica gruppo gruppis
 	 * @param end the upper bound of the range of rubrica gruppo gruppis (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of rubrica gruppo gruppis
 	 */
 	public static List<RubricaGruppoGruppi> findAll(
 		int start, int end,
 		OrderByComparator<RubricaGruppoGruppi> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
 		return getPersistence().findAll(
-			start, end, orderByComparator, retrieveFromCache);
+			start, end, orderByComparator, useFinderCache);
 	}
 
 	/**
@@ -666,29 +644,15 @@ public class RubricaGruppoGruppiUtil {
 	}
 
 	public static RubricaGruppoGruppiPersistence getPersistence() {
-		return _serviceTracker.getService();
+		return _persistence;
 	}
 
-	private static ServiceTracker
-		<RubricaGruppoGruppiPersistence, RubricaGruppoGruppiPersistence>
-			_serviceTracker;
+	public static void setPersistence(
+		RubricaGruppoGruppiPersistence persistence) {
 
-	static {
-		Bundle bundle = FrameworkUtil.getBundle(
-			RubricaGruppoGruppiPersistence.class);
-
-		ServiceTracker
-			<RubricaGruppoGruppiPersistence, RubricaGruppoGruppiPersistence>
-				serviceTracker =
-					new ServiceTracker
-						<RubricaGruppoGruppiPersistence,
-						 RubricaGruppoGruppiPersistence>(
-							 bundle.getBundleContext(),
-							 RubricaGruppoGruppiPersistence.class, null);
-
-		serviceTracker.open();
-
-		_serviceTracker = serviceTracker;
+		_persistence = persistence;
 	}
+
+	private static volatile RubricaGruppoGruppiPersistence _persistence;
 
 }

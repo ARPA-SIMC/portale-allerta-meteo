@@ -20,11 +20,7 @@ import org.osgi.service.component.annotations.Component;
 import allerta.search.objects.searchables.SearchFactory;
 
 @Component(
-	    immediate = true,
-	    property = {
-	        "osgi.http.whiteboard.context.path=/",
-	        "osgi.http.whiteboard.servlet.pattern=/feed/*"
-	    },
+	    property = "osgi.http.whiteboard.servlet.pattern=/feed/*",
 	    service = Servlet.class
 	)
 public class SearchableFeedServlet extends HttpServlet {

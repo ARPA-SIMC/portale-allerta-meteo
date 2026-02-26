@@ -1,30 +1,15 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.radarMeteo.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -35,22 +20,12 @@ import java.util.Objects;
  * @see Comuni_bacini_ws
  * @generated
  */
-@ProviderType
 public class Comuni_bacini_wsWrapper
+	extends BaseModelWrapper<Comuni_bacini_ws>
 	implements Comuni_bacini_ws, ModelWrapper<Comuni_bacini_ws> {
 
 	public Comuni_bacini_wsWrapper(Comuni_bacini_ws comuni_bacini_ws) {
-		_comuni_bacini_ws = comuni_bacini_ws;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return Comuni_bacini_ws.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return Comuni_bacini_ws.class.getName();
+		super(comuni_bacini_ws);
 	}
 
 	@Override
@@ -93,16 +68,8 @@ public class Comuni_bacini_wsWrapper
 	}
 
 	@Override
-	public Object clone() {
-		return new Comuni_bacini_wsWrapper(
-			(Comuni_bacini_ws)_comuni_bacini_ws.clone());
-	}
-
-	@Override
-	public int compareTo(
-		it.eng.radarMeteo.model.Comuni_bacini_ws comuni_bacini_ws) {
-
-		return _comuni_bacini_ws.compareTo(comuni_bacini_ws);
+	public Comuni_bacini_ws cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -112,7 +79,7 @@ public class Comuni_bacini_wsWrapper
 	 */
 	@Override
 	public String getBacino() {
-		return _comuni_bacini_ws.getBacino();
+		return model.getBacino();
 	}
 
 	/**
@@ -122,12 +89,7 @@ public class Comuni_bacini_wsWrapper
 	 */
 	@Override
 	public String getComune() {
-		return _comuni_bacini_ws.getComune();
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _comuni_bacini_ws.getExpandoBridge();
+		return model.getComune();
 	}
 
 	/**
@@ -137,7 +99,7 @@ public class Comuni_bacini_wsWrapper
 	 */
 	@Override
 	public int getIdBacini() {
-		return _comuni_bacini_ws.getIdBacini();
+		return model.getIdBacini();
 	}
 
 	/**
@@ -147,12 +109,7 @@ public class Comuni_bacini_wsWrapper
 	 */
 	@Override
 	public int getPrimaryKey() {
-		return _comuni_bacini_ws.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _comuni_bacini_ws.getPrimaryKeyObj();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -162,32 +119,12 @@ public class Comuni_bacini_wsWrapper
 	 */
 	@Override
 	public String getProvincia() {
-		return _comuni_bacini_ws.getProvincia();
-	}
-
-	@Override
-	public int hashCode() {
-		return _comuni_bacini_ws.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _comuni_bacini_ws.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _comuni_bacini_ws.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _comuni_bacini_ws.isNew();
+		return model.getProvincia();
 	}
 
 	@Override
 	public void persist() {
-		_comuni_bacini_ws.persist();
+		model.persist();
 	}
 
 	/**
@@ -197,12 +134,7 @@ public class Comuni_bacini_wsWrapper
 	 */
 	@Override
 	public void setBacino(String bacino) {
-		_comuni_bacini_ws.setBacino(bacino);
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_comuni_bacini_ws.setCachedModel(cachedModel);
+		model.setBacino(bacino);
 	}
 
 	/**
@@ -212,24 +144,7 @@ public class Comuni_bacini_wsWrapper
 	 */
 	@Override
 	public void setComune(String comune) {
-		_comuni_bacini_ws.setComune(comune);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_comuni_bacini_ws.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_comuni_bacini_ws.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_comuni_bacini_ws.setExpandoBridgeAttributes(serviceContext);
+		model.setComune(comune);
 	}
 
 	/**
@@ -239,12 +154,7 @@ public class Comuni_bacini_wsWrapper
 	 */
 	@Override
 	public void setIdBacini(int idBacini) {
-		_comuni_bacini_ws.setIdBacini(idBacini);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_comuni_bacini_ws.setNew(n);
+		model.setIdBacini(idBacini);
 	}
 
 	/**
@@ -254,12 +164,7 @@ public class Comuni_bacini_wsWrapper
 	 */
 	@Override
 	public void setPrimaryKey(int primaryKey) {
-		_comuni_bacini_ws.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_comuni_bacini_ws.setPrimaryKeyObj(primaryKeyObj);
+		model.setPrimaryKey(primaryKey);
 	}
 
 	/**
@@ -269,79 +174,17 @@ public class Comuni_bacini_wsWrapper
 	 */
 	@Override
 	public void setProvincia(String provincia) {
-		_comuni_bacini_ws.setProvincia(provincia);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<it.eng.radarMeteo.model.Comuni_bacini_ws> toCacheModel() {
-
-		return _comuni_bacini_ws.toCacheModel();
-	}
-
-	@Override
-	public it.eng.radarMeteo.model.Comuni_bacini_ws toEscapedModel() {
-		return new Comuni_bacini_wsWrapper(_comuni_bacini_ws.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _comuni_bacini_ws.toString();
-	}
-
-	@Override
-	public it.eng.radarMeteo.model.Comuni_bacini_ws toUnescapedModel() {
-		return new Comuni_bacini_wsWrapper(
-			_comuni_bacini_ws.toUnescapedModel());
+		model.setProvincia(provincia);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _comuni_bacini_ws.toXmlString();
+		return model.toXmlString();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-
-		if (!(obj instanceof Comuni_bacini_wsWrapper)) {
-			return false;
-		}
-
-		Comuni_bacini_wsWrapper comuni_bacini_wsWrapper =
-			(Comuni_bacini_wsWrapper)obj;
-
-		if (Objects.equals(
-				_comuni_bacini_ws, comuni_bacini_wsWrapper._comuni_bacini_ws)) {
-
-			return true;
-		}
-
-		return false;
+	protected Comuni_bacini_wsWrapper wrap(Comuni_bacini_ws comuni_bacini_ws) {
+		return new Comuni_bacini_wsWrapper(comuni_bacini_ws);
 	}
-
-	@Override
-	public Comuni_bacini_ws getWrappedModel() {
-		return _comuni_bacini_ws;
-	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _comuni_bacini_ws.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _comuni_bacini_ws.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_comuni_bacini_ws.resetOriginalValues();
-	}
-
-	private final Comuni_bacini_ws _comuni_bacini_ws;
 
 }

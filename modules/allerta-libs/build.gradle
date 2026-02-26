@@ -1,7 +1,8 @@
 repositories {
 	mavenCentral()
-	maven{url "http://jasperreports.sourceforge.net/maven2/"}
-    maven{url "http://jaspersoft.artifactoryonline.com/jaspersoft/third-party-ce-artifacts/"}
+	maven{url "https://mvnrepository.com/artifact/net.sf.jasperreports/jasperreports"}
+	maven{url "https://mvnrepository.com/artifact/com.lowagie/itext"}
+	maven{url "https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts"}
 }
 
 configurations {
@@ -11,21 +12,20 @@ configurations {
 }
 
 dependencies {
+	compileOnly group: "com.liferay.portal", name: "release.dxp.api"
+
+	cssBuilder group: "com.liferay", name: "com.liferay.css.builder", version: "3.1.4"
 
 	compileInclude group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.2'
 	compileInclude group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.5.2'
-	
+
 	compileInclude group: 'org.apache.poi', name: 'poi', version: '3.17'
 	
-		
-	compileInclude group: 'net.sf.jasperreports', name: 'jasperreports', version: '6.6.0'
-	
-	compileInclude group: 'net.sf.jasperreports', name: 'jasperreports-fonts', version: '6.0.0'
-	
-	compileInclude group: 'xerces', name: 'xercesImpl', version: '2.9.1'
+			compileInclude group: 'net.sf.jasperreports', name: 'jasperreports-fonts', version: '6.0.0'
+		compileInclude group: 'net.sf.jasperreports', name: 'jasperreports', version: '6.6.0'
+
+	compileInclude group: 'xerces', name: 'xercesImpl', version: '2.12.2'
 	
 	compileInclude group: 'org.facebook4j', name: 'facebook4j-core', version: '2.4.13'
-	
-	
 
 }

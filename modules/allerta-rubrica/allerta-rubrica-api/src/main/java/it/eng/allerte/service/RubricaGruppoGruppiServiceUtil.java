@@ -1,24 +1,14 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerte.service;
 
-import aQute.bnd.annotation.ProviderType;
+import com.liferay.portal.kernel.module.service.Snapshot;
 
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.util.tracker.ServiceTracker;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Provides the remote service utility for RubricaGruppoGruppi. This utility wraps
@@ -32,7 +22,6 @@ import org.osgi.util.tracker.ServiceTracker;
  * @see RubricaGruppoGruppiService
  * @generated
  */
-@ProviderType
 public class RubricaGruppoGruppiServiceUtil {
 
 	/*
@@ -40,37 +29,35 @@ public class RubricaGruppoGruppiServiceUtil {
 	 *
 	 * Never modify this class directly. Add custom service methods to <code>it.eng.allerte.service.impl.RubricaGruppoGruppiServiceImpl</code> and rerun ServiceBuilder to regenerate this class.
 	 */
-	public static java.util.Map<String, Object> addGroupMultiSubgroups(
+	public static Map<String, Object> addGroupMultiSubgroups(
 		int id, String data) {
 
 		return getService().addGroupMultiSubgroups(id, data);
 	}
 
-	public static java.util.Map<String, Object> addGroupMultiSupergroups(
+	public static Map<String, Object> addGroupMultiSupergroups(
 		int id, String data) {
 
 		return getService().addGroupMultiSupergroups(id, data);
 	}
 
-	public static java.util.Map<String, Object> addGroupSubgroups(
-		int id, String data) {
-
+	public static Map<String, Object> addGroupSubgroups(int id, String data) {
 		return getService().addGroupSubgroups(id, data);
 	}
 
-	public static java.util.Map<String, Object> deleteGroupMultiSubgroups(
+	public static Map<String, Object> deleteGroupMultiSubgroups(
 		int id, String data) {
 
 		return getService().deleteGroupMultiSubgroups(id, data);
 	}
 
-	public static java.util.Map<String, Object> deleteGroupMultiSupergroups(
+	public static Map<String, Object> deleteGroupMultiSupergroups(
 		int id, String data) {
 
 		return getService().deleteGroupMultiSupergroups(id, data);
 	}
 
-	public static java.util.Map<String, Object> deleteGroupSubgroups(
+	public static Map<String, Object> deleteGroupSubgroups(
 		int id, String data) {
 
 		return getService().deleteGroupSubgroups(id, data);
@@ -91,40 +78,25 @@ public class RubricaGruppoGruppiServiceUtil {
 	 * @param idGroup
 	 * @return
 	 */
-	public static java.util.List<it.eng.allerte.model.RubricaGruppo>
-		getSubGroups(long idGroup) {
+	public static List<it.eng.allerte.model.RubricaGruppo> getSubGroups(
+		long idGroup) {
 
 		return getService().getSubGroups(idGroup);
 	}
 
-	public static java.util.Map<String, Object> updateGroupSubgroups(
+	public static Map<String, Object> updateGroupSubgroups(
 		int id, String data) {
 
 		return getService().updateGroupSubgroups(id, data);
 	}
 
 	public static RubricaGruppoGruppiService getService() {
-		return _serviceTracker.getService();
+		return _serviceSnapshot.get();
 	}
 
-	private static ServiceTracker
-		<RubricaGruppoGruppiService, RubricaGruppoGruppiService>
-			_serviceTracker;
-
-	static {
-		Bundle bundle = FrameworkUtil.getBundle(
+	private static final Snapshot<RubricaGruppoGruppiService> _serviceSnapshot =
+		new Snapshot<>(
+			RubricaGruppoGruppiServiceUtil.class,
 			RubricaGruppoGruppiService.class);
-
-		ServiceTracker<RubricaGruppoGruppiService, RubricaGruppoGruppiService>
-			serviceTracker =
-				new ServiceTracker
-					<RubricaGruppoGruppiService, RubricaGruppoGruppiService>(
-						bundle.getBundleContext(),
-						RubricaGruppoGruppiService.class, null);
-
-		serviceTracker.open();
-
-		_serviceTracker = serviceTracker;
-	}
 
 }

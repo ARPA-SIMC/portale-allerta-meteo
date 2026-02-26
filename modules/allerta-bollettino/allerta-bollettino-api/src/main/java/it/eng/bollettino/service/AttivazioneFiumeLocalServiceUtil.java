@@ -1,24 +1,22 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.bollettino.service;
 
-import aQute.bnd.annotation.ProviderType;
+import com.liferay.petra.sql.dsl.query.DSLQuery;
+import com.liferay.portal.kernel.dao.orm.DynamicQuery;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.model.PersistedModel;
+import com.liferay.portal.kernel.module.service.Snapshot;
+import com.liferay.portal.kernel.util.OrderByComparator;
 
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.util.tracker.ServiceTracker;
+import it.eng.bollettino.model.AttivazioneFiume;
+
+import java.io.Serializable;
+
+import java.util.List;
 
 /**
  * Provides the local service utility for AttivazioneFiume. This utility wraps
@@ -32,7 +30,6 @@ import org.osgi.util.tracker.ServiceTracker;
  * @see AttivazioneFiumeLocalService
  * @generated
  */
-@ProviderType
 public class AttivazioneFiumeLocalServiceUtil {
 
 	/*
@@ -44,11 +41,15 @@ public class AttivazioneFiumeLocalServiceUtil {
 	/**
 	 * Adds the attivazione fiume to the database. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect AttivazioneFiumeLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param attivazioneFiume the attivazione fiume
 	 * @return the attivazione fiume that was added
 	 */
-	public static it.eng.bollettino.model.AttivazioneFiume addAttivazioneFiume(
-		it.eng.bollettino.model.AttivazioneFiume attivazioneFiume) {
+	public static AttivazioneFiume addAttivazioneFiume(
+		AttivazioneFiume attivazioneFiume) {
 
 		return getService().addAttivazioneFiume(attivazioneFiume);
 	}
@@ -59,21 +60,32 @@ public class AttivazioneFiumeLocalServiceUtil {
 	 * @param fiumeId the primary key for the new attivazione fiume
 	 * @return the new attivazione fiume
 	 */
-	public static it.eng.bollettino.model.AttivazioneFiume
-		createAttivazioneFiume(String fiumeId) {
-
+	public static AttivazioneFiume createAttivazioneFiume(String fiumeId) {
 		return getService().createAttivazioneFiume(fiumeId);
+	}
+
+	/**
+	 * @throws PortalException
+	 */
+	public static PersistedModel createPersistedModel(
+			Serializable primaryKeyObj)
+		throws PortalException {
+
+		return getService().createPersistedModel(primaryKeyObj);
 	}
 
 	/**
 	 * Deletes the attivazione fiume from the database. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect AttivazioneFiumeLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param attivazioneFiume the attivazione fiume
 	 * @return the attivazione fiume that was removed
 	 */
-	public static it.eng.bollettino.model.AttivazioneFiume
-		deleteAttivazioneFiume(
-			it.eng.bollettino.model.AttivazioneFiume attivazioneFiume) {
+	public static AttivazioneFiume deleteAttivazioneFiume(
+		AttivazioneFiume attivazioneFiume) {
 
 		return getService().deleteAttivazioneFiume(attivazioneFiume);
 	}
@@ -81,13 +93,16 @@ public class AttivazioneFiumeLocalServiceUtil {
 	/**
 	 * Deletes the attivazione fiume with the primary key from the database. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect AttivazioneFiumeLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param fiumeId the primary key of the attivazione fiume
 	 * @return the attivazione fiume that was removed
 	 * @throws PortalException if a attivazione fiume with the primary key could not be found
 	 */
-	public static it.eng.bollettino.model.AttivazioneFiume
-			deleteAttivazioneFiume(String fiumeId)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	public static AttivazioneFiume deleteAttivazioneFiume(String fiumeId)
+		throws PortalException {
 
 		return getService().deleteAttivazioneFiume(fiumeId);
 	}
@@ -95,17 +110,22 @@ public class AttivazioneFiumeLocalServiceUtil {
 	/**
 	 * @throws PortalException
 	 */
-	public static com.liferay.portal.kernel.model.PersistedModel
-			deletePersistedModel(
-				com.liferay.portal.kernel.model.PersistedModel persistedModel)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	public static PersistedModel deletePersistedModel(
+			PersistedModel persistedModel)
+		throws PortalException {
 
 		return getService().deletePersistedModel(persistedModel);
 	}
 
-	public static com.liferay.portal.kernel.dao.orm.DynamicQuery
-		dynamicQuery() {
+	public static <T> T dslQuery(DSLQuery dslQuery) {
+		return getService().dslQuery(dslQuery);
+	}
 
+	public static int dslQueryCount(DSLQuery dslQuery) {
+		return getService().dslQueryCount(dslQuery);
+	}
+
+	public static DynamicQuery dynamicQuery() {
 		return getService().dynamicQuery();
 	}
 
@@ -115,9 +135,7 @@ public class AttivazioneFiumeLocalServiceUtil {
 	 * @param dynamicQuery the dynamic query
 	 * @return the matching rows
 	 */
-	public static <T> java.util.List<T> dynamicQuery(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery) {
-
+	public static <T> List<T> dynamicQuery(DynamicQuery dynamicQuery) {
 		return getService().dynamicQuery(dynamicQuery);
 	}
 
@@ -125,7 +143,7 @@ public class AttivazioneFiumeLocalServiceUtil {
 	 * Performs a dynamic query on the database and returns a range of the matching rows.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>it.eng.bollettino.model.impl.AttivazioneFiumeModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>it.eng.bollettino.model.impl.AttivazioneFiumeModelImpl</code>.
 	 * </p>
 	 *
 	 * @param dynamicQuery the dynamic query
@@ -133,9 +151,8 @@ public class AttivazioneFiumeLocalServiceUtil {
 	 * @param end the upper bound of the range of model instances (not inclusive)
 	 * @return the range of matching rows
 	 */
-	public static <T> java.util.List<T> dynamicQuery(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery, int start,
-		int end) {
+	public static <T> List<T> dynamicQuery(
+		DynamicQuery dynamicQuery, int start, int end) {
 
 		return getService().dynamicQuery(dynamicQuery, start, end);
 	}
@@ -144,7 +161,7 @@ public class AttivazioneFiumeLocalServiceUtil {
 	 * Performs a dynamic query on the database and returns an ordered range of the matching rows.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>it.eng.bollettino.model.impl.AttivazioneFiumeModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>it.eng.bollettino.model.impl.AttivazioneFiumeModelImpl</code>.
 	 * </p>
 	 *
 	 * @param dynamicQuery the dynamic query
@@ -153,10 +170,9 @@ public class AttivazioneFiumeLocalServiceUtil {
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching rows
 	 */
-	public static <T> java.util.List<T> dynamicQuery(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery, int start,
-		int end,
-		com.liferay.portal.kernel.util.OrderByComparator<T> orderByComparator) {
+	public static <T> List<T> dynamicQuery(
+		DynamicQuery dynamicQuery, int start, int end,
+		OrderByComparator<T> orderByComparator) {
 
 		return getService().dynamicQuery(
 			dynamicQuery, start, end, orderByComparator);
@@ -168,9 +184,7 @@ public class AttivazioneFiumeLocalServiceUtil {
 	 * @param dynamicQuery the dynamic query
 	 * @return the number of rows matching the dynamic query
 	 */
-	public static long dynamicQueryCount(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery) {
-
+	public static long dynamicQueryCount(DynamicQuery dynamicQuery) {
 		return getService().dynamicQueryCount(dynamicQuery);
 	}
 
@@ -182,15 +196,13 @@ public class AttivazioneFiumeLocalServiceUtil {
 	 * @return the number of rows matching the dynamic query
 	 */
 	public static long dynamicQueryCount(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery,
+		DynamicQuery dynamicQuery,
 		com.liferay.portal.kernel.dao.orm.Projection projection) {
 
 		return getService().dynamicQueryCount(dynamicQuery, projection);
 	}
 
-	public static it.eng.bollettino.model.AttivazioneFiume
-		fetchAttivazioneFiume(String fiumeId) {
-
+	public static AttivazioneFiume fetchAttivazioneFiume(String fiumeId) {
 		return getService().fetchAttivazioneFiume(fiumeId);
 	}
 
@@ -201,9 +213,8 @@ public class AttivazioneFiumeLocalServiceUtil {
 	 * @return the attivazione fiume
 	 * @throws PortalException if a attivazione fiume with the primary key could not be found
 	 */
-	public static it.eng.bollettino.model.AttivazioneFiume getAttivazioneFiume(
-			String fiumeId)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	public static AttivazioneFiume getAttivazioneFiume(String fiumeId)
+		throws PortalException {
 
 		return getService().getAttivazioneFiume(fiumeId);
 	}
@@ -212,15 +223,15 @@ public class AttivazioneFiumeLocalServiceUtil {
 	 * Returns a range of all the attivazione fiumes.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>it.eng.bollettino.model.impl.AttivazioneFiumeModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>it.eng.bollettino.model.impl.AttivazioneFiumeModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of attivazione fiumes
 	 * @param end the upper bound of the range of attivazione fiumes (not inclusive)
 	 * @return the range of attivazione fiumes
 	 */
-	public static java.util.List<it.eng.bollettino.model.AttivazioneFiume>
-		getAttivazioneFiumes(int start, int end) {
+	public static List<AttivazioneFiume> getAttivazioneFiumes(
+		int start, int end) {
 
 		return getService().getAttivazioneFiumes(start, end);
 	}
@@ -243,9 +254,11 @@ public class AttivazioneFiumeLocalServiceUtil {
 		return getService().getOSGiServiceIdentifier();
 	}
 
-	public static com.liferay.portal.kernel.model.PersistedModel
-			getPersistedModel(java.io.Serializable primaryKeyObj)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	/**
+	 * @throws PortalException
+	 */
+	public static PersistedModel getPersistedModel(Serializable primaryKeyObj)
+		throws PortalException {
 
 		return getService().getPersistedModel(primaryKeyObj);
 	}
@@ -253,40 +266,26 @@ public class AttivazioneFiumeLocalServiceUtil {
 	/**
 	 * Updates the attivazione fiume in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect AttivazioneFiumeLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param attivazioneFiume the attivazione fiume
 	 * @return the attivazione fiume that was updated
 	 */
-	public static it.eng.bollettino.model.AttivazioneFiume
-		updateAttivazioneFiume(
-			it.eng.bollettino.model.AttivazioneFiume attivazioneFiume) {
+	public static AttivazioneFiume updateAttivazioneFiume(
+		AttivazioneFiume attivazioneFiume) {
 
 		return getService().updateAttivazioneFiume(attivazioneFiume);
 	}
 
 	public static AttivazioneFiumeLocalService getService() {
-		return _serviceTracker.getService();
+		return _serviceSnapshot.get();
 	}
 
-	private static ServiceTracker
-		<AttivazioneFiumeLocalService, AttivazioneFiumeLocalService>
-			_serviceTracker;
-
-	static {
-		Bundle bundle = FrameworkUtil.getBundle(
+	private static final Snapshot<AttivazioneFiumeLocalService>
+		_serviceSnapshot = new Snapshot<>(
+			AttivazioneFiumeLocalServiceUtil.class,
 			AttivazioneFiumeLocalService.class);
-
-		ServiceTracker
-			<AttivazioneFiumeLocalService, AttivazioneFiumeLocalService>
-				serviceTracker =
-					new ServiceTracker
-						<AttivazioneFiumeLocalService,
-						 AttivazioneFiumeLocalService>(
-							 bundle.getBundleContext(),
-							 AttivazioneFiumeLocalService.class, null);
-
-		serviceTracker.open();
-
-		_serviceTracker = serviceTracker;
-	}
 
 }

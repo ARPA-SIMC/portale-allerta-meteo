@@ -1,3 +1,4 @@
+<%@page import="com.liferay.portal.kernel.language.LanguageUtil"%>
 <%@page import="com.liferay.site.navigation.service.SiteNavigationMenuItemLocalService"%>
 <%@page import="it.eng.allerta.utils.AllertaTracker"%>
 <%@page import="com.liferay.site.navigation.type.SiteNavigationMenuItemTypeRegistry"%>
@@ -38,6 +39,9 @@ List<SiteNavigationMenuItem> menuItems = siteNavigationMenuItemLocalService
 if (menuItems.size() == 0)
 	return;
 
+String currentLanguage = LanguageUtil.getLanguageId(request);
+boolean isEnglish = currentLanguage.startsWith("en");
+String prefix = isEnglish? "/en" : "";
 
 
 %>
@@ -117,7 +121,7 @@ if (menuItems.size() == 0)
     	%>
     		         	
         	<li class="nav-item">
-            	<a class="nav-link " href="<%= l != null ? l.getFriendlyURL(locale) : "#"%>" 
+            	<a class="nav-link " href="<%= l != null ? prefix + l.getFriendlyURL(locale) : "#"%>" 
             		title="<%= l != null ? l.getName(locale) : menuType.getLabel(locale)%>">
             		
             	<%if( l != null && l.getExpandoBridge().hasAttribute("Icon")) {%>
@@ -195,7 +199,7 @@ if (menuItems.size() == 0)
                     			<a 
                     				class="nav-link <%=subSubMenuItems.size() > 0 ? "nav-link--has-submenu" : ""%>" 
                     				style="<%=subSubMenuItems.size() == 0 ? "padding: 0.75rem 3.3rem 0.75rem;" : "" %>"
-                    				href="<%=subSubMenuItems.size() == 0 ? (l != null ? l.getFriendlyURL(locale) : "#") : "" %>"
+                    				href="<%=subSubMenuItems.size() == 0 ? (l != null ? prefix + l.getFriendlyURL(locale) : "#") : "" %>"
                     				title="<%=l != null ? l.getName(locale) : subMenuType.getTitle(subMenuItem, locale)%>">
                     				
                     				<c:choose>
@@ -253,7 +257,7 @@ if (menuItems.size() == 0)
                 		
             			%>
             			 	<li class="nav-item">
-                            <a class="nav-link" href="<%=l != null ? l.getFriendlyURL(locale) : "#" %>" 
+                            <a class="nav-link" href="<%=l != null ? prefix + l.getFriendlyURL(locale) : "#" %>" 
                             	title="<%=l != null ?l.getName(locale) : subSubMenuType.getTitle(subSubMenuItem, locale)%>">
                                 <span><%= l != null ?l.getName(locale) : subSubMenuType.getTitle(subSubMenuItem, locale)%></span>
                             </a>

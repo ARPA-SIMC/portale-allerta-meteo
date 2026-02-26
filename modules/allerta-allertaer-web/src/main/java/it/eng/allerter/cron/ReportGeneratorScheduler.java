@@ -21,8 +21,14 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 
+import com.liferay.dispatch.executor.BaseDispatchTaskExecutor;
+import com.liferay.dispatch.executor.DispatchTaskExecutor;
+import com.liferay.dispatch.executor.DispatchTaskExecutorOutput;
+import com.liferay.dispatch.model.DispatchTrigger;
+import com.liferay.document.library.kernel.exception.NoSuchFileEntryException;
 import com.liferay.document.library.kernel.model.DLFileEntry;
 import com.liferay.document.library.kernel.model.DLFolderConstants;
+import com.liferay.document.library.kernel.model.DLVersionNumberIncrease;
 import com.liferay.document.library.kernel.service.DLAppServiceUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -47,10 +53,14 @@ import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.security.permission.PermissionCheckerFactoryUtil;
 import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
 import com.liferay.portal.kernel.service.ResourcePermissionLocalService;
+import com.liferay.portal.kernel.service.ResourcePermissionLocalServiceUtil;
 import com.liferay.portal.kernel.service.RoleLocalService;
+import com.liferay.portal.kernel.service.RoleLocalServiceUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.service.ServiceContextFactory;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.FileUtil;
+import com.liferay.portal.kernel.util.MimeTypesUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.PortalUtil;
 
@@ -63,7 +73,9 @@ import it.eng.allerter.model.AllertaParametro;
 import it.eng.allerter.model.AllertaValanghe;
 import it.eng.allerter.service.AllertaLocalService;
 import it.eng.allerter.service.AllertaParametroLocalService;
+import it.eng.allerter.service.AllertaParametroLocalServiceUtil;
 import it.eng.allerter.service.AllertaValangheLocalService;
+import it.eng.allerter.service.LogInternoLocalServiceUtil;
 import it.eng.bollettino.model.Allarme;
 import it.eng.bollettino.model.Bollettino;
 import it.eng.bollettino.model.BollettinoParametro;
@@ -80,16 +92,19 @@ import it.eng.parer.service.DatiSpecificiInvioLocalService;
 import it.eng.parer.service.DocumentiCollegatiLocalService;
 
 @Component(
-  immediate = true, 			  
-  service = MessageListener.class
-)
-public class ReportGeneratorScheduler extends BaseMessageListener  {
+		  property = {
+			"dispatch.task.executor.name=Registrazione report invio",
+			"dispatch.task.executor.type=task-report-invio"
+		  },
+		  service = DispatchTaskExecutor.class
+		)
+public class ReportGeneratorScheduler extends BaseDispatchTaskExecutor  {
 	
-	public static String QUERY_INVII = "select identificativo_dato_specifico from parer_datispecificiinvio i where tipo_documento='__TIPODOC__' and data_generazione > current_timestamp - cast('3 days' as interval) and data_generazione < current_timestamp - cast('__ORE__ hours' as interval) "+
+	public static String QUERY_INVII = "select identificativo_dato_specifico from parer_datispecificiinvio i where tipo_documento='__TIPODOC__' and data_generazione > current_timestamp - cast('30 days' as interval) and data_generazione < current_timestamp - cast('__ORE__ hours' as interval) "+
 			"and esito_invio ='OK' and not exists(select * from parer_datispecificiinvio i2 where i2.chiave_tipo_registro='__TIPOREGISTRO__' and i2.chiave_anno=i.chiave_anno "+
 			"and i2.chiave_numero=i.chiave_numero||'__PROGRESSIVO__')";
 	
-	public static String QUERY_SUPERAMENTI = "select allarmeid from bollettino_allarme i where createdate > current_timestamp - cast('3 days' as interval) and createdate < current_timestamp - cast('__ORE__ hours' as interval) "+
+	public static String QUERY_SUPERAMENTI = "select allarmeid from bollettino_allarme i where createdate > current_timestamp - cast('30 days' as interval) and createdate < current_timestamp - cast('__ORE__ hours' as interval) "+
 			"and not exists(select * from parer_datispecificiinvio i2 where i2.chiave_tipo_registro='__TIPOREGISTRO__' "+
 			"and i2.chiave_numero=i.allarmeid||'__PROGRESSIVO__')";
 	
@@ -97,7 +112,7 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
 	
 
 	@Override
-	protected void doReceive(Message message) throws Exception {
+	public void doExecute(DispatchTrigger dispatchTrigger, DispatchTaskExecutorOutput output) {
 
 		_log.info("ReportGenerator Scheduler - START");	
 		
@@ -510,6 +525,7 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
 		arretratiValanghe(true);
 		arretratiValanghe(false);
 		
+		output.setOutput("Invio report completato");
 		_log.info("ReportGenerator Scheduler - END");
 	}
 	
@@ -517,13 +533,12 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
 		
 		try {
 		String cpu = PortalUtil.getComputerName();
-		String host = cpu.contains("667") || cpu.contains("668")? "https://allertameteo.regione.emilia-romagna.it" : "http://localhost:8080";
+		String host = cpu.contains("957") || cpu.contains("959")? "https://allertameteo.regione.emilia-romagna.it" : "http://localhost:8080";
 		String u2 =  host+"/o/report/sms";
 		
 		String urlpdf = u2 + ("?tipo=allerta&sottotipo="+a.getNumero());
-		System.out.println(urlpdf);
+		_log.info(urlpdf);
 		File sms = FileUtil.createTempFile(new URL(urlpdf).openConnection().getInputStream());
-
 		long user = a.getUserId();
 	
 		//trova i dati del creatore
@@ -535,7 +550,7 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
 		 sc.setScopeGroupId(a.getGroupId());
 		 sc.setCompanyId(a.getCompanyId());
 		 
-		 long l = fileUploadByApp(sc, sms, "allerta-"+a.getAllertaId(), "rep_invio_sms_"+ore+"_ore.pdf", "Report invio", "application/pdf");
+		 long l = fileUploadByApp(sc, sms, "allerta-"+a.getAllertaId(), "rep_invio_sms_"+ore+"_ore.pdf", "rep_invio_sms_"+ore+"_ore.pdf", "application/pdf");
 		 
 		 Map<String,Object> m = new HashMap<String, Object>();
 		 m.put("entry", l);
@@ -555,11 +570,11 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
 		
 		try {
 		String cpu = PortalUtil.getComputerName();
-		String host = cpu.contains("667") || cpu.contains("668")? "https://allertameteo.regione.emilia-romagna.it" : "http://localhost:8080";
+		String host = cpu.contains("957") || cpu.contains("959")? "https://allertameteo.regione.emilia-romagna.it" : "http://localhost:8080";
 		String u2 =  host+"/o/report/sms";
 		
 		String urlpdf = u2 + ("?tipo=valanghe&sottotipo="+a.getNumero());
-		System.out.println(urlpdf);
+		_log.info(urlpdf);
 		File sms = FileUtil.createTempFile(new URL(urlpdf).openConnection().getInputStream());
 
 		long user = a.getUserId();
@@ -573,7 +588,7 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
 		 sc.setScopeGroupId(a.getGroupId());
 		 sc.setCompanyId(a.getCompanyId());
 		 
-		 long l = fileUploadByApp(sc, sms, "allerta-valanghe-"+a.getAllertaValangheId(), "rep_invio_sms_"+ore+"_ore.pdf", "Report invio", "application/pdf");
+		 long l = fileUploadByApp(sc, sms, "allerta-valanghe-"+a.getAllertaValangheId(), "rep_invio_sms_"+ore+"_ore.pdf", "rep_invio_sms_"+ore+"_ore.pdf", "application/pdf");
 		 
 		 Map<String,Object> m = new HashMap<String, Object>();
 		 m.put("entry", l);
@@ -593,11 +608,11 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
 		
 		try {
 		String cpu = PortalUtil.getComputerName();
-		String host = cpu.contains("667") || cpu.contains("668")? "https://allertameteo.regione.emilia-romagna.it" : "http://localhost:8080";
+		String host = cpu.contains("957") || cpu.contains("959")? "https://allertameteo.regione.emilia-romagna.it" : "http://localhost:8080";
 		String u2 =  host+"/o/report/sms";
 		
 		String urlpdf = u2 + ("?tipo=monitoraggio&sottotipo="+a.getNumero());
-		System.out.println(urlpdf);
+		_log.info(urlpdf);
 		File sms = FileUtil.createTempFile(new URL(urlpdf).openConnection().getInputStream());
 
 		long user = a.getUserId();
@@ -611,7 +626,7 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
 		 sc.setScopeGroupId(a.getGroupId());
 		 sc.setCompanyId(a.getCompanyId());
 		 
-		 long l = fileUploadByApp(sc, sms, "bollettino-"+a.getBollettinoId(), "rep_invio_sms_"+ore+"_ore.pdf", "Report invio", "application/pdf");
+		 long l = fileUploadByApp(sc, sms, "bollettino-"+a.getBollettinoId(), "rep_invio_sms_"+ore+"_ore.pdf", "rep_invio_sms_"+ore+"_ore.pdf", "application/pdf");
 		 
 		 Map<String,Object> m = new HashMap<String, Object>();
 		 m.put("entry", l);
@@ -632,11 +647,11 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
 		try {
 		String cpu = PortalUtil.getComputerName();
 			
-		String host = cpu.contains("667") || cpu.contains("668")? "https://allertameteo.regione.emilia-romagna.it" : "http://localhost:8080";
+		String host = cpu.contains("957") || cpu.contains("959")? "https://allertameteo.regione.emilia-romagna.it" : "http://localhost:8080";
 		String u2 =  host+"/o/report/sms";
 				
 		String urlpdf = u2 + ("?tipo=superamento&param="+a.getAllarmeId());
-		System.out.println(urlpdf);
+		_log.info(urlpdf);
 		URLConnection uc = new URL(urlpdf).openConnection();
 		InputStream is = uc.getInputStream();
 		File sms = FileUtil.createTempFile(is);
@@ -653,7 +668,7 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
 		 sc.setScopeGroupId(20181);
 		 sc.setCompanyId(20154);
 		 
-		 long l = fileUploadByApp(sc, sms, "report-superamenti", ""+a.getAllarmeId()+"_rep_invio_sms_"+ore+"_ore.pdf", "Report invio", "application/pdf");
+		 long l = fileUploadByApp(sc, sms, "report-superamenti", ""+a.getAllarmeId()+"_rep_invio_sms_"+ore+"_ore.pdf", ""+a.getAllarmeId()+"_rep_invio_sms_"+ore+"_ore.pdf", "application/pdf");
 		 
 		 Map<String,Object> m = new HashMap<String, Object>();
 		 m.put("entry", l);
@@ -674,11 +689,11 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
 		try {
 			String cpu = PortalUtil.getComputerName();
 			
-			String host = cpu.contains("667") || cpu.contains("668")? "https://allertameteo.regione.emilia-romagna.it" : "http://localhost:8080";
+			String host = cpu.contains("957") || cpu.contains("959")? "https://allertameteo.regione.emilia-romagna.it" : "http://localhost:8080";
 		String u2 =  host+"/o/report/email";
 		
 		String urlpdf = u2 + ("?tipo=allerta&sottotipo="+a.getNumero());
-		System.out.println(urlpdf);
+		_log.info(urlpdf);
 		URLConnection uc = new URL(urlpdf).openConnection();
 		InputStream is = uc.getInputStream();
 		File sms = FileUtil.createTempFile(is);
@@ -699,7 +714,7 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
 		 sc.setScopeGroupId(a.getGroupId());
 		 sc.setCompanyId(a.getCompanyId());
 		 
-		 long l = fileUploadByApp(sc, sms, "allerta-"+a.getAllertaId(), "rep_invio_email_"+ore+"_ore.pdf", "Report invio", "application/pdf");
+		 long l = fileUploadByApp(sc, sms, "allerta-"+a.getAllertaId(), "rep_invio_email_"+ore+"_ore.pdf", "rep_invio_email_"+ore+"_ore.pdf", "application/pdf");
 		 
 		 Map<String,Object> m = new HashMap<String, Object>();
 		 m.put("entry", l);
@@ -718,11 +733,11 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
 		try {
 			String cpu = PortalUtil.getComputerName();
 			
-			String host = cpu.contains("667") || cpu.contains("668")? "https://allertameteo.regione.emilia-romagna.it" : "http://localhost:8080";
+			String host = cpu.contains("957") || cpu.contains("959")? "https://allertameteo.regione.emilia-romagna.it" : "http://localhost:8080";
 		String u2 =  host+"/o/report/email";
 		
 		String urlpdf = u2 + ("?tipo=valanghe&sottotipo="+a.getNumero());
-		System.out.println(urlpdf);
+		_log.info(urlpdf);
 		URLConnection uc = new URL(urlpdf).openConnection();
 		InputStream is = uc.getInputStream();
 		File sms = FileUtil.createTempFile(is);
@@ -743,7 +758,7 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
 		 sc.setScopeGroupId(a.getGroupId());
 		 sc.setCompanyId(a.getCompanyId());
 		 
-		 long l = fileUploadByApp(sc, sms, "allerta-valanghe-"+a.getAllertaValangheId(), "rep_invio_email_"+ore+"_ore.pdf", "Report invio", "application/pdf");
+		 long l = fileUploadByApp(sc, sms, "allerta-valanghe-"+a.getAllertaValangheId(), "rep_invio_email_"+ore+"_ore.pdf", "rep_invio_email_"+ore+"_ore.pdf", "application/pdf");
 		 
 		 Map<String,Object> m = new HashMap<String, Object>();
 		 m.put("entry", l);
@@ -761,11 +776,11 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
 		
 		try {
 		String cpu = PortalUtil.getComputerName();
-		String host = cpu.contains("667") || cpu.contains("668")? "https://allertameteo.regione.emilia-romagna.it" : "http://localhost:8080";
+		String host = cpu.contains("957") || cpu.contains("959")? "https://allertameteo.regione.emilia-romagna.it" : "http://localhost:8080";
 		String u2 =  host+"/o/report/email";
 		
 		String urlpdf = u2 + ("?tipo=monitoraggio&sottotipo="+a.getNumero());
-		System.out.println(urlpdf);
+		_log.info(urlpdf);
 		File sms = FileUtil.createTempFile(new URL(urlpdf).openConnection().getInputStream());
 
 		long user = a.getUserId();
@@ -779,7 +794,7 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
 		 sc.setScopeGroupId(a.getGroupId());
 		 sc.setCompanyId(a.getCompanyId());
 		 
-		 long l = fileUploadByApp(sc, sms, "bollettino-"+a.getBollettinoId(), "rep_invio_email_"+ore+"_ore.pdf", "Report invio", "application/pdf");
+		 long l = fileUploadByApp(sc, sms, "bollettino-"+a.getBollettinoId(), "rep_invio_email_"+ore+"_ore.pdf", "rep_invio_email_"+ore+"_ore.pdf", "application/pdf");
 		 
 		 Map<String,Object> m = new HashMap<String, Object>();
 		 m.put("entry", l);
@@ -797,11 +812,11 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
 		
 		try {
 		String cpu = PortalUtil.getComputerName();
-		String host = cpu.contains("667") || cpu.contains("668")? "https://allertameteo.regione.emilia-romagna.it" : "http://localhost:8080";
+		String host = cpu.contains("957") || cpu.contains("959")? "https://allertameteo.regione.emilia-romagna.it" : "http://localhost:8080";
 		String u2 =  host+"/o/report/email";
 		
 		String urlpdf = u2 + ("?tipo=superamento&param="+a.getAllarmeId());
-		System.out.println(urlpdf);
+		_log.info(urlpdf);
 		File sms = FileUtil.createTempFile(new URL(urlpdf).openConnection().getInputStream());
 
 
@@ -812,7 +827,7 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
 		 sc.setScopeGroupId(20181);
 		 sc.setCompanyId(20154);
 		 
-		 long l = fileUploadByApp(sc, sms, "report-superamenti", ""+a.getAllarmeId()+"_rep_invio_email_"+ore+"_ore.pdf", "Report invio", "application/pdf");
+		 long l = fileUploadByApp(sc, sms, "report-superamenti", ""+a.getAllarmeId()+"_rep_invio_email_"+ore+"_ore.pdf", ""+a.getAllarmeId()+"_rep_invio_email_"+ore+"_ore.pdf", "application/pdf");
 		 
 		 Map<String,Object> m = new HashMap<String, Object>();
 		 m.put("entry", l);
@@ -956,7 +971,7 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
     	} catch (Exception e) {
     		_log.error(e);
     		//logInternoLocalService.log("ReportGeneratorTimer", "creaOggettiParerBollettino", e, "");
-    		//System.out.println("PARER EXCEPTION: "+e.getMessage());
+    		//_log.info("PARER EXCEPTION: "+e.getMessage());
     	}
 	}
 	
@@ -1013,7 +1028,7 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
     	} catch (Exception e) {
     		_log.error(e);
     		//logInternoLocalService.log("ReportGeneratorTimer", "creaOggettiParerAllarme", e, "");
-    		System.out.println("PARER EXCEPTION: "+e.getMessage());
+    		_log.info("PARER EXCEPTION: "+e.getMessage());
     	}
 	}
 	
@@ -1055,7 +1070,7 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
     	} catch (Exception e) {
     		_log.error(e);
     		//logInternoLocalService.log("ReportGeneratorTimer", "creaOggettiParerEmail", e, "");
-    		System.out.println("PARER EXCEPTION: "+e.getMessage());
+    		_log.info("PARER EXCEPTION: "+e.getMessage());
     	}
 		
 		
@@ -1102,7 +1117,7 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
     	} catch (Exception e) {
     		_log.error(e);
     		//logInternoLocalService.log("ReportGeneratorTimer", "creaOggettiParerEmail", e, "");
-    		System.out.println("PARER EXCEPTION: "+e.getMessage());
+    		_log.info("PARER EXCEPTION: "+e.getMessage());
     	}
 		
 		
@@ -1145,7 +1160,7 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
     	} catch (Exception e) {
     		_log.error(e);
     		//logInternoLocalService.log("ReportGeneratorTimer", "creaOggettiParerEmailBollettino", e, "");
-    		System.out.println("PARER EXCEPTION: "+e.getMessage());
+    		_log.info("PARER EXCEPTION: "+e.getMessage());
     	}
 	}
 	
@@ -1199,7 +1214,7 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
     	} catch (Exception e) {
     		_log.error(e);
     		//logInternoLocalService.log("ReportGeneratorTimer", "creaOggettiParerEmailAllarme", e, "");
-    		System.out.println("PARER EXCEPTION: "+e.getMessage());
+    		_log.info("PARER EXCEPTION: "+e.getMessage());
     	}
 	}
 	
@@ -1232,7 +1247,7 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
 				sb.append(Integer.toString((mdbytes[i] & 0xff) + 0x100, 16).substring(1));
 			}
 
-			System.out.println("Hex format : " + sb.toString());
+			_log.info("Hex format : " + sb.toString());
 
 		//convert the byte to hex format method 2
 			hexString = new StringBuffer();
@@ -1240,7 +1255,7 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
 				hexString.append(Integer.toHexString(0xFF & mdbytes[i]));
 		}
 
-		System.out.println("Hex format : " + hexString.toString());
+		_log.info("Hex format : " + hexString.toString());
 		} catch (Exception e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
@@ -1253,7 +1268,17 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
 	
 	public long fileUploadByApp(ServiceContext serviceContext, File file, String folderName, String title, String description, String mimeType)	{
 		
-	    System.out.println("Exist=>"+file.exists());
+	    _log.info("Exist=>"+file.exists());
+	    
+	    String oldFileName = file.getName();
+	    File file2 = new File(file.getParent(),title);
+	    file.renameTo(file2);
+	    file = file2;
+	    
+	    String mime = MimeTypesUtil.getContentType(file);
+		LogInternoLocalServiceUtil.log("ReportGeneratorScheduler", "File creato: "+title, "Lunghezza: "+file.length()+" mime:"+mime, "");
+		
+	    
 		long repositoryId = serviceContext.getScopeGroupId();
 	 	//String mimeType = MimeTypesUtil.getContentType(file);
 		//String title = file.getName();
@@ -1279,30 +1304,43 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
 		
 	    try
 	    {  
-	    	Folder folder =DLAppServiceUtil.getFolder(serviceContext.getScopeGroupId(), parentFolderId, folderName);
-	    	List<FileEntry> ll = DLAppServiceUtil.getFileEntries(repositoryId, folder.getFolderId());
-	    	for (FileEntry fe : ll) {
-	    		if (fe.getTitle().equals(title))
-	    	    	DLAppServiceUtil.deleteFileEntryByTitle(repositoryId, folder.getFolderId(), fe.getTitle());
-	    	}
-	    	
-	    	
-	    	InputStream is = new FileInputStream( file );
-	    	FileEntry f = DLAppServiceUtil.addFileEntry(repositoryId, folder.getFolderId(), file.getName(), mimeType, 
-	    			title, description, changeLog, is, file.length(), serviceContext);
-	    	
-	    	Role guestRole = roleLocalService.getRole(serviceContext.getCompanyId(),RoleConstants.GUEST);
-	    	resourcePermissionLocalService.setResourcePermissions(serviceContext.getCompanyId(), 
-					DLFileEntry.class.getName(), ResourceConstants.SCOPE_INDIVIDUAL, 
-					String.valueOf(f.getFileEntryId()), guestRole.getRoleId(), new String[]{"VIEW"});
+	    	Folder folder = DLAppServiceUtil.getFolder(repositoryId, parentFolderId, folderName);
+			_log.info("Folder=>" + folder.getFolderId());
+			ServiceContext dlServiceContext = serviceContext.getRequest()!=null?ServiceContextFactory.getInstance(
+					DLFileEntry.class.getName(), serviceContext.getRequest()):serviceContext;
+			_log.info("ServiceContext=>" + (dlServiceContext!=null));
+			InputStream is = new FileInputStream(file);
+			FileEntry f = null;
 			
-			AllertaParametro ap = allertaParametroLocalService.fetchAllertaParametro("ALLERTA_RUOLI_MODIFICA_LINK");
-			if (ap!=null && ap.getValore()!=null && !ap.getValore().equals("")) {
+			try {
+				f = DLAppServiceUtil.getFileEntry(repositoryId, folder.getFolderId(), title);
+				_log.info("File entry found=>"+f.getFileEntryId());
+				f = DLAppServiceUtil.updateFileEntry(f.getFileEntryId(), file.getName(), 
+						mimeType, title, title, description, changeLog, 
+						DLVersionNumberIncrease.AUTOMATIC, is, file.length(),
+						f.getDisplayDate(), f.getExpirationDate(), f.getReviewDate(),	dlServiceContext);
+				_log.info("File entry updated");
+			} catch (NoSuchFileEntryException e) {
+				 
+				f = DLAppServiceUtil.addFileEntry(folderName+"_"+title,repositoryId, folder.getFolderId(),			 
+						file.getName(), mimeType,
+						title, title, description, changeLog, file,null, null, null, dlServiceContext);
+				_log.info("File entry created=>"+f.getFileEntryId());
+			}
+
+			Role guestRole = RoleLocalServiceUtil.getRole(serviceContext.getCompanyId(), RoleConstants.GUEST);
+			ResourcePermissionLocalServiceUtil.setResourcePermissions(serviceContext.getCompanyId(),
+					DLFileEntry.class.getName(), ResourceConstants.SCOPE_INDIVIDUAL,
+					String.valueOf(f.getFileEntryId()), guestRole.getRoleId(), new String[] { "VIEW" });
+
+			AllertaParametro ap = AllertaParametroLocalServiceUtil.fetchAllertaParametro("ALLERTA_RUOLI_MODIFICA_LINK");
+			if (ap != null && ap.getValore() != null && !ap.getValore().equals("")) {
 				String[] ruoli = ap.getValore().split(",");
 				for (String s : ruoli) {
 					long l = Long.parseLong(s);
-					resourcePermissionLocalService.setResourcePermissions(serviceContext.getCompanyId(), DLFileEntry.class.getName(), 
-							ResourceConstants.SCOPE_INDIVIDUAL, String.valueOf(f.getFileEntryId()), l, new String[]{"VIEW","UPDATE","DELETE"});			
+					ResourcePermissionLocalServiceUtil.setResourcePermissions(serviceContext.getCompanyId(),
+							DLFileEntry.class.getName(), ResourceConstants.SCOPE_INDIVIDUAL,
+							String.valueOf(f.getFileEntryId()), l, new String[] { "VIEW", "UPDATE", "DELETE" });
 				}
 			}
 			
@@ -1312,6 +1350,8 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
 				} catch (Exception e) {}
 			}
 			
+			file2 = new File(file.getParent(),oldFileName);
+			file.renameTo(file2);
 			return f.getFileEntryId();
 	    	
 	     }
@@ -1599,7 +1639,7 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
     }
     
 
-	@Activate
+	/*@Activate
 	@Modified
 	protected void activate(Map<String, Object> properties) {
 		
@@ -1624,7 +1664,7 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
 	@Deactivate
 	protected void deactivate() {
 		baseScheduler.unregister(this);
-	}
+	}*/
 	
 	private Log _log = LogFactoryUtil.getLog(ReportGeneratorScheduler.class);
 	
@@ -1678,6 +1718,12 @@ public class ReportGeneratorScheduler extends BaseMessageListener  {
     
     @Reference
     private JasperUtils jasperUtils;
+
+
+	@Override
+	public String getName() {
+		return "Registrazione report invio";
+	}
     
     //@Reference
     //private LogInternoLocalService logInternoLocalService;

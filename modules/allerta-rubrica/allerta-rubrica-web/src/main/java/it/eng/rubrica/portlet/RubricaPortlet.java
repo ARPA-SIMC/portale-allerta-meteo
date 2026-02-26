@@ -1,4 +1,4 @@
-package it.eng.rubrica.portlet;
+﻿package it.eng.rubrica.portlet;
 
 import it.eng.rubrica.constants.RubricaPortletKeys;
 
@@ -17,10 +17,12 @@ import org.osgi.service.component.annotations.Component;
 		"com.liferay.portlet.display-category=category.rubrica",
 		"com.liferay.portlet.header-portlet-css=/static/css/2.fdb9d380.chunk.css",
 		"com.liferay.portlet.header-portlet-css=/static/css/main.1a2880f2.chunk.css",
-		
+
 		"com.liferay.portlet.header-portlet-javascript=/static/js/2.b86de75a.chunk.js",
 		"com.liferay.portlet.header-portlet-javascript=/static/js/main.dd894b59.chunk.js",
 		"com.liferay.portlet.footer-portlet-javascript=/static/js/pre.js",
+
+		
 		
 		
 		

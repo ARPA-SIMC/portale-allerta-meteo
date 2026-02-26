@@ -1,4 +1,8 @@
 dependencies {
+	api project(":modules:allerta-parer:allerta-parer-api")
+
+	compileOnly group: "com.liferay.portal", name: "release.dxp.api"
+	
 	compileOnly group: "com.liferay", name: "com.liferay.petra.lang"
 	compileOnly group: "com.liferay", name: "com.liferay.petra.string"
 	compileOnly group: "com.liferay", name: "com.liferay.portal.aop.api"
@@ -6,19 +10,20 @@ dependencies {
 	compileOnly group: "org.osgi", name: "org.osgi.annotation.versioning", version: "1.0.0"
 	compileOnly group: "org.osgi", name: "org.osgi.core"
 	compileOnly group: "org.osgi", name: "org.osgi.service.component.annotations"
-	compileOnly project(":modules:allerta-parer:allerta-parer-api")
 	
 	compileOnly 'biz.aQute.bnd:biz.aQute.bnd.annotation:4.2.0'
 	compileOnly group: "com.liferay", name: "com.liferay.portal.spring.extender", version: "2.0.0"
 	compileOnly group: "com.liferay", name: "com.liferay.petra.string"
 	
 	compileOnly 'com.liferay:com.liferay.portal.upgrade.api:2.0.0'
+	compileInclude group: "com.liferay", name: "com.liferay.portal.dao.orm.custom.sql", version: "1.0.6"
 	
 }
 
 buildService {
 	apiDir = "../allerta-parer-api/src/main/java"
+	testDir = "../allerta-parer-test/src/testIntegration/java"
 	databaseNameMaxLength=50
 }
 
-group = "it.eng.allerta.parer"
+group = "it.eng.parer"

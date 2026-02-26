@@ -1,18 +1,11 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerte.service.impl;
+
+import com.liferay.portal.aop.AopService;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -33,19 +26,18 @@ import it.eng.allerte.service.base.RubricaLogServiceBaseImpl;
 import it.eng.allerte.service.persistence.RubricaLogUtil;
 import it.eng.rubrica.service.util.GestioneRubricaCustomService;
 
+import org.osgi.service.component.annotations.Component;
+
 /**
- * The implementation of the rubrica log remote service.
- *
- * <p>
- * All custom service methods should be put in this class. Whenever methods are added, rerun ServiceBuilder to copy their definitions into the <code>it.eng.allerte.service.RubricaLogService</code> interface.
- *
- * <p>
- * This is a remote service. Methods of this service are expected to have security checks based on the propagated JAAS credentials because this service can be accessed remotely.
- * </p>
- *
  * @author Pratola_L
- * @see RubricaLogServiceBaseImpl
  */
+@Component(
+	property = {
+		"json.web.service.context.name=rubrica",
+		"json.web.service.context.path=RubricaLog"
+	},
+	service = AopService.class
+)
 public class RubricaLogServiceImpl extends RubricaLogServiceBaseImpl implements IRubricaRestConstants {
 
 	/*

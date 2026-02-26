@@ -145,7 +145,8 @@ am.MapDataScenarioSensore = (function($){
             cls = '' //'myDivIcon ' 
                 + ( (htm && htm !="0.0") || vl!==null 
                     ? this.getSensorMarkerBackground( data[a].soglia1, data[a].soglia2, data[a].soglia3, htm ) + ' _'+3600 
-                    : "marker--sensor nd");
+                    : "marker--sensor nd")
+		+ (data[a] && data[a].value!=null && data[a].precedente && data[a].precedente=='S'?' sensor-precedente':'');
         
             ic = L.divIcon({
                 iconSize: this.getIconSize(),

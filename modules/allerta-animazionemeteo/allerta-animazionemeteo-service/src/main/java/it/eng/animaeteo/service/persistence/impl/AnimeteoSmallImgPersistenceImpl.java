@@ -1,21 +1,12 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.animaeteo.service.persistence.impl;
 
-import aQute.bnd.annotation.ProviderType;
-
+import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
@@ -23,34 +14,42 @@ import com.liferay.portal.kernel.dao.orm.Query;
 import com.liferay.portal.kernel.dao.orm.QueryPos;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
+import com.liferay.portal.kernel.dao.orm.SessionFactory;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.kernel.util.PropsKeys;
+import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.SetUtil;
-import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.spring.extender.service.ServiceReference;
 
 import it.eng.animaeteo.exception.NoSuchAnimeteoSmallImgException;
 import it.eng.animaeteo.model.AnimeteoSmallImg;
+import it.eng.animaeteo.model.AnimeteoSmallImgTable;
 import it.eng.animaeteo.model.impl.AnimeteoSmallImgImpl;
 import it.eng.animaeteo.model.impl.AnimeteoSmallImgModelImpl;
 import it.eng.animaeteo.service.persistence.AnimeteoSmallImgPersistence;
+import it.eng.animaeteo.service.persistence.AnimeteoSmallImgUtil;
+import it.eng.animaeteo.service.persistence.impl.constants.animeteoPersistenceConstants;
 
 import java.io.Serializable;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+
+import javax.sql.DataSource;
+
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The persistence implementation for the animeteo small img service.
@@ -62,7 +61,7 @@ import java.util.Set;
  * @author UTENTE
  * @generated
  */
-@ProviderType
+@Component(service = AnimeteoSmallImgPersistence.class)
 public class AnimeteoSmallImgPersistenceImpl
 	extends BasePersistenceImpl<AnimeteoSmallImg>
 	implements AnimeteoSmallImgPersistence {
@@ -104,7 +103,7 @@ public class AnimeteoSmallImgPersistenceImpl
 	 * Returns a range of all the animeteo small imgs where type = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>AnimeteoSmallImgModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>AnimeteoSmallImgModelImpl</code>.
 	 * </p>
 	 *
 	 * @param type the type
@@ -123,7 +122,7 @@ public class AnimeteoSmallImgPersistenceImpl
 	 * Returns an ordered range of all the animeteo small imgs where type = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>AnimeteoSmallImgModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>AnimeteoSmallImgModelImpl</code>.
 	 * </p>
 	 *
 	 * @param type the type
@@ -144,43 +143,43 @@ public class AnimeteoSmallImgPersistenceImpl
 	 * Returns an ordered range of all the animeteo small imgs where type = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>AnimeteoSmallImgModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>AnimeteoSmallImgModelImpl</code>.
 	 * </p>
 	 *
 	 * @param type the type
 	 * @param start the lower bound of the range of animeteo small imgs
 	 * @param end the upper bound of the range of animeteo small imgs (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of matching animeteo small imgs
 	 */
 	@Override
 	public List<AnimeteoSmallImg> findByImageData(
 		String type, int start, int end,
 		OrderByComparator<AnimeteoSmallImg> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
 		type = Objects.toString(type, "");
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindByImageData;
-			finderArgs = new Object[] {type};
+			if (useFinderCache) {
+				finderPath = _finderPathWithoutPaginationFindByImageData;
+				finderArgs = new Object[] {type};
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindByImageData;
 			finderArgs = new Object[] {type, start, end, orderByComparator};
 		}
 
 		List<AnimeteoSmallImg> list = null;
 
-		if (retrieveFromCache) {
+		if (useFinderCache) {
 			list = (List<AnimeteoSmallImg>)finderCache.getResult(
 				finderPath, finderArgs, this);
 
@@ -196,73 +195,63 @@ public class AnimeteoSmallImgPersistenceImpl
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					3 + (orderByComparator.getOrderByFields().length * 2));
 			}
 			else {
-				query = new StringBundler(3);
+				sb = new StringBundler(3);
 			}
 
-			query.append(_SQL_SELECT_ANIMETEOSMALLIMG_WHERE);
+			sb.append(_SQL_SELECT_ANIMETEOSMALLIMG_WHERE);
 
 			boolean bindType = false;
 
 			if (type.isEmpty()) {
-				query.append(_FINDER_COLUMN_IMAGEDATA_TYPE_3);
+				sb.append(_FINDER_COLUMN_IMAGEDATA_TYPE_3);
 			}
 			else {
 				bindType = true;
 
-				query.append(_FINDER_COLUMN_IMAGEDATA_TYPE_2);
+				sb.append(_FINDER_COLUMN_IMAGEDATA_TYPE_2);
 			}
 
 			if (orderByComparator != null) {
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 			}
-			else if (pagination) {
-				query.append(AnimeteoSmallImgModelImpl.ORDER_BY_JPQL);
+			else {
+				sb.append(AnimeteoSmallImgModelImpl.ORDER_BY_JPQL);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindType) {
-					qPos.add(type);
+					queryPos.add(type);
 				}
 
-				if (!pagination) {
-					list = (List<AnimeteoSmallImg>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<AnimeteoSmallImg>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<AnimeteoSmallImg>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					finderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -292,16 +281,16 @@ public class AnimeteoSmallImgPersistenceImpl
 			return animeteoSmallImg;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("type=");
-		msg.append(type);
+		sb.append("type=");
+		sb.append(type);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchAnimeteoSmallImgException(msg.toString());
+		throw new NoSuchAnimeteoSmallImgException(sb.toString());
 	}
 
 	/**
@@ -345,16 +334,16 @@ public class AnimeteoSmallImgPersistenceImpl
 			return animeteoSmallImg;
 		}
 
-		StringBundler msg = new StringBundler(4);
+		StringBundler sb = new StringBundler(4);
 
-		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+		sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-		msg.append("type=");
-		msg.append(type);
+		sb.append("type=");
+		sb.append(type);
 
-		msg.append("}");
+		sb.append("}");
 
-		throw new NoSuchAnimeteoSmallImgException(msg.toString());
+		throw new NoSuchAnimeteoSmallImgException(sb.toString());
 	}
 
 	/**
@@ -420,8 +409,8 @@ public class AnimeteoSmallImgPersistenceImpl
 
 			return array;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -433,28 +422,28 @@ public class AnimeteoSmallImgPersistenceImpl
 		OrderByComparator<AnimeteoSmallImg> orderByComparator,
 		boolean previous) {
 
-		StringBundler query = null;
+		StringBundler sb = null;
 
 		if (orderByComparator != null) {
-			query = new StringBundler(
+			sb = new StringBundler(
 				4 + (orderByComparator.getOrderByConditionFields().length * 3) +
 					(orderByComparator.getOrderByFields().length * 3));
 		}
 		else {
-			query = new StringBundler(3);
+			sb = new StringBundler(3);
 		}
 
-		query.append(_SQL_SELECT_ANIMETEOSMALLIMG_WHERE);
+		sb.append(_SQL_SELECT_ANIMETEOSMALLIMG_WHERE);
 
 		boolean bindType = false;
 
 		if (type.isEmpty()) {
-			query.append(_FINDER_COLUMN_IMAGEDATA_TYPE_3);
+			sb.append(_FINDER_COLUMN_IMAGEDATA_TYPE_3);
 		}
 		else {
 			bindType = true;
 
-			query.append(_FINDER_COLUMN_IMAGEDATA_TYPE_2);
+			sb.append(_FINDER_COLUMN_IMAGEDATA_TYPE_2);
 		}
 
 		if (orderByComparator != null) {
@@ -462,72 +451,72 @@ public class AnimeteoSmallImgPersistenceImpl
 				orderByComparator.getOrderByConditionFields();
 
 			if (orderByConditionFields.length > 0) {
-				query.append(WHERE_AND);
+				sb.append(WHERE_AND);
 			}
 
 			for (int i = 0; i < orderByConditionFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByConditionFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByConditionFields[i]);
 
 				if ((i + 1) < orderByConditionFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+						sb.append(WHERE_GREATER_THAN_HAS_NEXT);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+						sb.append(WHERE_LESSER_THAN_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(WHERE_GREATER_THAN);
+						sb.append(WHERE_GREATER_THAN);
 					}
 					else {
-						query.append(WHERE_LESSER_THAN);
+						sb.append(WHERE_LESSER_THAN);
 					}
 				}
 			}
 
-			query.append(ORDER_BY_CLAUSE);
+			sb.append(ORDER_BY_CLAUSE);
 
 			String[] orderByFields = orderByComparator.getOrderByFields();
 
 			for (int i = 0; i < orderByFields.length; i++) {
-				query.append(_ORDER_BY_ENTITY_ALIAS);
-				query.append(orderByFields[i]);
+				sb.append(_ORDER_BY_ENTITY_ALIAS);
+				sb.append(orderByFields[i]);
 
 				if ((i + 1) < orderByFields.length) {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC_HAS_NEXT);
+						sb.append(ORDER_BY_ASC_HAS_NEXT);
 					}
 					else {
-						query.append(ORDER_BY_DESC_HAS_NEXT);
+						sb.append(ORDER_BY_DESC_HAS_NEXT);
 					}
 				}
 				else {
 					if (orderByComparator.isAscending() ^ previous) {
-						query.append(ORDER_BY_ASC);
+						sb.append(ORDER_BY_ASC);
 					}
 					else {
-						query.append(ORDER_BY_DESC);
+						sb.append(ORDER_BY_DESC);
 					}
 				}
 			}
 		}
 		else {
-			query.append(AnimeteoSmallImgModelImpl.ORDER_BY_JPQL);
+			sb.append(AnimeteoSmallImgModelImpl.ORDER_BY_JPQL);
 		}
 
-		String sql = query.toString();
+		String sql = sb.toString();
 
-		Query q = session.createQuery(sql);
+		Query query = session.createQuery(sql);
 
-		q.setFirstResult(0);
-		q.setMaxResults(2);
+		query.setFirstResult(0);
+		query.setMaxResults(2);
 
-		QueryPos qPos = QueryPos.getInstance(q);
+		QueryPos queryPos = QueryPos.getInstance(query);
 
 		if (bindType) {
-			qPos.add(type);
+			queryPos.add(type);
 		}
 
 		if (orderByComparator != null) {
@@ -535,11 +524,11 @@ public class AnimeteoSmallImgPersistenceImpl
 					orderByComparator.getOrderByConditionValues(
 						animeteoSmallImg)) {
 
-				qPos.add(orderByConditionValue);
+				queryPos.add(orderByConditionValue);
 			}
 		}
 
-		List<AnimeteoSmallImg> list = q.list();
+		List<AnimeteoSmallImg> list = query.list();
 
 		if (list.size() == 2) {
 			return list.get(1);
@@ -581,44 +570,42 @@ public class AnimeteoSmallImgPersistenceImpl
 		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
-			StringBundler query = new StringBundler(2);
+			StringBundler sb = new StringBundler(2);
 
-			query.append(_SQL_COUNT_ANIMETEOSMALLIMG_WHERE);
+			sb.append(_SQL_COUNT_ANIMETEOSMALLIMG_WHERE);
 
 			boolean bindType = false;
 
 			if (type.isEmpty()) {
-				query.append(_FINDER_COLUMN_IMAGEDATA_TYPE_3);
+				sb.append(_FINDER_COLUMN_IMAGEDATA_TYPE_3);
 			}
 			else {
 				bindType = true;
 
-				query.append(_FINDER_COLUMN_IMAGEDATA_TYPE_2);
+				sb.append(_FINDER_COLUMN_IMAGEDATA_TYPE_2);
 			}
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
 				if (bindType) {
-					qPos.add(type);
+					queryPos.add(type);
 				}
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
 				finderCache.putResult(finderPath, finderArgs, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -635,27 +622,20 @@ public class AnimeteoSmallImgPersistenceImpl
 		"(animeteoSmallImg.type IS NULL OR animeteoSmallImg.type = '')";
 
 	public AnimeteoSmallImgPersistenceImpl() {
-		setModelClass(AnimeteoSmallImg.class);
-
 		Map<String, String> dbColumnNames = new HashMap<String, String>();
 
 		dbColumnNames.put("id", "id_");
 		dbColumnNames.put("type", "type_");
 		dbColumnNames.put("data", "data_");
 
-		try {
-			Field field = BasePersistenceImpl.class.getDeclaredField(
-				"_dbColumnNames");
+		setDBColumnNames(dbColumnNames);
 
-			field.setAccessible(true);
+		setModelClass(AnimeteoSmallImg.class);
 
-			field.set(this, dbColumnNames);
-		}
-		catch (Exception e) {
-			if (_log.isDebugEnabled()) {
-				_log.debug(e, e);
-			}
-		}
+		setModelImplClass(AnimeteoSmallImgImpl.class);
+		setModelPKClass(long.class);
+
+		setTable(AnimeteoSmallImgTable.INSTANCE);
 	}
 
 	/**
@@ -666,12 +646,11 @@ public class AnimeteoSmallImgPersistenceImpl
 	@Override
 	public void cacheResult(AnimeteoSmallImg animeteoSmallImg) {
 		entityCache.putResult(
-			AnimeteoSmallImgModelImpl.ENTITY_CACHE_ENABLED,
 			AnimeteoSmallImgImpl.class, animeteoSmallImg.getPrimaryKey(),
 			animeteoSmallImg);
-
-		animeteoSmallImg.resetOriginalValues();
 	}
+
+	private int _valueObjectFinderCacheListThreshold;
 
 	/**
 	 * Caches the animeteo small imgs in the entity cache if it is enabled.
@@ -680,16 +659,20 @@ public class AnimeteoSmallImgPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(List<AnimeteoSmallImg> animeteoSmallImgs) {
+		if ((_valueObjectFinderCacheListThreshold == 0) ||
+			((_valueObjectFinderCacheListThreshold > 0) &&
+			 (animeteoSmallImgs.size() >
+				 _valueObjectFinderCacheListThreshold))) {
+
+			return;
+		}
+
 		for (AnimeteoSmallImg animeteoSmallImg : animeteoSmallImgs) {
 			if (entityCache.getResult(
-					AnimeteoSmallImgModelImpl.ENTITY_CACHE_ENABLED,
 					AnimeteoSmallImgImpl.class,
 					animeteoSmallImg.getPrimaryKey()) == null) {
 
 				cacheResult(animeteoSmallImg);
-			}
-			else {
-				animeteoSmallImg.resetOriginalValues();
 			}
 		}
 	}
@@ -705,9 +688,7 @@ public class AnimeteoSmallImgPersistenceImpl
 	public void clearCache() {
 		entityCache.clearCache(AnimeteoSmallImgImpl.class);
 
-		finderCache.clearCache(FINDER_CLASS_NAME_ENTITY);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		finderCache.clearCache(AnimeteoSmallImgImpl.class);
 	}
 
 	/**
@@ -719,23 +700,23 @@ public class AnimeteoSmallImgPersistenceImpl
 	 */
 	@Override
 	public void clearCache(AnimeteoSmallImg animeteoSmallImg) {
-		entityCache.removeResult(
-			AnimeteoSmallImgModelImpl.ENTITY_CACHE_ENABLED,
-			AnimeteoSmallImgImpl.class, animeteoSmallImg.getPrimaryKey());
-
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		entityCache.removeResult(AnimeteoSmallImgImpl.class, animeteoSmallImg);
 	}
 
 	@Override
 	public void clearCache(List<AnimeteoSmallImg> animeteoSmallImgs) {
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
-
 		for (AnimeteoSmallImg animeteoSmallImg : animeteoSmallImgs) {
 			entityCache.removeResult(
-				AnimeteoSmallImgModelImpl.ENTITY_CACHE_ENABLED,
-				AnimeteoSmallImgImpl.class, animeteoSmallImg.getPrimaryKey());
+				AnimeteoSmallImgImpl.class, animeteoSmallImg);
+		}
+	}
+
+	@Override
+	public void clearCache(Set<Serializable> primaryKeys) {
+		finderCache.clearCache(AnimeteoSmallImgImpl.class);
+
+		for (Serializable primaryKey : primaryKeys) {
+			entityCache.removeResult(AnimeteoSmallImgImpl.class, primaryKey);
 		}
 	}
 
@@ -799,11 +780,11 @@ public class AnimeteoSmallImgPersistenceImpl
 
 			return remove(animeteoSmallImg);
 		}
-		catch (NoSuchAnimeteoSmallImgException nsee) {
-			throw nsee;
+		catch (NoSuchAnimeteoSmallImgException noSuchEntityException) {
+			throw noSuchEntityException;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -827,8 +808,8 @@ public class AnimeteoSmallImgPersistenceImpl
 				session.delete(animeteoSmallImg);
 			}
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -870,64 +851,27 @@ public class AnimeteoSmallImgPersistenceImpl
 		try {
 			session = openSession();
 
-			if (animeteoSmallImg.isNew()) {
+			if (isNew) {
 				session.save(animeteoSmallImg);
-
-				animeteoSmallImg.setNew(false);
 			}
 			else {
 				animeteoSmallImg = (AnimeteoSmallImg)session.merge(
 					animeteoSmallImg);
 			}
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
 		}
 
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-
-		if (!AnimeteoSmallImgModelImpl.COLUMN_BITMASK_ENABLED) {
-			finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
-		}
-		else if (isNew) {
-			Object[] args = new Object[] {animeteoSmallImgModelImpl.getType()};
-
-			finderCache.removeResult(_finderPathCountByImageData, args);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindByImageData, args);
-
-			finderCache.removeResult(_finderPathCountAll, FINDER_ARGS_EMPTY);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindAll, FINDER_ARGS_EMPTY);
-		}
-		else {
-			if ((animeteoSmallImgModelImpl.getColumnBitmask() &
-				 _finderPathWithoutPaginationFindByImageData.
-					 getColumnBitmask()) != 0) {
-
-				Object[] args = new Object[] {
-					animeteoSmallImgModelImpl.getOriginalType()
-				};
-
-				finderCache.removeResult(_finderPathCountByImageData, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByImageData, args);
-
-				args = new Object[] {animeteoSmallImgModelImpl.getType()};
-
-				finderCache.removeResult(_finderPathCountByImageData, args);
-				finderCache.removeResult(
-					_finderPathWithoutPaginationFindByImageData, args);
-			}
-		}
-
 		entityCache.putResult(
-			AnimeteoSmallImgModelImpl.ENTITY_CACHE_ENABLED,
-			AnimeteoSmallImgImpl.class, animeteoSmallImg.getPrimaryKey(),
-			animeteoSmallImg, false);
+			AnimeteoSmallImgImpl.class, animeteoSmallImgModelImpl, false, true);
+
+		if (isNew) {
+			animeteoSmallImg.setNew(false);
+		}
 
 		animeteoSmallImg.resetOriginalValues();
 
@@ -976,163 +920,12 @@ public class AnimeteoSmallImgPersistenceImpl
 	/**
 	 * Returns the animeteo small img with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the animeteo small img
-	 * @return the animeteo small img, or <code>null</code> if a animeteo small img with the primary key could not be found
-	 */
-	@Override
-	public AnimeteoSmallImg fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(
-			AnimeteoSmallImgModelImpl.ENTITY_CACHE_ENABLED,
-			AnimeteoSmallImgImpl.class, primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		AnimeteoSmallImg animeteoSmallImg = (AnimeteoSmallImg)serializable;
-
-		if (animeteoSmallImg == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				animeteoSmallImg = (AnimeteoSmallImg)session.get(
-					AnimeteoSmallImgImpl.class, primaryKey);
-
-				if (animeteoSmallImg != null) {
-					cacheResult(animeteoSmallImg);
-				}
-				else {
-					entityCache.putResult(
-						AnimeteoSmallImgModelImpl.ENTITY_CACHE_ENABLED,
-						AnimeteoSmallImgImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(
-					AnimeteoSmallImgModelImpl.ENTITY_CACHE_ENABLED,
-					AnimeteoSmallImgImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return animeteoSmallImg;
-	}
-
-	/**
-	 * Returns the animeteo small img with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param id the primary key of the animeteo small img
 	 * @return the animeteo small img, or <code>null</code> if a animeteo small img with the primary key could not be found
 	 */
 	@Override
 	public AnimeteoSmallImg fetchByPrimaryKey(long id) {
 		return fetchByPrimaryKey((Serializable)id);
-	}
-
-	@Override
-	public Map<Serializable, AnimeteoSmallImg> fetchByPrimaryKeys(
-		Set<Serializable> primaryKeys) {
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, AnimeteoSmallImg> map =
-			new HashMap<Serializable, AnimeteoSmallImg>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			AnimeteoSmallImg animeteoSmallImg = fetchByPrimaryKey(primaryKey);
-
-			if (animeteoSmallImg != null) {
-				map.put(primaryKey, animeteoSmallImg);
-			}
-
-			return map;
-		}
-
-		Set<Serializable> uncachedPrimaryKeys = null;
-
-		for (Serializable primaryKey : primaryKeys) {
-			Serializable serializable = entityCache.getResult(
-				AnimeteoSmallImgModelImpl.ENTITY_CACHE_ENABLED,
-				AnimeteoSmallImgImpl.class, primaryKey);
-
-			if (serializable != nullModel) {
-				if (serializable == null) {
-					if (uncachedPrimaryKeys == null) {
-						uncachedPrimaryKeys = new HashSet<Serializable>();
-					}
-
-					uncachedPrimaryKeys.add(primaryKey);
-				}
-				else {
-					map.put(primaryKey, (AnimeteoSmallImg)serializable);
-				}
-			}
-		}
-
-		if (uncachedPrimaryKeys == null) {
-			return map;
-		}
-
-		StringBundler query = new StringBundler(
-			uncachedPrimaryKeys.size() * 2 + 1);
-
-		query.append(_SQL_SELECT_ANIMETEOSMALLIMG_WHERE_PKS_IN);
-
-		for (Serializable primaryKey : uncachedPrimaryKeys) {
-			query.append((long)primaryKey);
-
-			query.append(",");
-		}
-
-		query.setIndex(query.index() - 1);
-
-		query.append(")");
-
-		String sql = query.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query q = session.createQuery(sql);
-
-			for (AnimeteoSmallImg animeteoSmallImg :
-					(List<AnimeteoSmallImg>)q.list()) {
-
-				map.put(animeteoSmallImg.getPrimaryKeyObj(), animeteoSmallImg);
-
-				cacheResult(animeteoSmallImg);
-
-				uncachedPrimaryKeys.remove(animeteoSmallImg.getPrimaryKeyObj());
-			}
-
-			for (Serializable primaryKey : uncachedPrimaryKeys) {
-				entityCache.putResult(
-					AnimeteoSmallImgModelImpl.ENTITY_CACHE_ENABLED,
-					AnimeteoSmallImgImpl.class, primaryKey, nullModel);
-			}
-		}
-		catch (Exception e) {
-			throw processException(e);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**
@@ -1149,7 +942,7 @@ public class AnimeteoSmallImgPersistenceImpl
 	 * Returns a range of all the animeteo small imgs.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>AnimeteoSmallImgModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>AnimeteoSmallImgModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of animeteo small imgs
@@ -1165,7 +958,7 @@ public class AnimeteoSmallImgPersistenceImpl
 	 * Returns an ordered range of all the animeteo small imgs.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>AnimeteoSmallImgModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>AnimeteoSmallImgModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of animeteo small imgs
@@ -1185,65 +978,63 @@ public class AnimeteoSmallImgPersistenceImpl
 	 * Returns an ordered range of all the animeteo small imgs.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>AnimeteoSmallImgModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>AnimeteoSmallImgModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of animeteo small imgs
 	 * @param end the upper bound of the range of animeteo small imgs (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of animeteo small imgs
 	 */
 	@Override
 	public List<AnimeteoSmallImg> findAll(
 		int start, int end,
 		OrderByComparator<AnimeteoSmallImg> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindAll;
-			finderArgs = FINDER_ARGS_EMPTY;
+			if (useFinderCache) {
+				finderPath = _finderPathWithoutPaginationFindAll;
+				finderArgs = FINDER_ARGS_EMPTY;
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
 			finderArgs = new Object[] {start, end, orderByComparator};
 		}
 
 		List<AnimeteoSmallImg> list = null;
 
-		if (retrieveFromCache) {
+		if (useFinderCache) {
 			list = (List<AnimeteoSmallImg>)finderCache.getResult(
 				finderPath, finderArgs, this);
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 			String sql = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					2 + (orderByComparator.getOrderByFields().length * 2));
 
-				query.append(_SQL_SELECT_ANIMETEOSMALLIMG);
+				sb.append(_SQL_SELECT_ANIMETEOSMALLIMG);
 
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 
-				sql = query.toString();
+				sql = sb.toString();
 			}
 			else {
 				sql = _SQL_SELECT_ANIMETEOSMALLIMG;
 
-				if (pagination) {
-					sql = sql.concat(AnimeteoSmallImgModelImpl.ORDER_BY_JPQL);
-				}
+				sql = sql.concat(AnimeteoSmallImgModelImpl.ORDER_BY_JPQL);
 			}
 
 			Session session = null;
@@ -1251,29 +1042,19 @@ public class AnimeteoSmallImgPersistenceImpl
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				if (!pagination) {
-					list = (List<AnimeteoSmallImg>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<AnimeteoSmallImg>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<AnimeteoSmallImg>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					finderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -1310,18 +1091,15 @@ public class AnimeteoSmallImgPersistenceImpl
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(_SQL_COUNT_ANIMETEOSMALLIMG);
+				Query query = session.createQuery(_SQL_COUNT_ANIMETEOSMALLIMG);
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
 				finderCache.putResult(
 					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -1337,6 +1115,21 @@ public class AnimeteoSmallImgPersistenceImpl
 	}
 
 	@Override
+	protected EntityCache getEntityCache() {
+		return entityCache;
+	}
+
+	@Override
+	protected String getPKDBName() {
+		return "id_";
+	}
+
+	@Override
+	protected String getSelectSQL() {
+		return _SQL_SELECT_ANIMETEOSMALLIMG;
+	}
+
+	@Override
 	protected Map<String, Integer> getTableColumnsMap() {
 		return AnimeteoSmallImgModelImpl.TABLE_COLUMNS_MAP;
 	}
@@ -1344,69 +1137,85 @@ public class AnimeteoSmallImgPersistenceImpl
 	/**
 	 * Initializes the animeteo small img persistence.
 	 */
-	public void afterPropertiesSet() {
+	@Activate
+	public void activate() {
+		_valueObjectFinderCacheListThreshold = GetterUtil.getInteger(
+			PropsUtil.get(PropsKeys.VALUE_OBJECT_FINDER_CACHE_LIST_THRESHOLD));
+
 		_finderPathWithPaginationFindAll = new FinderPath(
-			AnimeteoSmallImgModelImpl.ENTITY_CACHE_ENABLED,
-			AnimeteoSmallImgModelImpl.FINDER_CACHE_ENABLED,
-			AnimeteoSmallImgImpl.class, FINDER_CLASS_NAME_LIST_WITH_PAGINATION,
-			"findAll", new String[0]);
+			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findAll", new String[0],
+			new String[0], true);
 
 		_finderPathWithoutPaginationFindAll = new FinderPath(
-			AnimeteoSmallImgModelImpl.ENTITY_CACHE_ENABLED,
-			AnimeteoSmallImgModelImpl.FINDER_CACHE_ENABLED,
-			AnimeteoSmallImgImpl.class,
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findAll",
-			new String[0]);
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findAll", new String[0],
+			new String[0], true);
 
 		_finderPathCountAll = new FinderPath(
-			AnimeteoSmallImgModelImpl.ENTITY_CACHE_ENABLED,
-			AnimeteoSmallImgModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countAll",
-			new String[0]);
+			new String[0], new String[0], false);
 
 		_finderPathWithPaginationFindByImageData = new FinderPath(
-			AnimeteoSmallImgModelImpl.ENTITY_CACHE_ENABLED,
-			AnimeteoSmallImgModelImpl.FINDER_CACHE_ENABLED,
-			AnimeteoSmallImgImpl.class, FINDER_CLASS_NAME_LIST_WITH_PAGINATION,
-			"findByImageData",
+			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByImageData",
 			new String[] {
 				String.class.getName(), Integer.class.getName(),
 				Integer.class.getName(), OrderByComparator.class.getName()
-			});
+			},
+			new String[] {"type_"}, true);
 
 		_finderPathWithoutPaginationFindByImageData = new FinderPath(
-			AnimeteoSmallImgModelImpl.ENTITY_CACHE_ENABLED,
-			AnimeteoSmallImgModelImpl.FINDER_CACHE_ENABLED,
-			AnimeteoSmallImgImpl.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByImageData",
-			new String[] {String.class.getName()},
-			AnimeteoSmallImgModelImpl.TYPE_COLUMN_BITMASK);
+			new String[] {String.class.getName()}, new String[] {"type_"},
+			true);
 
 		_finderPathCountByImageData = new FinderPath(
-			AnimeteoSmallImgModelImpl.ENTITY_CACHE_ENABLED,
-			AnimeteoSmallImgModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByImageData",
-			new String[] {String.class.getName()});
+			new String[] {String.class.getName()}, new String[] {"type_"},
+			false);
+
+		AnimeteoSmallImgUtil.setPersistence(this);
 	}
 
-	public void destroy() {
+	@Deactivate
+	public void deactivate() {
+		AnimeteoSmallImgUtil.setPersistence(null);
+
 		entityCache.removeCache(AnimeteoSmallImgImpl.class.getName());
-		finderCache.removeCache(FINDER_CLASS_NAME_ENTITY);
-		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 	}
 
-	@ServiceReference(type = EntityCache.class)
+	@Override
+	@Reference(
+		target = animeteoPersistenceConstants.SERVICE_CONFIGURATION_FILTER,
+		unbind = "-"
+	)
+	public void setConfiguration(Configuration configuration) {
+	}
+
+	@Override
+	@Reference(
+		target = animeteoPersistenceConstants.ORIGIN_BUNDLE_SYMBOLIC_NAME_FILTER,
+		unbind = "-"
+	)
+	public void setDataSource(DataSource dataSource) {
+		super.setDataSource(dataSource);
+	}
+
+	@Override
+	@Reference(
+		target = animeteoPersistenceConstants.ORIGIN_BUNDLE_SYMBOLIC_NAME_FILTER,
+		unbind = "-"
+	)
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		super.setSessionFactory(sessionFactory);
+	}
+
+	@Reference
 	protected EntityCache entityCache;
 
-	@ServiceReference(type = FinderCache.class)
+	@Reference
 	protected FinderCache finderCache;
 
 	private static final String _SQL_SELECT_ANIMETEOSMALLIMG =
 		"SELECT animeteoSmallImg FROM AnimeteoSmallImg animeteoSmallImg";
-
-	private static final String _SQL_SELECT_ANIMETEOSMALLIMG_WHERE_PKS_IN =
-		"SELECT animeteoSmallImg FROM AnimeteoSmallImg animeteoSmallImg WHERE id_ IN (";
 
 	private static final String _SQL_SELECT_ANIMETEOSMALLIMG_WHERE =
 		"SELECT animeteoSmallImg FROM AnimeteoSmallImg animeteoSmallImg WHERE ";
@@ -1430,5 +1239,10 @@ public class AnimeteoSmallImgPersistenceImpl
 
 	private static final Set<String> _badColumnNames = SetUtil.fromArray(
 		new String[] {"id", "type", "data"});
+
+	@Override
+	protected FinderCache getFinderCache() {
+		return finderCache;
+	}
 
 }

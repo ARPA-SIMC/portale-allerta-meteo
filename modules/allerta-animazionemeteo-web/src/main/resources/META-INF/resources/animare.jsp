@@ -87,34 +87,34 @@
 						<div class="form-group map-animation-dropdown">
 						
 							<label for="animation__timespan--dato-osservato--animmare">
-								Animazione </label>
+								<liferay-ui:message key="allertaanimazionemeteo_radar6" /></label>
 							<div class="input-group" >
 								<select id="animation__timespan--dato-osservato--animmare"
 									style="display:none" class="form-control map-animation__timespan"><option
-										value="1">Ultima 1 ora</option>
-									<option value="2">Ultime 2 ore</option>
-									<option value="3">Ultime 3 ore</option>
-									<option value="4">Ultime 4 ore</option>
-									<option value="5">Ultime 5 ore</option>
-									<option value="6">Ultime 6 ore</option>
-									<option value="7">Ultime 7 ore</option>
-									<option value="8">Ultime 8 ore</option>
-									<option value="9">Ultime 9 ore</option>
-									<option value="10">Ultime 10 ore</option>
-									<option value="11">Ultime 11 ore</option>
-									<option value="12">Ultime 12 ore</option>
-									<option value="13">Ultime 13 ore</option>
-									<option value="14">Ultime 14 ore</option>
-									<option value="15">Ultime 15 ore</option>
-									<option value="16">Ultime 16 ore</option>
-									<option value="17">Ultime 17 ore</option>
-									<option value="18">Ultime 18 ore</option>
-									<option value="19">Ultime 19 ore</option>
-									<option value="20">Ultime 20 ore</option>
-									<option value="21">Ultime 21 ore</option>
-									<option value="22">Ultime 22 ore</option>
-									<option value="23">Ultime 23 ore</option>
-									<option value="24">Ultime 24 ore</option></select>
+										value="1"><liferay-ui:message key="allertaanimazionemeteo_radar1h" /></option>
+									<option value="2"><liferay-ui:message key="allertaanimazionemeteo_radar2h" /></option>
+									<option value="3"><liferay-ui:message key="allertaanimazionemeteo_radar3h" /></option>
+									<option value="4"><liferay-ui:message key="allertaanimazionemeteo_radar4h" /></option>
+									<option value="5"><liferay-ui:message key="allertaanimazionemeteo_radar5h" /></option>
+									<option value="6"><liferay-ui:message key="allertaanimazionemeteo_radar6h" /></option>
+									<option value="7"><liferay-ui:message key="allertaanimazionemeteo_radar7h" /></option>
+									<option value="8"><liferay-ui:message key="allertaanimazionemeteo_radar8h" /></option>
+									<option value="9"><liferay-ui:message key="allertaanimazionemeteo_radar9h" /></option>
+									<option value="10"><liferay-ui:message key="allertaanimazionemeteo_radar10h" /></option>
+									<option value="11"><liferay-ui:message key="allertaanimazionemeteo_radar11h" /></option>
+									<option value="12"><liferay-ui:message key="allertaanimazionemeteo_radar12h" /></option>
+									<option value="13"><liferay-ui:message key="allertaanimazionemeteo_radar13h" /></option>
+									<option value="14"><liferay-ui:message key="allertaanimazionemeteo_radar14h" /></option>
+									<option value="15"><liferay-ui:message key="allertaanimazionemeteo_radar15h" /></option>
+									<option value="16"><liferay-ui:message key="allertaanimazionemeteo_radar16h" /></option>
+									<option value="17"><liferay-ui:message key="allertaanimazionemeteo_radar17h" /></option>
+									<option value="18"><liferay-ui:message key="allertaanimazionemeteo_radar18h" /></option>
+									<option value="19"><liferay-ui:message key="allertaanimazionemeteo_radar19h" /></option>
+									<option value="20"><liferay-ui:message key="allertaanimazionemeteo_radar20h" /></option>
+									<option value="21"><liferay-ui:message key="allertaanimazionemeteo_radar21h" /></option>
+									<option value="22"><liferay-ui:message key="allertaanimazionemeteo_radar22h" /></option>
+									<option value="23"><liferay-ui:message key="allertaanimazionemeteo_radar23h" /></option>
+									<option value="24"><liferay-ui:message key="allertaanimazionemeteo_radar24h" /></option></select>
 								
 								<div class="input-group-appendx">
 								
@@ -213,7 +213,7 @@
 								<a href="#" class="d-block" data-toggle="modal"
 									data-target="#modal--guida-mappa-dato-osservato"> <span
 									class="icon i-info-circle" title="Info"></span> <span>
-										Guida alla mappa </span>
+										<liferay-ui:message key="allertaanimazionemeteo_guidaallamappa" /> </span>
 								</a>
 							</div>
 						</div>

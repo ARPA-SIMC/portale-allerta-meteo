@@ -20,12 +20,7 @@
 
 <div class="map-section__body">
 
-	La mappa evoluzione considera gli echi delle precipitazioni ad un dato istante e 
-	fornisce la previsione del loro spostamento a +1 ora (linea gialla), +2 ore 
-	(linea arancione) e +3 ore (linea rossa): in caso di situazione stazionaria la 
-	linea rossa ricopre le altre. Gli echi sono rappresentati in modo semplificato 
-	con due o tre diversi colori, dalle tonalità pi&ugrave; scure per nubi debolmente 
-	precipitanti a colori pi&ugrave; chiari per le precipitazioni pi&ugrave; intense. 
+	<liferay-ui:message key="allertaanimazionemeteo_nowcasting" />
 	
 	<br/>
 	<br/>
@@ -140,8 +135,8 @@
 						<div class="d-flex">
 							<div class="d-none d-md-flex d-print-flex flex-md-row">
 								<div class="map-legend--rtdata-legend">
-									<strong>Riflettivit&agrave;</strong>
-									<div id="legenda" class="row" style="margin-left:0px;margin-right:0px"><div class="col s2 legendario truncate" style="background-color: #001A97; color: #ffffff">debole</div><div class="col s2 legendario truncate" style="background-color: #0067D9; color: #ffffff">moderata</div><div class="col s2 legendario truncate" style="background-color: #41B4FF; color: #000000">intensa</div><div class="col s2 legendario truncate" style="background-color: #FFC800; color: #000000">+1h</div><div class="col s2 legendario truncate" style="background-color: #FF7D00; color: #000000">+2h</div><div class="col s2 legendario truncate" style="background-color: #FF0000; color: #ffffff">+3h</div></div>
+									<strong><liferay-ui:message key="allertaanimazionemeteo_riflettivita" /></strong>
+									<div id="legenda" class="row" style="margin-left:0px;margin-right:0px"><div class="col s2 legendario truncate" style="background-color: #001A97; color: #ffffff"><liferay-ui:message key="allertaanimazionemeteo_riflettivita1" /></div><div class="col s2 legendario truncate" style="background-color: #0067D9; color: #ffffff"><liferay-ui:message key="allertaanimazionemeteo_riflettivita2" /></div><div class="col s2 legendario truncate" style="background-color: #41B4FF; color: #000000"><liferay-ui:message key="allertaanimazionemeteo_riflettivita3" /></div><div class="col s2 legendario truncate" style="background-color: #FFC800; color: #000000">+1h</div><div class="col s2 legendario truncate" style="background-color: #FF7D00; color: #000000">+2h</div><div class="col s2 legendario truncate" style="background-color: #FF0000; color: #ffffff">+3h</div></div>
 								</div>
 							</div>
 						</div>
@@ -173,7 +168,7 @@
 								<a href="#" class="d-block" data-toggle="modal"
 									data-target="#modal--guida-mappa-dato-osservato"> <span
 									class="icon i-info-circle" title="Info"></span> <span>
-										Guida alla mappa </span>
+										<liferay-ui:message key="allertaanimazionemeteo_guidaallamappa" /> </span>
 								</a>
 							</div>
 						</div>
@@ -203,20 +198,19 @@
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modal-guida-mappa-osservato-title">Guida alla mappa</h5>
+                <h5 class="modal-title" id="modal-guida-mappa-osservato-title"><liferay-ui:message key="allertaanimazionemeteo_guidaallamappa" /></h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">×</span>
                 </button>
             </div>
             <div class="modal-lead">
-                I livelli di criticità di ogni fenomeno si basano su soglie e valutazioni differenti.<br> 
-                Questa è una breve guida alla lettura della mappa.
+                <liferay-ui:message key="allertaanimazionemeteo_legenda4" />
             </div>
             <div class="modal-body">
                 <div class="row flex-lg-column">
                     
                         <div class="col-12 col-lg-7 mb-4" data-if="legend" data-when="rtdata" style="display: block;">
-                            <h6>Legenda dati osservati mostrati sulla mappa</h6>
+                            <h6><liferay-ui:message key="allertaanimazionemeteo_legenda1" /></h6>
                             <ul class="mb-md-2 nav map-legend__rtdata-guides flex-column">                       
                                 <li class="nav-item" data-if="legend" data-when="nowcasting" style="display: list-item;">
                                     <div id="legenda" class="row"><div class="col s2 legendario right-align"><i>Riflettività</i></div><div class="col s2 legendario truncate" style="background-color: #001A97; color: #ffffff">debole</div><div class="col s2 legendario truncate" style="background-color: #0067D9; color: #ffffff">moderata</div><div class="col s2 legendario truncate" style="background-color: #41B4FF; color: #000000">intensa</div><div class="col s2 legendario truncate" style="background-color: #FFC800; color: #000000">+1h</div><div class="col s2 legendario truncate" style="background-color: #FF7D00; color: #000000">+2h</div><div class="col s2 legendario truncate" style="background-color: #FF0000; color: #ffffff">+3h</div></div>
@@ -227,10 +221,10 @@
 
               
                          <div class="col-12 col-lg-5 mb-4">
-                            <h6>Guide di utilità</h6>
+                            <h6><liferay-ui:message key="allertaanimazionemeteo_legenda5" /></h6>
                             <ul class="mb-md-2 nav map-legend__utility-guides flex-column">
                                 <li class="nav-item">
-                                    <a class="nav-link" href="<%=doc.linkLetturaRadar() %>" target="_blank"><span class="icon i-file-pdf-o"></span>Guida alla lettura della mappa</a>
+                                    <a class="nav-link" href="<%=doc.linkLetturaRadar() %>" target="_blank"><span class="icon i-file-pdf-o"></span><liferay-ui:message key="allertaanimazionemeteo_legenda2" /></a>
                                 </li>
                             </ul>
                         </div>

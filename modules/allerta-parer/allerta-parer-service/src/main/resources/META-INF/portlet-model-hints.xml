@@ -7,14 +7,10 @@
 		<field name="ORDINE_PRESENTAZIONE" type="long" />
 		<field name="TIPO_COMPONENTE" type="String" />
 		<field name="TIPO_SUPPORTO_COMPONENTE" type="String" />
-		<field name="NOME_COMPONENTE" type="String">
-			<hint name="max-length">128</hint>
-		</field>
+		<field name="NOME_COMPONENTE" type="String" />
 		<field name="FORMATO_FILE_VERSATO" type="String" />
 		<field name="HASH_VERSATO" type="String" />
-		<field name="URN_VERSATO" type="String">
-			<hint name="max-length">128</hint>
-		</field>
+		<field name="URN_VERSATO" type="String" />
 		<field name="ID_COMPONENTE_VERSATO" type="long" />
 	</model>
 	<model name="it.eng.parer.model.DatiSpecificiInvio">
@@ -32,9 +28,7 @@
 		<field name="FORZA_ACCETTAZIONE" type="String" />
 		<field name="FORZA_CONSERVAZIONE" type="String" />
 		<field name="FORZA_COLLEGAMENTO" type="String" />
-		<field name="OGGETTO_UNITA_DOCUMENTARIA" type="String">
-			<hint name="max-length">1024</hint>
-		</field>
+		<field name="OGGETTO_UNITA_DOCUMENTARIA" type="String" />
 		<field name="DATA_UNITA_DOCUMENTARIA" type="Date" />
 		<field name="VERSIONE_DATI_SPECIFICI" type="double" />
 		<field name="IDENTIFICATIVO_DATO_SPECIFICO" type="String" />
@@ -43,12 +37,8 @@
 		<field name="NUM_SMS_INVIATI" type="int" />
 		<field name="NUM_NOTIFICHE_RICEZIONE" type="int" />
 		<field name="DENOMINAZIONE_APPLICATIVO" type="String" />
-		<field name="OGGETTO_MAIL" type="String">
-			<hint name="max-length">256</hint>
-		</field>
-		<field name="TESTO_MAIL" type="String">
-			<hint name="max-length">5000</hint>
-		</field>
+		<field name="OGGETTO_MAIL" type="String" />
+		<field name="TESTO_MAIL" type="String" />
 		<field name="COMPILATORE_ARPAE" type="String" />
 		<field name="COMPILATORE_PROTEZIONE_CIVILE" type="String" />
 		<field name="DATA_INIZIO_VALIDITA" type="Date" />
@@ -73,18 +63,14 @@
 		<field name="data_risposta" type="Date" />
 		<field name="CODICE_ESITO" type="String" />
 		<field name="CODICE_ERRORE" type="String" />
-		<field name="MESG_ERRORE" type="String">
-			<hint name="max-length">2048</hint>
-		</field>
+		<field name="MESG_ERRORE" type="String" />
 		<field name="CODICE_TIPO_INVIO" type="String" />
 	</model>
 	<model name="it.eng.parer.model.DocumentiCollegati">
 		<field name="DOC_COLLEGATO_NUMERO" type="String" />
 		<field name="DOC_COLLEGATO_ANNO" type="int" />
 		<field name="DOC_COLLEGATO_TIPO_REGISTRO" type="String" />
-		<field name="DESCRIZIONE_COLLEGAMENTO" type="String">
-			<hint name="max-length">5000</hint>
-		</field>
+		<field name="DESCRIZIONE_COLLEGAMENTO" type="String" />
 		<field name="ID_INVIO" type="long" />
 	</model>
 	<model name="it.eng.parer.model.Parametri">

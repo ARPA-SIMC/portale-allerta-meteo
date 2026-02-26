@@ -7,7 +7,9 @@
 **/bin
 **/build
 **/build_gradle
+**/dist
 **/node_modules
+**/node_modules_cache
 **/test-coverage
 **/tmp
 **/.web_bundle_build
@@ -22,6 +24,7 @@
 /plugins-sdk/dependencies/**/*.jar
 /plugins-sdk/dist
 /plugins-sdk/lib
+test-results
 /modules/allerta-allertaer/allerta-allertaer-service/src/main/resources/service.properties
 /modules/allerta-bollettino/allerta-bollettino-service/src/main/resources/service.properties
 /modules/allerta-radarmeteo/allerta-radarmeteo-service/src/main/resources/service.properties

@@ -1,26 +1,15 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerte.service.base;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.portal.kernel.bean.BeanReference;
+import com.liferay.petra.sql.dsl.query.DSLQuery;
+import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.dao.db.DB;
 import com.liferay.portal.kernel.dao.db.DBManagerUtil;
-import com.liferay.portal.kernel.dao.jdbc.SqlUpdate;
-import com.liferay.portal.kernel.dao.jdbc.SqlUpdateFactoryUtil;
+import com.liferay.portal.kernel.dao.jdbc.CurrentConnectionUtil;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DefaultActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
@@ -29,18 +18,17 @@ import com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.Projection;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.PersistedModel;
 import com.liferay.portal.kernel.module.framework.service.IdentifiableOSGiService;
 import com.liferay.portal.kernel.search.Indexable;
 import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.service.BaseLocalServiceImpl;
-import com.liferay.portal.kernel.service.PersistedModelLocalServiceRegistry;
-import com.liferay.portal.kernel.service.persistence.ClassNamePersistence;
-import com.liferay.portal.kernel.service.persistence.UserPersistence;
+import com.liferay.portal.kernel.service.PersistedModelLocalService;
+import com.liferay.portal.kernel.service.persistence.BasePersistence;
 import com.liferay.portal.kernel.transaction.Transactional;
 import com.liferay.portal.kernel.util.OrderByComparator;
-import com.liferay.portal.kernel.util.PortalUtil;
-import com.liferay.portal.spring.extender.service.ServiceReference;
 
 import it.eng.allerte.model.RubricaRuolo;
 import it.eng.allerte.service.RubricaRuoloLocalService;
@@ -67,9 +55,14 @@ import it.eng.allerte.service.persistence.RubricaUtenteSitoPersistence;
 
 import java.io.Serializable;
 
+import java.sql.Connection;
+
 import java.util.List;
 
 import javax.sql.DataSource;
+
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * Provides the base implementation for the rubrica ruolo local service.
@@ -82,10 +75,9 @@ import javax.sql.DataSource;
  * @see it.eng.allerte.service.impl.RubricaRuoloLocalServiceImpl
  * @generated
  */
-@ProviderType
 public abstract class RubricaRuoloLocalServiceBaseImpl
 	extends BaseLocalServiceImpl
-	implements RubricaRuoloLocalService, IdentifiableOSGiService {
+	implements AopService, IdentifiableOSGiService, RubricaRuoloLocalService {
 
 	/*
 	 * NOTE FOR DEVELOPERS:
@@ -95,6 +87,10 @@ public abstract class RubricaRuoloLocalServiceBaseImpl
 
 	/**
 	 * Adds the rubrica ruolo to the database. Also notifies the appropriate model listeners.
+	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect RubricaRuoloLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
 	 *
 	 * @param rubricaRuolo the rubrica ruolo
 	 * @return the rubrica ruolo that was added
@@ -122,6 +118,10 @@ public abstract class RubricaRuoloLocalServiceBaseImpl
 	/**
 	 * Deletes the rubrica ruolo with the primary key from the database. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect RubricaRuoloLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param ID_RUOLO the primary key of the rubrica ruolo
 	 * @return the rubrica ruolo that was removed
 	 * @throws PortalException if a rubrica ruolo with the primary key could not be found
@@ -137,6 +137,10 @@ public abstract class RubricaRuoloLocalServiceBaseImpl
 	/**
 	 * Deletes the rubrica ruolo from the database. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect RubricaRuoloLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param rubricaRuolo the rubrica ruolo
 	 * @return the rubrica ruolo that was removed
 	 */
@@ -144,6 +148,18 @@ public abstract class RubricaRuoloLocalServiceBaseImpl
 	@Override
 	public RubricaRuolo deleteRubricaRuolo(RubricaRuolo rubricaRuolo) {
 		return rubricaRuoloPersistence.remove(rubricaRuolo);
+	}
+
+	@Override
+	public <T> T dslQuery(DSLQuery dslQuery) {
+		return rubricaRuoloPersistence.dslQuery(dslQuery);
+	}
+
+	@Override
+	public int dslQueryCount(DSLQuery dslQuery) {
+		Long count = dslQuery(dslQuery);
+
+		return count.intValue();
 	}
 
 	@Override
@@ -169,7 +185,7 @@ public abstract class RubricaRuoloLocalServiceBaseImpl
 	 * Performs a dynamic query on the database and returns a range of the matching rows.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>it.eng.allerte.model.impl.RubricaRuoloModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>it.eng.allerte.model.impl.RubricaRuoloModelImpl</code>.
 	 * </p>
 	 *
 	 * @param dynamicQuery the dynamic query
@@ -189,7 +205,7 @@ public abstract class RubricaRuoloLocalServiceBaseImpl
 	 * Performs a dynamic query on the database and returns an ordered range of the matching rows.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>it.eng.allerte.model.impl.RubricaRuoloModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>it.eng.allerte.model.impl.RubricaRuoloModelImpl</code>.
 	 * </p>
 	 *
 	 * @param dynamicQuery the dynamic query
@@ -295,13 +311,37 @@ public abstract class RubricaRuoloLocalServiceBaseImpl
 	 * @throws PortalException
 	 */
 	@Override
+	public PersistedModel createPersistedModel(Serializable primaryKeyObj)
+		throws PortalException {
+
+		return rubricaRuoloPersistence.create(
+			((Long)primaryKeyObj).longValue());
+	}
+
+	/**
+	 * @throws PortalException
+	 */
+	@Override
 	public PersistedModel deletePersistedModel(PersistedModel persistedModel)
 		throws PortalException {
+
+		if (_log.isWarnEnabled()) {
+			_log.warn(
+				"Implement RubricaRuoloLocalServiceImpl#deleteRubricaRuolo(RubricaRuolo) to avoid orphaned data");
+		}
 
 		return rubricaRuoloLocalService.deleteRubricaRuolo(
 			(RubricaRuolo)persistedModel);
 	}
 
+	@Override
+	public BasePersistence<RubricaRuolo> getBasePersistence() {
+		return rubricaRuoloPersistence;
+	}
+
+	/**
+	 * @throws PortalException
+	 */
 	@Override
 	public PersistedModel getPersistedModel(Serializable primaryKeyObj)
 		throws PortalException {
@@ -313,7 +353,7 @@ public abstract class RubricaRuoloLocalServiceBaseImpl
 	 * Returns a range of all the rubrica ruolos.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>it.eng.allerte.model.impl.RubricaRuoloModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>it.eng.allerte.model.impl.RubricaRuoloModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of rubrica ruolos
@@ -338,6 +378,10 @@ public abstract class RubricaRuoloLocalServiceBaseImpl
 	/**
 	 * Updates the rubrica ruolo in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect RubricaRuoloLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param rubricaRuolo the rubrica ruolo
 	 * @return the rubrica ruolo that was updated
 	 */
@@ -347,843 +391,21 @@ public abstract class RubricaRuoloLocalServiceBaseImpl
 		return rubricaRuoloPersistence.update(rubricaRuolo);
 	}
 
-	/**
-	 * Returns the rubrica canale local service.
-	 *
-	 * @return the rubrica canale local service
-	 */
-	public it.eng.allerte.service.RubricaCanaleLocalService
-		getRubricaCanaleLocalService() {
-
-		return rubricaCanaleLocalService;
-	}
-
-	/**
-	 * Sets the rubrica canale local service.
-	 *
-	 * @param rubricaCanaleLocalService the rubrica canale local service
-	 */
-	public void setRubricaCanaleLocalService(
-		it.eng.allerte.service.RubricaCanaleLocalService
-			rubricaCanaleLocalService) {
-
-		this.rubricaCanaleLocalService = rubricaCanaleLocalService;
-	}
-
-	/**
-	 * Returns the rubrica canale persistence.
-	 *
-	 * @return the rubrica canale persistence
-	 */
-	public RubricaCanalePersistence getRubricaCanalePersistence() {
-		return rubricaCanalePersistence;
-	}
-
-	/**
-	 * Sets the rubrica canale persistence.
-	 *
-	 * @param rubricaCanalePersistence the rubrica canale persistence
-	 */
-	public void setRubricaCanalePersistence(
-		RubricaCanalePersistence rubricaCanalePersistence) {
-
-		this.rubricaCanalePersistence = rubricaCanalePersistence;
-	}
-
-	/**
-	 * Returns the rubrica categoria local service.
-	 *
-	 * @return the rubrica categoria local service
-	 */
-	public it.eng.allerte.service.RubricaCategoriaLocalService
-		getRubricaCategoriaLocalService() {
-
-		return rubricaCategoriaLocalService;
-	}
-
-	/**
-	 * Sets the rubrica categoria local service.
-	 *
-	 * @param rubricaCategoriaLocalService the rubrica categoria local service
-	 */
-	public void setRubricaCategoriaLocalService(
-		it.eng.allerte.service.RubricaCategoriaLocalService
-			rubricaCategoriaLocalService) {
-
-		this.rubricaCategoriaLocalService = rubricaCategoriaLocalService;
-	}
-
-	/**
-	 * Returns the rubrica categoria persistence.
-	 *
-	 * @return the rubrica categoria persistence
-	 */
-	public RubricaCategoriaPersistence getRubricaCategoriaPersistence() {
-		return rubricaCategoriaPersistence;
-	}
-
-	/**
-	 * Sets the rubrica categoria persistence.
-	 *
-	 * @param rubricaCategoriaPersistence the rubrica categoria persistence
-	 */
-	public void setRubricaCategoriaPersistence(
-		RubricaCategoriaPersistence rubricaCategoriaPersistence) {
-
-		this.rubricaCategoriaPersistence = rubricaCategoriaPersistence;
-	}
-
-	/**
-	 * Returns the rubrica contatto local service.
-	 *
-	 * @return the rubrica contatto local service
-	 */
-	public it.eng.allerte.service.RubricaContattoLocalService
-		getRubricaContattoLocalService() {
-
-		return rubricaContattoLocalService;
-	}
-
-	/**
-	 * Sets the rubrica contatto local service.
-	 *
-	 * @param rubricaContattoLocalService the rubrica contatto local service
-	 */
-	public void setRubricaContattoLocalService(
-		it.eng.allerte.service.RubricaContattoLocalService
-			rubricaContattoLocalService) {
-
-		this.rubricaContattoLocalService = rubricaContattoLocalService;
-	}
-
-	/**
-	 * Returns the rubrica contatto persistence.
-	 *
-	 * @return the rubrica contatto persistence
-	 */
-	public RubricaContattoPersistence getRubricaContattoPersistence() {
-		return rubricaContattoPersistence;
-	}
-
-	/**
-	 * Sets the rubrica contatto persistence.
-	 *
-	 * @param rubricaContattoPersistence the rubrica contatto persistence
-	 */
-	public void setRubricaContattoPersistence(
-		RubricaContattoPersistence rubricaContattoPersistence) {
-
-		this.rubricaContattoPersistence = rubricaContattoPersistence;
-	}
-
-	/**
-	 * Returns the rubrica contatto finder.
-	 *
-	 * @return the rubrica contatto finder
-	 */
-	public RubricaContattoFinder getRubricaContattoFinder() {
-		return rubricaContattoFinder;
-	}
-
-	/**
-	 * Sets the rubrica contatto finder.
-	 *
-	 * @param rubricaContattoFinder the rubrica contatto finder
-	 */
-	public void setRubricaContattoFinder(
-		RubricaContattoFinder rubricaContattoFinder) {
-
-		this.rubricaContattoFinder = rubricaContattoFinder;
-	}
-
-	/**
-	 * Returns the rubrica gruppo local service.
-	 *
-	 * @return the rubrica gruppo local service
-	 */
-	public it.eng.allerte.service.RubricaGruppoLocalService
-		getRubricaGruppoLocalService() {
-
-		return rubricaGruppoLocalService;
-	}
-
-	/**
-	 * Sets the rubrica gruppo local service.
-	 *
-	 * @param rubricaGruppoLocalService the rubrica gruppo local service
-	 */
-	public void setRubricaGruppoLocalService(
-		it.eng.allerte.service.RubricaGruppoLocalService
-			rubricaGruppoLocalService) {
-
-		this.rubricaGruppoLocalService = rubricaGruppoLocalService;
-	}
-
-	/**
-	 * Returns the rubrica gruppo persistence.
-	 *
-	 * @return the rubrica gruppo persistence
-	 */
-	public RubricaGruppoPersistence getRubricaGruppoPersistence() {
-		return rubricaGruppoPersistence;
-	}
-
-	/**
-	 * Sets the rubrica gruppo persistence.
-	 *
-	 * @param rubricaGruppoPersistence the rubrica gruppo persistence
-	 */
-	public void setRubricaGruppoPersistence(
-		RubricaGruppoPersistence rubricaGruppoPersistence) {
-
-		this.rubricaGruppoPersistence = rubricaGruppoPersistence;
-	}
-
-	/**
-	 * Returns the rubrica gruppo finder.
-	 *
-	 * @return the rubrica gruppo finder
-	 */
-	public RubricaGruppoFinder getRubricaGruppoFinder() {
-		return rubricaGruppoFinder;
-	}
-
-	/**
-	 * Sets the rubrica gruppo finder.
-	 *
-	 * @param rubricaGruppoFinder the rubrica gruppo finder
-	 */
-	public void setRubricaGruppoFinder(
-		RubricaGruppoFinder rubricaGruppoFinder) {
-
-		this.rubricaGruppoFinder = rubricaGruppoFinder;
-	}
-
-	/**
-	 * Returns the rubrica gruppo gruppi local service.
-	 *
-	 * @return the rubrica gruppo gruppi local service
-	 */
-	public it.eng.allerte.service.RubricaGruppoGruppiLocalService
-		getRubricaGruppoGruppiLocalService() {
-
-		return rubricaGruppoGruppiLocalService;
-	}
-
-	/**
-	 * Sets the rubrica gruppo gruppi local service.
-	 *
-	 * @param rubricaGruppoGruppiLocalService the rubrica gruppo gruppi local service
-	 */
-	public void setRubricaGruppoGruppiLocalService(
-		it.eng.allerte.service.RubricaGruppoGruppiLocalService
-			rubricaGruppoGruppiLocalService) {
-
-		this.rubricaGruppoGruppiLocalService = rubricaGruppoGruppiLocalService;
-	}
-
-	/**
-	 * Returns the rubrica gruppo gruppi persistence.
-	 *
-	 * @return the rubrica gruppo gruppi persistence
-	 */
-	public RubricaGruppoGruppiPersistence getRubricaGruppoGruppiPersistence() {
-		return rubricaGruppoGruppiPersistence;
-	}
-
-	/**
-	 * Sets the rubrica gruppo gruppi persistence.
-	 *
-	 * @param rubricaGruppoGruppiPersistence the rubrica gruppo gruppi persistence
-	 */
-	public void setRubricaGruppoGruppiPersistence(
-		RubricaGruppoGruppiPersistence rubricaGruppoGruppiPersistence) {
-
-		this.rubricaGruppoGruppiPersistence = rubricaGruppoGruppiPersistence;
-	}
-
-	/**
-	 * Returns the rubrica gruppo gruppi finder.
-	 *
-	 * @return the rubrica gruppo gruppi finder
-	 */
-	public RubricaGruppoGruppiFinder getRubricaGruppoGruppiFinder() {
-		return rubricaGruppoGruppiFinder;
-	}
-
-	/**
-	 * Sets the rubrica gruppo gruppi finder.
-	 *
-	 * @param rubricaGruppoGruppiFinder the rubrica gruppo gruppi finder
-	 */
-	public void setRubricaGruppoGruppiFinder(
-		RubricaGruppoGruppiFinder rubricaGruppoGruppiFinder) {
-
-		this.rubricaGruppoGruppiFinder = rubricaGruppoGruppiFinder;
-	}
-
-	/**
-	 * Returns the rubrica gruppo nominativi local service.
-	 *
-	 * @return the rubrica gruppo nominativi local service
-	 */
-	public it.eng.allerte.service.RubricaGruppoNominativiLocalService
-		getRubricaGruppoNominativiLocalService() {
-
-		return rubricaGruppoNominativiLocalService;
-	}
-
-	/**
-	 * Sets the rubrica gruppo nominativi local service.
-	 *
-	 * @param rubricaGruppoNominativiLocalService the rubrica gruppo nominativi local service
-	 */
-	public void setRubricaGruppoNominativiLocalService(
-		it.eng.allerte.service.RubricaGruppoNominativiLocalService
-			rubricaGruppoNominativiLocalService) {
-
-		this.rubricaGruppoNominativiLocalService =
-			rubricaGruppoNominativiLocalService;
-	}
-
-	/**
-	 * Returns the rubrica gruppo nominativi persistence.
-	 *
-	 * @return the rubrica gruppo nominativi persistence
-	 */
-	public RubricaGruppoNominativiPersistence
-		getRubricaGruppoNominativiPersistence() {
-
-		return rubricaGruppoNominativiPersistence;
-	}
-
-	/**
-	 * Sets the rubrica gruppo nominativi persistence.
-	 *
-	 * @param rubricaGruppoNominativiPersistence the rubrica gruppo nominativi persistence
-	 */
-	public void setRubricaGruppoNominativiPersistence(
-		RubricaGruppoNominativiPersistence rubricaGruppoNominativiPersistence) {
-
-		this.rubricaGruppoNominativiPersistence =
-			rubricaGruppoNominativiPersistence;
-	}
-
-	/**
-	 * Returns the rubrica gruppo nominativi finder.
-	 *
-	 * @return the rubrica gruppo nominativi finder
-	 */
-	public RubricaGruppoNominativiFinder getRubricaGruppoNominativiFinder() {
-		return rubricaGruppoNominativiFinder;
-	}
-
-	/**
-	 * Sets the rubrica gruppo nominativi finder.
-	 *
-	 * @param rubricaGruppoNominativiFinder the rubrica gruppo nominativi finder
-	 */
-	public void setRubricaGruppoNominativiFinder(
-		RubricaGruppoNominativiFinder rubricaGruppoNominativiFinder) {
-
-		this.rubricaGruppoNominativiFinder = rubricaGruppoNominativiFinder;
-	}
-
-	/**
-	 * Returns the rubrica log local service.
-	 *
-	 * @return the rubrica log local service
-	 */
-	public it.eng.allerte.service.RubricaLogLocalService
-		getRubricaLogLocalService() {
-
-		return rubricaLogLocalService;
-	}
-
-	/**
-	 * Sets the rubrica log local service.
-	 *
-	 * @param rubricaLogLocalService the rubrica log local service
-	 */
-	public void setRubricaLogLocalService(
-		it.eng.allerte.service.RubricaLogLocalService rubricaLogLocalService) {
-
-		this.rubricaLogLocalService = rubricaLogLocalService;
-	}
-
-	/**
-	 * Returns the rubrica log persistence.
-	 *
-	 * @return the rubrica log persistence
-	 */
-	public RubricaLogPersistence getRubricaLogPersistence() {
-		return rubricaLogPersistence;
-	}
-
-	/**
-	 * Sets the rubrica log persistence.
-	 *
-	 * @param rubricaLogPersistence the rubrica log persistence
-	 */
-	public void setRubricaLogPersistence(
-		RubricaLogPersistence rubricaLogPersistence) {
-
-		this.rubricaLogPersistence = rubricaLogPersistence;
-	}
-
-	/**
-	 * Returns the rubrica log finder.
-	 *
-	 * @return the rubrica log finder
-	 */
-	public RubricaLogFinder getRubricaLogFinder() {
-		return rubricaLogFinder;
-	}
-
-	/**
-	 * Sets the rubrica log finder.
-	 *
-	 * @param rubricaLogFinder the rubrica log finder
-	 */
-	public void setRubricaLogFinder(RubricaLogFinder rubricaLogFinder) {
-		this.rubricaLogFinder = rubricaLogFinder;
-	}
-
-	/**
-	 * Returns the rubrica nominativo local service.
-	 *
-	 * @return the rubrica nominativo local service
-	 */
-	public it.eng.allerte.service.RubricaNominativoLocalService
-		getRubricaNominativoLocalService() {
-
-		return rubricaNominativoLocalService;
-	}
-
-	/**
-	 * Sets the rubrica nominativo local service.
-	 *
-	 * @param rubricaNominativoLocalService the rubrica nominativo local service
-	 */
-	public void setRubricaNominativoLocalService(
-		it.eng.allerte.service.RubricaNominativoLocalService
-			rubricaNominativoLocalService) {
-
-		this.rubricaNominativoLocalService = rubricaNominativoLocalService;
-	}
-
-	/**
-	 * Returns the rubrica nominativo persistence.
-	 *
-	 * @return the rubrica nominativo persistence
-	 */
-	public RubricaNominativoPersistence getRubricaNominativoPersistence() {
-		return rubricaNominativoPersistence;
-	}
-
-	/**
-	 * Sets the rubrica nominativo persistence.
-	 *
-	 * @param rubricaNominativoPersistence the rubrica nominativo persistence
-	 */
-	public void setRubricaNominativoPersistence(
-		RubricaNominativoPersistence rubricaNominativoPersistence) {
-
-		this.rubricaNominativoPersistence = rubricaNominativoPersistence;
-	}
-
-	/**
-	 * Returns the rubrica nominativo finder.
-	 *
-	 * @return the rubrica nominativo finder
-	 */
-	public RubricaNominativoFinder getRubricaNominativoFinder() {
-		return rubricaNominativoFinder;
-	}
-
-	/**
-	 * Sets the rubrica nominativo finder.
-	 *
-	 * @param rubricaNominativoFinder the rubrica nominativo finder
-	 */
-	public void setRubricaNominativoFinder(
-		RubricaNominativoFinder rubricaNominativoFinder) {
-
-		this.rubricaNominativoFinder = rubricaNominativoFinder;
-	}
-
-	/**
-	 * Returns the rubrica permessi persistence.
-	 *
-	 * @return the rubrica permessi persistence
-	 */
-	public RubricaPermessiPersistence getRubricaPermessiPersistence() {
-		return rubricaPermessiPersistence;
-	}
-
-	/**
-	 * Sets the rubrica permessi persistence.
-	 *
-	 * @param rubricaPermessiPersistence the rubrica permessi persistence
-	 */
-	public void setRubricaPermessiPersistence(
-		RubricaPermessiPersistence rubricaPermessiPersistence) {
-
-		this.rubricaPermessiPersistence = rubricaPermessiPersistence;
-	}
-
-	/**
-	 * Returns the rubrica ruolo local service.
-	 *
-	 * @return the rubrica ruolo local service
-	 */
-	public RubricaRuoloLocalService getRubricaRuoloLocalService() {
-		return rubricaRuoloLocalService;
-	}
-
-	/**
-	 * Sets the rubrica ruolo local service.
-	 *
-	 * @param rubricaRuoloLocalService the rubrica ruolo local service
-	 */
-	public void setRubricaRuoloLocalService(
-		RubricaRuoloLocalService rubricaRuoloLocalService) {
-
-		this.rubricaRuoloLocalService = rubricaRuoloLocalService;
-	}
-
-	/**
-	 * Returns the rubrica ruolo persistence.
-	 *
-	 * @return the rubrica ruolo persistence
-	 */
-	public RubricaRuoloPersistence getRubricaRuoloPersistence() {
-		return rubricaRuoloPersistence;
-	}
-
-	/**
-	 * Sets the rubrica ruolo persistence.
-	 *
-	 * @param rubricaRuoloPersistence the rubrica ruolo persistence
-	 */
-	public void setRubricaRuoloPersistence(
-		RubricaRuoloPersistence rubricaRuoloPersistence) {
-
-		this.rubricaRuoloPersistence = rubricaRuoloPersistence;
-	}
-
-	/**
-	 * Returns the rubrica ruolo permessi local service.
-	 *
-	 * @return the rubrica ruolo permessi local service
-	 */
-	public it.eng.allerte.service.RubricaRuoloPermessiLocalService
-		getRubricaRuoloPermessiLocalService() {
-
-		return rubricaRuoloPermessiLocalService;
-	}
-
-	/**
-	 * Sets the rubrica ruolo permessi local service.
-	 *
-	 * @param rubricaRuoloPermessiLocalService the rubrica ruolo permessi local service
-	 */
-	public void setRubricaRuoloPermessiLocalService(
-		it.eng.allerte.service.RubricaRuoloPermessiLocalService
-			rubricaRuoloPermessiLocalService) {
-
-		this.rubricaRuoloPermessiLocalService =
-			rubricaRuoloPermessiLocalService;
-	}
-
-	/**
-	 * Returns the rubrica ruolo permessi persistence.
-	 *
-	 * @return the rubrica ruolo permessi persistence
-	 */
-	public RubricaRuoloPermessiPersistence
-		getRubricaRuoloPermessiPersistence() {
-
-		return rubricaRuoloPermessiPersistence;
-	}
-
-	/**
-	 * Sets the rubrica ruolo permessi persistence.
-	 *
-	 * @param rubricaRuoloPermessiPersistence the rubrica ruolo permessi persistence
-	 */
-	public void setRubricaRuoloPermessiPersistence(
-		RubricaRuoloPermessiPersistence rubricaRuoloPermessiPersistence) {
-
-		this.rubricaRuoloPermessiPersistence = rubricaRuoloPermessiPersistence;
-	}
-
-	/**
-	 * Returns the rubrica ruolo rubrica local service.
-	 *
-	 * @return the rubrica ruolo rubrica local service
-	 */
-	public it.eng.allerte.service.RubricaRuoloRubricaLocalService
-		getRubricaRuoloRubricaLocalService() {
-
-		return rubricaRuoloRubricaLocalService;
-	}
-
-	/**
-	 * Sets the rubrica ruolo rubrica local service.
-	 *
-	 * @param rubricaRuoloRubricaLocalService the rubrica ruolo rubrica local service
-	 */
-	public void setRubricaRuoloRubricaLocalService(
-		it.eng.allerte.service.RubricaRuoloRubricaLocalService
-			rubricaRuoloRubricaLocalService) {
-
-		this.rubricaRuoloRubricaLocalService = rubricaRuoloRubricaLocalService;
-	}
-
-	/**
-	 * Returns the rubrica ruolo rubrica persistence.
-	 *
-	 * @return the rubrica ruolo rubrica persistence
-	 */
-	public RubricaRuoloRubricaPersistence getRubricaRuoloRubricaPersistence() {
-		return rubricaRuoloRubricaPersistence;
-	}
-
-	/**
-	 * Sets the rubrica ruolo rubrica persistence.
-	 *
-	 * @param rubricaRuoloRubricaPersistence the rubrica ruolo rubrica persistence
-	 */
-	public void setRubricaRuoloRubricaPersistence(
-		RubricaRuoloRubricaPersistence rubricaRuoloRubricaPersistence) {
-
-		this.rubricaRuoloRubricaPersistence = rubricaRuoloRubricaPersistence;
-	}
-
-	/**
-	 * Returns the rubrica sito local service.
-	 *
-	 * @return the rubrica sito local service
-	 */
-	public it.eng.allerte.service.RubricaSitoLocalService
-		getRubricaSitoLocalService() {
-
-		return rubricaSitoLocalService;
-	}
-
-	/**
-	 * Sets the rubrica sito local service.
-	 *
-	 * @param rubricaSitoLocalService the rubrica sito local service
-	 */
-	public void setRubricaSitoLocalService(
-		it.eng.allerte.service.RubricaSitoLocalService
-			rubricaSitoLocalService) {
-
-		this.rubricaSitoLocalService = rubricaSitoLocalService;
-	}
-
-	/**
-	 * Returns the rubrica sito persistence.
-	 *
-	 * @return the rubrica sito persistence
-	 */
-	public RubricaSitoPersistence getRubricaSitoPersistence() {
-		return rubricaSitoPersistence;
-	}
-
-	/**
-	 * Sets the rubrica sito persistence.
-	 *
-	 * @param rubricaSitoPersistence the rubrica sito persistence
-	 */
-	public void setRubricaSitoPersistence(
-		RubricaSitoPersistence rubricaSitoPersistence) {
-
-		this.rubricaSitoPersistence = rubricaSitoPersistence;
-	}
-
-	/**
-	 * Returns the rubrica utente sito local service.
-	 *
-	 * @return the rubrica utente sito local service
-	 */
-	public it.eng.allerte.service.RubricaUtenteSitoLocalService
-		getRubricaUtenteSitoLocalService() {
-
-		return rubricaUtenteSitoLocalService;
-	}
-
-	/**
-	 * Sets the rubrica utente sito local service.
-	 *
-	 * @param rubricaUtenteSitoLocalService the rubrica utente sito local service
-	 */
-	public void setRubricaUtenteSitoLocalService(
-		it.eng.allerte.service.RubricaUtenteSitoLocalService
-			rubricaUtenteSitoLocalService) {
-
-		this.rubricaUtenteSitoLocalService = rubricaUtenteSitoLocalService;
-	}
-
-	/**
-	 * Returns the rubrica utente sito persistence.
-	 *
-	 * @return the rubrica utente sito persistence
-	 */
-	public RubricaUtenteSitoPersistence getRubricaUtenteSitoPersistence() {
-		return rubricaUtenteSitoPersistence;
-	}
-
-	/**
-	 * Sets the rubrica utente sito persistence.
-	 *
-	 * @param rubricaUtenteSitoPersistence the rubrica utente sito persistence
-	 */
-	public void setRubricaUtenteSitoPersistence(
-		RubricaUtenteSitoPersistence rubricaUtenteSitoPersistence) {
-
-		this.rubricaUtenteSitoPersistence = rubricaUtenteSitoPersistence;
-	}
-
-	/**
-	 * Returns the counter local service.
-	 *
-	 * @return the counter local service
-	 */
-	public com.liferay.counter.kernel.service.CounterLocalService
-		getCounterLocalService() {
-
-		return counterLocalService;
-	}
-
-	/**
-	 * Sets the counter local service.
-	 *
-	 * @param counterLocalService the counter local service
-	 */
-	public void setCounterLocalService(
-		com.liferay.counter.kernel.service.CounterLocalService
-			counterLocalService) {
-
-		this.counterLocalService = counterLocalService;
-	}
-
-	/**
-	 * Returns the class name local service.
-	 *
-	 * @return the class name local service
-	 */
-	public com.liferay.portal.kernel.service.ClassNameLocalService
-		getClassNameLocalService() {
-
-		return classNameLocalService;
-	}
-
-	/**
-	 * Sets the class name local service.
-	 *
-	 * @param classNameLocalService the class name local service
-	 */
-	public void setClassNameLocalService(
-		com.liferay.portal.kernel.service.ClassNameLocalService
-			classNameLocalService) {
-
-		this.classNameLocalService = classNameLocalService;
-	}
-
-	/**
-	 * Returns the class name persistence.
-	 *
-	 * @return the class name persistence
-	 */
-	public ClassNamePersistence getClassNamePersistence() {
-		return classNamePersistence;
-	}
-
-	/**
-	 * Sets the class name persistence.
-	 *
-	 * @param classNamePersistence the class name persistence
-	 */
-	public void setClassNamePersistence(
-		ClassNamePersistence classNamePersistence) {
-
-		this.classNamePersistence = classNamePersistence;
-	}
-
-	/**
-	 * Returns the resource local service.
-	 *
-	 * @return the resource local service
-	 */
-	public com.liferay.portal.kernel.service.ResourceLocalService
-		getResourceLocalService() {
-
-		return resourceLocalService;
-	}
-
-	/**
-	 * Sets the resource local service.
-	 *
-	 * @param resourceLocalService the resource local service
-	 */
-	public void setResourceLocalService(
-		com.liferay.portal.kernel.service.ResourceLocalService
-			resourceLocalService) {
-
-		this.resourceLocalService = resourceLocalService;
-	}
-
-	/**
-	 * Returns the user local service.
-	 *
-	 * @return the user local service
-	 */
-	public com.liferay.portal.kernel.service.UserLocalService
-		getUserLocalService() {
-
-		return userLocalService;
-	}
-
-	/**
-	 * Sets the user local service.
-	 *
-	 * @param userLocalService the user local service
-	 */
-	public void setUserLocalService(
-		com.liferay.portal.kernel.service.UserLocalService userLocalService) {
-
-		this.userLocalService = userLocalService;
-	}
-
-	/**
-	 * Returns the user persistence.
-	 *
-	 * @return the user persistence
-	 */
-	public UserPersistence getUserPersistence() {
-		return userPersistence;
-	}
-
-	/**
-	 * Sets the user persistence.
-	 *
-	 * @param userPersistence the user persistence
-	 */
-	public void setUserPersistence(UserPersistence userPersistence) {
-		this.userPersistence = userPersistence;
+	@Deactivate
+	protected void deactivate() {
 	}
 
-	public void afterPropertiesSet() {
-		persistedModelLocalServiceRegistry.register(
-			"it.eng.allerte.model.RubricaRuolo", rubricaRuoloLocalService);
+	@Override
+	public Class<?>[] getAopInterfaces() {
+		return new Class<?>[] {
+			RubricaRuoloLocalService.class, IdentifiableOSGiService.class,
+			PersistedModelLocalService.class
+		};
 	}
 
-	public void destroy() {
-		persistedModelLocalServiceRegistry.unregister(
-			"it.eng.allerte.model.RubricaRuolo");
+	@Override
+	public void setAopProxy(Object aopProxy) {
+		rubricaRuoloLocalService = (RubricaRuoloLocalService)aopProxy;
 	}
 
 	/**
@@ -1210,188 +432,109 @@ public abstract class RubricaRuoloLocalServiceBaseImpl
 	 * @param sql the sql query
 	 */
 	protected void runSQL(String sql) {
+		DataSource dataSource = rubricaRuoloPersistence.getDataSource();
+
+		DB db = DBManagerUtil.getDB();
+
+		Connection currentConnection = CurrentConnectionUtil.getConnection(
+			dataSource);
+
 		try {
-			DataSource dataSource = rubricaRuoloPersistence.getDataSource();
+			if (currentConnection != null) {
+				db.runSQL(currentConnection, new String[] {sql});
 
-			DB db = DBManagerUtil.getDB();
+				return;
+			}
 
-			sql = db.buildSQL(sql);
-			sql = PortalUtil.transformSQL(sql);
-
-			SqlUpdate sqlUpdate = SqlUpdateFactoryUtil.getSqlUpdate(
-				dataSource, sql);
-
-			sqlUpdate.update();
+			try (Connection connection = dataSource.getConnection()) {
+				db.runSQL(connection, new String[] {sql});
+			}
 		}
-		catch (Exception e) {
-			throw new SystemException(e);
+		catch (Exception exception) {
+			throw new SystemException(exception);
 		}
 	}
 
-	@BeanReference(
-		type = it.eng.allerte.service.RubricaCanaleLocalService.class
-	)
-	protected it.eng.allerte.service.RubricaCanaleLocalService
-		rubricaCanaleLocalService;
-
-	@BeanReference(type = RubricaCanalePersistence.class)
+	@Reference
 	protected RubricaCanalePersistence rubricaCanalePersistence;
 
-	@BeanReference(
-		type = it.eng.allerte.service.RubricaCategoriaLocalService.class
-	)
-	protected it.eng.allerte.service.RubricaCategoriaLocalService
-		rubricaCategoriaLocalService;
-
-	@BeanReference(type = RubricaCategoriaPersistence.class)
+	@Reference
 	protected RubricaCategoriaPersistence rubricaCategoriaPersistence;
 
-	@BeanReference(
-		type = it.eng.allerte.service.RubricaContattoLocalService.class
-	)
-	protected it.eng.allerte.service.RubricaContattoLocalService
-		rubricaContattoLocalService;
-
-	@BeanReference(type = RubricaContattoPersistence.class)
+	@Reference
 	protected RubricaContattoPersistence rubricaContattoPersistence;
 
-	@BeanReference(type = RubricaContattoFinder.class)
+	@Reference
 	protected RubricaContattoFinder rubricaContattoFinder;
 
-	@BeanReference(
-		type = it.eng.allerte.service.RubricaGruppoLocalService.class
-	)
-	protected it.eng.allerte.service.RubricaGruppoLocalService
-		rubricaGruppoLocalService;
-
-	@BeanReference(type = RubricaGruppoPersistence.class)
+	@Reference
 	protected RubricaGruppoPersistence rubricaGruppoPersistence;
 
-	@BeanReference(type = RubricaGruppoFinder.class)
+	@Reference
 	protected RubricaGruppoFinder rubricaGruppoFinder;
 
-	@BeanReference(
-		type = it.eng.allerte.service.RubricaGruppoGruppiLocalService.class
-	)
-	protected it.eng.allerte.service.RubricaGruppoGruppiLocalService
-		rubricaGruppoGruppiLocalService;
-
-	@BeanReference(type = RubricaGruppoGruppiPersistence.class)
+	@Reference
 	protected RubricaGruppoGruppiPersistence rubricaGruppoGruppiPersistence;
 
-	@BeanReference(type = RubricaGruppoGruppiFinder.class)
+	@Reference
 	protected RubricaGruppoGruppiFinder rubricaGruppoGruppiFinder;
 
-	@BeanReference(
-		type = it.eng.allerte.service.RubricaGruppoNominativiLocalService.class
-	)
-	protected it.eng.allerte.service.RubricaGruppoNominativiLocalService
-		rubricaGruppoNominativiLocalService;
-
-	@BeanReference(type = RubricaGruppoNominativiPersistence.class)
+	@Reference
 	protected RubricaGruppoNominativiPersistence
 		rubricaGruppoNominativiPersistence;
 
-	@BeanReference(type = RubricaGruppoNominativiFinder.class)
+	@Reference
 	protected RubricaGruppoNominativiFinder rubricaGruppoNominativiFinder;
 
-	@BeanReference(type = it.eng.allerte.service.RubricaLogLocalService.class)
-	protected it.eng.allerte.service.RubricaLogLocalService
-		rubricaLogLocalService;
-
-	@BeanReference(type = RubricaLogPersistence.class)
+	@Reference
 	protected RubricaLogPersistence rubricaLogPersistence;
 
-	@BeanReference(type = RubricaLogFinder.class)
+	@Reference
 	protected RubricaLogFinder rubricaLogFinder;
 
-	@BeanReference(
-		type = it.eng.allerte.service.RubricaNominativoLocalService.class
-	)
-	protected it.eng.allerte.service.RubricaNominativoLocalService
-		rubricaNominativoLocalService;
-
-	@BeanReference(type = RubricaNominativoPersistence.class)
+	@Reference
 	protected RubricaNominativoPersistence rubricaNominativoPersistence;
 
-	@BeanReference(type = RubricaNominativoFinder.class)
+	@Reference
 	protected RubricaNominativoFinder rubricaNominativoFinder;
 
-	@BeanReference(type = RubricaPermessiPersistence.class)
+	@Reference
 	protected RubricaPermessiPersistence rubricaPermessiPersistence;
 
-	@BeanReference(type = RubricaRuoloLocalService.class)
 	protected RubricaRuoloLocalService rubricaRuoloLocalService;
 
-	@BeanReference(type = RubricaRuoloPersistence.class)
+	@Reference
 	protected RubricaRuoloPersistence rubricaRuoloPersistence;
 
-	@BeanReference(
-		type = it.eng.allerte.service.RubricaRuoloPermessiLocalService.class
-	)
-	protected it.eng.allerte.service.RubricaRuoloPermessiLocalService
-		rubricaRuoloPermessiLocalService;
-
-	@BeanReference(type = RubricaRuoloPermessiPersistence.class)
+	@Reference
 	protected RubricaRuoloPermessiPersistence rubricaRuoloPermessiPersistence;
 
-	@BeanReference(
-		type = it.eng.allerte.service.RubricaRuoloRubricaLocalService.class
-	)
-	protected it.eng.allerte.service.RubricaRuoloRubricaLocalService
-		rubricaRuoloRubricaLocalService;
-
-	@BeanReference(type = RubricaRuoloRubricaPersistence.class)
+	@Reference
 	protected RubricaRuoloRubricaPersistence rubricaRuoloRubricaPersistence;
 
-	@BeanReference(type = it.eng.allerte.service.RubricaSitoLocalService.class)
-	protected it.eng.allerte.service.RubricaSitoLocalService
-		rubricaSitoLocalService;
-
-	@BeanReference(type = RubricaSitoPersistence.class)
+	@Reference
 	protected RubricaSitoPersistence rubricaSitoPersistence;
 
-	@BeanReference(
-		type = it.eng.allerte.service.RubricaUtenteSitoLocalService.class
-	)
-	protected it.eng.allerte.service.RubricaUtenteSitoLocalService
-		rubricaUtenteSitoLocalService;
-
-	@BeanReference(type = RubricaUtenteSitoPersistence.class)
+	@Reference
 	protected RubricaUtenteSitoPersistence rubricaUtenteSitoPersistence;
 
-	@ServiceReference(
-		type = com.liferay.counter.kernel.service.CounterLocalService.class
-	)
+	@Reference
 	protected com.liferay.counter.kernel.service.CounterLocalService
 		counterLocalService;
 
-	@ServiceReference(
-		type = com.liferay.portal.kernel.service.ClassNameLocalService.class
-	)
+	@Reference
 	protected com.liferay.portal.kernel.service.ClassNameLocalService
 		classNameLocalService;
 
-	@ServiceReference(type = ClassNamePersistence.class)
-	protected ClassNamePersistence classNamePersistence;
-
-	@ServiceReference(
-		type = com.liferay.portal.kernel.service.ResourceLocalService.class
-	)
+	@Reference
 	protected com.liferay.portal.kernel.service.ResourceLocalService
 		resourceLocalService;
 
-	@ServiceReference(
-		type = com.liferay.portal.kernel.service.UserLocalService.class
-	)
+	@Reference
 	protected com.liferay.portal.kernel.service.UserLocalService
 		userLocalService;
 
-	@ServiceReference(type = UserPersistence.class)
-	protected UserPersistence userPersistence;
-
-	@ServiceReference(type = PersistedModelLocalServiceRegistry.class)
-	protected PersistedModelLocalServiceRegistry
-		persistedModelLocalServiceRegistry;
+	private static final Log _log = LogFactoryUtil.getLog(
+		RubricaRuoloLocalServiceBaseImpl.class);
 
 }

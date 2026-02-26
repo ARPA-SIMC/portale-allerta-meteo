@@ -3,6 +3,8 @@ package it.eng.allerter.allerta;
 import com.liferay.portal.kernel.util.PortalUtil;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.sql.Connection;
@@ -28,14 +30,11 @@ import it.eng.allerter.model.AllertaValangheStato;
 import it.eng.allerter.service.AllertaLocalServiceUtil;
 import it.eng.allerter.service.AllertaServiceUtil;
 import it.eng.allerter.service.AllertaValangheLocalServiceUtil;
+import it.eng.allerter.service.LogInternoLocalServiceUtil;
 import it.eng.bollettino.service.BollettinoLocalServiceUtil;
 
 @Component(
-	    immediate = true,
-	    property = {
-	        "osgi.http.whiteboard.context.path=/",
-	        "osgi.http.whiteboard.servlet.pattern=/badge"
-	    },
+	    property = "osgi.http.whiteboard.servlet.pattern=/badge",
 	    service = Servlet.class
 	)
 public class BadgeServlet  extends HttpServlet {
@@ -55,6 +54,7 @@ public class BadgeServlet  extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		Connection connection = null;
 		try {
+		
 			
 			String cpu = PortalUtil.getComputerName();
 			if (cpu!=null && cpu.contains("vm"))
@@ -68,6 +68,19 @@ public class BadgeServlet  extends HttpServlet {
 				resp.setStatus(404);
 				return;
 			}
+			
+			try {
+			String ref = req.getHeader("Referer");
+			if (ref!=null && !"".equals(ref)) {
+				URI uri = new URI(ref);
+			    String domain = uri.getHost();
+			    ref = domain.startsWith("www.") ? domain.substring(4) : domain;
+			    BollettinoLocalServiceUtil.eseguiQueryGenerica("insert into api_requests (dominio,tipo) values('"+ref+"','"+feed+"')");
+			}
+			} catch (Exception e) {
+				LogInternoLocalServiceUtil.log("badge", "stats", e, "");
+			}
+			
 			
 			String ts = req.getParameter("ts");
 			Date tts = null;
@@ -110,7 +123,7 @@ public class BadgeServlet  extends HttpServlet {
 				
 				
 				zonaV = (String)BollettinoLocalServiceUtil.eseguiQueryGenerica("select area from storico_aree where nome='"+
-						comune+"' and tipo='V' and data_inizio<=current_date and data_fine>=current_date");
+						comune.replaceAll("'", "''")+"' and tipo='V' and data_inizio<=current_date and data_fine>=current_date");
 			
 			
 				if (zonaV!=null) {
@@ -140,6 +153,7 @@ public class BadgeServlet  extends HttpServlet {
 			
 			String out ="";
 			String overallColor = "white";
+			String overallColor2 = "white";
 			
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 			SimpleDateFormat sdf2 = new SimpleDateFormat("HH:mm:ss");
@@ -149,6 +163,9 @@ public class BadgeServlet  extends HttpServlet {
 			
 			HashMap<String, String> worst = new HashMap<String, String>();
 			HashMap<String, String> events = new HashMap<String, String>();
+			
+			HashMap<String, String> worst2 = new HashMap<String, String>();
+			HashMap<String, String> events2 = new HashMap<String, String>();
 			
 			ArrayList<Map<String, String>> lista = (giorno==0?oggi:domani);
 			
@@ -176,8 +193,36 @@ public class BadgeServlet  extends HttpServlet {
 				}
 			}
 			
+			for (Map<String,String> x : domani) {
+				String area = x.get("area");
+				String eventi = x.get("eventi");
+				String[] ev2 = eventi.split(",");
+				for (String evD : ev2) {
+					String[] dett = evD.split(":");
+					String evento = dett[0];
+					String colore = dett[1];
+					if (area.equals(zona) || area.equals(zonaV)) {
+						testo = testo.replace("%area_"+evento+"_domani%", colore);
+						testo = testo.replace(("%area_"+evento+"_colore_domani%"), getColor(colore));
+						
+					}
+					int index = getIndex(colore);
+					if (!worst2.containsKey(area) || getIndex(worst2.get(area))<index)
+						worst2.put(area, colore);
+					
+					if (!events2.containsKey(evento) || getIndex(events2.get(evento))<index)
+						if ((zona==null || area.equals(zona) || area.equals(zonaV))) events2.put(evento, colore);
+					
+					if (getIndex(overallColor2)<index && (zona==null || area.equals(zona) || area.equals(zonaV))) overallColor2=colore;
+				}
+			}
+			
 			testo = testo.replace("%colore_globale%", overallColor);
 			testo = testo.replace("%nome_colore_globale%", getColor(overallColor));
+			
+			testo = testo.replace("%colore_globale_domani%", overallColor2);
+			testo = testo.replace("%nome_colore_globale_domani%", getColor(overallColor2));
+			
 			if (comune!=null) {
 				testo = testo.replace("%comune%",comune.toUpperCase());
 				testo = testo.replace("%comune_on%","on");
@@ -205,9 +250,19 @@ public class BadgeServlet  extends HttpServlet {
 				
 			}
 			
+			for (String x : worst2.keySet()) {
+				testo = testo.replace("%"+x+"_domani%", worst2.get(x));
+				
+			}
+			
 			for (String x : events.keySet()) {
 				testo = testo.replace("%"+x+"%", events.get(x));
 				testo = testo.replace("%"+x+"_colore%", getColor(events.get(x)));
+			}
+			
+			for (String x : events2.keySet()) {
+				testo = testo.replace("%"+x+"_domani%", events2.get(x));
+				testo = testo.replace("%"+x+"_colore_domani%", getColor(events2.get(x)));
 			}
 			
 			if (!events.containsKey("valanghe")) {
@@ -215,10 +270,33 @@ public class BadgeServlet  extends HttpServlet {
 				testo = testo.replace("%valanghe_colore%", "BIANCO");
 			}
 			
+			if (!events2.containsKey("valanghe")) {
+				testo = testo.replace("%valanghe_domani%", "white");
+				testo = testo.replace("%valanghe_colore_domani%", "BIANCO");
+			}
+			
 			Allerta a = getAllerta(giorno,tts);
 			if (a!=null) {
 				testo = testo.replace("%titolo_allerta%", a.getTitolo());
 				testo = testo.replace("%link_allerta%", BASE_URL1+a.getLink());
+				testo = testo.replace("%descrizione_allerta%", a.getDescrizioneMeteo());
+				testo = testo.replace("%allerta_on%", "on");
+				
+			} else {
+				testo = testo.replace("%allerta_on%", "off");
+			}
+			
+			Allerta a2 = getAllerta(1,tts);
+			if (a2!=null) {
+				testo = testo.replace("%titolo_allerta_domani%", a2.getTitolo());
+				testo = testo.replace("%link_allerta_domani%", BASE_URL1+a2.getLink());
+				testo = testo.replace("%descrizione_allerta_domani%", a2.getDescrizioneMeteo());
+				testo = testo.replace("%allerta_domani_on%", "on");
+				testo = testo.replace("%allerta_domani_off%", "off");
+				
+			} else {
+				testo = testo.replace("%allerta_domani_on%", "off");
+				testo = testo.replace("%allerta_domani_off%", "on");
 			}
 			
 			AllertaValanghe av = getAllertaValanghe(giorno);
@@ -234,6 +312,19 @@ public class BadgeServlet  extends HttpServlet {
 				
 			}
 			
+			AllertaValanghe av2 = getAllertaValanghe(1);
+			if (av2!=null) {
+				
+				testo = testo.replace("%titolo_allerta_valanghe_domani%", av2.getTitolo());
+				testo = testo.replace("%link_allerta_valanghe_domani%", BASE_URL1+av2.getLink());
+				testo = testo.replace("%allerta_valanghe_domani%", "on");
+			} else {
+				testo = testo.replace("%titolo_allerta_valanghe_domani%", "");
+				testo = testo.replace("%link_allerta_valanghe_domani%", "");
+				testo = testo.replace("%allerta_valanghe_domani%", "off");
+				
+			}
+			
 			testo = testo.replace("%path%", BASE_URL+"o/it.eng.allerta.compila/img");
 			testo = testo.replaceAll("%baseurl%", BASE_URL);
 			
@@ -245,6 +336,15 @@ public class BadgeServlet  extends HttpServlet {
 				
 			}
 			testo = testo.replace("%mappa%", BASE_URL+"o/allerta-img?param="+mappa);
+			
+			String mappa2 = "";
+			for (String x : areeNuove) {
+				String col = worst2.get(x);
+				if (col==null) col = "white";
+				mappa2+=getColorInitial(col);
+				
+			}
+			testo = testo.replace("%mappa_domani%", BASE_URL+"o/allerta-img?param="+mappa2);
 			
 			resp.setStatus(200);
 			resp.setHeader("Access-Control-Allow-Origin", "*");

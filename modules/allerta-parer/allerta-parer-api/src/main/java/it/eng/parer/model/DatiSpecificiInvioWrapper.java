@@ -1,31 +1,16 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.parer.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -36,22 +21,12 @@ import java.util.Objects;
  * @see DatiSpecificiInvio
  * @generated
  */
-@ProviderType
 public class DatiSpecificiInvioWrapper
+	extends BaseModelWrapper<DatiSpecificiInvio>
 	implements DatiSpecificiInvio, ModelWrapper<DatiSpecificiInvio> {
 
 	public DatiSpecificiInvioWrapper(DatiSpecificiInvio datiSpecificiInvio) {
-		_datiSpecificiInvio = datiSpecificiInvio;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return DatiSpecificiInvio.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return DatiSpecificiInvio.class.getName();
+		super(datiSpecificiInvio);
 	}
 
 	@Override
@@ -461,16 +436,8 @@ public class DatiSpecificiInvioWrapper
 	}
 
 	@Override
-	public Object clone() {
-		return new DatiSpecificiInvioWrapper(
-			(DatiSpecificiInvio)_datiSpecificiInvio.clone());
-	}
-
-	@Override
-	public int compareTo(
-		it.eng.parer.model.DatiSpecificiInvio datiSpecificiInvio) {
-
-		return _datiSpecificiInvio.compareTo(datiSpecificiInvio);
+	public DatiSpecificiInvio cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -480,7 +447,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public String getAMBIENTE() {
-		return _datiSpecificiInvio.getAMBIENTE();
+		return model.getAMBIENTE();
 	}
 
 	/**
@@ -490,7 +457,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public String getAPPROVATORE_ARPAE() {
-		return _datiSpecificiInvio.getAPPROVATORE_ARPAE();
+		return model.getAPPROVATORE_ARPAE();
 	}
 
 	/**
@@ -500,7 +467,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public String getAPPROVATORE_PROTEZIONE_CIVILE() {
-		return _datiSpecificiInvio.getAPPROVATORE_PROTEZIONE_CIVILE();
+		return model.getAPPROVATORE_PROTEZIONE_CIVILE();
 	}
 
 	/**
@@ -510,7 +477,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public long getCHIAVE_ANNO() {
-		return _datiSpecificiInvio.getCHIAVE_ANNO();
+		return model.getCHIAVE_ANNO();
 	}
 
 	/**
@@ -520,7 +487,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public String getCHIAVE_NUMERO() {
-		return _datiSpecificiInvio.getCHIAVE_NUMERO();
+		return model.getCHIAVE_NUMERO();
 	}
 
 	/**
@@ -530,7 +497,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public String getCHIAVE_TIPO_REGISTRO() {
-		return _datiSpecificiInvio.getCHIAVE_TIPO_REGISTRO();
+		return model.getCHIAVE_TIPO_REGISTRO();
 	}
 
 	/**
@@ -540,7 +507,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public String getCODICE_ERRORE() {
-		return _datiSpecificiInvio.getCODICE_ERRORE();
+		return model.getCODICE_ERRORE();
 	}
 
 	/**
@@ -550,7 +517,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public String getCODICE_ESITO() {
-		return _datiSpecificiInvio.getCODICE_ESITO();
+		return model.getCODICE_ESITO();
 	}
 
 	/**
@@ -560,7 +527,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public String getCODICE_TIPO_INVIO() {
-		return _datiSpecificiInvio.getCODICE_TIPO_INVIO();
+		return model.getCODICE_TIPO_INVIO();
 	}
 
 	/**
@@ -570,7 +537,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public long getCompanyId() {
-		return _datiSpecificiInvio.getCompanyId();
+		return model.getCompanyId();
 	}
 
 	/**
@@ -580,7 +547,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public String getCOMPILATORE_ARPAE() {
-		return _datiSpecificiInvio.getCOMPILATORE_ARPAE();
+		return model.getCOMPILATORE_ARPAE();
 	}
 
 	/**
@@ -590,7 +557,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public String getCOMPILATORE_PROTEZIONE_CIVILE() {
-		return _datiSpecificiInvio.getCOMPILATORE_PROTEZIONE_CIVILE();
+		return model.getCOMPILATORE_PROTEZIONE_CIVILE();
 	}
 
 	/**
@@ -600,7 +567,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public Date getDATA_FINE_VALIDITA() {
-		return _datiSpecificiInvio.getDATA_FINE_VALIDITA();
+		return model.getDATA_FINE_VALIDITA();
 	}
 
 	/**
@@ -610,7 +577,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public Date getDATA_FIRMA_ARPAE() {
-		return _datiSpecificiInvio.getDATA_FIRMA_ARPAE();
+		return model.getDATA_FIRMA_ARPAE();
 	}
 
 	/**
@@ -620,7 +587,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public Date getDATA_FIRMA_PROTEZIONE_CIVILE() {
-		return _datiSpecificiInvio.getDATA_FIRMA_PROTEZIONE_CIVILE();
+		return model.getDATA_FIRMA_PROTEZIONE_CIVILE();
 	}
 
 	/**
@@ -630,7 +597,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public Date getDATA_GENERAZIONE() {
-		return _datiSpecificiInvio.getDATA_GENERAZIONE();
+		return model.getDATA_GENERAZIONE();
 	}
 
 	/**
@@ -640,7 +607,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public Date getDATA_INIZIO_VALIDITA() {
-		return _datiSpecificiInvio.getDATA_INIZIO_VALIDITA();
+		return model.getDATA_INIZIO_VALIDITA();
 	}
 
 	/**
@@ -650,7 +617,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public Date getData_invio() {
-		return _datiSpecificiInvio.getData_invio();
+		return model.getData_invio();
 	}
 
 	/**
@@ -660,7 +627,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public Date getData_risposta() {
-		return _datiSpecificiInvio.getData_risposta();
+		return model.getData_risposta();
 	}
 
 	/**
@@ -670,7 +637,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public Date getDATA_UNITA_DOCUMENTARIA() {
-		return _datiSpecificiInvio.getDATA_UNITA_DOCUMENTARIA();
+		return model.getDATA_UNITA_DOCUMENTARIA();
 	}
 
 	/**
@@ -680,7 +647,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public String getDENOMINAZIONE_APPLICATIVO() {
-		return _datiSpecificiInvio.getDENOMINAZIONE_APPLICATIVO();
+		return model.getDENOMINAZIONE_APPLICATIVO();
 	}
 
 	/**
@@ -690,7 +657,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public String getDENOMINAZIONE_SENSORE_RILEVAMENTO() {
-		return _datiSpecificiInvio.getDENOMINAZIONE_SENSORE_RILEVAMENTO();
+		return model.getDENOMINAZIONE_SENSORE_RILEVAMENTO();
 	}
 
 	/**
@@ -700,12 +667,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public String getESITO_INVIO() {
-		return _datiSpecificiInvio.getESITO_INVIO();
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _datiSpecificiInvio.getExpandoBridge();
+		return model.getESITO_INVIO();
 	}
 
 	/**
@@ -715,7 +677,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public String getFORZA_ACCETTAZIONE() {
-		return _datiSpecificiInvio.getFORZA_ACCETTAZIONE();
+		return model.getFORZA_ACCETTAZIONE();
 	}
 
 	/**
@@ -725,7 +687,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public String getFORZA_COLLEGAMENTO() {
-		return _datiSpecificiInvio.getFORZA_COLLEGAMENTO();
+		return model.getFORZA_COLLEGAMENTO();
 	}
 
 	/**
@@ -735,7 +697,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public String getFORZA_CONSERVAZIONE() {
-		return _datiSpecificiInvio.getFORZA_CONSERVAZIONE();
+		return model.getFORZA_CONSERVAZIONE();
 	}
 
 	/**
@@ -745,7 +707,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public long getGroupId() {
-		return _datiSpecificiInvio.getGroupId();
+		return model.getGroupId();
 	}
 
 	/**
@@ -755,7 +717,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public long getID_DOCUMENTO_PRINCIPALE() {
-		return _datiSpecificiInvio.getID_DOCUMENTO_PRINCIPALE();
+		return model.getID_DOCUMENTO_PRINCIPALE();
 	}
 
 	/**
@@ -765,7 +727,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public long getID_INVIO() {
-		return _datiSpecificiInvio.getID_INVIO();
+		return model.getID_INVIO();
 	}
 
 	/**
@@ -775,7 +737,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public String getIDENTIFICATIVO_DATO_SPECIFICO() {
-		return _datiSpecificiInvio.getIDENTIFICATIVO_DATO_SPECIFICO();
+		return model.getIDENTIFICATIVO_DATO_SPECIFICO();
 	}
 
 	/**
@@ -785,7 +747,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public String getINVIO_RESPONSABILE_TERRITORIO() {
-		return _datiSpecificiInvio.getINVIO_RESPONSABILE_TERRITORIO();
+		return model.getINVIO_RESPONSABILE_TERRITORIO();
 	}
 
 	/**
@@ -795,7 +757,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public String getMESG_ERRORE() {
-		return _datiSpecificiInvio.getMESG_ERRORE();
+		return model.getMESG_ERRORE();
 	}
 
 	/**
@@ -805,7 +767,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public int getNUM_NOTIFICHE_RICEZIONE() {
-		return _datiSpecificiInvio.getNUM_NOTIFICHE_RICEZIONE();
+		return model.getNUM_NOTIFICHE_RICEZIONE();
 	}
 
 	/**
@@ -815,7 +777,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public int getNUM_SMS_GENERATI() {
-		return _datiSpecificiInvio.getNUM_SMS_GENERATI();
+		return model.getNUM_SMS_GENERATI();
 	}
 
 	/**
@@ -825,7 +787,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public int getNUM_SMS_INVIATI() {
-		return _datiSpecificiInvio.getNUM_SMS_INVIATI();
+		return model.getNUM_SMS_INVIATI();
 	}
 
 	/**
@@ -835,7 +797,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public String getOGGETTO_MAIL() {
-		return _datiSpecificiInvio.getOGGETTO_MAIL();
+		return model.getOGGETTO_MAIL();
 	}
 
 	/**
@@ -845,7 +807,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public String getOGGETTO_UNITA_DOCUMENTARIA() {
-		return _datiSpecificiInvio.getOGGETTO_UNITA_DOCUMENTARIA();
+		return model.getOGGETTO_UNITA_DOCUMENTARIA();
 	}
 
 	/**
@@ -855,12 +817,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public long getPrimaryKey() {
-		return _datiSpecificiInvio.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _datiSpecificiInvio.getPrimaryKeyObj();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -870,7 +827,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public String getREGOLA_ALLARME_DESCRIZIONE() {
-		return _datiSpecificiInvio.getREGOLA_ALLARME_DESCRIZIONE();
+		return model.getREGOLA_ALLARME_DESCRIZIONE();
 	}
 
 	/**
@@ -880,7 +837,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public String getREGOLA_ALLARME_ID() {
-		return _datiSpecificiInvio.getREGOLA_ALLARME_ID();
+		return model.getREGOLA_ALLARME_ID();
 	}
 
 	/**
@@ -890,7 +847,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public String getREGOLA_ALLARME_NOME() {
-		return _datiSpecificiInvio.getREGOLA_ALLARME_NOME();
+		return model.getREGOLA_ALLARME_NOME();
 	}
 
 	/**
@@ -900,7 +857,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public String getTESTO_MAIL() {
-		return _datiSpecificiInvio.getTESTO_MAIL();
+		return model.getTESTO_MAIL();
 	}
 
 	/**
@@ -910,7 +867,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public String getTIPO_CONSERVAZIONE() {
-		return _datiSpecificiInvio.getTIPO_CONSERVAZIONE();
+		return model.getTIPO_CONSERVAZIONE();
 	}
 
 	/**
@@ -920,7 +877,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public String getTIPO_DOCUMENTO() {
-		return _datiSpecificiInvio.getTIPO_DOCUMENTO();
+		return model.getTIPO_DOCUMENTO();
 	}
 
 	/**
@@ -930,7 +887,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public String getTIPO_STRUTTURA() {
-		return _datiSpecificiInvio.getTIPO_STRUTTURA();
+		return model.getTIPO_STRUTTURA();
 	}
 
 	/**
@@ -940,7 +897,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public String getTIPOLOGIA_UNITA_DOCUMENTARIA() {
-		return _datiSpecificiInvio.getTIPOLOGIA_UNITA_DOCUMENTARIA();
+		return model.getTIPOLOGIA_UNITA_DOCUMENTARIA();
 	}
 
 	/**
@@ -950,7 +907,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public long getUserId() {
-		return _datiSpecificiInvio.getUserId();
+		return model.getUserId();
 	}
 
 	/**
@@ -960,7 +917,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public String getUserUuid() {
-		return _datiSpecificiInvio.getUserUuid();
+		return model.getUserUuid();
 	}
 
 	/**
@@ -970,7 +927,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public String getVERSATORE_ENTE() {
-		return _datiSpecificiInvio.getVERSATORE_ENTE();
+		return model.getVERSATORE_ENTE();
 	}
 
 	/**
@@ -980,7 +937,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public String getVERSATORE_STRUTTURA() {
-		return _datiSpecificiInvio.getVERSATORE_STRUTTURA();
+		return model.getVERSATORE_STRUTTURA();
 	}
 
 	/**
@@ -990,7 +947,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public String getVERSATORE_USER_ID() {
-		return _datiSpecificiInvio.getVERSATORE_USER_ID();
+		return model.getVERSATORE_USER_ID();
 	}
 
 	/**
@@ -1000,7 +957,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public double getVERSIONE() {
-		return _datiSpecificiInvio.getVERSIONE();
+		return model.getVERSIONE();
 	}
 
 	/**
@@ -1010,32 +967,12 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public double getVERSIONE_DATI_SPECIFICI() {
-		return _datiSpecificiInvio.getVERSIONE_DATI_SPECIFICI();
-	}
-
-	@Override
-	public int hashCode() {
-		return _datiSpecificiInvio.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _datiSpecificiInvio.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _datiSpecificiInvio.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _datiSpecificiInvio.isNew();
+		return model.getVERSIONE_DATI_SPECIFICI();
 	}
 
 	@Override
 	public void persist() {
-		_datiSpecificiInvio.persist();
+		model.persist();
 	}
 
 	/**
@@ -1045,7 +982,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public void setAMBIENTE(String AMBIENTE) {
-		_datiSpecificiInvio.setAMBIENTE(AMBIENTE);
+		model.setAMBIENTE(AMBIENTE);
 	}
 
 	/**
@@ -1055,7 +992,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public void setAPPROVATORE_ARPAE(String APPROVATORE_ARPAE) {
-		_datiSpecificiInvio.setAPPROVATORE_ARPAE(APPROVATORE_ARPAE);
+		model.setAPPROVATORE_ARPAE(APPROVATORE_ARPAE);
 	}
 
 	/**
@@ -1067,13 +1004,7 @@ public class DatiSpecificiInvioWrapper
 	public void setAPPROVATORE_PROTEZIONE_CIVILE(
 		String APPROVATORE_PROTEZIONE_CIVILE) {
 
-		_datiSpecificiInvio.setAPPROVATORE_PROTEZIONE_CIVILE(
-			APPROVATORE_PROTEZIONE_CIVILE);
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_datiSpecificiInvio.setCachedModel(cachedModel);
+		model.setAPPROVATORE_PROTEZIONE_CIVILE(APPROVATORE_PROTEZIONE_CIVILE);
 	}
 
 	/**
@@ -1083,7 +1014,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public void setCHIAVE_ANNO(long CHIAVE_ANNO) {
-		_datiSpecificiInvio.setCHIAVE_ANNO(CHIAVE_ANNO);
+		model.setCHIAVE_ANNO(CHIAVE_ANNO);
 	}
 
 	/**
@@ -1093,7 +1024,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public void setCHIAVE_NUMERO(String CHIAVE_NUMERO) {
-		_datiSpecificiInvio.setCHIAVE_NUMERO(CHIAVE_NUMERO);
+		model.setCHIAVE_NUMERO(CHIAVE_NUMERO);
 	}
 
 	/**
@@ -1103,7 +1034,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public void setCHIAVE_TIPO_REGISTRO(String CHIAVE_TIPO_REGISTRO) {
-		_datiSpecificiInvio.setCHIAVE_TIPO_REGISTRO(CHIAVE_TIPO_REGISTRO);
+		model.setCHIAVE_TIPO_REGISTRO(CHIAVE_TIPO_REGISTRO);
 	}
 
 	/**
@@ -1113,7 +1044,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public void setCODICE_ERRORE(String CODICE_ERRORE) {
-		_datiSpecificiInvio.setCODICE_ERRORE(CODICE_ERRORE);
+		model.setCODICE_ERRORE(CODICE_ERRORE);
 	}
 
 	/**
@@ -1123,7 +1054,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public void setCODICE_ESITO(String CODICE_ESITO) {
-		_datiSpecificiInvio.setCODICE_ESITO(CODICE_ESITO);
+		model.setCODICE_ESITO(CODICE_ESITO);
 	}
 
 	/**
@@ -1133,7 +1064,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public void setCODICE_TIPO_INVIO(String CODICE_TIPO_INVIO) {
-		_datiSpecificiInvio.setCODICE_TIPO_INVIO(CODICE_TIPO_INVIO);
+		model.setCODICE_TIPO_INVIO(CODICE_TIPO_INVIO);
 	}
 
 	/**
@@ -1143,7 +1074,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public void setCompanyId(long companyId) {
-		_datiSpecificiInvio.setCompanyId(companyId);
+		model.setCompanyId(companyId);
 	}
 
 	/**
@@ -1153,7 +1084,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public void setCOMPILATORE_ARPAE(String COMPILATORE_ARPAE) {
-		_datiSpecificiInvio.setCOMPILATORE_ARPAE(COMPILATORE_ARPAE);
+		model.setCOMPILATORE_ARPAE(COMPILATORE_ARPAE);
 	}
 
 	/**
@@ -1165,8 +1096,7 @@ public class DatiSpecificiInvioWrapper
 	public void setCOMPILATORE_PROTEZIONE_CIVILE(
 		String COMPILATORE_PROTEZIONE_CIVILE) {
 
-		_datiSpecificiInvio.setCOMPILATORE_PROTEZIONE_CIVILE(
-			COMPILATORE_PROTEZIONE_CIVILE);
+		model.setCOMPILATORE_PROTEZIONE_CIVILE(COMPILATORE_PROTEZIONE_CIVILE);
 	}
 
 	/**
@@ -1176,7 +1106,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public void setDATA_FINE_VALIDITA(Date DATA_FINE_VALIDITA) {
-		_datiSpecificiInvio.setDATA_FINE_VALIDITA(DATA_FINE_VALIDITA);
+		model.setDATA_FINE_VALIDITA(DATA_FINE_VALIDITA);
 	}
 
 	/**
@@ -1186,7 +1116,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public void setDATA_FIRMA_ARPAE(Date DATA_FIRMA_ARPAE) {
-		_datiSpecificiInvio.setDATA_FIRMA_ARPAE(DATA_FIRMA_ARPAE);
+		model.setDATA_FIRMA_ARPAE(DATA_FIRMA_ARPAE);
 	}
 
 	/**
@@ -1198,8 +1128,7 @@ public class DatiSpecificiInvioWrapper
 	public void setDATA_FIRMA_PROTEZIONE_CIVILE(
 		Date DATA_FIRMA_PROTEZIONE_CIVILE) {
 
-		_datiSpecificiInvio.setDATA_FIRMA_PROTEZIONE_CIVILE(
-			DATA_FIRMA_PROTEZIONE_CIVILE);
+		model.setDATA_FIRMA_PROTEZIONE_CIVILE(DATA_FIRMA_PROTEZIONE_CIVILE);
 	}
 
 	/**
@@ -1209,7 +1138,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public void setDATA_GENERAZIONE(Date DATA_GENERAZIONE) {
-		_datiSpecificiInvio.setDATA_GENERAZIONE(DATA_GENERAZIONE);
+		model.setDATA_GENERAZIONE(DATA_GENERAZIONE);
 	}
 
 	/**
@@ -1219,7 +1148,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public void setDATA_INIZIO_VALIDITA(Date DATA_INIZIO_VALIDITA) {
-		_datiSpecificiInvio.setDATA_INIZIO_VALIDITA(DATA_INIZIO_VALIDITA);
+		model.setDATA_INIZIO_VALIDITA(DATA_INIZIO_VALIDITA);
 	}
 
 	/**
@@ -1229,7 +1158,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public void setData_invio(Date data_invio) {
-		_datiSpecificiInvio.setData_invio(data_invio);
+		model.setData_invio(data_invio);
 	}
 
 	/**
@@ -1239,7 +1168,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public void setData_risposta(Date data_risposta) {
-		_datiSpecificiInvio.setData_risposta(data_risposta);
+		model.setData_risposta(data_risposta);
 	}
 
 	/**
@@ -1249,7 +1178,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public void setDATA_UNITA_DOCUMENTARIA(Date DATA_UNITA_DOCUMENTARIA) {
-		_datiSpecificiInvio.setDATA_UNITA_DOCUMENTARIA(DATA_UNITA_DOCUMENTARIA);
+		model.setDATA_UNITA_DOCUMENTARIA(DATA_UNITA_DOCUMENTARIA);
 	}
 
 	/**
@@ -1259,8 +1188,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public void setDENOMINAZIONE_APPLICATIVO(String DENOMINAZIONE_APPLICATIVO) {
-		_datiSpecificiInvio.setDENOMINAZIONE_APPLICATIVO(
-			DENOMINAZIONE_APPLICATIVO);
+		model.setDENOMINAZIONE_APPLICATIVO(DENOMINAZIONE_APPLICATIVO);
 	}
 
 	/**
@@ -1272,7 +1200,7 @@ public class DatiSpecificiInvioWrapper
 	public void setDENOMINAZIONE_SENSORE_RILEVAMENTO(
 		String DENOMINAZIONE_SENSORE_RILEVAMENTO) {
 
-		_datiSpecificiInvio.setDENOMINAZIONE_SENSORE_RILEVAMENTO(
+		model.setDENOMINAZIONE_SENSORE_RILEVAMENTO(
 			DENOMINAZIONE_SENSORE_RILEVAMENTO);
 	}
 
@@ -1283,24 +1211,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public void setESITO_INVIO(String ESITO_INVIO) {
-		_datiSpecificiInvio.setESITO_INVIO(ESITO_INVIO);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_datiSpecificiInvio.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_datiSpecificiInvio.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_datiSpecificiInvio.setExpandoBridgeAttributes(serviceContext);
+		model.setESITO_INVIO(ESITO_INVIO);
 	}
 
 	/**
@@ -1310,7 +1221,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public void setFORZA_ACCETTAZIONE(String FORZA_ACCETTAZIONE) {
-		_datiSpecificiInvio.setFORZA_ACCETTAZIONE(FORZA_ACCETTAZIONE);
+		model.setFORZA_ACCETTAZIONE(FORZA_ACCETTAZIONE);
 	}
 
 	/**
@@ -1320,7 +1231,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public void setFORZA_COLLEGAMENTO(String FORZA_COLLEGAMENTO) {
-		_datiSpecificiInvio.setFORZA_COLLEGAMENTO(FORZA_COLLEGAMENTO);
+		model.setFORZA_COLLEGAMENTO(FORZA_COLLEGAMENTO);
 	}
 
 	/**
@@ -1330,7 +1241,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public void setFORZA_CONSERVAZIONE(String FORZA_CONSERVAZIONE) {
-		_datiSpecificiInvio.setFORZA_CONSERVAZIONE(FORZA_CONSERVAZIONE);
+		model.setFORZA_CONSERVAZIONE(FORZA_CONSERVAZIONE);
 	}
 
 	/**
@@ -1340,7 +1251,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public void setGroupId(long groupId) {
-		_datiSpecificiInvio.setGroupId(groupId);
+		model.setGroupId(groupId);
 	}
 
 	/**
@@ -1350,7 +1261,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public void setID_DOCUMENTO_PRINCIPALE(long ID_DOCUMENTO_PRINCIPALE) {
-		_datiSpecificiInvio.setID_DOCUMENTO_PRINCIPALE(ID_DOCUMENTO_PRINCIPALE);
+		model.setID_DOCUMENTO_PRINCIPALE(ID_DOCUMENTO_PRINCIPALE);
 	}
 
 	/**
@@ -1360,7 +1271,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public void setID_INVIO(long ID_INVIO) {
-		_datiSpecificiInvio.setID_INVIO(ID_INVIO);
+		model.setID_INVIO(ID_INVIO);
 	}
 
 	/**
@@ -1372,8 +1283,7 @@ public class DatiSpecificiInvioWrapper
 	public void setIDENTIFICATIVO_DATO_SPECIFICO(
 		String IDENTIFICATIVO_DATO_SPECIFICO) {
 
-		_datiSpecificiInvio.setIDENTIFICATIVO_DATO_SPECIFICO(
-			IDENTIFICATIVO_DATO_SPECIFICO);
+		model.setIDENTIFICATIVO_DATO_SPECIFICO(IDENTIFICATIVO_DATO_SPECIFICO);
 	}
 
 	/**
@@ -1385,8 +1295,7 @@ public class DatiSpecificiInvioWrapper
 	public void setINVIO_RESPONSABILE_TERRITORIO(
 		String INVIO_RESPONSABILE_TERRITORIO) {
 
-		_datiSpecificiInvio.setINVIO_RESPONSABILE_TERRITORIO(
-			INVIO_RESPONSABILE_TERRITORIO);
+		model.setINVIO_RESPONSABILE_TERRITORIO(INVIO_RESPONSABILE_TERRITORIO);
 	}
 
 	/**
@@ -1396,12 +1305,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public void setMESG_ERRORE(String MESG_ERRORE) {
-		_datiSpecificiInvio.setMESG_ERRORE(MESG_ERRORE);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_datiSpecificiInvio.setNew(n);
+		model.setMESG_ERRORE(MESG_ERRORE);
 	}
 
 	/**
@@ -1411,7 +1315,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public void setNUM_NOTIFICHE_RICEZIONE(int NUM_NOTIFICHE_RICEZIONE) {
-		_datiSpecificiInvio.setNUM_NOTIFICHE_RICEZIONE(NUM_NOTIFICHE_RICEZIONE);
+		model.setNUM_NOTIFICHE_RICEZIONE(NUM_NOTIFICHE_RICEZIONE);
 	}
 
 	/**
@@ -1421,7 +1325,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public void setNUM_SMS_GENERATI(int NUM_SMS_GENERATI) {
-		_datiSpecificiInvio.setNUM_SMS_GENERATI(NUM_SMS_GENERATI);
+		model.setNUM_SMS_GENERATI(NUM_SMS_GENERATI);
 	}
 
 	/**
@@ -1431,7 +1335,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public void setNUM_SMS_INVIATI(int NUM_SMS_INVIATI) {
-		_datiSpecificiInvio.setNUM_SMS_INVIATI(NUM_SMS_INVIATI);
+		model.setNUM_SMS_INVIATI(NUM_SMS_INVIATI);
 	}
 
 	/**
@@ -1441,7 +1345,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public void setOGGETTO_MAIL(String OGGETTO_MAIL) {
-		_datiSpecificiInvio.setOGGETTO_MAIL(OGGETTO_MAIL);
+		model.setOGGETTO_MAIL(OGGETTO_MAIL);
 	}
 
 	/**
@@ -1453,8 +1357,7 @@ public class DatiSpecificiInvioWrapper
 	public void setOGGETTO_UNITA_DOCUMENTARIA(
 		String OGGETTO_UNITA_DOCUMENTARIA) {
 
-		_datiSpecificiInvio.setOGGETTO_UNITA_DOCUMENTARIA(
-			OGGETTO_UNITA_DOCUMENTARIA);
+		model.setOGGETTO_UNITA_DOCUMENTARIA(OGGETTO_UNITA_DOCUMENTARIA);
 	}
 
 	/**
@@ -1464,12 +1367,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public void setPrimaryKey(long primaryKey) {
-		_datiSpecificiInvio.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_datiSpecificiInvio.setPrimaryKeyObj(primaryKeyObj);
+		model.setPrimaryKey(primaryKey);
 	}
 
 	/**
@@ -1481,8 +1379,7 @@ public class DatiSpecificiInvioWrapper
 	public void setREGOLA_ALLARME_DESCRIZIONE(
 		String REGOLA_ALLARME_DESCRIZIONE) {
 
-		_datiSpecificiInvio.setREGOLA_ALLARME_DESCRIZIONE(
-			REGOLA_ALLARME_DESCRIZIONE);
+		model.setREGOLA_ALLARME_DESCRIZIONE(REGOLA_ALLARME_DESCRIZIONE);
 	}
 
 	/**
@@ -1492,7 +1389,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public void setREGOLA_ALLARME_ID(String REGOLA_ALLARME_ID) {
-		_datiSpecificiInvio.setREGOLA_ALLARME_ID(REGOLA_ALLARME_ID);
+		model.setREGOLA_ALLARME_ID(REGOLA_ALLARME_ID);
 	}
 
 	/**
@@ -1502,7 +1399,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public void setREGOLA_ALLARME_NOME(String REGOLA_ALLARME_NOME) {
-		_datiSpecificiInvio.setREGOLA_ALLARME_NOME(REGOLA_ALLARME_NOME);
+		model.setREGOLA_ALLARME_NOME(REGOLA_ALLARME_NOME);
 	}
 
 	/**
@@ -1512,7 +1409,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public void setTESTO_MAIL(String TESTO_MAIL) {
-		_datiSpecificiInvio.setTESTO_MAIL(TESTO_MAIL);
+		model.setTESTO_MAIL(TESTO_MAIL);
 	}
 
 	/**
@@ -1522,7 +1419,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public void setTIPO_CONSERVAZIONE(String TIPO_CONSERVAZIONE) {
-		_datiSpecificiInvio.setTIPO_CONSERVAZIONE(TIPO_CONSERVAZIONE);
+		model.setTIPO_CONSERVAZIONE(TIPO_CONSERVAZIONE);
 	}
 
 	/**
@@ -1532,7 +1429,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public void setTIPO_DOCUMENTO(String TIPO_DOCUMENTO) {
-		_datiSpecificiInvio.setTIPO_DOCUMENTO(TIPO_DOCUMENTO);
+		model.setTIPO_DOCUMENTO(TIPO_DOCUMENTO);
 	}
 
 	/**
@@ -1542,7 +1439,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public void setTIPO_STRUTTURA(String TIPO_STRUTTURA) {
-		_datiSpecificiInvio.setTIPO_STRUTTURA(TIPO_STRUTTURA);
+		model.setTIPO_STRUTTURA(TIPO_STRUTTURA);
 	}
 
 	/**
@@ -1554,8 +1451,7 @@ public class DatiSpecificiInvioWrapper
 	public void setTIPOLOGIA_UNITA_DOCUMENTARIA(
 		String TIPOLOGIA_UNITA_DOCUMENTARIA) {
 
-		_datiSpecificiInvio.setTIPOLOGIA_UNITA_DOCUMENTARIA(
-			TIPOLOGIA_UNITA_DOCUMENTARIA);
+		model.setTIPOLOGIA_UNITA_DOCUMENTARIA(TIPOLOGIA_UNITA_DOCUMENTARIA);
 	}
 
 	/**
@@ -1565,7 +1461,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public void setUserId(long userId) {
-		_datiSpecificiInvio.setUserId(userId);
+		model.setUserId(userId);
 	}
 
 	/**
@@ -1575,7 +1471,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public void setUserUuid(String userUuid) {
-		_datiSpecificiInvio.setUserUuid(userUuid);
+		model.setUserUuid(userUuid);
 	}
 
 	/**
@@ -1585,7 +1481,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public void setVERSATORE_ENTE(String VERSATORE_ENTE) {
-		_datiSpecificiInvio.setVERSATORE_ENTE(VERSATORE_ENTE);
+		model.setVERSATORE_ENTE(VERSATORE_ENTE);
 	}
 
 	/**
@@ -1595,7 +1491,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public void setVERSATORE_STRUTTURA(String VERSATORE_STRUTTURA) {
-		_datiSpecificiInvio.setVERSATORE_STRUTTURA(VERSATORE_STRUTTURA);
+		model.setVERSATORE_STRUTTURA(VERSATORE_STRUTTURA);
 	}
 
 	/**
@@ -1605,7 +1501,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public void setVERSATORE_USER_ID(String VERSATORE_USER_ID) {
-		_datiSpecificiInvio.setVERSATORE_USER_ID(VERSATORE_USER_ID);
+		model.setVERSATORE_USER_ID(VERSATORE_USER_ID);
 	}
 
 	/**
@@ -1615,7 +1511,7 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public void setVERSIONE(double VERSIONE) {
-		_datiSpecificiInvio.setVERSIONE(VERSIONE);
+		model.setVERSIONE(VERSIONE);
 	}
 
 	/**
@@ -1625,81 +1521,19 @@ public class DatiSpecificiInvioWrapper
 	 */
 	@Override
 	public void setVERSIONE_DATI_SPECIFICI(double VERSIONE_DATI_SPECIFICI) {
-		_datiSpecificiInvio.setVERSIONE_DATI_SPECIFICI(VERSIONE_DATI_SPECIFICI);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<it.eng.parer.model.DatiSpecificiInvio> toCacheModel() {
-
-		return _datiSpecificiInvio.toCacheModel();
-	}
-
-	@Override
-	public it.eng.parer.model.DatiSpecificiInvio toEscapedModel() {
-		return new DatiSpecificiInvioWrapper(
-			_datiSpecificiInvio.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _datiSpecificiInvio.toString();
-	}
-
-	@Override
-	public it.eng.parer.model.DatiSpecificiInvio toUnescapedModel() {
-		return new DatiSpecificiInvioWrapper(
-			_datiSpecificiInvio.toUnescapedModel());
+		model.setVERSIONE_DATI_SPECIFICI(VERSIONE_DATI_SPECIFICI);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _datiSpecificiInvio.toXmlString();
+		return model.toXmlString();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
+	protected DatiSpecificiInvioWrapper wrap(
+		DatiSpecificiInvio datiSpecificiInvio) {
 
-		if (!(obj instanceof DatiSpecificiInvioWrapper)) {
-			return false;
-		}
-
-		DatiSpecificiInvioWrapper datiSpecificiInvioWrapper =
-			(DatiSpecificiInvioWrapper)obj;
-
-		if (Objects.equals(
-				_datiSpecificiInvio,
-				datiSpecificiInvioWrapper._datiSpecificiInvio)) {
-
-			return true;
-		}
-
-		return false;
+		return new DatiSpecificiInvioWrapper(datiSpecificiInvio);
 	}
-
-	@Override
-	public DatiSpecificiInvio getWrappedModel() {
-		return _datiSpecificiInvio;
-	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _datiSpecificiInvio.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _datiSpecificiInvio.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_datiSpecificiInvio.resetOriginalValues();
-	}
-
-	private final DatiSpecificiInvio _datiSpecificiInvio;
 
 }

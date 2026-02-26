@@ -1,32 +1,17 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerter.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.exportimport.kernel.lar.StagedModelType;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -37,22 +22,12 @@ import java.util.Objects;
  * @see AllertaValanghe
  * @generated
  */
-@ProviderType
 public class AllertaValangheWrapper
+	extends BaseModelWrapper<AllertaValanghe>
 	implements AllertaValanghe, ModelWrapper<AllertaValanghe> {
 
 	public AllertaValangheWrapper(AllertaValanghe allertaValanghe) {
-		_allertaValanghe = allertaValanghe;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return AllertaValanghe.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return AllertaValanghe.class.getName();
+		super(allertaValanghe);
 	}
 
 	@Override
@@ -271,16 +246,8 @@ public class AllertaValangheWrapper
 	}
 
 	@Override
-	public Object clone() {
-		return new AllertaValangheWrapper(
-			(AllertaValanghe)_allertaValanghe.clone());
-	}
-
-	@Override
-	public int compareTo(
-		it.eng.allerter.model.AllertaValanghe allertaValanghe) {
-
-		return _allertaValanghe.compareTo(allertaValanghe);
+	public AllertaValanghe cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -290,14 +257,12 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public long getAllertaValangheId() {
-		return _allertaValanghe.getAllertaValangheId();
+		return model.getAllertaValangheId();
 	}
 
 	@Override
-	public java.util.List<it.eng.allerter.model.AllertaValangheStato>
-		getAllertaValangheStato() {
-
-		return _allertaValanghe.getAllertaValangheStato();
+	public java.util.List<AllertaValangheStato> getAllertaValangheStato() {
+		return model.getAllertaValangheStato();
 	}
 
 	/**
@@ -307,7 +272,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public int getAnno() {
-		return _allertaValanghe.getAnno();
+		return model.getAnno();
 	}
 
 	/**
@@ -317,7 +282,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public long getCompanyId() {
-		return _allertaValanghe.getCompanyId();
+		return model.getCompanyId();
 	}
 
 	/**
@@ -327,7 +292,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public Date getCreateDate() {
-		return _allertaValanghe.getCreateDate();
+		return model.getCreateDate();
 	}
 
 	/**
@@ -337,7 +302,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public String getCreatorName() {
-		return _allertaValanghe.getCreatorName();
+		return model.getCreatorName();
 	}
 
 	/**
@@ -347,7 +312,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public Date getDataEmissione() {
-		return _allertaValanghe.getDataEmissione();
+		return model.getDataEmissione();
 	}
 
 	/**
@@ -357,7 +322,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public Date getDataFine() {
-		return _allertaValanghe.getDataFine();
+		return model.getDataFine();
 	}
 
 	/**
@@ -367,7 +332,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public Date getDataFirmaArpa() {
-		return _allertaValanghe.getDataFirmaArpa();
+		return model.getDataFirmaArpa();
 	}
 
 	/**
@@ -377,7 +342,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public Date getDataFirmaProt() {
-		return _allertaValanghe.getDataFirmaProt();
+		return model.getDataFirmaProt();
 	}
 
 	/**
@@ -387,7 +352,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public Date getDataInizio() {
-		return _allertaValanghe.getDataInizio();
+		return model.getDataInizio();
 	}
 
 	/**
@@ -397,24 +362,19 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public String getDescrizioneFenomeni() {
-		return _allertaValanghe.getDescrizioneFenomeni();
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _allertaValanghe.getExpandoBridge();
+		return model.getDescrizioneFenomeni();
 	}
 
 	@Override
 	public com.liferay.portal.kernel.repository.model.FileEntry getFile(
 		String folderName, String fileName) {
 
-		return _allertaValanghe.getFile(folderName, fileName);
+		return model.getFile(folderName, fileName);
 	}
 
 	@Override
 	public String getFileLinkRelative(String folderName, String fileName) {
-		return _allertaValanghe.getFileLinkRelative(folderName, fileName);
+		return model.getFileLinkRelative(folderName, fileName);
 	}
 
 	/**
@@ -424,7 +384,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public long getGroupId() {
-		return _allertaValanghe.getGroupId();
+		return model.getGroupId();
 	}
 
 	/**
@@ -434,7 +394,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public String getHash() {
-		return _allertaValanghe.getHash();
+		return model.getHash();
 	}
 
 	/**
@@ -444,7 +404,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public String getLink() {
-		return _allertaValanghe.getLink();
+		return model.getLink();
 	}
 
 	/**
@@ -454,7 +414,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public Date getModifiedDate() {
-		return _allertaValanghe.getModifiedDate();
+		return model.getModifiedDate();
 	}
 
 	/**
@@ -464,7 +424,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public String getNote() {
-		return _allertaValanghe.getNote();
+		return model.getNote();
 	}
 
 	/**
@@ -474,7 +434,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public String getNumero() {
-		return _allertaValanghe.getNumero();
+		return model.getNumero();
 	}
 
 	/**
@@ -484,7 +444,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public long getParentId() {
-		return _allertaValanghe.getParentId();
+		return model.getParentId();
 	}
 
 	/**
@@ -494,12 +454,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public long getPrimaryKey() {
-		return _allertaValanghe.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _allertaValanghe.getPrimaryKeyObj();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -509,12 +464,12 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public int getProgressivo() {
-		return _allertaValanghe.getProgressivo();
+		return model.getProgressivo();
 	}
 
 	@Override
 	public java.io.File getReportAsFile() {
-		return _allertaValanghe.getReportAsFile();
+		return model.getReportAsFile();
 	}
 
 	/**
@@ -524,7 +479,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public String getRiferimenti() {
-		return _allertaValanghe.getRiferimenti();
+		return model.getRiferimenti();
 	}
 
 	/**
@@ -534,7 +489,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public String getSintesi() {
-		return _allertaValanghe.getSintesi();
+		return model.getSintesi();
 	}
 
 	/**
@@ -544,7 +499,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public int getStato() {
-		return _allertaValanghe.getStato();
+		return model.getStato();
 	}
 
 	/**
@@ -554,7 +509,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public boolean getTipoAllerta() {
-		return _allertaValanghe.getTipoAllerta();
+		return model.getTipoAllerta();
 	}
 
 	/**
@@ -564,12 +519,12 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public String getTitolo() {
-		return _allertaValanghe.getTitolo();
+		return model.getTitolo();
 	}
 
 	@Override
 	public String getUrl() {
-		return _allertaValanghe.getUrl();
+		return model.getUrl();
 	}
 
 	/**
@@ -579,7 +534,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public long getUserId() {
-		return _allertaValanghe.getUserId();
+		return model.getUserId();
 	}
 
 	/**
@@ -589,7 +544,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public String getUserName() {
-		return _allertaValanghe.getUserName();
+		return model.getUserName();
 	}
 
 	/**
@@ -599,7 +554,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public String getUserUuid() {
-		return _allertaValanghe.getUserUuid();
+		return model.getUserUuid();
 	}
 
 	/**
@@ -609,7 +564,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public long getUtenteFirmaArpaId() {
-		return _allertaValanghe.getUtenteFirmaArpaId();
+		return model.getUtenteFirmaArpaId();
 	}
 
 	/**
@@ -619,7 +574,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public long getUtenteFirmaProtId() {
-		return _allertaValanghe.getUtenteFirmaProtId();
+		return model.getUtenteFirmaProtId();
 	}
 
 	/**
@@ -629,27 +584,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public String getUuid() {
-		return _allertaValanghe.getUuid();
-	}
-
-	@Override
-	public int hashCode() {
-		return _allertaValanghe.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _allertaValanghe.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _allertaValanghe.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _allertaValanghe.isNew();
+		return model.getUuid();
 	}
 
 	/**
@@ -659,12 +594,12 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public boolean isTipoAllerta() {
-		return _allertaValanghe.isTipoAllerta();
+		return model.isTipoAllerta();
 	}
 
 	@Override
 	public void persist() {
-		_allertaValanghe.persist();
+		model.persist();
 	}
 
 	/**
@@ -674,7 +609,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public void setAllertaValangheId(long allertaValangheId) {
-		_allertaValanghe.setAllertaValangheId(allertaValangheId);
+		model.setAllertaValangheId(allertaValangheId);
 	}
 
 	/**
@@ -684,12 +619,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public void setAnno(int anno) {
-		_allertaValanghe.setAnno(anno);
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_allertaValanghe.setCachedModel(cachedModel);
+		model.setAnno(anno);
 	}
 
 	/**
@@ -699,7 +629,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public void setCompanyId(long companyId) {
-		_allertaValanghe.setCompanyId(companyId);
+		model.setCompanyId(companyId);
 	}
 
 	/**
@@ -709,7 +639,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public void setCreateDate(Date createDate) {
-		_allertaValanghe.setCreateDate(createDate);
+		model.setCreateDate(createDate);
 	}
 
 	/**
@@ -719,7 +649,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public void setCreatorName(String creatorName) {
-		_allertaValanghe.setCreatorName(creatorName);
+		model.setCreatorName(creatorName);
 	}
 
 	/**
@@ -729,7 +659,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public void setDataEmissione(Date dataEmissione) {
-		_allertaValanghe.setDataEmissione(dataEmissione);
+		model.setDataEmissione(dataEmissione);
 	}
 
 	/**
@@ -739,7 +669,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public void setDataFine(Date dataFine) {
-		_allertaValanghe.setDataFine(dataFine);
+		model.setDataFine(dataFine);
 	}
 
 	/**
@@ -749,7 +679,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public void setDataFirmaArpa(Date dataFirmaArpa) {
-		_allertaValanghe.setDataFirmaArpa(dataFirmaArpa);
+		model.setDataFirmaArpa(dataFirmaArpa);
 	}
 
 	/**
@@ -759,7 +689,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public void setDataFirmaProt(Date dataFirmaProt) {
-		_allertaValanghe.setDataFirmaProt(dataFirmaProt);
+		model.setDataFirmaProt(dataFirmaProt);
 	}
 
 	/**
@@ -769,7 +699,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public void setDataInizio(Date dataInizio) {
-		_allertaValanghe.setDataInizio(dataInizio);
+		model.setDataInizio(dataInizio);
 	}
 
 	/**
@@ -779,24 +709,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public void setDescrizioneFenomeni(String descrizioneFenomeni) {
-		_allertaValanghe.setDescrizioneFenomeni(descrizioneFenomeni);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_allertaValanghe.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_allertaValanghe.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_allertaValanghe.setExpandoBridgeAttributes(serviceContext);
+		model.setDescrizioneFenomeni(descrizioneFenomeni);
 	}
 
 	/**
@@ -806,7 +719,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public void setGroupId(long groupId) {
-		_allertaValanghe.setGroupId(groupId);
+		model.setGroupId(groupId);
 	}
 
 	/**
@@ -816,7 +729,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public void setHash(String hash) {
-		_allertaValanghe.setHash(hash);
+		model.setHash(hash);
 	}
 
 	/**
@@ -826,7 +739,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public void setLink(String link) {
-		_allertaValanghe.setLink(link);
+		model.setLink(link);
 	}
 
 	/**
@@ -836,12 +749,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public void setModifiedDate(Date modifiedDate) {
-		_allertaValanghe.setModifiedDate(modifiedDate);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_allertaValanghe.setNew(n);
+		model.setModifiedDate(modifiedDate);
 	}
 
 	/**
@@ -851,7 +759,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public void setNote(String note) {
-		_allertaValanghe.setNote(note);
+		model.setNote(note);
 	}
 
 	/**
@@ -861,7 +769,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public void setNumero(String numero) {
-		_allertaValanghe.setNumero(numero);
+		model.setNumero(numero);
 	}
 
 	/**
@@ -871,7 +779,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public void setParentId(long parentId) {
-		_allertaValanghe.setParentId(parentId);
+		model.setParentId(parentId);
 	}
 
 	/**
@@ -881,12 +789,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public void setPrimaryKey(long primaryKey) {
-		_allertaValanghe.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_allertaValanghe.setPrimaryKeyObj(primaryKeyObj);
+		model.setPrimaryKey(primaryKey);
 	}
 
 	/**
@@ -896,7 +799,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public void setProgressivo(int progressivo) {
-		_allertaValanghe.setProgressivo(progressivo);
+		model.setProgressivo(progressivo);
 	}
 
 	/**
@@ -906,7 +809,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public void setRiferimenti(String riferimenti) {
-		_allertaValanghe.setRiferimenti(riferimenti);
+		model.setRiferimenti(riferimenti);
 	}
 
 	/**
@@ -916,7 +819,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public void setSintesi(String sintesi) {
-		_allertaValanghe.setSintesi(sintesi);
+		model.setSintesi(sintesi);
 	}
 
 	/**
@@ -926,7 +829,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public void setStato(int stato) {
-		_allertaValanghe.setStato(stato);
+		model.setStato(stato);
 	}
 
 	/**
@@ -936,7 +839,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public void setTipoAllerta(boolean tipoAllerta) {
-		_allertaValanghe.setTipoAllerta(tipoAllerta);
+		model.setTipoAllerta(tipoAllerta);
 	}
 
 	/**
@@ -946,7 +849,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public void setTitolo(String titolo) {
-		_allertaValanghe.setTitolo(titolo);
+		model.setTitolo(titolo);
 	}
 
 	/**
@@ -956,7 +859,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public void setUserId(long userId) {
-		_allertaValanghe.setUserId(userId);
+		model.setUserId(userId);
 	}
 
 	/**
@@ -966,7 +869,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public void setUserName(String userName) {
-		_allertaValanghe.setUserName(userName);
+		model.setUserName(userName);
 	}
 
 	/**
@@ -976,7 +879,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public void setUserUuid(String userUuid) {
-		_allertaValanghe.setUserUuid(userUuid);
+		model.setUserUuid(userUuid);
 	}
 
 	/**
@@ -986,7 +889,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public void setUtenteFirmaArpaId(long utenteFirmaArpaId) {
-		_allertaValanghe.setUtenteFirmaArpaId(utenteFirmaArpaId);
+		model.setUtenteFirmaArpaId(utenteFirmaArpaId);
 	}
 
 	/**
@@ -996,7 +899,7 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public void setUtenteFirmaProtId(long utenteFirmaProtId) {
-		_allertaValanghe.setUtenteFirmaProtId(utenteFirmaProtId);
+		model.setUtenteFirmaProtId(utenteFirmaProtId);
 	}
 
 	/**
@@ -1006,83 +909,22 @@ public class AllertaValangheWrapper
 	 */
 	@Override
 	public void setUuid(String uuid) {
-		_allertaValanghe.setUuid(uuid);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<it.eng.allerter.model.AllertaValanghe> toCacheModel() {
-
-		return _allertaValanghe.toCacheModel();
-	}
-
-	@Override
-	public it.eng.allerter.model.AllertaValanghe toEscapedModel() {
-		return new AllertaValangheWrapper(_allertaValanghe.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _allertaValanghe.toString();
-	}
-
-	@Override
-	public it.eng.allerter.model.AllertaValanghe toUnescapedModel() {
-		return new AllertaValangheWrapper(_allertaValanghe.toUnescapedModel());
+		model.setUuid(uuid);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _allertaValanghe.toXmlString();
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-
-		if (!(obj instanceof AllertaValangheWrapper)) {
-			return false;
-		}
-
-		AllertaValangheWrapper allertaValangheWrapper =
-			(AllertaValangheWrapper)obj;
-
-		if (Objects.equals(
-				_allertaValanghe, allertaValangheWrapper._allertaValanghe)) {
-
-			return true;
-		}
-
-		return false;
+		return model.toXmlString();
 	}
 
 	@Override
 	public StagedModelType getStagedModelType() {
-		return _allertaValanghe.getStagedModelType();
+		return model.getStagedModelType();
 	}
 
 	@Override
-	public AllertaValanghe getWrappedModel() {
-		return _allertaValanghe;
+	protected AllertaValangheWrapper wrap(AllertaValanghe allertaValanghe) {
+		return new AllertaValangheWrapper(allertaValanghe);
 	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _allertaValanghe.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _allertaValanghe.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_allertaValanghe.resetOriginalValues();
-	}
-
-	private final AllertaValanghe _allertaValanghe;
 
 }

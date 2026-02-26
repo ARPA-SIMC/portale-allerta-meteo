@@ -1,32 +1,17 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerter.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.exportimport.kernel.lar.StagedModelType;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -37,21 +22,12 @@ import java.util.Objects;
  * @see Allerta
  * @generated
  */
-@ProviderType
-public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
+public class AllertaWrapper
+	extends BaseModelWrapper<Allerta>
+	implements Allerta, ModelWrapper<Allerta> {
 
 	public AllertaWrapper(Allerta allerta) {
-		_allerta = allerta;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return Allerta.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return Allerta.class.getName();
+		super(allerta);
 	}
 
 	@Override
@@ -84,8 +60,10 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 		attributes.put("dataFirmaProt", getDataFirmaProt());
 		attributes.put("parentId", getParentId());
 		attributes.put("sintesi", getSintesi());
+		attributes.put("sintesiEng", getSintesiEng());
 		attributes.put("link", getLink());
 		attributes.put("titolo", getTitolo());
+		attributes.put("titoloEng", getTitoloEng());
 		attributes.put("tipoAllerta", isTipoAllerta());
 		attributes.put("hash", getHash());
 		attributes.put("sintesiBriefing", getSintesiBriefing());
@@ -251,6 +229,12 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 			setSintesi(sintesi);
 		}
 
+		String sintesiEng = (String)attributes.get("sintesiEng");
+
+		if (sintesiEng != null) {
+			setSintesiEng(sintesiEng);
+		}
+
 		String link = (String)attributes.get("link");
 
 		if (link != null) {
@@ -261,6 +245,12 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 
 		if (titolo != null) {
 			setTitolo(titolo);
+		}
+
+		String titoloEng = (String)attributes.get("titoloEng");
+
+		if (titoloEng != null) {
+			setTitoloEng(titoloEng);
 		}
 
 		Boolean tipoAllerta = (Boolean)attributes.get("tipoAllerta");
@@ -283,13 +273,8 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	}
 
 	@Override
-	public Object clone() {
-		return new AllertaWrapper((Allerta)_allerta.clone());
-	}
-
-	@Override
-	public int compareTo(it.eng.allerter.model.Allerta allerta) {
-		return _allerta.compareTo(allerta);
+	public Allerta cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -299,14 +284,12 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public long getAllertaId() {
-		return _allerta.getAllertaId();
+		return model.getAllertaId();
 	}
 
 	@Override
-	public java.util.List<it.eng.allerter.model.AllertaStato>
-		getAllertaStato() {
-
-		return _allerta.getAllertaStato();
+	public java.util.List<AllertaStato> getAllertaStato() {
+		return model.getAllertaStato();
 	}
 
 	/**
@@ -316,7 +299,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public int getAnno() {
-		return _allerta.getAnno();
+		return model.getAnno();
 	}
 
 	/**
@@ -326,7 +309,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public long getCompanyId() {
-		return _allerta.getCompanyId();
+		return model.getCompanyId();
 	}
 
 	/**
@@ -336,7 +319,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public Date getCreateDate() {
-		return _allerta.getCreateDate();
+		return model.getCreateDate();
 	}
 
 	/**
@@ -346,7 +329,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public String getCreatorName() {
-		return _allerta.getCreatorName();
+		return model.getCreatorName();
 	}
 
 	/**
@@ -356,7 +339,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public Date getDataEmissione() {
-		return _allerta.getDataEmissione();
+		return model.getDataEmissione();
 	}
 
 	/**
@@ -366,7 +349,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public Date getDataFine() {
-		return _allerta.getDataFine();
+		return model.getDataFine();
 	}
 
 	/**
@@ -376,7 +359,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public Date getDataFirmaArpa() {
-		return _allerta.getDataFirmaArpa();
+		return model.getDataFirmaArpa();
 	}
 
 	/**
@@ -386,7 +369,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public Date getDataFirmaProt() {
-		return _allerta.getDataFirmaProt();
+		return model.getDataFirmaProt();
 	}
 
 	/**
@@ -396,7 +379,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public Date getDataInizio() {
-		return _allerta.getDataInizio();
+		return model.getDataInizio();
 	}
 
 	/**
@@ -406,24 +389,19 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public String getDescrizioneMeteo() {
-		return _allerta.getDescrizioneMeteo();
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _allerta.getExpandoBridge();
+		return model.getDescrizioneMeteo();
 	}
 
 	@Override
 	public com.liferay.portal.kernel.repository.model.FileEntry getFile(
 		String folderName, String fileName) {
 
-		return _allerta.getFile(folderName, fileName);
+		return model.getFile(folderName, fileName);
 	}
 
 	@Override
 	public String getFileLinkRelative(String folderName, String fileName) {
-		return _allerta.getFileLinkRelative(folderName, fileName);
+		return model.getFileLinkRelative(folderName, fileName);
 	}
 
 	/**
@@ -433,7 +411,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public long getGroupId() {
-		return _allerta.getGroupId();
+		return model.getGroupId();
 	}
 
 	/**
@@ -443,7 +421,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public String getHash() {
-		return _allerta.getHash();
+		return model.getHash();
 	}
 
 	/**
@@ -453,7 +431,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public String getLink() {
-		return _allerta.getLink();
+		return model.getLink();
 	}
 
 	/**
@@ -463,7 +441,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public Date getModifiedDate() {
-		return _allerta.getModifiedDate();
+		return model.getModifiedDate();
 	}
 
 	/**
@@ -473,7 +451,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public String getNote() {
-		return _allerta.getNote();
+		return model.getNote();
 	}
 
 	/**
@@ -483,7 +461,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public String getNumero() {
-		return _allerta.getNumero();
+		return model.getNumero();
 	}
 
 	/**
@@ -493,7 +471,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public long getParentId() {
-		return _allerta.getParentId();
+		return model.getParentId();
 	}
 
 	/**
@@ -503,12 +481,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public long getPrimaryKey() {
-		return _allerta.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _allerta.getPrimaryKeyObj();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -518,12 +491,12 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public int getProgressivo() {
-		return _allerta.getProgressivo();
+		return model.getProgressivo();
 	}
 
 	@Override
 	public java.io.File getReportAsFile() {
-		return _allerta.getReportAsFile();
+		return model.getReportAsFile();
 	}
 
 	/**
@@ -533,7 +506,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public String getRiferimenti() {
-		return _allerta.getRiferimenti();
+		return model.getRiferimenti();
 	}
 
 	/**
@@ -543,7 +516,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public String getSintesi() {
-		return _allerta.getSintesi();
+		return model.getSintesi();
 	}
 
 	/**
@@ -553,7 +526,17 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public String getSintesiBriefing() {
-		return _allerta.getSintesiBriefing();
+		return model.getSintesiBriefing();
+	}
+
+	/**
+	 * Returns the sintesi eng of this allerta.
+	 *
+	 * @return the sintesi eng of this allerta
+	 */
+	@Override
+	public String getSintesiEng() {
+		return model.getSintesiEng();
 	}
 
 	/**
@@ -563,7 +546,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public int getStato() {
-		return _allerta.getStato();
+		return model.getStato();
 	}
 
 	/**
@@ -573,7 +556,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public int getTendenza() {
-		return _allerta.getTendenza();
+		return model.getTendenza();
 	}
 
 	/**
@@ -583,7 +566,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public boolean getTipoAllerta() {
-		return _allerta.getTipoAllerta();
+		return model.getTipoAllerta();
 	}
 
 	/**
@@ -593,12 +576,22 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public String getTitolo() {
-		return _allerta.getTitolo();
+		return model.getTitolo();
+	}
+
+	/**
+	 * Returns the titolo eng of this allerta.
+	 *
+	 * @return the titolo eng of this allerta
+	 */
+	@Override
+	public String getTitoloEng() {
+		return model.getTitoloEng();
 	}
 
 	@Override
 	public String getUrl() {
-		return _allerta.getUrl();
+		return model.getUrl();
 	}
 
 	/**
@@ -608,7 +601,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public long getUserId() {
-		return _allerta.getUserId();
+		return model.getUserId();
 	}
 
 	/**
@@ -618,7 +611,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public String getUserName() {
-		return _allerta.getUserName();
+		return model.getUserName();
 	}
 
 	/**
@@ -628,7 +621,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public String getUserUuid() {
-		return _allerta.getUserUuid();
+		return model.getUserUuid();
 	}
 
 	/**
@@ -638,7 +631,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public long getUtenteFirmaArpaId() {
-		return _allerta.getUtenteFirmaArpaId();
+		return model.getUtenteFirmaArpaId();
 	}
 
 	/**
@@ -648,7 +641,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public long getUtenteFirmaProtId() {
-		return _allerta.getUtenteFirmaProtId();
+		return model.getUtenteFirmaProtId();
 	}
 
 	/**
@@ -658,27 +651,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public String getUuid() {
-		return _allerta.getUuid();
-	}
-
-	@Override
-	public int hashCode() {
-		return _allerta.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _allerta.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _allerta.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _allerta.isNew();
+		return model.getUuid();
 	}
 
 	/**
@@ -688,12 +661,12 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public boolean isTipoAllerta() {
-		return _allerta.isTipoAllerta();
+		return model.isTipoAllerta();
 	}
 
 	@Override
 	public void persist() {
-		_allerta.persist();
+		model.persist();
 	}
 
 	/**
@@ -703,7 +676,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public void setAllertaId(long allertaId) {
-		_allerta.setAllertaId(allertaId);
+		model.setAllertaId(allertaId);
 	}
 
 	/**
@@ -713,12 +686,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public void setAnno(int anno) {
-		_allerta.setAnno(anno);
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_allerta.setCachedModel(cachedModel);
+		model.setAnno(anno);
 	}
 
 	/**
@@ -728,7 +696,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public void setCompanyId(long companyId) {
-		_allerta.setCompanyId(companyId);
+		model.setCompanyId(companyId);
 	}
 
 	/**
@@ -738,7 +706,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public void setCreateDate(Date createDate) {
-		_allerta.setCreateDate(createDate);
+		model.setCreateDate(createDate);
 	}
 
 	/**
@@ -748,7 +716,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public void setCreatorName(String creatorName) {
-		_allerta.setCreatorName(creatorName);
+		model.setCreatorName(creatorName);
 	}
 
 	/**
@@ -758,7 +726,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public void setDataEmissione(Date dataEmissione) {
-		_allerta.setDataEmissione(dataEmissione);
+		model.setDataEmissione(dataEmissione);
 	}
 
 	/**
@@ -768,7 +736,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public void setDataFine(Date dataFine) {
-		_allerta.setDataFine(dataFine);
+		model.setDataFine(dataFine);
 	}
 
 	/**
@@ -778,7 +746,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public void setDataFirmaArpa(Date dataFirmaArpa) {
-		_allerta.setDataFirmaArpa(dataFirmaArpa);
+		model.setDataFirmaArpa(dataFirmaArpa);
 	}
 
 	/**
@@ -788,7 +756,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public void setDataFirmaProt(Date dataFirmaProt) {
-		_allerta.setDataFirmaProt(dataFirmaProt);
+		model.setDataFirmaProt(dataFirmaProt);
 	}
 
 	/**
@@ -798,7 +766,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public void setDataInizio(Date dataInizio) {
-		_allerta.setDataInizio(dataInizio);
+		model.setDataInizio(dataInizio);
 	}
 
 	/**
@@ -808,24 +776,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public void setDescrizioneMeteo(String descrizioneMeteo) {
-		_allerta.setDescrizioneMeteo(descrizioneMeteo);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_allerta.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_allerta.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_allerta.setExpandoBridgeAttributes(serviceContext);
+		model.setDescrizioneMeteo(descrizioneMeteo);
 	}
 
 	/**
@@ -835,7 +786,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public void setGroupId(long groupId) {
-		_allerta.setGroupId(groupId);
+		model.setGroupId(groupId);
 	}
 
 	/**
@@ -845,7 +796,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public void setHash(String hash) {
-		_allerta.setHash(hash);
+		model.setHash(hash);
 	}
 
 	/**
@@ -855,7 +806,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public void setLink(String link) {
-		_allerta.setLink(link);
+		model.setLink(link);
 	}
 
 	/**
@@ -865,12 +816,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public void setModifiedDate(Date modifiedDate) {
-		_allerta.setModifiedDate(modifiedDate);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_allerta.setNew(n);
+		model.setModifiedDate(modifiedDate);
 	}
 
 	/**
@@ -880,7 +826,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public void setNote(String note) {
-		_allerta.setNote(note);
+		model.setNote(note);
 	}
 
 	/**
@@ -890,7 +836,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public void setNumero(String numero) {
-		_allerta.setNumero(numero);
+		model.setNumero(numero);
 	}
 
 	/**
@@ -900,7 +846,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public void setParentId(long parentId) {
-		_allerta.setParentId(parentId);
+		model.setParentId(parentId);
 	}
 
 	/**
@@ -910,12 +856,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public void setPrimaryKey(long primaryKey) {
-		_allerta.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_allerta.setPrimaryKeyObj(primaryKeyObj);
+		model.setPrimaryKey(primaryKey);
 	}
 
 	/**
@@ -925,7 +866,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public void setProgressivo(int progressivo) {
-		_allerta.setProgressivo(progressivo);
+		model.setProgressivo(progressivo);
 	}
 
 	/**
@@ -935,7 +876,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public void setRiferimenti(String riferimenti) {
-		_allerta.setRiferimenti(riferimenti);
+		model.setRiferimenti(riferimenti);
 	}
 
 	/**
@@ -945,7 +886,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public void setSintesi(String sintesi) {
-		_allerta.setSintesi(sintesi);
+		model.setSintesi(sintesi);
 	}
 
 	/**
@@ -955,7 +896,17 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public void setSintesiBriefing(String sintesiBriefing) {
-		_allerta.setSintesiBriefing(sintesiBriefing);
+		model.setSintesiBriefing(sintesiBriefing);
+	}
+
+	/**
+	 * Sets the sintesi eng of this allerta.
+	 *
+	 * @param sintesiEng the sintesi eng of this allerta
+	 */
+	@Override
+	public void setSintesiEng(String sintesiEng) {
+		model.setSintesiEng(sintesiEng);
 	}
 
 	/**
@@ -965,7 +916,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public void setStato(int stato) {
-		_allerta.setStato(stato);
+		model.setStato(stato);
 	}
 
 	/**
@@ -975,7 +926,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public void setTendenza(int tendenza) {
-		_allerta.setTendenza(tendenza);
+		model.setTendenza(tendenza);
 	}
 
 	/**
@@ -985,7 +936,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public void setTipoAllerta(boolean tipoAllerta) {
-		_allerta.setTipoAllerta(tipoAllerta);
+		model.setTipoAllerta(tipoAllerta);
 	}
 
 	/**
@@ -995,7 +946,17 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public void setTitolo(String titolo) {
-		_allerta.setTitolo(titolo);
+		model.setTitolo(titolo);
+	}
+
+	/**
+	 * Sets the titolo eng of this allerta.
+	 *
+	 * @param titoloEng the titolo eng of this allerta
+	 */
+	@Override
+	public void setTitoloEng(String titoloEng) {
+		model.setTitoloEng(titoloEng);
 	}
 
 	/**
@@ -1005,7 +966,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public void setUserId(long userId) {
-		_allerta.setUserId(userId);
+		model.setUserId(userId);
 	}
 
 	/**
@@ -1015,7 +976,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public void setUserName(String userName) {
-		_allerta.setUserName(userName);
+		model.setUserName(userName);
 	}
 
 	/**
@@ -1025,7 +986,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public void setUserUuid(String userUuid) {
-		_allerta.setUserUuid(userUuid);
+		model.setUserUuid(userUuid);
 	}
 
 	/**
@@ -1035,7 +996,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public void setUtenteFirmaArpaId(long utenteFirmaArpaId) {
-		_allerta.setUtenteFirmaArpaId(utenteFirmaArpaId);
+		model.setUtenteFirmaArpaId(utenteFirmaArpaId);
 	}
 
 	/**
@@ -1045,7 +1006,7 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public void setUtenteFirmaProtId(long utenteFirmaProtId) {
-		_allerta.setUtenteFirmaProtId(utenteFirmaProtId);
+		model.setUtenteFirmaProtId(utenteFirmaProtId);
 	}
 
 	/**
@@ -1055,80 +1016,22 @@ public class AllertaWrapper implements Allerta, ModelWrapper<Allerta> {
 	 */
 	@Override
 	public void setUuid(String uuid) {
-		_allerta.setUuid(uuid);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<it.eng.allerter.model.Allerta> toCacheModel() {
-
-		return _allerta.toCacheModel();
-	}
-
-	@Override
-	public it.eng.allerter.model.Allerta toEscapedModel() {
-		return new AllertaWrapper(_allerta.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _allerta.toString();
-	}
-
-	@Override
-	public it.eng.allerter.model.Allerta toUnescapedModel() {
-		return new AllertaWrapper(_allerta.toUnescapedModel());
+		model.setUuid(uuid);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _allerta.toXmlString();
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-
-		if (!(obj instanceof AllertaWrapper)) {
-			return false;
-		}
-
-		AllertaWrapper allertaWrapper = (AllertaWrapper)obj;
-
-		if (Objects.equals(_allerta, allertaWrapper._allerta)) {
-			return true;
-		}
-
-		return false;
+		return model.toXmlString();
 	}
 
 	@Override
 	public StagedModelType getStagedModelType() {
-		return _allerta.getStagedModelType();
+		return model.getStagedModelType();
 	}
 
 	@Override
-	public Allerta getWrappedModel() {
-		return _allerta;
+	protected AllertaWrapper wrap(Allerta allerta) {
+		return new AllertaWrapper(allerta);
 	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _allerta.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _allerta.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_allerta.resetOriginalValues();
-	}
-
-	private final Allerta _allerta;
 
 }

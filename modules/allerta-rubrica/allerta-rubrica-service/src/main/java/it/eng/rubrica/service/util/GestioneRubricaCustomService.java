@@ -175,10 +175,21 @@ public class GestioneRubricaCustomService implements IRubricaLogConstants, IRubr
 	public static Map<Long,String> getSitiUtente(Long userId) {
 		Map<Long,String> m = new HashMap<Long, String>();
 		
-		if (RoleLocalServiceUtil.hasUserRole(userId, AMMINISTRATORE_RUBRICA)) m.put(20181L,"Rubrica Portale");
+		System.out.println("Getting sites for user "+userId);
+		
+		List<com.liferay.portal.kernel.model.Role> roles = RoleLocalServiceUtil.getUserRoles(userId);
+		
+		for (com.liferay.portal.kernel.model.Role r : roles) {
+			System.out.println("Ruolo "+r.getName());
+			if (r.getRoleId()==AMMINISTRATORE_RUBRICA) m.put(20181L,"Rubrica Portale");
+			if (r.getRoleId()==AMMINISTRATORE_PORTALE) m.put(20181L,"Rubrica Portale");
+			if (r.getRoleId()==ADMIN) m.put(20181L,"Rubrica Portale");
+		}
+		
+		/*if (RoleLocalServiceUtil.hasUserRole(userId, AMMINISTRATORE_RUBRICA)) m.put(20181L,"Rubrica Portale");
 		if (RoleLocalServiceUtil.hasUserRole(userId, AMMINISTRATORE_PORTALE)) m.put(20181L,"Rubrica Portale");
 		if (RoleLocalServiceUtil.hasUserRole(userId, ADMIN)) m.put(20181L,"Rubrica Portale");
-		
+		*/
 		List<Group> groups = GroupLocalServiceUtil.getUserGroups(userId);
 		for (Group g : groups) {
 			if (UserGroupRoleLocalServiceUtil.hasUserGroupRole(userId, g.getGroupId(), SINDACO)
@@ -294,7 +305,7 @@ public class GestioneRubricaCustomService implements IRubricaLogConstants, IRubr
 		rubricaNominativo.setFK_UTENTE_MODIFICA(userId);
 		rubricaNominativo.setMODIFICA_MINORE(false);
 
-		RubricaNominativoLocalServiceUtil.updateRubricaNominativo(rubricaNominativo);
+		RubricaNominativoLocalServiceUtil.addRubricaNominativo(rubricaNominativo);
 		
 		//Logga operazione in RUBRICA_LOG
 		aggiornaRubricaLog(TABELLA_RUBRICA_NOMINATIVO, String.valueOf(rubricaNominativo.getID_NOMINATIVO()),TIPO_OPERAZIONE_INSERT, rubricaNominativo.toString(), userId );
@@ -306,7 +317,7 @@ public class GestioneRubricaCustomService implements IRubricaLogConstants, IRubr
 			rgn.setFK_GRUPPO(nominative.getGroup());
 			rgn.setFK_RUOLO(nominative.getRole());
 			rgn.setSPECIFICA_RUOLO(nominative.getSpecificaRuolo());
-			RubricaGruppoNominativiLocalServiceUtil.updateRubricaGruppoNominativi(rgn);
+			RubricaGruppoNominativiLocalServiceUtil.addRubricaGruppoNominativi(rgn);
 		}
 		
 		//logger.info("inserisciNominativo4");
@@ -327,7 +338,7 @@ public class GestioneRubricaCustomService implements IRubricaLogConstants, IRubr
 				//setto anche quello di modifica uguale a quello di creazione in questa fase
 				rc.setFK_UTENTE_CREAZIONE(userId);
 				rc.setFK_UTENTE_MODIFICA(userId);
-				RubricaContattoLocalServiceUtil.updateRubricaContatto(rc);
+				RubricaContattoLocalServiceUtil.addRubricaContatto(rc);
 			}
 			
 		}
@@ -348,7 +359,7 @@ public class GestioneRubricaCustomService implements IRubricaLogConstants, IRubr
 				//setto anche quello di modifica uguale a quello di creazione in questa fase
 				rc.setFK_UTENTE_CREAZIONE(userId);
 				rc.setFK_UTENTE_MODIFICA(userId);
-				RubricaContattoLocalServiceUtil.updateRubricaContatto(rc);
+				RubricaContattoLocalServiceUtil.addRubricaContatto(rc);
 			}
 			
 		}
@@ -375,7 +386,7 @@ public class GestioneRubricaCustomService implements IRubricaLogConstants, IRubr
 			gruppoNominativo.setFK_RUOLO(gruppoJson.getRoleId());  
 			gruppoNominativo.setFK_GRUPPO(gruppoJson.getId());
 					
-			RubricaGruppoNominativiLocalServiceUtil.updateRubricaGruppoNominativi(gruppoNominativo);
+			RubricaGruppoNominativiLocalServiceUtil.addRubricaGruppoNominativi(gruppoNominativo);
 				
 			//Logga operazione in RUBRICA_LOG
 			aggiornaRubricaLog(TABELLA_RUBRICA_GRUPPO_NOMINATIVI, 
@@ -413,7 +424,7 @@ public class GestioneRubricaCustomService implements IRubricaLogConstants, IRubr
 				rubricaGruppoNominativi.setFK_RUOLO(gruppoNominativo.getRole());
 				rubricaGruppoNominativi.setSPECIFICA_RUOLO(gruppoNominativo.getSpecificaRuolo());
 							
-				RubricaGruppoNominativiLocalServiceUtil.updateRubricaGruppoNominativi(rubricaGruppoNominativi);
+				RubricaGruppoNominativiLocalServiceUtil.addRubricaGruppoNominativi(rubricaGruppoNominativi);
 									
 				//Logga operazione in RUBRICA_LOG
 				aggiornaRubricaLog(TABELLA_RUBRICA_GRUPPO_NOMINATIVI, 
@@ -440,6 +451,7 @@ public class GestioneRubricaCustomService implements IRubricaLogConstants, IRubr
 			
 			}
 			catch (Exception e ){
+				e.printStackTrace();
 				listaAssociationError.add(gruppoNominativo.getNominativeId());
 			}			
 			
@@ -545,7 +557,7 @@ public class GestioneRubricaCustomService implements IRubricaLogConstants, IRubr
 			rubricaContatto.setFK_UTENTE_MODIFICA(userId);
 			rubricaContatto.setMODIFICA_MINORE(false);
 				
-			RubricaContattoLocalServiceUtil.updateRubricaContatto(rubricaContatto);
+			RubricaContattoLocalServiceUtil.addRubricaContatto(rubricaContatto);
 						
 			//Logga operazione in RUBRICA_LOG
 			aggiornaRubricaLog(TABELLA_RUBRICA_CONTATTO, String.valueOf(rubricaContatto.getID_CONTATTO()),TIPO_OPERAZIONE_INSERT, rubricaContatto.toString(), userId );
@@ -692,7 +704,7 @@ public class GestioneRubricaCustomService implements IRubricaLogConstants, IRubr
 					//Aggiorna Log con i dati del contatto che sto per cancellare
 					aggiornaRubricaLog(TABELLA_RUBRICA_CONTATTO, String.valueOf(contatto.getID_CONTATTO()), TIPO_OPERAZIONE_DELETE, contatto.toString(), userId );
 					
-					//Setto la data fine validità corrente per cancellarlo logicamente
+					//Setto la data fine validitï¿½ corrente per cancellarlo logicamente
 					contatto.setDATA_FINE_VALIDITA(new Date());
 					
 					contatto.setDATA_MODIFICA(new Date());
@@ -739,7 +751,7 @@ public class GestioneRubricaCustomService implements IRubricaLogConstants, IRubr
 				gruppoNominativo.setFK_GRUPPO(gruppoAssociation.getId());
 				gruppoNominativo.setSPECIFICA_RUOLO(gruppoAssociation.getSpecificaRuolo());
 						
-				RubricaGruppoNominativiLocalServiceUtil.updateRubricaGruppoNominativi(gruppoNominativo);
+				RubricaGruppoNominativiLocalServiceUtil.addRubricaGruppoNominativi(gruppoNominativo);
 					
 				//Logga operazione in RUBRICA_LOG
 				aggiornaRubricaLog(TABELLA_RUBRICA_GRUPPO_NOMINATIVI, 
@@ -1113,7 +1125,7 @@ public class GestioneRubricaCustomService implements IRubricaLogConstants, IRubr
 				rubricaContatto.setFK_UTENTE_MODIFICA(userId);
 				rubricaContatto.setMODIFICA_MINORE(false);
 				
-				RubricaContattoLocalServiceUtil.updateRubricaContatto(rubricaContatto);
+				RubricaContattoLocalServiceUtil.addRubricaContatto(rubricaContatto);
 						
 				//Logga operazione in RUBRICA_LOG
 				aggiornaRubricaLog(TABELLA_RUBRICA_CONTATTO, String.valueOf(rubricaContatto.getID_CONTATTO()),TIPO_OPERAZIONE_INSERT, rubricaContatto.toString(), userId );
@@ -1153,7 +1165,7 @@ public class GestioneRubricaCustomService implements IRubricaLogConstants, IRubr
 			//Aggiorna Log con i dati del contatto che sto per cancellare
 			aggiornaRubricaLog(TABELLA_RUBRICA_CONTATTO, String.valueOf(id), TIPO_OPERAZIONE_DELETE, contatto.toString(), userId );
 			
-			//Setto la data fine validità corrente per cancellarlo logicamente
+			//Setto la data fine validitï¿½ corrente per cancellarlo logicamente
 			contatto.setDATA_FINE_VALIDITA(new Date());
 			
 			contatto.setDATA_MODIFICA(new Date());
@@ -1201,7 +1213,7 @@ public class GestioneRubricaCustomService implements IRubricaLogConstants, IRubr
 					//Aggiorna Log con i dati del contatto che sto per cancellare
 					aggiornaRubricaLog(TABELLA_RUBRICA_CONTATTO, String.valueOf(contatto.getID_CONTATTO()), TIPO_OPERAZIONE_DELETE, contatto.toString(), userId );
 					
-					//Setto la data fine validità corrente per cancellarlo logicamente
+					//Setto la data fine validitï¿½ corrente per cancellarlo logicamente
 					contatto.setDATA_FINE_VALIDITA(new Date());
 					
 					contatto.setDATA_MODIFICA(new Date());
@@ -1422,7 +1434,7 @@ public class GestioneRubricaCustomService implements IRubricaLogConstants, IRubr
 				rubricaGruppo.setDATA_CREAZIONE(new Date());
 				rubricaGruppo.setDATA_MODIFICA(new Date());
 			
-				RubricaGruppoLocalServiceUtil.updateRubricaGruppo(rubricaGruppo);
+				RubricaGruppoLocalServiceUtil.addRubricaGruppo(rubricaGruppo);
 				
 				//Aggiorna Log
 				aggiornaRubricaLog(TABELLA_RUBRICA_GRUPPO, String.valueOf(rubricaGruppo.getID_GRUPPO()),TIPO_OPERAZIONE_INSERT, rubricaGruppo.toString(), userId );
@@ -1559,7 +1571,7 @@ public class GestioneRubricaCustomService implements IRubricaLogConstants, IRubr
 		ObjectMapper mapper = new ObjectMapper();
 		GroupSubGroupAssociationRequest subGruop = mapper.readValue(data, GroupSubGroupAssociationRequest.class);
 			
-		//cancello solo se è presente l'associazione, carico il dato sempre aggioranto ripulendo la cache
+		//cancello solo se ï¿½ presente l'associazione, carico il dato sempre aggioranto ripulendo la cache
 		RubricaGruppoGruppi gruppoGruppiLog = null;
 		try {
 			gruppoGruppiLog = RubricaGruppoGruppiUtil.findByPrimaryKey(new RubricaGruppoGruppiPK(idGruppo,subGruop.getSubgroupId()));
@@ -1618,7 +1630,7 @@ public class GestioneRubricaCustomService implements IRubricaLogConstants, IRubr
 		gruppoSottoGruppo.setFK_GRUPPO_PADRE(idGruppo);
 		gruppoSottoGruppo.setFK_GRUPPO_FIGLIO(subGruops.getSubgroupId());
 		
-		//Verifica se sto associando gruppi di proprietari differenti il che non è ammissibile
+		//Verifica se sto associando gruppi di proprietari differenti il che non ï¿½ ammissibile
 		RubricaGruppo gruppoPadre = RubricaGruppoLocalServiceUtil.fetchRubricaGruppo(idGruppo);
 		RubricaGruppo gruppoFiglio = RubricaGruppoLocalServiceUtil.fetchRubricaGruppo(subGruops.getSubgroupId().longValue());
 		
@@ -1639,7 +1651,7 @@ public class GestioneRubricaCustomService implements IRubricaLogConstants, IRubr
 			if(!verificaDiscendentiPadre(idGruppo, subGruops.getSubgroupId())) {
 
 			
-				RubricaGruppoGruppiLocalServiceUtil.updateRubricaGruppoGruppi(gruppoSottoGruppo);
+				RubricaGruppoGruppiLocalServiceUtil.addRubricaGruppoGruppi(gruppoSottoGruppo);
 				
 				//Logga operazione
 				//Aggiorna Log
@@ -1658,7 +1670,7 @@ private boolean creaAssociazioneGruppoSuperGruppo(long idGruppo, GroupSubGroupAs
 		gruppoSottoGruppo.setFK_GRUPPO_FIGLIO(idGruppo);
 		gruppoSottoGruppo.setFK_GRUPPO_PADRE(subGruops.getSubgroupId());
 		
-		//Verifica se sto associando gruppi di proprietari differenti il che non è ammissibile
+		//Verifica se sto associando gruppi di proprietari differenti il che non ï¿½ ammissibile
 		RubricaGruppo gruppoPadre = RubricaGruppoLocalServiceUtil.fetchRubricaGruppo(idGruppo);
 		RubricaGruppo gruppoFiglio = RubricaGruppoLocalServiceUtil.fetchRubricaGruppo(subGruops.getSubgroupId().longValue());
 		
@@ -1679,7 +1691,7 @@ private boolean creaAssociazioneGruppoSuperGruppo(long idGruppo, GroupSubGroupAs
 			if(!verificaDiscendentiPadre(subGruops.getSubgroupId(), idGruppo)) {
 
 			
-				RubricaGruppoGruppiLocalServiceUtil.updateRubricaGruppoGruppi(gruppoSottoGruppo);
+				RubricaGruppoGruppiLocalServiceUtil.addRubricaGruppoGruppi(gruppoSottoGruppo);
 				
 				//Logga operazione
 				//Aggiorna Log
@@ -1772,7 +1784,7 @@ private boolean creaAssociazioneGruppoSuperGruppo(long idGruppo, GroupSubGroupAs
 		
 		for(GroupSubGroupAssociationRequest subGroup : listSubGroups) {
 		
-			//cancello solo se è presente l'associazione, carico il dato sempre aggioranto ripulendo la cache
+			//cancello solo se ï¿½ presente l'associazione, carico il dato sempre aggioranto ripulendo la cache
 			RubricaGruppoGruppi gruppoGruppiLog = null;
 			try {
 				gruppoGruppiLog = RubricaGruppoGruppiUtil.findByPrimaryKey(new RubricaGruppoGruppiPK(idGruppo, subGroup.getSubgroupId()));
@@ -1818,7 +1830,7 @@ private boolean creaAssociazioneGruppoSuperGruppo(long idGruppo, GroupSubGroupAs
 		
 		for(GroupSubGroupAssociationRequest subGroup : listSubGroups) {
 		
-			//cancello solo se è presente l'associazione, carico il dato sempre aggioranto ripulendo la cache
+			//cancello solo se ï¿½ presente l'associazione, carico il dato sempre aggioranto ripulendo la cache
 			RubricaGruppoGruppi gruppoGruppiLog = null;
 			try {
 				gruppoGruppiLog = RubricaGruppoGruppiUtil.findByPrimaryKey(new RubricaGruppoGruppiPK(subGroup.getSubgroupId(),idGruppo));
@@ -1863,7 +1875,7 @@ private boolean creaAssociazioneGruppoSuperGruppo(long idGruppo, GroupSubGroupAs
 		ObjectMapper mapper = new ObjectMapper();
 		GroupSubGroupUpdateRequest subGroupsUpdate = mapper.readValue(data, GroupSubGroupUpdateRequest.class);
 		
-		//Verifica dove il gruppo è figlio e elimina le associazioni (per lo stesso sito proprietario)
+		//Verifica dove il gruppo ï¿½ figlio e elimina le associazioni (per lo stesso sito proprietario)
 		List<RubricaGruppoGruppi> rubricaGruppoGruppi = new ArrayList<>();
 		rubricaGruppoGruppi = RubricaGruppoGruppiUtil.findByRubricaGruppoGruppoByFiglio(id);
 		
@@ -1873,7 +1885,7 @@ private boolean creaAssociazioneGruppoSuperGruppo(long idGruppo, GroupSubGroupAs
 				
 				RubricaGruppo gruppoPadreOld = RubricaGruppoUtil.findByPrimaryKey(gruppoGruppi.getFK_GRUPPO_PADRE());
 				
-				//verifica se è un gruppo per lo stesso proprietario 
+				//verifica se ï¿½ un gruppo per lo stesso proprietario 
 				//cancella tutte le relazioni per lo stesso proprietario
 				if(null != gruppoPadreOld && gruppoPadreOld.getFK_SITO_PROPRIETARIO() == groupId) {
 					
@@ -1892,7 +1904,7 @@ private boolean creaAssociazioneGruppoSuperGruppo(long idGruppo, GroupSubGroupAs
 			}
 		}
 			
-		//Verifica se sarà un nodo radice oppure da associare a un altro padre
+		//Verifica se sarï¿½ un nodo radice oppure da associare a un altro padre
 		if(null != subGroupsUpdate) {
 				
 			if(null != subGroupsUpdate.getParentId()) {
@@ -1902,7 +1914,7 @@ private boolean creaAssociazioneGruppoSuperGruppo(long idGruppo, GroupSubGroupAs
 				gruppoSottoGruppo.setFK_GRUPPO_PADRE(subGroupsUpdate.getParentId());
 				gruppoSottoGruppo.setFK_GRUPPO_FIGLIO(id);
 					
-				//Verifica se sto associando gruppi di proprietari differenti il che non è ammissibile
+				//Verifica se sto associando gruppi di proprietari differenti il che non ï¿½ ammissibile
 				RubricaGruppo gruppoPadre = RubricaGruppoLocalServiceUtil.fetchRubricaGruppo(gruppoSottoGruppo.getFK_GRUPPO_PADRE());
 				RubricaGruppo gruppoFiglio = RubricaGruppoLocalServiceUtil.fetchRubricaGruppo(gruppoSottoGruppo.getFK_GRUPPO_FIGLIO());
 					
@@ -1923,7 +1935,7 @@ private boolean creaAssociazioneGruppoSuperGruppo(long idGruppo, GroupSubGroupAs
 					//TODO verificare che il nodo figlio non sia gia' associato a sottogruppi del padre
 					if(!verificaDiscendentiPadre(subGroupsUpdate.getParentId(), id)) {
 					
-					RubricaGruppoGruppiLocalServiceUtil.updateRubricaGruppoGruppi(gruppoSottoGruppo);
+					RubricaGruppoGruppiLocalServiceUtil.addRubricaGruppoGruppi(gruppoSottoGruppo);
 						
 						//Logga operazione
 						//Aggiorna Log
@@ -2185,7 +2197,7 @@ private boolean creaAssociazioneGruppoSuperGruppo(long idGruppo, GroupSubGroupAs
 
 		Map<String,Object> cache = new HashMap<>();
 		
-		//Lista finale che conterrà tutta la struttura Json
+		//Lista finale che conterrï¿½ tutta la struttura Json
 		List<GroupElement> listaGruopElementFinal = new ArrayList<>();
 		if (limit==null || limit<=0) limit=10000L;
 
@@ -2277,7 +2289,7 @@ private boolean creaAssociazioneGruppoSuperGruppo(long idGruppo, GroupSubGroupAs
 				//Estrai il nodo radice (che contiene tutta la gerarchia) ed aggiungilo alla lista finale listaGruopElementFinal
 				GroupElement rootGroupJson = RubricaStructureCustomService.createGroupElementTree(listaGruopElement);
 				
-				//Lo aggiungo alla lista solo se è un gruppo root, ovvero se non è figlio di un gruppo per lo stesso proprietario
+				//Lo aggiungo alla lista solo se ï¿½ un gruppo root, ovvero se non ï¿½ figlio di un gruppo per lo stesso proprietario
 				//if(isGroupRoot(rootGroupJson, idSite)) {
 					//Aggiungo alla lista finale
 					listaGruopElementFinal.add(rootGroupJson);
@@ -2384,7 +2396,7 @@ private boolean creaAssociazioneGruppoSuperGruppo(long idGruppo, GroupSubGroupAs
 	public GroupDetail loadGroupById(Long idSite, Long idGroup)  throws SystemException, ParseException, PortalException, IOException {
 		//logger.info("getGroupBId "+idGroup);
 		//Dettaglio gruppo utenti portale
-		if(idGroup.longValue() == ID_GRUPPO_UTENTI_PORTALE) { //l'id del gruppo degli utenti del portale è fisso
+		if(idGroup.longValue() == ID_GRUPPO_UTENTI_PORTALE) { //l'id del gruppo degli utenti del portale ï¿½ fisso
 			GroupDetail groupDetailUtentiPortale = creaGroupDetailUtentiPortale(idSite, idGroup); //prova new Long(232914), new Long(-1)
 			return groupDetailUtentiPortale;
 		}
@@ -2593,7 +2605,7 @@ private boolean creaAssociazioneGruppoSuperGruppo(long idGruppo, GroupSubGroupAs
 			User userPortale = UserLocalServiceUtil.fetchUser(userGroup.getUserId());
 			com.liferay.portal.kernel.model.Contact contact = userPortale.getContact();
 		
-			//Creo la lista dei gruppi a cui è iscritto l'user
+			//Creo la lista dei gruppi a cui ï¿½ iscritto l'user
 //		    List<UserGroup> listaUserGroup = UserGroupLocalServiceUtil.getUserUserGroups(userGroup.getUserId());
 		    //Per ogni gruppo carico le info
 		    List<it.eng.allerte.custom.jsonRubrica.Group> listaGruppi = new ArrayList<>();
@@ -2620,7 +2632,7 @@ private boolean creaAssociazioneGruppoSuperGruppo(long idGruppo, GroupSubGroupAs
 			nominativeJson.setId(userPortale.getUserId());
 			nominativeJson.setLastEdit(userPortale.getModifiedDate().getTime());
 			nominativeJson.setModifyUser(userPortale.getFirstName().concat(" ").concat( userPortale.getLastName()));
-			nominativeJson.setRole(DESCRIZIONE_ROLE_CITTADINO); //Il ruolo è sempre cittadino
+			nominativeJson.setRole(DESCRIZIONE_ROLE_CITTADINO); //Il ruolo ï¿½ sempre cittadino
 			nominativeJson.setGroups(listaGruppi);
 			//In contact liferay ci sono i contatti per colonna, prendiamo solo mail e cell
 			if(StringUtils.isNotBlank(contact.getEmailAddress())) {
@@ -2749,7 +2761,7 @@ private boolean creaAssociazioneGruppoSuperGruppo(long idGruppo, GroupSubGroupAs
 			rubricaGruppoNominativi.setFK_RUOLO(gruppoNominativo.getRole());
 			rubricaGruppoNominativi.setSPECIFICA_RUOLO(gruppoNominativo.getSpecificaRuolo());
 					
-			RubricaGruppoNominativiLocalServiceUtil.updateRubricaGruppoNominativi(rubricaGruppoNominativi);
+			RubricaGruppoNominativiLocalServiceUtil.addRubricaGruppoNominativi(rubricaGruppoNominativi);
 							
 			//Logga operazione in RUBRICA_LOG
 			aggiornaRubricaLog(TABELLA_RUBRICA_GRUPPO_NOMINATIVI, 
@@ -3121,12 +3133,12 @@ private boolean creaAssociazioneGruppoSuperGruppo(long idGruppo, GroupSubGroupAs
 					
 				permessi.setFK_ID_RUOLO(perm.getRoleId());
 				
-				//Inserisco se true, se false cancello perchè la NON presenza del permesso in tabella significa che NON ho un determinato tipo di permesso
+				//Inserisco se true, se false cancello perchï¿½ la NON presenza del permesso in tabella significa che NON ho un determinato tipo di permesso
 				
 				if(perm.isPermission()) {
 					permessi.setFK_ID_PERMESSO("P");
 					//RubricaPermessiGruppo
-					RubricaRuoloPermessiLocalServiceUtil.updateRubricaRuoloPermessi(permessi);
+					RubricaRuoloPermessiLocalServiceUtil.addRubricaRuoloPermessi(permessi);
 						
 					//Logga operazione in RUBRICA_LOG
 					aggiornaRubricaLog(TABELLA_RUBRICA_RUOLO_PERMESSI, String.valueOf(permessi.getFK_ID_RUOLO()).concat("-").concat(permessi.getFK_ID_PERMESSO()), 
@@ -3339,7 +3351,7 @@ private boolean creaAssociazioneGruppoSuperGruppo(long idGruppo, GroupSubGroupAs
 	 */
 	public RubricaLog creaRubricaLog (String nomeTabella, String idOggetto, String tipoOperazione,
 									  String nuovaDescrizione, Long userId, Date dataModifica){
-
+		System.out.println("crea rubrica log");
 		RubricaLog rubricaLog = new RubricaLogImpl();
 		
 		rubricaLog.setDATA_MODIFICA(dataModifica);
@@ -3350,7 +3362,7 @@ private boolean creaAssociazioneGruppoSuperGruppo(long idGruppo, GroupSubGroupAs
 		rubricaLog.setTABELLA(nomeTabella);
 		rubricaLog.setTIPO_OPERAZIONE(tipoOperazione);
 		
-		
+		System.out.println("crea rubrica log 2");
 		return rubricaLog;
 	}
 	
@@ -3363,10 +3375,21 @@ private boolean creaAssociazioneGruppoSuperGruppo(long idGruppo, GroupSubGroupAs
 	@Transactional(isolation = Isolation.PORTAL, propagation=Propagation.REQUIRED)
 	public void inserimentoRubricaLog(RubricaLog rubricaLog) throws SystemException{
 		//setto l'id
-		rubricaLog.setID_LOG(CounterLocalServiceUtil.increment(RubricaLog.class.getName()));
-			
-		RubricaLogLocalServiceUtil.updateRubricaLog(rubricaLog);
-
+		long l = CounterLocalServiceUtil.increment(RubricaLog.class.getName());
+		System.out.println("set rubrica id: "+l);
+		rubricaLog.setID_LOG(l);
+		System.out.println("set rubrica id 2");	
+		System.out.println(rubricaLog.getFK_SITO_PROPRIETARIO());
+		System.out.println(rubricaLog.getFK_UTENTE_MODIFICA());
+		System.out.println(rubricaLog.getID_LOG());
+		System.out.println(rubricaLog.getID_OGGETTO());
+		System.out.println(rubricaLog.getNUOVA_DESCRIZIONE());
+		System.out.println(rubricaLog.getTABELLA());
+		System.out.println(rubricaLog.getTIPO_OPERAZIONE());
+		System.out.println(rubricaLog.getDATA_MODIFICA());
+		RubricaLogLocalServiceUtil.addRubricaLog(rubricaLog);
+		//RubricaLogLocalServiceUtil.updateRubricaLog(rubricaLog);
+		System.out.println("set rubrica id 3");	
 	}
 	
 	/**
@@ -3412,7 +3435,7 @@ private boolean creaAssociazioneGruppoSuperGruppo(long idGruppo, GroupSubGroupAs
 		List<Log> listaLogResult = new ArrayList<>();
 		List<RubricaLog> listaLog = new ArrayList<>();
 		
-		//Se name non è valorizzato carico tutto
+		//Se name non ï¿½ valorizzato carico tutto
 		//if(StringUtils.isNotBlank(name)) {
 		
 			if(null != listaLogObj && listaLogObj.size() > 0) {
@@ -3602,16 +3625,16 @@ private boolean creaAssociazioneGruppoSuperGruppo(long idGruppo, GroupSubGroupAs
 						//verifica contatto
 						for(RubricaNominativo nominativo : listaNominativi) {
 							
-							//Se il nominativo è lo stesso verifico il contatto
+							//Se il nominativo ï¿½ lo stesso verifico il contatto
 							if(verificaUguaglianzaNominativo(nominative, nominativo)) {
 								
 								//Stesso nominativo, verifica se anche i contatti sono uguali
-								//Se non sono uguali aggiungo il contatto al nominativo altrimenti contatto e nominativo già presenti
+								//Se non sono uguali aggiungo il contatto al nominativo altrimenti contatto e nominativo giï¿½ presenti
 								if(hasContact(nominative) && ! verificaContattiPerNominativo(nominative, nominativo.getID_NOMINATIVO())) {
 									//Crea contatto mancante per il nominativo
 									creaContattoByImportCsv(nominative, nominativo.getID_NOMINATIVO());
 								}  else {
-									//logger.info("Nominativo e contatto già presente: " + nominative.getNome().concat(" ").concat(nominative.getCognome().concat(" Contatto: ").concat(nominative.getContatto())));
+									//logger.info("Nominativo e contatto giï¿½ presente: " + nominative.getNome().concat(" ").concat(nominative.getCognome().concat(" Contatto: ").concat(nominative.getContatto())));
 									listaNominativiContattiGiaPresenti.add(nominative.getNome().concat(" ").concat(nominative.getCognome().concat(" Contatto: ").concat(nominative.getContatto())));
 								
 								}
@@ -3633,7 +3656,7 @@ private boolean creaAssociazioneGruppoSuperGruppo(long idGruppo, GroupSubGroupAs
 			msgReturn.add("Sono state elaborate correttamente: " + (index-totaleRigheInErrore) + " elementi ");
 			msgReturn.add("Righe totali in errore: " + totaleRigheInErrore);
 			msgReturn.add("Numero di riga in errore :"  + numeroRigaInErrore.toString());
-			msgReturn.add("Nominativi/contatti già presenti in rubrica: " + listaNominativiContattiGiaPresenti.toString());
+			msgReturn.add("Nominativi/contatti giï¿½ presenti in rubrica: " + listaNominativiContattiGiaPresenti.toString());
 			
 			
 			mappaResult.put(CODE, 200);
@@ -3671,7 +3694,7 @@ private boolean creaAssociazioneGruppoSuperGruppo(long idGruppo, GroupSubGroupAs
 	}
 	
 	/**
-	 * Il metodo verifica se è stato inserito il contatto nel file csv di import
+	 * Il metodo verifica se ï¿½ stato inserito il contatto nel file csv di import
 	 * @param nominative 
 	 *  
 	 * @return
@@ -3719,7 +3742,7 @@ private boolean creaAssociazioneGruppoSuperGruppo(long idGruppo, GroupSubGroupAs
 		rubricaContatto.setFK_UTENTE_CREAZIONE(userId);
 		rubricaContatto.setFK_UTENTE_MODIFICA(userId);
 		
-		RubricaContattoLocalServiceUtil.updateRubricaContatto(rubricaContatto);
+		RubricaContattoLocalServiceUtil.addRubricaContatto(rubricaContatto);
 				
 		//Logga operazione in RUBRICA_LOG
 		aggiornaRubricaLog(TABELLA_RUBRICA_CONTATTO, String.valueOf(rubricaContatto.getID_CONTATTO()),TIPO_OPERAZIONE_INSERT, rubricaContatto.toString(), userId );
@@ -3750,7 +3773,7 @@ private boolean creaAssociazioneGruppoSuperGruppo(long idGruppo, GroupSubGroupAs
 		nominativo.setFK_UTENTE_CREAZIONE(userId);
 		nominativo.setFK_UTENTE_MODIFICA(userId);
 
-		RubricaNominativoLocalServiceUtil.updateRubricaNominativo(nominativo);
+		RubricaNominativoLocalServiceUtil.addRubricaNominativo(nominativo);
 		
 		//Logga operazione in RUBRICA_LOG
 		aggiornaRubricaLog(TABELLA_RUBRICA_NOMINATIVO, String.valueOf(nominativo.getID_NOMINATIVO()),TIPO_OPERAZIONE_INSERT, nominativo.toString(), userId );

@@ -1,24 +1,23 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.animaeteo.service;
 
-import aQute.bnd.annotation.ProviderType;
+import com.liferay.petra.sql.dsl.query.DSLQuery;
+import com.liferay.portal.kernel.dao.orm.DynamicQuery;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.model.PersistedModel;
+import com.liferay.portal.kernel.module.service.Snapshot;
+import com.liferay.portal.kernel.util.OrderByComparator;
 
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.util.tracker.ServiceTracker;
+import it.eng.animaeteo.model.AnimeteoSmallImg;
+
+import java.io.Serializable;
+
+import java.util.List;
 
 /**
  * Provides the local service utility for AnimeteoSmallImg. This utility wraps
@@ -32,7 +31,6 @@ import org.osgi.util.tracker.ServiceTracker;
  * @see AnimeteoSmallImgLocalService
  * @generated
  */
-@ProviderType
 public class AnimeteoSmallImgLocalServiceUtil {
 
 	/*
@@ -44,11 +42,15 @@ public class AnimeteoSmallImgLocalServiceUtil {
 	/**
 	 * Adds the animeteo small img to the database. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect AnimeteoSmallImgLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param animeteoSmallImg the animeteo small img
 	 * @return the animeteo small img that was added
 	 */
-	public static it.eng.animaeteo.model.AnimeteoSmallImg addAnimeteoSmallImg(
-		it.eng.animaeteo.model.AnimeteoSmallImg animeteoSmallImg) {
+	public static AnimeteoSmallImg addAnimeteoSmallImg(
+		AnimeteoSmallImg animeteoSmallImg) {
 
 		return getService().addAnimeteoSmallImg(animeteoSmallImg);
 	}
@@ -59,21 +61,32 @@ public class AnimeteoSmallImgLocalServiceUtil {
 	 * @param id the primary key for the new animeteo small img
 	 * @return the new animeteo small img
 	 */
-	public static it.eng.animaeteo.model.AnimeteoSmallImg
-		createAnimeteoSmallImg(long id) {
-
+	public static AnimeteoSmallImg createAnimeteoSmallImg(long id) {
 		return getService().createAnimeteoSmallImg(id);
+	}
+
+	/**
+	 * @throws PortalException
+	 */
+	public static PersistedModel createPersistedModel(
+			Serializable primaryKeyObj)
+		throws PortalException {
+
+		return getService().createPersistedModel(primaryKeyObj);
 	}
 
 	/**
 	 * Deletes the animeteo small img from the database. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect AnimeteoSmallImgLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param animeteoSmallImg the animeteo small img
 	 * @return the animeteo small img that was removed
 	 */
-	public static it.eng.animaeteo.model.AnimeteoSmallImg
-		deleteAnimeteoSmallImg(
-			it.eng.animaeteo.model.AnimeteoSmallImg animeteoSmallImg) {
+	public static AnimeteoSmallImg deleteAnimeteoSmallImg(
+		AnimeteoSmallImg animeteoSmallImg) {
 
 		return getService().deleteAnimeteoSmallImg(animeteoSmallImg);
 	}
@@ -81,13 +94,16 @@ public class AnimeteoSmallImgLocalServiceUtil {
 	/**
 	 * Deletes the animeteo small img with the primary key from the database. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect AnimeteoSmallImgLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param id the primary key of the animeteo small img
 	 * @return the animeteo small img that was removed
 	 * @throws PortalException if a animeteo small img with the primary key could not be found
 	 */
-	public static it.eng.animaeteo.model.AnimeteoSmallImg
-			deleteAnimeteoSmallImg(long id)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	public static AnimeteoSmallImg deleteAnimeteoSmallImg(long id)
+		throws PortalException {
 
 		return getService().deleteAnimeteoSmallImg(id);
 	}
@@ -95,17 +111,22 @@ public class AnimeteoSmallImgLocalServiceUtil {
 	/**
 	 * @throws PortalException
 	 */
-	public static com.liferay.portal.kernel.model.PersistedModel
-			deletePersistedModel(
-				com.liferay.portal.kernel.model.PersistedModel persistedModel)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	public static PersistedModel deletePersistedModel(
+			PersistedModel persistedModel)
+		throws PortalException {
 
 		return getService().deletePersistedModel(persistedModel);
 	}
 
-	public static com.liferay.portal.kernel.dao.orm.DynamicQuery
-		dynamicQuery() {
+	public static <T> T dslQuery(DSLQuery dslQuery) {
+		return getService().dslQuery(dslQuery);
+	}
 
+	public static int dslQueryCount(DSLQuery dslQuery) {
+		return getService().dslQueryCount(dslQuery);
+	}
+
+	public static DynamicQuery dynamicQuery() {
 		return getService().dynamicQuery();
 	}
 
@@ -115,9 +136,7 @@ public class AnimeteoSmallImgLocalServiceUtil {
 	 * @param dynamicQuery the dynamic query
 	 * @return the matching rows
 	 */
-	public static <T> java.util.List<T> dynamicQuery(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery) {
-
+	public static <T> List<T> dynamicQuery(DynamicQuery dynamicQuery) {
 		return getService().dynamicQuery(dynamicQuery);
 	}
 
@@ -125,7 +144,7 @@ public class AnimeteoSmallImgLocalServiceUtil {
 	 * Performs a dynamic query on the database and returns a range of the matching rows.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>it.eng.animaeteo.model.impl.AnimeteoSmallImgModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>it.eng.animaeteo.model.impl.AnimeteoSmallImgModelImpl</code>.
 	 * </p>
 	 *
 	 * @param dynamicQuery the dynamic query
@@ -133,9 +152,8 @@ public class AnimeteoSmallImgLocalServiceUtil {
 	 * @param end the upper bound of the range of model instances (not inclusive)
 	 * @return the range of matching rows
 	 */
-	public static <T> java.util.List<T> dynamicQuery(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery, int start,
-		int end) {
+	public static <T> List<T> dynamicQuery(
+		DynamicQuery dynamicQuery, int start, int end) {
 
 		return getService().dynamicQuery(dynamicQuery, start, end);
 	}
@@ -144,7 +162,7 @@ public class AnimeteoSmallImgLocalServiceUtil {
 	 * Performs a dynamic query on the database and returns an ordered range of the matching rows.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>it.eng.animaeteo.model.impl.AnimeteoSmallImgModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>it.eng.animaeteo.model.impl.AnimeteoSmallImgModelImpl</code>.
 	 * </p>
 	 *
 	 * @param dynamicQuery the dynamic query
@@ -153,10 +171,9 @@ public class AnimeteoSmallImgLocalServiceUtil {
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching rows
 	 */
-	public static <T> java.util.List<T> dynamicQuery(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery, int start,
-		int end,
-		com.liferay.portal.kernel.util.OrderByComparator<T> orderByComparator) {
+	public static <T> List<T> dynamicQuery(
+		DynamicQuery dynamicQuery, int start, int end,
+		OrderByComparator<T> orderByComparator) {
 
 		return getService().dynamicQuery(
 			dynamicQuery, start, end, orderByComparator);
@@ -168,9 +185,7 @@ public class AnimeteoSmallImgLocalServiceUtil {
 	 * @param dynamicQuery the dynamic query
 	 * @return the number of rows matching the dynamic query
 	 */
-	public static long dynamicQueryCount(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery) {
-
+	public static long dynamicQueryCount(DynamicQuery dynamicQuery) {
 		return getService().dynamicQueryCount(dynamicQuery);
 	}
 
@@ -182,21 +197,18 @@ public class AnimeteoSmallImgLocalServiceUtil {
 	 * @return the number of rows matching the dynamic query
 	 */
 	public static long dynamicQueryCount(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery,
+		DynamicQuery dynamicQuery,
 		com.liferay.portal.kernel.dao.orm.Projection projection) {
 
 		return getService().dynamicQueryCount(dynamicQuery, projection);
 	}
 
-	public static it.eng.animaeteo.model.AnimeteoSmallImg fetchAnimeteoSmallImg(
-		long id) {
-
+	public static AnimeteoSmallImg fetchAnimeteoSmallImg(long id) {
 		return getService().fetchAnimeteoSmallImg(id);
 	}
 
-	public static java.util.List<it.eng.animaeteo.model.AnimeteoSmallImg>
-			findByType(String type)
-		throws com.liferay.portal.kernel.exception.SystemException {
+	public static List<AnimeteoSmallImg> findByType(String type)
+		throws SystemException {
 
 		return getService().findByType(type);
 	}
@@ -214,9 +226,8 @@ public class AnimeteoSmallImgLocalServiceUtil {
 	 * @return the animeteo small img
 	 * @throws PortalException if a animeteo small img with the primary key could not be found
 	 */
-	public static it.eng.animaeteo.model.AnimeteoSmallImg getAnimeteoSmallImg(
-			long id)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	public static AnimeteoSmallImg getAnimeteoSmallImg(long id)
+		throws PortalException {
 
 		return getService().getAnimeteoSmallImg(id);
 	}
@@ -225,15 +236,15 @@ public class AnimeteoSmallImgLocalServiceUtil {
 	 * Returns a range of all the animeteo small imgs.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>it.eng.animaeteo.model.impl.AnimeteoSmallImgModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>it.eng.animaeteo.model.impl.AnimeteoSmallImgModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of animeteo small imgs
 	 * @param end the upper bound of the range of animeteo small imgs (not inclusive)
 	 * @return the range of animeteo small imgs
 	 */
-	public static java.util.List<it.eng.animaeteo.model.AnimeteoSmallImg>
-		getAnimeteoSmallImgs(int start, int end) {
+	public static List<AnimeteoSmallImg> getAnimeteoSmallImgs(
+		int start, int end) {
 
 		return getService().getAnimeteoSmallImgs(start, end);
 	}
@@ -263,9 +274,11 @@ public class AnimeteoSmallImgLocalServiceUtil {
 		return getService().getOSGiServiceIdentifier();
 	}
 
-	public static com.liferay.portal.kernel.model.PersistedModel
-			getPersistedModel(java.io.Serializable primaryKeyObj)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	/**
+	 * @throws PortalException
+	 */
+	public static PersistedModel getPersistedModel(Serializable primaryKeyObj)
+		throws PortalException {
 
 		return getService().getPersistedModel(primaryKeyObj);
 	}
@@ -273,40 +286,26 @@ public class AnimeteoSmallImgLocalServiceUtil {
 	/**
 	 * Updates the animeteo small img in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect AnimeteoSmallImgLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param animeteoSmallImg the animeteo small img
 	 * @return the animeteo small img that was updated
 	 */
-	public static it.eng.animaeteo.model.AnimeteoSmallImg
-		updateAnimeteoSmallImg(
-			it.eng.animaeteo.model.AnimeteoSmallImg animeteoSmallImg) {
+	public static AnimeteoSmallImg updateAnimeteoSmallImg(
+		AnimeteoSmallImg animeteoSmallImg) {
 
 		return getService().updateAnimeteoSmallImg(animeteoSmallImg);
 	}
 
 	public static AnimeteoSmallImgLocalService getService() {
-		return _serviceTracker.getService();
+		return _serviceSnapshot.get();
 	}
 
-	private static ServiceTracker
-		<AnimeteoSmallImgLocalService, AnimeteoSmallImgLocalService>
-			_serviceTracker;
-
-	static {
-		Bundle bundle = FrameworkUtil.getBundle(
+	private static final Snapshot<AnimeteoSmallImgLocalService>
+		_serviceSnapshot = new Snapshot<>(
+			AnimeteoSmallImgLocalServiceUtil.class,
 			AnimeteoSmallImgLocalService.class);
-
-		ServiceTracker
-			<AnimeteoSmallImgLocalService, AnimeteoSmallImgLocalService>
-				serviceTracker =
-					new ServiceTracker
-						<AnimeteoSmallImgLocalService,
-						 AnimeteoSmallImgLocalService>(
-							 bundle.getBundleContext(),
-							 AnimeteoSmallImgLocalService.class, null);
-
-		serviceTracker.open();
-
-		_serviceTracker = serviceTracker;
-	}
 
 }

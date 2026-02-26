@@ -1,8 +1,22 @@
 package it.eng.allerta.web.rest.application;
 
-import java.net.UnknownHostException;
+import com.google.gson.Gson;
+import com.liferay.blogs.model.BlogsEntry;
+import com.liferay.blogs.service.BlogsEntryLocalServiceUtil;
+import com.liferay.journal.model.JournalArticle;
+import com.liferay.journal.service.JournalArticleLocalServiceUtil;
+import com.liferay.portal.kernel.dao.orm.QueryUtil;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONSerializer;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.service.UserLocalServiceUtil;
+import com.liferay.portal.kernel.util.Validator;
+
 import java.sql.Timestamp;
-import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -11,7 +25,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -29,25 +42,6 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.jaxrs.whiteboard.JaxrsWhiteboardConstants;
 
 import allerta.dewetra.service.HRWLocalService;
-
-import com.google.gson.Gson;
-import com.liferay.blogs.model.BlogsEntry;
-import com.liferay.blogs.service.BlogsEntryLocalServiceUtil;
-import com.liferay.journal.model.JournalArticle;
-import com.liferay.journal.service.JournalArticleLocalServiceUtil;
-import com.liferay.portal.kernel.dao.orm.QueryUtil;
-import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.exception.SystemException;
-import com.liferay.portal.kernel.json.JSONArray;
-import com.liferay.portal.kernel.json.JSONException;
-import com.liferay.portal.kernel.json.JSONFactoryUtil;
-import com.liferay.portal.kernel.json.JSONSerializer;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.security.access.control.AccessControlled;
-import com.liferay.portal.kernel.service.UserLocalServiceUtil;
-import com.liferay.portal.kernel.util.Validator;
-
 import it.eng.allerta.rest.application.service.AllertaRestService;
 import it.eng.allerta.rest.application.service.ReportRefreshService;
 import it.eng.allerter.service.AllertaService;
@@ -68,11 +62,9 @@ import it.eng.animazione.image.service.altezzaOndaSwanitaLocalServiceUtil;
 import it.eng.bollettino.service.BollettinoService;
 import it.eng.bollettino.service.RegolaAllarmeLocalService;
 import it.eng.bollettino.service.ValoreSensoreLocalService;
-import it.eng.bollettino.service.ValoreSensoreService;
 import it.eng.cache.service.DatiLocalServiceUtil;
 import it.eng.radarMeteo.model.Img;
 import it.eng.radarMeteo.service.Comuni_bacini_wsServiceUtil;
-import it.eng.radarMeteo.service.Comuni_wsLocalServiceUtil;
 import it.eng.radarMeteo.service.Comuni_wsService;
 import it.eng.radarMeteo.service.Comuni_wsServiceUtil;
 import it.eng.radarMeteo.service.ImgLocalServiceUtil;
@@ -93,7 +85,6 @@ public class AllertaWebRestApplication extends Application {
 
 	private Log logger = LogFactoryUtil.getLog(AllertaWebRestApplication.class);
 	
-	private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.ITALY);
 	
 	@Context private HttpServletRequest servletRequest;
 	
@@ -793,7 +784,8 @@ public class AllertaWebRestApplication extends Application {
 				imgMap.put(current.getInserted().getTime()/1000,current.getData());
 			}
 			
-			bounds = "7,43,14,46.5";
+			//bounds = "7,43,14,46.5";
+			bounds = "3,33.7,22,48.9";
 			
 			JSONSerializer serializer = JSONFactoryUtil.createJSONSerializer();
 			
@@ -915,7 +907,7 @@ public class AllertaWebRestApplication extends Application {
 			imgMap.put(current.getTs_UTC(),current.getImgData());
 		}
 		
-		bounds = "6,36,20,47";
+		bounds = "7,35,20,46";
 		
 		JSONSerializer serializer = JSONFactoryUtil.createJSONSerializer();
 		
@@ -1141,8 +1133,8 @@ public class AllertaWebRestApplication extends Application {
 	
 	@GET
 	@Path("/buildAllertaPdf")
-	@Produces("application/json; charset=UTF-8")
-	public void buildAllertaPdf(
+	@Produces("text/plain; charset=UTF-8")
+	public String buildAllertaPdf(
 			@QueryParam("tipo") String tipo, 
 			@QueryParam("id") String id,
 			@QueryParam("scope") String scope) {
@@ -1152,12 +1144,14 @@ public class AllertaWebRestApplication extends Application {
 		
 		try {
 			
-			reportService.refreshPdf(null, tipo, id, scope, servletRequest);
+			return reportService.refreshPdf(null, tipo, id, scope, servletRequest);
 			
 		} catch (Exception e) {
 			_log.error(e);
 			LogInternoLocalServiceUtil.log("buildAllertaPdf", "buildAllertaPdf", e, "");
 		}
+		
+		return "";
 		
 	}
 	

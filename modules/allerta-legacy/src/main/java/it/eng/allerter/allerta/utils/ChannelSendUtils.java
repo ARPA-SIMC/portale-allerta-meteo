@@ -44,7 +44,7 @@ public class ChannelSendUtils {
 		//		String pictureLink = "http://www.regione.emilia-romagna.it/logo_er.png";
 		//	    String title="nuova comunicazione dal portale weballerte.it";Boolean shared =true;
 
-		String link = "https://allertameteo.regione.emilia-romagna.it/";
+		/*String link = "https://allertameteo.regione.emilia-romagna.it/";
 		String pictureLink = portalURL+"/weballerte-theme/images/allerta/logo_allertameteo_er.png";
 		Boolean shared =true;
 
@@ -72,7 +72,8 @@ public class ChannelSendUtils {
 		}else{
 			logger.info("@@@@@@@@@@@@ nessuna comunicazione inviata, trovata utente nullo ");
 		}
-		return shared;
+		return shared;*/
+		return true;
 	}
 
 

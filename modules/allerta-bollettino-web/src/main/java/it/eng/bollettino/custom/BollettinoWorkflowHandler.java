@@ -15,6 +15,7 @@ import javax.mail.internet.InternetAddress;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
+import com.liferay.asset.entry.rel.service.AssetEntryAssetCategoryRelLocalServiceUtil;
 import com.liferay.asset.kernel.model.AssetCategory;
 import com.liferay.asset.kernel.model.AssetEntry;
 import com.liferay.asset.kernel.service.AssetCategoryLocalService;
@@ -37,6 +38,7 @@ import com.liferay.portal.kernel.search.IndexerRegistryUtil;
 import com.liferay.portal.kernel.service.OrganizationLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.UserLocalService;
+import com.liferay.portal.kernel.transaction.TransactionCommitCallbackUtil;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Portal;
@@ -48,15 +50,19 @@ import it.eng.allerta.configuration.AllertaBaseConfiguration;
 import it.eng.allerta.utils.AllertaTracker;
 import it.eng.allerta.utils.AllertaUtils;
 import it.eng.allerta.utils.AllertaUtilsInterface;
+import it.eng.allerter.model.Allerta;
 import it.eng.allerter.model.AllertaParametro;
 import it.eng.allerter.model.Email;
+import it.eng.allerter.service.AllertaLocalServiceUtil;
 import it.eng.allerter.service.AllertaParametroLocalService;
+import it.eng.allerter.service.AllertaParametroLocalServiceUtil;
 import it.eng.allerter.service.EmailLocalService;
 import it.eng.allerter.service.LogInternoLocalService;
 import it.eng.allerter.service.SMSLocalService;
 import it.eng.bollettino.model.Bollettino;
 import it.eng.bollettino.model.BollettinoParametro;
 import it.eng.bollettino.service.BollettinoLocalService;
+import it.eng.bollettino.service.BollettinoLocalServiceUtil;
 import it.eng.bollettino.service.BollettinoParametroLocalService;
 import it.eng.parer.model.ComponentiInvio;
 import it.eng.parer.model.DatiSpecificiInvio;
@@ -138,13 +144,14 @@ public class BollettinoWorkflowHandler extends BaseWorkflowHandler<Bollettino> {
 			if (lavorazione == null)
 				caricaPubblicatoTag();
 			if (lavorazione != null)
-				assetCategoryLocalService.addAssetEntryAssetCategory(assetEntryLocalService
-						.getEntry(Bollettino.class.getName(), feedback.getBollettinoId()).getEntryId(), lavorazione);
+				AssetEntryAssetCategoryRelLocalServiceUtil.addAssetEntryAssetCategoryRel(assetEntryLocalService
+						.getEntry(Bollettino.class.getName(), feedback.getBollettinoId()).getEntryId(), lavorazione.getCategoryId());
+				//assetCategoryLocalService.addAssetEntryAssetCategory(assetEntryLocalService
+						//.getEntry(Bollettino.class.getName(), feedback.getBollettinoId()).getEntryId(), lavorazione);
 			assetEntryLocalService.updateVisible(Bollettino.class.getName(), resourcePrimKey, true);
 			IndexerRegistryUtil.nullSafeGetIndexer(Bollettino.class).reindex(feedback);
 		}
 
-		// if (feedback.getStato()==status) return feedback;
 
 		if (status == WorkflowConstants.STATUS_DENIED) {
 
@@ -164,25 +171,41 @@ public class BollettinoWorkflowHandler extends BaseWorkflowHandler<Bollettino> {
 			feedback.setStato(status);
 			feedback = bollettinoLocalService.updateBollettino(feedback);
 
-			// mandaMessaggioRifiuto(feedback);
 
 			long id = assetEntryLocalService.getEntry(Bollettino.class.getName(), feedback.getBollettinoId())
 					.getEntryId();
-			assetCategoryLocalService.clearAssetEntryAssetCategories(id);
+			AssetEntryAssetCategoryRelLocalServiceUtil.deleteAssetEntryAssetCategoryRelByAssetEntryId(id);
+
 			if (lavorazione != null)
-				assetCategoryLocalService.addAssetEntryAssetCategory(id, lavorazione);
+				AssetEntryAssetCategoryRelLocalServiceUtil.addAssetEntryAssetCategoryRel(id, lavorazione.getCategoryId());
+				//assetCategoryLocalService.addAssetEntryAssetCategory(id, lavorazione);
 		}
 
 		// feedback.setStato(status);
 		// feedback=bollettinoLocalService.updateBollettino(feedback);
+
+		final Bollettino feedback2 = feedback;
+		
+		final String tpo =textPlusOne;
+		final String spo =subjectPlusOne;
+		final String tp =text;
+		final String sp =subject;
+		
+		TransactionCommitCallbackUtil.registerCallback(()->{ 
+			
+			 String textPlusOne2 = tpo;
+			 String subjectPlusOne2 = spo;	
+			 String text2 = tp;
+			 String subject2 = sp;
+			
 		if (status == WorkflowConstants.STATUS_APPROVED) {
 
-			mandaNotificaSoloEmail(feedback.getIdApprovatore(), tipo, sottotipo, l + 1);
+			mandaNotificaSoloEmail(feedback2.getIdApprovatore(), tipo, sottotipo, l + 1);
 			mandaNotificaSoloEmail(getParam("EMAIL_APPROVA_BOLLETTINO", ""), tipo, sottotipo, l + 1);
 
-			textPlusOne = "<html><head></head><body>Il monitoraggio " + feedback.getNumero()
+			 textPlusOne2 = "<html><head></head><body>Il monitoraggio " + feedback2.getNumero()
 					+ " e' stato approvato.</body></html>";
-			subjectPlusOne = "Monitoraggio " + feedback.getNumero() + " approvato";
+			 subjectPlusOne2 = "Monitoraggio " + feedback2.getNumero() + " approvato";
 
 			ServiceContext s = (ServiceContext) workflowContext.get(WorkflowConstants.CONTEXT_SERVICE_CONTEXT);
 			if (s != null) {
@@ -193,40 +216,44 @@ public class BollettinoWorkflowHandler extends BaseWorkflowHandler<Bollettino> {
 			} else
 				System.out.println("CONTEXT NOT OK");
 
-			feedback.setStato(status);
-			feedback.setDataApprovazione(new Date());
-			feedback.setDataEmissione(new Date());
+			feedback2.setStato(status);
+			feedback2.setDataApprovazione(new Date());
+			feedback2.setDataEmissione(new Date());
 			// feedback.setIdApprovatore(userId);
-			feedback = bollettinoLocalService.updateBollettino(feedback);
+			bollettinoLocalService.updateBollettino(feedback2);
 
-			rigeneraPdf(feedback, feedback.getGroupId());
+			
+			
+
+			
+			rigeneraPdf(feedback2, feedback2.getGroupId());
 
 			// PARER
 			try {
 				if (!AllertaTracker.getAllertaBaseConfiguration().disableParer()) {
-					User arpa = userLocalService.getUser(feedback.getIdApprovatore());
-					String[] num = feedback.getNumero().split("/");
+					User arpa = userLocalService.getUser(feedback2.getIdApprovatore());
+					String[] num = feedback2.getNumero().split("/");
 					DatiSpecificiInvio dsi = datiSpecificiInvioLocalService.createDatiSpecificiInvio(0);
 					dsi.setCHIAVE_NUMERO(num[0] + num[2].substring(0, 2));
 					dsi.setCHIAVE_ANNO(Long.parseLong(num[1]));
-					dsi.setDATA_UNITA_DOCUMENTARIA(feedback.getDataEmissione());
-					dsi.setIDENTIFICATIVO_DATO_SPECIFICO("" + feedback.getBollettinoId());
-					dsi.setDATA_GENERAZIONE(feedback.getCreateDate());
+					dsi.setDATA_UNITA_DOCUMENTARIA(feedback2.getDataEmissione());
+					dsi.setIDENTIFICATIVO_DATO_SPECIFICO("" + feedback2.getBollettinoId());
+					dsi.setDATA_GENERAZIONE(feedback2.getCreateDate());
 					dsi.setDENOMINAZIONE_APPLICATIVO("AllertaMeteoER");
-					dsi.setCOMPILATORE_ARPAE(feedback.getUserName());
+					dsi.setCOMPILATORE_ARPAE(feedback2.getUserName());
 					dsi.setAPPROVATORE_ARPAE(arpa.getFullName());
-					dsi.setDATA_INIZIO_VALIDITA(feedback.getDataInizio());
-					dsi.setDATA_FINE_VALIDITA(feedback.getDataFine());
-					dsi.setDATA_FIRMA_ARPAE(feedback.getDataApprovazione());
+					dsi.setDATA_INIZIO_VALIDITA(feedback2.getDataInizio());
+					dsi.setDATA_FINE_VALIDITA(feedback2.getDataFine());
+					dsi.setDATA_FIRMA_ARPAE(feedback2.getDataApprovazione());
 
 					ArrayList<DocumentiCollegati> documentiCollegati = new ArrayList<DocumentiCollegati>();
 					ArrayList<ComponentiInvio> componentiInvio = new ArrayList<ComponentiInvio>();
 
 					ComponentiInvio c = componentiInvioLocalService.getNuovoComponenteInvio();
-					c.setHASH_VERSATO(feedback.getHash());
-					c.setID_COMPONENTE_VERSATO(getReportId(feedback));
+					c.setHASH_VERSATO(feedback2.getHash());
+					c.setID_COMPONENTE_VERSATO(getReportId(feedback2));
 					c.setNOME_COMPONENTE(nomeFile);
-					c.setURN_VERSATO("https://allertameteo.regione.emilia-romagna.it" + feedback.getLink());
+					c.setURN_VERSATO("https://allertameteo.regione.emilia-romagna.it" + feedback2.getLink());
 					c.setFORMATO_FILE_VERSATO("PDF");
 					componentiInvio.add(c);
 					datiSpecificiInvioLocalService.comunicaDatiSpecificiInvioMonitoraggio(dsi, documentiCollegati,
@@ -240,94 +267,45 @@ public class BollettinoWorkflowHandler extends BaseWorkflowHandler<Bollettino> {
 
 			String url = "https://allertameteo.regione.emilia-romagna.it";
 			try {
-				AllertaParametro ap = allertaParametroLocalService.getAllertaParametro("URL_PRIMES");
+				AllertaParametro ap = allertaParametroLocalService.fetchAllertaParametro("URL_PRIMES");
 				if (ap != null)
 					url = ap.getValore();
 			} catch (Exception e) {
 			}
 			String u = "";
 			try {
-				u = url + feedback.getLink();
-				u = u.replace(" ", "%20");
+				u = url + feedback2.getLink();
+				u = u.replaceAll(" ", "%20");
 			} catch (Exception e) {
 			}
-			sendToChannel("Emanato documento di monitoraggio " + feedback.getNumero() + ": " + u);
+			sendToChannel("Emanato documento di monitoraggio " + feedback2.getNumero() + ": " + u);
 
 			if (pubblicato == null)
 				caricaPubblicatoTag();
 
-			try {
-				if (lavorazione != null)
-					assetCategoryLocalService.deleteAssetEntryAssetCategory(feedback.getBollettinoId(), lavorazione);
-			} catch (Exception e) {
-			}
-			try {
-				if (presentato != null)
-					assetCategoryLocalService.deleteAssetEntryAssetCategory(feedback.getBollettinoId(), presentato);
-			} catch (Exception e) {
-			}
+			long id = assetEntryLocalService.getEntry(Bollettino.class.getName(), feedback2.getBollettinoId())
+					.getEntryId();
+			AssetEntryAssetCategoryRelLocalServiceUtil.deleteAssetEntryAssetCategoryRelByAssetEntryId(id);
+			
 
 			if (pubblicato != null) {
 				// assetCategoryLocalService.clearAssetEntryAssetCategories(assetEntryLocalService.getEntry(Bollettino.class.getName(),
 				// feedback.getBollettinoId()).getEntryId());
-				assetCategoryLocalService.addAssetEntryAssetCategory(assetEntryLocalService
-						.getEntry(Bollettino.class.getName(), feedback.getBollettinoId()).getEntryId(), pubblicato);
+				AssetEntryAssetCategoryRelLocalServiceUtil.addAssetEntryAssetCategoryRel(id, pubblicato.getCategoryId());
+				//assetCategoryLocalService.addAssetEntryAssetCategory(assetEntryLocalService
+						//.getEntry(Bollettino.class.getName(), feedback.getBollettinoId()).getEntryId(), pubblicato);
 			}
 
 			if (homepage != null) {
-				assetCategoryLocalService.addAssetEntryAssetCategory(assetEntryLocalService
-						.getEntry(Bollettino.class.getName(), feedback.getBollettinoId()).getEntryId(), homepage);
-			}
+				AssetEntryAssetCategoryRelLocalServiceUtil.addAssetEntryAssetCategoryRel(id, homepage.getCategoryId());
 
-			try {
-				if (ultimoEvento != null) {
-
-					// se questo è il primo monitoraggio di un nuovo evento...
-					try {
-						if (feedback.getNumero() != null && feedback.getNumero().endsWith("/01")) {
-							// rimuovi la categoria ultimoEvento da tutti i monitoraggi precedenti
-							AssetEntryQuery assetEntryQuery = new AssetEntryQuery();
-							assetEntryQuery.setAllCategoryIds(new long[] { ultimoEvento.getCategoryId() });
-							List<AssetEntry> allertaAssets = assetEntryLocalService.getEntries(assetEntryQuery);
-							for (AssetEntry allertaAssetEntry : allertaAssets) {
-
-								long[] cats = allertaAssetEntry.getCategoryIds();
-								long[] cc = new long[cats.length - 1];
-
-								int i = 0;
-								for (long ll : cats) {
-
-									if (ll != ultimoEvento.getCategoryId())
-										cc[i++] = ll;
-								}
-
-								assetEntryLocalService.deleteAssetCategoryAssetEntry(ultimoEvento.getCategoryId(),
-										allertaAssetEntry);
-								assetEntryLocalService.updateEntry(allertaAssetEntry.getUserId(),
-										allertaAssetEntry.getGroupId(), allertaAssetEntry.getClassName(),
-										allertaAssetEntry.getClassPK(), cc, new String[] {});
-							}
-						}
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-
-					assetCategoryLocalService.addAssetEntryAssetCategory(assetEntryLocalService
-							.getEntry(Bollettino.class.getName(), feedback.getBollettinoId()).getEntryId(),
-							ultimoEvento);
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
+				//assetCategoryLocalService.addAssetEntryAssetCategory(assetEntryLocalService
+						//.getEntry(Bollettino.class.getName(), feedback.getBollettinoId()).getEntryId(), homepage);
 			}
 
 			assetEntryLocalService.updateVisible(Bollettino.class.getName(), resourcePrimKey, true);
-			IndexerRegistryUtil.nullSafeGetIndexer(Bollettino.class).reindex(feedback);
+			IndexerRegistryUtil.nullSafeGetIndexer(Bollettino.class).reindex(feedback2);
 
-			/*
-			 * try { sendMail(Long.parseLong(workflowContext.get(WorkflowConstants.
-			 * CONTEXT_COMPANY_ID).toString()),feedback); } catch (Exception mail) {
-			 * System.out.println("MAIL EXCEPTION: "+mail.getMessage()); }
-			 */
 
 			String fromSMS = "33312345678";
 			try {
@@ -339,21 +317,24 @@ public class BollettinoWorkflowHandler extends BaseWorkflowHandler<Bollettino> {
 			} catch (Exception e) {
 			}
 
-			sendSMS(feedback, fromSMS); // manda anche le mail
+			sendSMS(feedback2, fromSMS); // manda anche le mail
+			
+			
 		}
 
 		if (status == WorkflowConstants.STATUS_PENDING) {
+			String approvalUrl = getBollettinoApprovalUrl(feedback2);
 
-			mandaNotifica(feedback.getIdApprovatore(),
-					"Il monitoraggio " + feedback.getNumero()
-							+ " è in attesa di approvazione: https://allertameteo.regione.emilia-romagna.it",
-					feedback, tipo, sottotipo, l);
+			mandaNotifica(feedback2.getIdApprovatore(),
+					"Il monitoraggio " + feedback2.getNumero()
+							+ "e' in attesa di approvazione su https://allertameteo-utenti.regione.emilia-romagna.it",
+							feedback2, tipo, sottotipo, l);
 
-			text = "<html><head></head><body>Il monitoraggio " + feedback.getNumero()
-					+ " e' in attesa di approvazione su <a href=\"https://allertameteo.regione.emilia-romagna.it\">https://allertameteo.regione.emilia-romagna.it</a></body></html>";
-			subject = "Il documento " + feedback.getNumero() + " è in attesa di approvazione";
+			 text2 = "<html><head></head><body>Il monitoraggio " + feedback2.getNumero()
+					+ " e' in attesa di approvazione sul <a href=\"" + approvalUrl + "\">Portale Allerta Meteo</a></body></html>";
+			 subject2 = "Il documento " + feedback2.getNumero() + "e' in attesa di approvazione";
 
-			long id = assetEntryLocalService.getEntry(Bollettino.class.getName(), feedback.getBollettinoId())
+			long id = assetEntryLocalService.getEntry(Bollettino.class.getName(), feedback2.getBollettinoId())
 					.getEntryId();
 
 			if (presentato == null)
@@ -361,29 +342,35 @@ public class BollettinoWorkflowHandler extends BaseWorkflowHandler<Bollettino> {
 			if (presentato != null) {
 				// assetCategoryLocalService.clearAssetEntryAssetCategories(assetEntryLocalService.getEntry(Bollettino.class.getName(),
 				// feedback.getBollettinoId()).getEntryId());
-				assetCategoryLocalService.addAssetEntryAssetCategory(id, presentato);
+				AssetEntryAssetCategoryRelLocalServiceUtil.addAssetEntryAssetCategoryRel(id, presentato.getCategoryId());
+
+				//assetCategoryLocalService.addAssetEntryAssetCategory(id, presentato);
 			}
 
 			try {
 				if (lavorazione != null)
-					assetCategoryLocalService.deleteAssetEntryAssetCategory(id, lavorazione);
+					AssetEntryAssetCategoryRelLocalServiceUtil.deleteAssetEntryAssetCategoryRel(id, lavorazione.getCategoryId());
+					//assetCategoryLocalService.deleteAssetEntryAssetCategory(id, lavorazione);
 			} catch (Exception e) {
 
 				logger.error(e);
 			}
 
 			assetEntryLocalService.updateVisible(Bollettino.class.getName(), resourcePrimKey, true);
-			IndexerRegistryUtil.nullSafeGetIndexer(Bollettino.class).reindex(feedback);
+			IndexerRegistryUtil.nullSafeGetIndexer(Bollettino.class).reindex(feedback2);
+		}
+		
+		
+
+		if (text2 != null) {
+			spedisciNotifiche(tipo, sottotipo, l, subject2, text2, feedback2);
 		}
 
-		if (text != null) {
-			spedisciNotifiche(tipo, sottotipo, l, subject, text, feedback);
+		if (textPlusOne2 != null) {
+			spedisciNotifiche(tipo, sottotipo, l + 1, subjectPlusOne2, textPlusOne2, feedback2);
 		}
 
-		if (textPlusOne != null) {
-			spedisciNotifiche(tipo, sottotipo, l + 1, subjectPlusOne, textPlusOne, feedback);
-		}
-
+		return null;});
 		return feedback;
 	}
 
@@ -442,7 +429,7 @@ public class BollettinoWorkflowHandler extends BaseWorkflowHandler<Bollettino> {
 				List bacini = bollettinoLocalService.getFiumiBollettino(a.getBollettinoId());
 
 				List<String> b2 = new ArrayList<String>();
-				b2.add("§§§");
+				b2.add("ï¿½ï¿½ï¿½");
 				for (Object ob : bacini)
 					b2.add(ob.toString());
 
@@ -541,29 +528,43 @@ public class BollettinoWorkflowHandler extends BaseWorkflowHandler<Bollettino> {
 		}
 	}
 
-	private void rigeneraPdf(Bollettino a, long scope) {
+	/*private void rigeneraPdf(Bollettino a, long scope) {
 
 		try {
 
 			allertaUtils.invocaServizioRefreshMonitoraggio(a.getBollettinoId());
 
-			/*
-			 * BollettinoParametro ap = bollettinoParametroLocalService
-			 * .fetchBollettinoParametro("BOLLETTINO_PDF_REFRESH_URL");
-			 * 
-			 * String url = (ap != null ? ap.getValore() : "http://localhost:" +
-			 * portal.getPortalServerPort(false) + "/o/api/allerta/buildAllertaPdf");
-			 * 
-			 * url += ("?tipo=bollettino&scope=" + scope + "&id=" + a.getBollettinoId());
-			 * 
-			 * System.out.println(url);
-			 * 
-			 * new URL(url).openConnection().getInputStream();
-			 */
 
 		} catch (Exception e) {
 
 			// logInternoLocalService.log("BollettinoWorkflow", "rigeneraPdf", e, "");
+			logger.error(e);
+		}
+
+	}*/
+	
+	private void rigeneraPdf(Bollettino a, long scope) {
+
+		try {
+			
+			AllertaParametro ap = AllertaParametroLocalServiceUtil.fetchAllertaParametro("URL_REFRESH");
+			String url = "";
+			try {
+				if (ap!=null) {
+					url = ap.getValore()+"?tipo=bollettino&scope=20154&id="+a.getBollettinoId();
+					String str = new URL(url).openConnection().getContent().toString();
+					if (str!=null && !str.equals(""))
+					{
+						a.setHash(str);
+						BollettinoLocalServiceUtil.updateBollettino(a);
+					}
+				}
+			} catch (Exception e) { e.printStackTrace(); }
+			finally {
+				Thread.sleep(2000);
+			}
+			
+		} catch (Exception e) {
 			logger.error(e);
 		}
 
@@ -732,6 +733,19 @@ public class BollettinoWorkflowHandler extends BaseWorkflowHandler<Bollettino> {
 		}
 	}
 
+	private String getBollettinoApprovalUrl(Bollettino bollettino) {
+		String portalBaseUrl = "https://allertameteo-utenti.regione.emilia-romagna.it";
+		try {
+			long entryId = assetEntryLocalService.getEntry(Bollettino.class.getName(), bollettino.getBollettinoId())
+					.getEntryId();
+			return portalBaseUrl
+					+ "/web/guest/approvazione-monitoraggio/-/asset_publisher/16LwXJHZXwfc/Bollettino/id/" + entryId;
+		} catch (Exception e) {
+			logger.warn("Cannot build specific approval URL for bollettinoId=" + bollettino.getBollettinoId(), e);
+			return portalBaseUrl;
+		}
+	}
+
 	public void sendToChannel(String message) {
 
 		AllertaBaseConfiguration configuration = AllertaTracker.getAllertaBaseConfiguration();
@@ -741,7 +755,7 @@ public class BollettinoWorkflowHandler extends BaseWorkflowHandler<Bollettino> {
 			return;
 		}
 
-		String urlTest = "https://api.telegram.org/bot524869072:AAEvFLpoFBHJUMNLhWn1aOvAPdZYPvkHBhM/sendMessage?chat_id=@AllertaMeteoEMR&text=";
+		String urlTest = "";
 
 		try {
 			BollettinoParametro ap = bollettinoParametroLocalService.fetchBollettinoParametro("ALLERTA_TELEGRAM_URL");
@@ -774,6 +788,7 @@ public class BollettinoWorkflowHandler extends BaseWorkflowHandler<Bollettino> {
 
 	@Reference
 	private AssetCategoryLocalService assetCategoryLocalService;
+	
 
 	@Reference
 	private AssetEntryLocalService assetEntryLocalService;

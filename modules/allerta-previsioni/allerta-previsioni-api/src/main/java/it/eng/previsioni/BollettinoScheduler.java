@@ -1,8 +1,22 @@
 package it.eng.previsioni;
 
 
+import com.liferay.counter.kernel.service.CounterLocalService;
+import com.liferay.dispatch.executor.BaseDispatchTaskExecutor;
+import com.liferay.dispatch.executor.DispatchTaskExecutor;
+import com.liferay.dispatch.executor.DispatchTaskExecutorOutput;
+import com.liferay.dispatch.model.DispatchTrigger;
+import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.scheduler.SchedulerEngineHelper;
+import com.liferay.portal.kernel.scheduler.TriggerFactory;
+import com.liferay.portal.kernel.util.StreamUtil;
+
 import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -20,39 +34,12 @@ import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
-import com.liferay.counter.kernel.service.CounterLocalService;
-import com.liferay.portal.kernel.exception.SystemException;
-import com.liferay.portal.kernel.json.JSONArray;
-import com.liferay.portal.kernel.json.JSONFactoryUtil;
-import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.messaging.BaseMessageListener;
-import com.liferay.portal.kernel.messaging.DestinationNames;
-import com.liferay.portal.kernel.messaging.Message;
-import com.liferay.portal.kernel.messaging.MessageListener;
-import com.liferay.portal.kernel.scheduler.SchedulerEngineHelper;
-import com.liferay.portal.kernel.scheduler.SchedulerEntry;
-import com.liferay.portal.kernel.scheduler.SchedulerEntryImpl;
-import com.liferay.portal.kernel.scheduler.TimeUnit;
-import com.liferay.portal.kernel.scheduler.Trigger;
-import com.liferay.portal.kernel.scheduler.TriggerFactory;
-import com.liferay.portal.kernel.util.Base64;
-import com.liferay.portal.kernel.util.StreamUtil;
-
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Modified;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-
-import it.eng.allerta.configuration.schedulers.AllertaBaseSchedulersConfiguration;
-import it.eng.allerta.utils.AllertaTracker;
 import it.eng.previsioni.meteo.exception.NoSuchImgException;
 import it.eng.previsioni.meteo.model.Bollettino;
 import it.eng.previsioni.meteo.model.Img;
@@ -62,10 +49,13 @@ import it.eng.previsioni.meteo.service.BollettinoLocalService;
 import it.eng.previsioni.meteo.service.ImgLocalService;
 
 @Component(
-		  immediate = false, 			  
-		  service = MessageListener.class
+		  property = {
+			"dispatch.task.executor.name=Scarico previsioni meteo",
+			"dispatch.task.executor.type=task-previsioni-meteo"
+		  },
+		  service = DispatchTaskExecutor.class
 		)
-public class BollettinoScheduler extends BaseMessageListener {
+public class BollettinoScheduler extends BaseDispatchTaskExecutor {
 
 	private Log logger = LogFactoryUtil.getLog(BollettinoScheduler.class);
 
@@ -148,7 +138,7 @@ public class BollettinoScheduler extends BaseMessageListener {
 	}
 
 	@Override
-	protected void doReceive(Message message) throws Exception {
+	public void doExecute(DispatchTrigger dispatchTrigger, DispatchTaskExecutorOutput output) {
 		// TODO Auto-generated method stub
 		logger.warn("Inizio scheduler");
 		JSONObject d = getXml();
@@ -159,6 +149,8 @@ public class BollettinoScheduler extends BaseMessageListener {
 		logger.warn("Passo tendenza");
 		getTendenzaImg(d);
 		logger.warn("Fine scheduler");
+		
+		output.setOutput("Scarico previsioni meteo completato");
 
 	}
 	
@@ -420,42 +412,15 @@ public class BollettinoScheduler extends BaseMessageListener {
 	@Reference
 	private CounterLocalService counterLocalService;
 
-	@Activate
-	@Modified
-	protected void activate(Map<String, Object> properties) {
-		
-		System.out.println("Activate BollettinoScheduler");
-		logger.debug("Activate BollettinoScheduler");
-		
-		Class<?> clazz = getClass();
-
-		String className = clazz.getName();
-		
-		AllertaBaseSchedulersConfiguration configuration = AllertaTracker.getAllertaSchedulersConfiguration();
-		
-		System.out.println("scheduling at " + configuration.schedulerBollettinoMinutes());
-
-		if (configuration.schedulerBollettinoMinutes()<1) return;
-		
-		Trigger trigger = 
-				_triggerFactory.createTrigger(className, className, null, null, configuration.schedulerBollettinoMinutes(), TimeUnit.MINUTE);
-
-		SchedulerEntry schedulerEntry = new SchedulerEntryImpl(
-			className, trigger);
-
-		baseScheduler.register(
-			this, schedulerEntry, DestinationNames.SCHEDULER_DISPATCH);
-		
-	}
-
-	@Deactivate
-	protected void deactivate() {
-		baseScheduler.unregister(this);
-	}
 	
 	@Reference
 	private SchedulerEngineHelper baseScheduler;
 	
 	@Reference
 	private TriggerFactory _triggerFactory;
+
+	@Override
+	public String getName() {
+		return "Scarico previsioni meteo";
+	}
 }

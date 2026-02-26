@@ -5,11 +5,11 @@ create table img_animazioni_Parametro (
 
 create table img_animazioni_PioggiaCumulativa (
 	id_ LONG not null primary key,
-	nome VARCHAR(300) null,
+	nome VARCHAR(75) null,
 	cumulazione VARCHAR(75) null,
 	inzioCumulazione DATE null,
 	fineCumulazione DATE null,
-	imgData TEXT null
+	imgData VARCHAR(75) null
 );
 
 create table img_animazioni_altezzaOnda (
@@ -17,7 +17,7 @@ create table img_animazioni_altezzaOnda (
 	im VARCHAR(75) null,
 	text_LOC VARCHAR(75) null,
 	timestamp LONG,
-	imgData TEXT null
+	imgData VARCHAR(75) null
 );
 
 create table img_animazioni_altezzaOndaAdriac (

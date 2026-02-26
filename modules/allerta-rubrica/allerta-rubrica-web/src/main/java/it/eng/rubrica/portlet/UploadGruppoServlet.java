@@ -57,8 +57,10 @@ import it.eng.allerte.service.persistence.RubricaGruppoNominativiPK;
 import it.eng.allerter.service.LogInternoLocalServiceUtil;
 import it.eng.bollettino.service.BollettinoLocalServiceUtil;
 
-@Component(immediate = true, property = { "osgi.http.whiteboard.context.path=/",
-		"osgi.http.whiteboard.servlet.pattern=/rubrica/upload/*" }, service = Servlet.class)
+@Component(
+	    property = "osgi.http.whiteboard.servlet.pattern=/rubrica/upload/*",
+	    service = Servlet.class
+	)
 public class UploadGruppoServlet extends HttpServlet {
 
 	public static final long AMMINISTRATORE_RUBRICA = 233866;
@@ -605,7 +607,7 @@ public class UploadGruppoServlet extends HttpServlet {
 				}
 
 				// considera quando chiedere la decisione dell'utente. Questo accade
-				// quando è prevista una modifica a un nominativo presente in più gruppi
+				// quando ï¿½ prevista una modifica a un nominativo presente in piï¿½ gruppi
 				if (!nc.decisione.equals("NOTHING") && nc.gruppiAppartenenza > 1)
 					nc.chiedi = true;
 
@@ -690,11 +692,11 @@ public class UploadGruppoServlet extends HttpServlet {
 			if (nc.decisione.equals("INSERT") || nc.decisione.equals("UPDATE")) {
 				String veraDecisione = nc.decisione;
 
-				// l'utente ha visto un nominativo che compare in più gruppi e ha scelto di
+				// l'utente ha visto un nominativo che compare in piï¿½ gruppi e ha scelto di
 				// non salvarne una versione separata
 				if (nc.chiedi && !nc.risposta) {
 					//controlla se ci sono altre modifiche allo stesso nominativo nel seguito del file di importazione; nel qual caso queste sono
-					//inutili perché verrebbero sovrascritte.
+					//inutili perchï¿½ verrebbero sovrascritte.
 					for (int k=l.size()-1; k>=0; k--) {
 						NominativoChange nomi = l.get(k);
 						if (nomi==nc) break;
@@ -714,7 +716,7 @@ public class UploadGruppoServlet extends HttpServlet {
 					RubricaGruppoNominativiLocalServiceUtil.deleteRubricaGruppoNominativi(new RubricaGruppoNominativiPK(rg.getID_GRUPPO(), nc.old));
 					List<RubricaGruppoNominativi> ll = RubricaGruppoNominativiLocalServiceUtil.findByRubricaGruppoRuoloByNominativo(nc.old);
 					if (ll!=null && ll.size()==0) {
-						//non fa più parte di niente, disattivalo
+						//non fa piï¿½ parte di niente, disattivalo
 						rubricaNominativo = RubricaNominativoLocalServiceUtil.fetchRubricaNominativo(nc.old);
 						if (rubricaNominativo!=null) {
 							rubricaNominativo.setDISABLED(true);
@@ -1006,7 +1008,11 @@ public class UploadGruppoServlet extends HttpServlet {
 				cc.old = rubcon != null ? rubcon.getID_CONTATTO() : null;
 				cc.oldCanale = rubcon.getFK_CANALE();
 				cc.oldContatto = rubcon.getCONTATTO();
-				cc.nomeCanale = RubricaCanaleLocalServiceUtil.fetchRubricaCanale(rubcon.getFK_CANALE()).getNOME();
+				//cc.nomeCanale = RubricaCanaleLocalServiceUtil.fetchRubricaCanale(rubcon.getFK_CANALE()).getNOME();
+				RubricaCanale rc = RubricaCanaleLocalServiceUtil.fetchRubricaCanale(rubcon.getFK_CANALE());
+				cc.nomeCanale = (rc!=null?rc.getNOME():"");
+
+				
 				nc.contatti.add(cc);
 			}
 			List<RubricaGruppoNominativi> rr = RubricaGruppoNominativiLocalServiceUtil

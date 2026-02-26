@@ -1,21 +1,12 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerte.service.persistence.impl;
 
-import aQute.bnd.annotation.ProviderType;
-
+import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
@@ -23,32 +14,41 @@ import com.liferay.portal.kernel.dao.orm.Query;
 import com.liferay.portal.kernel.dao.orm.QueryPos;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
+import com.liferay.portal.kernel.dao.orm.SessionFactory;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.kernel.util.PropsKeys;
+import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.ProxyUtil;
-import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringUtil;
-import com.liferay.portal.spring.extender.service.ServiceReference;
 
 import it.eng.allerte.exception.NoSuchRubricaRuoloException;
 import it.eng.allerte.model.RubricaRuolo;
+import it.eng.allerte.model.RubricaRuoloTable;
 import it.eng.allerte.model.impl.RubricaRuoloImpl;
 import it.eng.allerte.model.impl.RubricaRuoloModelImpl;
 import it.eng.allerte.service.persistence.RubricaRuoloPersistence;
+import it.eng.allerte.service.persistence.RubricaRuoloUtil;
+import it.eng.allerte.service.persistence.impl.constants.rubricaPersistenceConstants;
 
 import java.io.Serializable;
 
 import java.lang.reflect.InvocationHandler;
 
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.sql.DataSource;
+
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The persistence implementation for the rubrica ruolo service.
@@ -60,7 +60,7 @@ import java.util.Set;
  * @author Pratola_L
  * @generated
  */
-@ProviderType
+@Component(service = RubricaRuoloPersistence.class)
 public class RubricaRuoloPersistenceImpl
 	extends BasePersistenceImpl<RubricaRuolo>
 	implements RubricaRuoloPersistence {
@@ -83,7 +83,6 @@ public class RubricaRuoloPersistenceImpl
 	private FinderPath _finderPathWithoutPaginationFindAll;
 	private FinderPath _finderPathCountAll;
 	private FinderPath _finderPathFetchByRubricaRuoloByRuoloLiferay;
-	private FinderPath _finderPathCountByRubricaRuoloByRuoloLiferay;
 
 	/**
 	 * Returns the rubrica ruolo where FK_RUOLO_LIFERAY = &#63; or throws a <code>NoSuchRubricaRuoloException</code> if it could not be found.
@@ -100,20 +99,20 @@ public class RubricaRuoloPersistenceImpl
 			FK_RUOLO_LIFERAY);
 
 		if (rubricaRuolo == null) {
-			StringBundler msg = new StringBundler(4);
+			StringBundler sb = new StringBundler(4);
 
-			msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+			sb.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-			msg.append("FK_RUOLO_LIFERAY=");
-			msg.append(FK_RUOLO_LIFERAY);
+			sb.append("FK_RUOLO_LIFERAY=");
+			sb.append(FK_RUOLO_LIFERAY);
 
-			msg.append("}");
+			sb.append("}");
 
 			if (_log.isDebugEnabled()) {
-				_log.debug(msg.toString());
+				_log.debug(sb.toString());
 			}
 
-			throw new NoSuchRubricaRuoloException(msg.toString());
+			throw new NoSuchRubricaRuoloException(sb.toString());
 		}
 
 		return rubricaRuolo;
@@ -136,63 +135,73 @@ public class RubricaRuoloPersistenceImpl
 	 * Returns the rubrica ruolo where FK_RUOLO_LIFERAY = &#63; or returns <code>null</code> if it could not be found, optionally using the finder cache.
 	 *
 	 * @param FK_RUOLO_LIFERAY the fk_ruolo_liferay
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the matching rubrica ruolo, or <code>null</code> if a matching rubrica ruolo could not be found
 	 */
 	@Override
 	public RubricaRuolo fetchByRubricaRuoloByRuoloLiferay(
-		long FK_RUOLO_LIFERAY, boolean retrieveFromCache) {
+		long FK_RUOLO_LIFERAY, boolean useFinderCache) {
 
-		Object[] finderArgs = new Object[] {FK_RUOLO_LIFERAY};
+		Object[] finderArgs = null;
+
+		if (useFinderCache) {
+			finderArgs = new Object[] {FK_RUOLO_LIFERAY};
+		}
 
 		Object result = null;
 
-		if (retrieveFromCache) {
-			result = finderCache.getResult(
+		if (useFinderCache) {
+			result = dummyFinderCache.getResult(
 				_finderPathFetchByRubricaRuoloByRuoloLiferay, finderArgs, this);
 		}
 
 		if (result instanceof RubricaRuolo) {
 			RubricaRuolo rubricaRuolo = (RubricaRuolo)result;
 
-			if ((FK_RUOLO_LIFERAY != rubricaRuolo.getFK_RUOLO_LIFERAY())) {
+			if (FK_RUOLO_LIFERAY != rubricaRuolo.getFK_RUOLO_LIFERAY()) {
 				result = null;
 			}
 		}
 
 		if (result == null) {
-			StringBundler query = new StringBundler(3);
+			StringBundler sb = new StringBundler(3);
 
-			query.append(_SQL_SELECT_RUBRICARUOLO_WHERE);
+			sb.append(_SQL_SELECT_RUBRICARUOLO_WHERE);
 
-			query.append(
+			sb.append(
 				_FINDER_COLUMN_RUBRICARUOLOBYRUOLOLIFERAY_FK_RUOLO_LIFERAY_2);
 
-			String sql = query.toString();
+			String sql = sb.toString();
 
 			Session session = null;
 
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				QueryPos qPos = QueryPos.getInstance(q);
+				QueryPos queryPos = QueryPos.getInstance(query);
 
-				qPos.add(FK_RUOLO_LIFERAY);
+				queryPos.add(FK_RUOLO_LIFERAY);
 
-				List<RubricaRuolo> list = q.list();
+				List<RubricaRuolo> list = query.list();
 
 				if (list.isEmpty()) {
-					finderCache.putResult(
-						_finderPathFetchByRubricaRuoloByRuoloLiferay,
-						finderArgs, list);
+					if (useFinderCache) {
+						dummyFinderCache.putResult(
+							_finderPathFetchByRubricaRuoloByRuoloLiferay,
+							finderArgs, list);
+					}
 				}
 				else {
 					if (list.size() > 1) {
 						Collections.sort(list, Collections.reverseOrder());
 
 						if (_log.isWarnEnabled()) {
+							if (!useFinderCache) {
+								finderArgs = new Object[] {FK_RUOLO_LIFERAY};
+							}
+
 							_log.warn(
 								"RubricaRuoloPersistenceImpl.fetchByRubricaRuoloByRuoloLiferay(long, boolean) with parameters (" +
 									StringUtil.merge(finderArgs) +
@@ -207,11 +216,8 @@ public class RubricaRuoloPersistenceImpl
 					cacheResult(rubricaRuolo);
 				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(
-					_finderPathFetchByRubricaRuoloByRuoloLiferay, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -251,48 +257,14 @@ public class RubricaRuoloPersistenceImpl
 	 */
 	@Override
 	public int countByRubricaRuoloByRuoloLiferay(long FK_RUOLO_LIFERAY) {
-		FinderPath finderPath = _finderPathCountByRubricaRuoloByRuoloLiferay;
+		RubricaRuolo rubricaRuolo = fetchByRubricaRuoloByRuoloLiferay(
+			FK_RUOLO_LIFERAY);
 
-		Object[] finderArgs = new Object[] {FK_RUOLO_LIFERAY};
-
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
-
-		if (count == null) {
-			StringBundler query = new StringBundler(2);
-
-			query.append(_SQL_COUNT_RUBRICARUOLO_WHERE);
-
-			query.append(
-				_FINDER_COLUMN_RUBRICARUOLOBYRUOLOLIFERAY_FK_RUOLO_LIFERAY_2);
-
-			String sql = query.toString();
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				Query q = session.createQuery(sql);
-
-				QueryPos qPos = QueryPos.getInstance(q);
-
-				qPos.add(FK_RUOLO_LIFERAY);
-
-				count = (Long)q.uniqueResult();
-
-				finderCache.putResult(finderPath, finderArgs, count);
-			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
+		if (rubricaRuolo == null) {
+			return 0;
 		}
 
-		return count.intValue();
+		return 1;
 	}
 
 	private static final String
@@ -301,6 +273,11 @@ public class RubricaRuoloPersistenceImpl
 
 	public RubricaRuoloPersistenceImpl() {
 		setModelClass(RubricaRuolo.class);
+
+		setModelImplClass(RubricaRuoloImpl.class);
+		setModelPKClass(long.class);
+
+		setTable(RubricaRuoloTable.INSTANCE);
 	}
 
 	/**
@@ -310,16 +287,15 @@ public class RubricaRuoloPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(RubricaRuolo rubricaRuolo) {
-		entityCache.putResult(
-			RubricaRuoloModelImpl.ENTITY_CACHE_ENABLED, RubricaRuoloImpl.class,
-			rubricaRuolo.getPrimaryKey(), rubricaRuolo);
+		dummyEntityCache.putResult(
+			RubricaRuoloImpl.class, rubricaRuolo.getPrimaryKey(), rubricaRuolo);
 
-		finderCache.putResult(
+		dummyFinderCache.putResult(
 			_finderPathFetchByRubricaRuoloByRuoloLiferay,
 			new Object[] {rubricaRuolo.getFK_RUOLO_LIFERAY()}, rubricaRuolo);
-
-		rubricaRuolo.resetOriginalValues();
 	}
+
+	private int _valueObjectFinderCacheListThreshold;
 
 	/**
 	 * Caches the rubrica ruolos in the entity cache if it is enabled.
@@ -328,16 +304,19 @@ public class RubricaRuoloPersistenceImpl
 	 */
 	@Override
 	public void cacheResult(List<RubricaRuolo> rubricaRuolos) {
+		if ((_valueObjectFinderCacheListThreshold == 0) ||
+			((_valueObjectFinderCacheListThreshold > 0) &&
+			 (rubricaRuolos.size() > _valueObjectFinderCacheListThreshold))) {
+
+			return;
+		}
+
 		for (RubricaRuolo rubricaRuolo : rubricaRuolos) {
-			if (entityCache.getResult(
-					RubricaRuoloModelImpl.ENTITY_CACHE_ENABLED,
+			if (dummyEntityCache.getResult(
 					RubricaRuoloImpl.class, rubricaRuolo.getPrimaryKey()) ==
 						null) {
 
 				cacheResult(rubricaRuolo);
-			}
-			else {
-				rubricaRuolo.resetOriginalValues();
 			}
 		}
 	}
@@ -351,11 +330,9 @@ public class RubricaRuoloPersistenceImpl
 	 */
 	@Override
 	public void clearCache() {
-		entityCache.clearCache(RubricaRuoloImpl.class);
+		dummyEntityCache.clearCache(RubricaRuoloImpl.class);
 
-		finderCache.clearCache(FINDER_CLASS_NAME_ENTITY);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		dummyFinderCache.clearCache(RubricaRuoloImpl.class);
 	}
 
 	/**
@@ -367,27 +344,22 @@ public class RubricaRuoloPersistenceImpl
 	 */
 	@Override
 	public void clearCache(RubricaRuolo rubricaRuolo) {
-		entityCache.removeResult(
-			RubricaRuoloModelImpl.ENTITY_CACHE_ENABLED, RubricaRuoloImpl.class,
-			rubricaRuolo.getPrimaryKey());
-
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
-
-		clearUniqueFindersCache((RubricaRuoloModelImpl)rubricaRuolo, true);
+		dummyEntityCache.removeResult(RubricaRuoloImpl.class, rubricaRuolo);
 	}
 
 	@Override
 	public void clearCache(List<RubricaRuolo> rubricaRuolos) {
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
-
 		for (RubricaRuolo rubricaRuolo : rubricaRuolos) {
-			entityCache.removeResult(
-				RubricaRuoloModelImpl.ENTITY_CACHE_ENABLED,
-				RubricaRuoloImpl.class, rubricaRuolo.getPrimaryKey());
+			dummyEntityCache.removeResult(RubricaRuoloImpl.class, rubricaRuolo);
+		}
+	}
 
-			clearUniqueFindersCache((RubricaRuoloModelImpl)rubricaRuolo, true);
+	@Override
+	public void clearCache(Set<Serializable> primaryKeys) {
+		dummyFinderCache.clearCache(RubricaRuoloImpl.class);
+
+		for (Serializable primaryKey : primaryKeys) {
+			dummyEntityCache.removeResult(RubricaRuoloImpl.class, primaryKey);
 		}
 	}
 
@@ -398,41 +370,9 @@ public class RubricaRuoloPersistenceImpl
 			rubricaRuoloModelImpl.getFK_RUOLO_LIFERAY()
 		};
 
-		finderCache.putResult(
-			_finderPathCountByRubricaRuoloByRuoloLiferay, args, Long.valueOf(1),
-			false);
-		finderCache.putResult(
+		dummyFinderCache.putResult(
 			_finderPathFetchByRubricaRuoloByRuoloLiferay, args,
-			rubricaRuoloModelImpl, false);
-	}
-
-	protected void clearUniqueFindersCache(
-		RubricaRuoloModelImpl rubricaRuoloModelImpl, boolean clearCurrent) {
-
-		if (clearCurrent) {
-			Object[] args = new Object[] {
-				rubricaRuoloModelImpl.getFK_RUOLO_LIFERAY()
-			};
-
-			finderCache.removeResult(
-				_finderPathCountByRubricaRuoloByRuoloLiferay, args);
-			finderCache.removeResult(
-				_finderPathFetchByRubricaRuoloByRuoloLiferay, args);
-		}
-
-		if ((rubricaRuoloModelImpl.getColumnBitmask() &
-			 _finderPathFetchByRubricaRuoloByRuoloLiferay.getColumnBitmask()) !=
-				 0) {
-
-			Object[] args = new Object[] {
-				rubricaRuoloModelImpl.getOriginalFK_RUOLO_LIFERAY()
-			};
-
-			finderCache.removeResult(
-				_finderPathCountByRubricaRuoloByRuoloLiferay, args);
-			finderCache.removeResult(
-				_finderPathFetchByRubricaRuoloByRuoloLiferay, args);
-		}
+			rubricaRuoloModelImpl);
 	}
 
 	/**
@@ -495,11 +435,11 @@ public class RubricaRuoloPersistenceImpl
 
 			return remove(rubricaRuolo);
 		}
-		catch (NoSuchRubricaRuoloException nsee) {
-			throw nsee;
+		catch (NoSuchRubricaRuoloException noSuchEntityException) {
+			throw noSuchEntityException;
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -522,8 +462,8 @@ public class RubricaRuoloPersistenceImpl
 				session.delete(rubricaRuolo);
 			}
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
@@ -565,39 +505,28 @@ public class RubricaRuoloPersistenceImpl
 		try {
 			session = openSession();
 
-			if (rubricaRuolo.isNew()) {
+			if (isNew) {
 				session.save(rubricaRuolo);
-
-				rubricaRuolo.setNew(false);
 			}
 			else {
 				rubricaRuolo = (RubricaRuolo)session.merge(rubricaRuolo);
 			}
 		}
-		catch (Exception e) {
-			throw processException(e);
+		catch (Exception exception) {
+			throw processException(exception);
 		}
 		finally {
 			closeSession(session);
 		}
 
-		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		dummyEntityCache.putResult(
+			RubricaRuoloImpl.class, rubricaRuoloModelImpl, false, true);
 
-		if (!RubricaRuoloModelImpl.COLUMN_BITMASK_ENABLED) {
-			finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
-		}
-		else if (isNew) {
-			finderCache.removeResult(_finderPathCountAll, FINDER_ARGS_EMPTY);
-			finderCache.removeResult(
-				_finderPathWithoutPaginationFindAll, FINDER_ARGS_EMPTY);
-		}
-
-		entityCache.putResult(
-			RubricaRuoloModelImpl.ENTITY_CACHE_ENABLED, RubricaRuoloImpl.class,
-			rubricaRuolo.getPrimaryKey(), rubricaRuolo, false);
-
-		clearUniqueFindersCache(rubricaRuoloModelImpl, false);
 		cacheUniqueFindersCache(rubricaRuoloModelImpl);
+
+		if (isNew) {
+			rubricaRuolo.setNew(false);
+		}
 
 		rubricaRuolo.resetOriginalValues();
 
@@ -646,161 +575,12 @@ public class RubricaRuoloPersistenceImpl
 	/**
 	 * Returns the rubrica ruolo with the primary key or returns <code>null</code> if it could not be found.
 	 *
-	 * @param primaryKey the primary key of the rubrica ruolo
-	 * @return the rubrica ruolo, or <code>null</code> if a rubrica ruolo with the primary key could not be found
-	 */
-	@Override
-	public RubricaRuolo fetchByPrimaryKey(Serializable primaryKey) {
-		Serializable serializable = entityCache.getResult(
-			RubricaRuoloModelImpl.ENTITY_CACHE_ENABLED, RubricaRuoloImpl.class,
-			primaryKey);
-
-		if (serializable == nullModel) {
-			return null;
-		}
-
-		RubricaRuolo rubricaRuolo = (RubricaRuolo)serializable;
-
-		if (rubricaRuolo == null) {
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				rubricaRuolo = (RubricaRuolo)session.get(
-					RubricaRuoloImpl.class, primaryKey);
-
-				if (rubricaRuolo != null) {
-					cacheResult(rubricaRuolo);
-				}
-				else {
-					entityCache.putResult(
-						RubricaRuoloModelImpl.ENTITY_CACHE_ENABLED,
-						RubricaRuoloImpl.class, primaryKey, nullModel);
-				}
-			}
-			catch (Exception e) {
-				entityCache.removeResult(
-					RubricaRuoloModelImpl.ENTITY_CACHE_ENABLED,
-					RubricaRuoloImpl.class, primaryKey);
-
-				throw processException(e);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return rubricaRuolo;
-	}
-
-	/**
-	 * Returns the rubrica ruolo with the primary key or returns <code>null</code> if it could not be found.
-	 *
 	 * @param ID_RUOLO the primary key of the rubrica ruolo
 	 * @return the rubrica ruolo, or <code>null</code> if a rubrica ruolo with the primary key could not be found
 	 */
 	@Override
 	public RubricaRuolo fetchByPrimaryKey(long ID_RUOLO) {
 		return fetchByPrimaryKey((Serializable)ID_RUOLO);
-	}
-
-	@Override
-	public Map<Serializable, RubricaRuolo> fetchByPrimaryKeys(
-		Set<Serializable> primaryKeys) {
-
-		if (primaryKeys.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<Serializable, RubricaRuolo> map =
-			new HashMap<Serializable, RubricaRuolo>();
-
-		if (primaryKeys.size() == 1) {
-			Iterator<Serializable> iterator = primaryKeys.iterator();
-
-			Serializable primaryKey = iterator.next();
-
-			RubricaRuolo rubricaRuolo = fetchByPrimaryKey(primaryKey);
-
-			if (rubricaRuolo != null) {
-				map.put(primaryKey, rubricaRuolo);
-			}
-
-			return map;
-		}
-
-		Set<Serializable> uncachedPrimaryKeys = null;
-
-		for (Serializable primaryKey : primaryKeys) {
-			Serializable serializable = entityCache.getResult(
-				RubricaRuoloModelImpl.ENTITY_CACHE_ENABLED,
-				RubricaRuoloImpl.class, primaryKey);
-
-			if (serializable != nullModel) {
-				if (serializable == null) {
-					if (uncachedPrimaryKeys == null) {
-						uncachedPrimaryKeys = new HashSet<Serializable>();
-					}
-
-					uncachedPrimaryKeys.add(primaryKey);
-				}
-				else {
-					map.put(primaryKey, (RubricaRuolo)serializable);
-				}
-			}
-		}
-
-		if (uncachedPrimaryKeys == null) {
-			return map;
-		}
-
-		StringBundler query = new StringBundler(
-			uncachedPrimaryKeys.size() * 2 + 1);
-
-		query.append(_SQL_SELECT_RUBRICARUOLO_WHERE_PKS_IN);
-
-		for (Serializable primaryKey : uncachedPrimaryKeys) {
-			query.append((long)primaryKey);
-
-			query.append(",");
-		}
-
-		query.setIndex(query.index() - 1);
-
-		query.append(")");
-
-		String sql = query.toString();
-
-		Session session = null;
-
-		try {
-			session = openSession();
-
-			Query q = session.createQuery(sql);
-
-			for (RubricaRuolo rubricaRuolo : (List<RubricaRuolo>)q.list()) {
-				map.put(rubricaRuolo.getPrimaryKeyObj(), rubricaRuolo);
-
-				cacheResult(rubricaRuolo);
-
-				uncachedPrimaryKeys.remove(rubricaRuolo.getPrimaryKeyObj());
-			}
-
-			for (Serializable primaryKey : uncachedPrimaryKeys) {
-				entityCache.putResult(
-					RubricaRuoloModelImpl.ENTITY_CACHE_ENABLED,
-					RubricaRuoloImpl.class, primaryKey, nullModel);
-			}
-		}
-		catch (Exception e) {
-			throw processException(e);
-		}
-		finally {
-			closeSession(session);
-		}
-
-		return map;
 	}
 
 	/**
@@ -817,7 +597,7 @@ public class RubricaRuoloPersistenceImpl
 	 * Returns a range of all the rubrica ruolos.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaRuoloModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaRuoloModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of rubrica ruolos
@@ -833,7 +613,7 @@ public class RubricaRuoloPersistenceImpl
 	 * Returns an ordered range of all the rubrica ruolos.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaRuoloModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaRuoloModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of rubrica ruolos
@@ -852,64 +632,62 @@ public class RubricaRuoloPersistenceImpl
 	 * Returns an ordered range of all the rubrica ruolos.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>RubricaRuoloModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>RubricaRuoloModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of rubrica ruolos
 	 * @param end the upper bound of the range of rubrica ruolos (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @param useFinderCache whether to use the finder cache
 	 * @return the ordered range of rubrica ruolos
 	 */
 	@Override
 	public List<RubricaRuolo> findAll(
 		int start, int end, OrderByComparator<RubricaRuolo> orderByComparator,
-		boolean retrieveFromCache) {
+		boolean useFinderCache) {
 
-		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
 		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
 			(orderByComparator == null)) {
 
-			pagination = false;
-			finderPath = _finderPathWithoutPaginationFindAll;
-			finderArgs = FINDER_ARGS_EMPTY;
+			if (useFinderCache) {
+				finderPath = _finderPathWithoutPaginationFindAll;
+				finderArgs = FINDER_ARGS_EMPTY;
+			}
 		}
-		else {
+		else if (useFinderCache) {
 			finderPath = _finderPathWithPaginationFindAll;
 			finderArgs = new Object[] {start, end, orderByComparator};
 		}
 
 		List<RubricaRuolo> list = null;
 
-		if (retrieveFromCache) {
-			list = (List<RubricaRuolo>)finderCache.getResult(
+		if (useFinderCache) {
+			list = (List<RubricaRuolo>)dummyFinderCache.getResult(
 				finderPath, finderArgs, this);
 		}
 
 		if (list == null) {
-			StringBundler query = null;
+			StringBundler sb = null;
 			String sql = null;
 
 			if (orderByComparator != null) {
-				query = new StringBundler(
+				sb = new StringBundler(
 					2 + (orderByComparator.getOrderByFields().length * 2));
 
-				query.append(_SQL_SELECT_RUBRICARUOLO);
+				sb.append(_SQL_SELECT_RUBRICARUOLO);
 
 				appendOrderByComparator(
-					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
+					sb, _ORDER_BY_ENTITY_ALIAS, orderByComparator);
 
-				sql = query.toString();
+				sql = sb.toString();
 			}
 			else {
 				sql = _SQL_SELECT_RUBRICARUOLO;
 
-				if (pagination) {
-					sql = sql.concat(RubricaRuoloModelImpl.ORDER_BY_JPQL);
-				}
+				sql = sql.concat(RubricaRuoloModelImpl.ORDER_BY_JPQL);
 			}
 
 			Session session = null;
@@ -917,29 +695,19 @@ public class RubricaRuoloPersistenceImpl
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(sql);
+				Query query = session.createQuery(sql);
 
-				if (!pagination) {
-					list = (List<RubricaRuolo>)QueryUtil.list(
-						q, getDialect(), start, end, false);
-
-					Collections.sort(list);
-
-					list = Collections.unmodifiableList(list);
-				}
-				else {
-					list = (List<RubricaRuolo>)QueryUtil.list(
-						q, getDialect(), start, end);
-				}
+				list = (List<RubricaRuolo>)QueryUtil.list(
+					query, getDialect(), start, end);
 
 				cacheResult(list);
 
-				finderCache.putResult(finderPath, finderArgs, list);
+				if (useFinderCache) {
+					dummyFinderCache.putResult(finderPath, finderArgs, list);
+				}
 			}
-			catch (Exception e) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -967,7 +735,7 @@ public class RubricaRuoloPersistenceImpl
 	 */
 	@Override
 	public int countAll() {
-		Long count = (Long)finderCache.getResult(
+		Long count = (Long)dummyFinderCache.getResult(
 			_finderPathCountAll, FINDER_ARGS_EMPTY, this);
 
 		if (count == null) {
@@ -976,18 +744,15 @@ public class RubricaRuoloPersistenceImpl
 			try {
 				session = openSession();
 
-				Query q = session.createQuery(_SQL_COUNT_RUBRICARUOLO);
+				Query query = session.createQuery(_SQL_COUNT_RUBRICARUOLO);
 
-				count = (Long)q.uniqueResult();
+				count = (Long)query.uniqueResult();
 
-				finderCache.putResult(
+				dummyFinderCache.putResult(
 					_finderPathCountAll, FINDER_ARGS_EMPTY, count);
 			}
-			catch (Exception e) {
-				finderCache.removeResult(
-					_finderPathCountAll, FINDER_ARGS_EMPTY);
-
-				throw processException(e);
+			catch (Exception exception) {
+				throw processException(exception);
 			}
 			finally {
 				closeSession(session);
@@ -998,6 +763,21 @@ public class RubricaRuoloPersistenceImpl
 	}
 
 	@Override
+	protected EntityCache getEntityCache() {
+		return dummyEntityCache;
+	}
+
+	@Override
+	protected String getPKDBName() {
+		return "ID_RUOLO";
+	}
+
+	@Override
+	protected String getSelectSQL() {
+		return _SQL_SELECT_RUBRICARUOLO;
+	}
+
+	@Override
 	protected Map<String, Integer> getTableColumnsMap() {
 		return RubricaRuoloModelImpl.TABLE_COLUMNS_MAP;
 	}
@@ -1005,57 +785,66 @@ public class RubricaRuoloPersistenceImpl
 	/**
 	 * Initializes the rubrica ruolo persistence.
 	 */
-	public void afterPropertiesSet() {
+	@Activate
+	public void activate() {
+		_valueObjectFinderCacheListThreshold = GetterUtil.getInteger(
+			PropsUtil.get(PropsKeys.VALUE_OBJECT_FINDER_CACHE_LIST_THRESHOLD));
+
 		_finderPathWithPaginationFindAll = new FinderPath(
-			RubricaRuoloModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaRuoloModelImpl.FINDER_CACHE_ENABLED, RubricaRuoloImpl.class,
-			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findAll", new String[0]);
+			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findAll", new String[0],
+			new String[0], true);
 
 		_finderPathWithoutPaginationFindAll = new FinderPath(
-			RubricaRuoloModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaRuoloModelImpl.FINDER_CACHE_ENABLED, RubricaRuoloImpl.class,
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findAll",
-			new String[0]);
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findAll", new String[0],
+			new String[0], true);
 
 		_finderPathCountAll = new FinderPath(
-			RubricaRuoloModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaRuoloModelImpl.FINDER_CACHE_ENABLED, Long.class,
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countAll",
-			new String[0]);
+			new String[0], new String[0], false);
 
 		_finderPathFetchByRubricaRuoloByRuoloLiferay = new FinderPath(
-			RubricaRuoloModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaRuoloModelImpl.FINDER_CACHE_ENABLED, RubricaRuoloImpl.class,
 			FINDER_CLASS_NAME_ENTITY, "fetchByRubricaRuoloByRuoloLiferay",
 			new String[] {Long.class.getName()},
-			RubricaRuoloModelImpl.FK_RUOLO_LIFERAY_COLUMN_BITMASK);
+			new String[] {"FK_RUOLO_LIFERAY"}, true);
 
-		_finderPathCountByRubricaRuoloByRuoloLiferay = new FinderPath(
-			RubricaRuoloModelImpl.ENTITY_CACHE_ENABLED,
-			RubricaRuoloModelImpl.FINDER_CACHE_ENABLED, Long.class,
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
-			"countByRubricaRuoloByRuoloLiferay",
-			new String[] {Long.class.getName()});
+		RubricaRuoloUtil.setPersistence(this);
 	}
 
-	public void destroy() {
-		entityCache.removeCache(RubricaRuoloImpl.class.getName());
-		finderCache.removeCache(FINDER_CLASS_NAME_ENTITY);
-		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+	@Deactivate
+	public void deactivate() {
+		RubricaRuoloUtil.setPersistence(null);
+
+		dummyEntityCache.removeCache(RubricaRuoloImpl.class.getName());
 	}
 
-	@ServiceReference(type = EntityCache.class)
-	protected EntityCache entityCache;
+	@Override
+	@Reference(
+		target = rubricaPersistenceConstants.SERVICE_CONFIGURATION_FILTER,
+		unbind = "-"
+	)
+	public void setConfiguration(Configuration configuration) {
+	}
 
-	@ServiceReference(type = FinderCache.class)
-	protected FinderCache finderCache;
+	@Override
+	@Reference(
+		target = rubricaPersistenceConstants.ORIGIN_BUNDLE_SYMBOLIC_NAME_FILTER,
+		unbind = "-"
+	)
+	public void setDataSource(DataSource dataSource) {
+		super.setDataSource(dataSource);
+	}
+
+	@Override
+	@Reference(
+		target = rubricaPersistenceConstants.ORIGIN_BUNDLE_SYMBOLIC_NAME_FILTER,
+		unbind = "-"
+	)
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		super.setSessionFactory(sessionFactory);
+	}
 
 	private static final String _SQL_SELECT_RUBRICARUOLO =
 		"SELECT rubricaRuolo FROM RubricaRuolo rubricaRuolo";
-
-	private static final String _SQL_SELECT_RUBRICARUOLO_WHERE_PKS_IN =
-		"SELECT rubricaRuolo FROM RubricaRuolo rubricaRuolo WHERE ID_RUOLO IN (";
 
 	private static final String _SQL_SELECT_RUBRICARUOLO_WHERE =
 		"SELECT rubricaRuolo FROM RubricaRuolo rubricaRuolo WHERE ";
@@ -1076,5 +865,10 @@ public class RubricaRuoloPersistenceImpl
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		RubricaRuoloPersistenceImpl.class);
+
+	@Override
+	protected FinderCache getFinderCache() {
+		return dummyFinderCache;
+	}
 
 }

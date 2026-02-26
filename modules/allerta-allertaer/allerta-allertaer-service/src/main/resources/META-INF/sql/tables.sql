@@ -15,18 +15,20 @@ create table ALLERTER_Allerta (
 	dataEmissione DATE null,
 	dataInizio DATE null,
 	dataFine DATE null,
-	descrizioneMeteo TEXT null,
+	descrizioneMeteo VARCHAR(75) null,
 	tendenza INTEGER,
-	note TEXT null,
-	riferimenti TEXT null,
+	note VARCHAR(75) null,
+	riferimenti VARCHAR(75) null,
 	utenteFirmaArpaId LONG,
 	dataFirmaArpa DATE null,
 	utenteFirmaProtId LONG,
 	dataFirmaProt DATE null,
 	parentId LONG,
-	sintesi TEXT null,
-	link VARCHAR(256) null,
-	titolo TEXT null,
+	sintesi VARCHAR(75) null,
+	sintesiEng VARCHAR(75) null,
+	link VARCHAR(75) null,
+	titolo VARCHAR(75) null,
+	titoloEng VARCHAR(75) null,
 	tipoAllerta BOOLEAN,
 	hash VARCHAR(75) null,
 	sintesiBriefing VARCHAR(75) null
@@ -34,7 +36,7 @@ create table ALLERTER_Allerta (
 
 create table ALLERTER_AllertaParametro (
 	parametroId VARCHAR(75) not null primary key,
-	valore TEXT null
+	valore VARCHAR(75) null
 );
 
 create table ALLERTER_AllertaStato (
@@ -130,12 +132,12 @@ create table ALLERTER_Email (
 	sottotipo VARCHAR(75) null,
 	param LONG,
 	destinatario LONG,
-	indirizzo VARCHAR(256) null,
-	nomeDestinatario VARCHAR(200) null,
+	indirizzo VARCHAR(75) null,
+	nomeDestinatario VARCHAR(75) null,
 	stato LONG,
 	dataInvio DATE null,
-	testo TEXT null,
-	oggetto TEXT null
+	testo VARCHAR(75) null,
+	oggetto VARCHAR(75) null
 );
 
 create table ALLERTER_Feed (
@@ -143,7 +145,7 @@ create table ALLERTER_Feed (
 	titolo VARCHAR(75) null,
 	link VARCHAR(75) null,
 	autore VARCHAR(75) null,
-	query TEXT null
+	query VARCHAR(75) null
 );
 
 create table ALLERTER_Geografia (
@@ -151,19 +153,19 @@ create table ALLERTER_Geografia (
 	tipo VARCHAR(75) not null,
 	area VARCHAR(75) not null,
 	complessita VARCHAR(75) not null,
-	geometria TEXT null,
+	geometria VARCHAR(75) null,
 	primary key (geografiaId, tipo, area, complessita)
 );
 
 create table ALLERTER_LogInterno (
 	logId LONG not null primary key,
 	timestamp DATE null,
-	thread VARCHAR(128) null,
-	cosa VARCHAR(128) null,
-	dettaglio VARCHAR(256) null,
+	thread VARCHAR(75) null,
+	cosa VARCHAR(75) null,
+	dettaglio VARCHAR(75) null,
 	utente VARCHAR(75) null,
-	risultato TEXT null,
-	eccezione TEXT null
+	risultato VARCHAR(75) null,
+	eccezione VARCHAR(75) null
 );
 
 create table ALLERTER_SMS (
@@ -171,7 +173,7 @@ create table ALLERTER_SMS (
 	tipo VARCHAR(75) null,
 	sottotipo VARCHAR(75) null,
 	param LONG,
-	testo VARCHAR(160) null,
+	testo VARCHAR(75) null,
 	destinatario LONG,
 	numeroDa VARCHAR(75) null,
 	numero VARCHAR(75) null,
@@ -183,7 +185,7 @@ create table ALLERTER_SMS (
 	tentativi LONG,
 	prossimoInvio DATE null,
 	codiceErrore VARCHAR(75) null,
-	descrizioneErrore VARCHAR(200) null,
+	descrizioneErrore VARCHAR(75) null,
 	timestamp VARCHAR(75) null
 );
 

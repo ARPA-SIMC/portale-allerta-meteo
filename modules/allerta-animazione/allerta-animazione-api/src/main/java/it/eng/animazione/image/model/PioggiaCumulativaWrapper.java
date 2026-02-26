@@ -1,31 +1,16 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.animazione.image.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -36,22 +21,12 @@ import java.util.Objects;
  * @see PioggiaCumulativa
  * @generated
  */
-@ProviderType
 public class PioggiaCumulativaWrapper
-	implements PioggiaCumulativa, ModelWrapper<PioggiaCumulativa> {
+	extends BaseModelWrapper<PioggiaCumulativa>
+	implements ModelWrapper<PioggiaCumulativa>, PioggiaCumulativa {
 
 	public PioggiaCumulativaWrapper(PioggiaCumulativa pioggiaCumulativa) {
-		_pioggiaCumulativa = pioggiaCumulativa;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return PioggiaCumulativa.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return PioggiaCumulativa.class.getName();
+		super(pioggiaCumulativa);
 	}
 
 	@Override
@@ -108,16 +83,8 @@ public class PioggiaCumulativaWrapper
 	}
 
 	@Override
-	public Object clone() {
-		return new PioggiaCumulativaWrapper(
-			(PioggiaCumulativa)_pioggiaCumulativa.clone());
-	}
-
-	@Override
-	public int compareTo(
-		it.eng.animazione.image.model.PioggiaCumulativa pioggiaCumulativa) {
-
-		return _pioggiaCumulativa.compareTo(pioggiaCumulativa);
+	public PioggiaCumulativa cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -127,12 +94,7 @@ public class PioggiaCumulativaWrapper
 	 */
 	@Override
 	public String getCumulazione() {
-		return _pioggiaCumulativa.getCumulazione();
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _pioggiaCumulativa.getExpandoBridge();
+		return model.getCumulazione();
 	}
 
 	/**
@@ -142,7 +104,7 @@ public class PioggiaCumulativaWrapper
 	 */
 	@Override
 	public Date getFineCumulazione() {
-		return _pioggiaCumulativa.getFineCumulazione();
+		return model.getFineCumulazione();
 	}
 
 	/**
@@ -152,7 +114,7 @@ public class PioggiaCumulativaWrapper
 	 */
 	@Override
 	public long getId() {
-		return _pioggiaCumulativa.getId();
+		return model.getId();
 	}
 
 	/**
@@ -162,7 +124,7 @@ public class PioggiaCumulativaWrapper
 	 */
 	@Override
 	public String getImgData() {
-		return _pioggiaCumulativa.getImgData();
+		return model.getImgData();
 	}
 
 	/**
@@ -172,7 +134,7 @@ public class PioggiaCumulativaWrapper
 	 */
 	@Override
 	public Date getInzioCumulazione() {
-		return _pioggiaCumulativa.getInzioCumulazione();
+		return model.getInzioCumulazione();
 	}
 
 	/**
@@ -182,7 +144,7 @@ public class PioggiaCumulativaWrapper
 	 */
 	@Override
 	public String getNome() {
-		return _pioggiaCumulativa.getNome();
+		return model.getNome();
 	}
 
 	/**
@@ -192,42 +154,12 @@ public class PioggiaCumulativaWrapper
 	 */
 	@Override
 	public long getPrimaryKey() {
-		return _pioggiaCumulativa.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _pioggiaCumulativa.getPrimaryKeyObj();
-	}
-
-	@Override
-	public int hashCode() {
-		return _pioggiaCumulativa.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _pioggiaCumulativa.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _pioggiaCumulativa.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _pioggiaCumulativa.isNew();
+		return model.getPrimaryKey();
 	}
 
 	@Override
 	public void persist() {
-		_pioggiaCumulativa.persist();
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_pioggiaCumulativa.setCachedModel(cachedModel);
+		model.persist();
 	}
 
 	/**
@@ -237,24 +169,7 @@ public class PioggiaCumulativaWrapper
 	 */
 	@Override
 	public void setCumulazione(String cumulazione) {
-		_pioggiaCumulativa.setCumulazione(cumulazione);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_pioggiaCumulativa.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_pioggiaCumulativa.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_pioggiaCumulativa.setExpandoBridgeAttributes(serviceContext);
+		model.setCumulazione(cumulazione);
 	}
 
 	/**
@@ -264,7 +179,7 @@ public class PioggiaCumulativaWrapper
 	 */
 	@Override
 	public void setFineCumulazione(Date fineCumulazione) {
-		_pioggiaCumulativa.setFineCumulazione(fineCumulazione);
+		model.setFineCumulazione(fineCumulazione);
 	}
 
 	/**
@@ -274,7 +189,7 @@ public class PioggiaCumulativaWrapper
 	 */
 	@Override
 	public void setId(long id) {
-		_pioggiaCumulativa.setId(id);
+		model.setId(id);
 	}
 
 	/**
@@ -284,7 +199,7 @@ public class PioggiaCumulativaWrapper
 	 */
 	@Override
 	public void setImgData(String imgData) {
-		_pioggiaCumulativa.setImgData(imgData);
+		model.setImgData(imgData);
 	}
 
 	/**
@@ -294,12 +209,7 @@ public class PioggiaCumulativaWrapper
 	 */
 	@Override
 	public void setInzioCumulazione(Date inzioCumulazione) {
-		_pioggiaCumulativa.setInzioCumulazione(inzioCumulazione);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_pioggiaCumulativa.setNew(n);
+		model.setInzioCumulazione(inzioCumulazione);
 	}
 
 	/**
@@ -309,7 +219,7 @@ public class PioggiaCumulativaWrapper
 	 */
 	@Override
 	public void setNome(String nome) {
-		_pioggiaCumulativa.setNome(nome);
+		model.setNome(nome);
 	}
 
 	/**
@@ -319,86 +229,19 @@ public class PioggiaCumulativaWrapper
 	 */
 	@Override
 	public void setPrimaryKey(long primaryKey) {
-		_pioggiaCumulativa.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_pioggiaCumulativa.setPrimaryKeyObj(primaryKeyObj);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<it.eng.animazione.image.model.PioggiaCumulativa> toCacheModel() {
-
-		return _pioggiaCumulativa.toCacheModel();
-	}
-
-	@Override
-	public it.eng.animazione.image.model.PioggiaCumulativa toEscapedModel() {
-		return new PioggiaCumulativaWrapper(
-			_pioggiaCumulativa.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _pioggiaCumulativa.toString();
-	}
-
-	@Override
-	public it.eng.animazione.image.model.PioggiaCumulativa toUnescapedModel() {
-		return new PioggiaCumulativaWrapper(
-			_pioggiaCumulativa.toUnescapedModel());
+		model.setPrimaryKey(primaryKey);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _pioggiaCumulativa.toXmlString();
+		return model.toXmlString();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
+	protected PioggiaCumulativaWrapper wrap(
+		PioggiaCumulativa pioggiaCumulativa) {
 
-		if (!(obj instanceof PioggiaCumulativaWrapper)) {
-			return false;
-		}
-
-		PioggiaCumulativaWrapper pioggiaCumulativaWrapper =
-			(PioggiaCumulativaWrapper)obj;
-
-		if (Objects.equals(
-				_pioggiaCumulativa,
-				pioggiaCumulativaWrapper._pioggiaCumulativa)) {
-
-			return true;
-		}
-
-		return false;
+		return new PioggiaCumulativaWrapper(pioggiaCumulativa);
 	}
-
-	@Override
-	public PioggiaCumulativa getWrappedModel() {
-		return _pioggiaCumulativa;
-	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _pioggiaCumulativa.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _pioggiaCumulativa.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_pioggiaCumulativa.resetOriginalValues();
-	}
-
-	private final PioggiaCumulativa _pioggiaCumulativa;
 
 }

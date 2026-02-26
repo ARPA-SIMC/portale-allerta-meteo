@@ -14,7 +14,6 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.lang.StringUtils;
 import org.xml.sax.SAXException;
 
 import com.liferay.counter.kernel.service.CounterLocalServiceUtil;
@@ -27,6 +26,7 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.transaction.Isolation;
 import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.transaction.Transactional;
+import com.liferay.portal.kernel.util.FileUtil;
 
 import it.eng.parer.bean.DatiSpecificiBean;
 import it.eng.parer.model.ComponentiInvio;
@@ -555,10 +555,21 @@ public class ParerService implements IJavaToXMLParerConstants {
 		for (ComponentiInvio comp : componentiInvio) {
 
 			DLFileEntry dlFileEntry = DLFileEntryLocalServiceUtil.getDLFileEntry(comp.getID_COMPONENTE_VERSATO());
-			File file = DLFileEntryLocalServiceUtil.getFile(dlFileEntry.getFileEntryId(),
+			//File file = DLFileEntryLocalServiceUtil.getFile(dlFileEntry.getFileEntryId(),
 					//userId, comp.getID_COMPONENTE_VERSATO(),
-					dlFileEntry.getVersion(), false);
-			listaFileComponenti.add(file);
+			//		dlFileEntry.getVersion(), false);
+			File file;
+			try {
+				file = FileUtil.createTempFile(dlFileEntry.getContentStream());
+				listaFileComponenti.add(file);
+			} catch (PortalException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 
 		}
 
@@ -623,7 +634,7 @@ public class ParerService implements IJavaToXMLParerConstants {
 //				resp =resp.concat(respon);
 //			}
 
-		if (StringUtils.isNotBlank(response)) {
+		if (response!=null && !"".equals(response)) {
 
 			JAXBContext jaxbContext = JAXBContext.newInstance(EsitoVersamentoType.class);
 			Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
@@ -667,7 +678,7 @@ public class ParerService implements IJavaToXMLParerConstants {
 			List<DocumentiCollegati> documentiCollegati,
 			List<ComponentiInvio> componentiInvio, String codiceTipoInvio) throws SystemException {
 
-		// Se ho già valorizzato l'id (caso di reinvii con batch) non ne stacco uno
+		// Se ho giï¿½ valorizzato l'id (caso di reinvii con batch) non ne stacco uno
 		// nuovo ma aggiorno su quello esistente
 		if (datiSpecifici.getID_INVIO() > 0) {
 			// Aggiorno il vecchio con il codice esito "REINVIATO"
@@ -690,7 +701,7 @@ public class ParerService implements IJavaToXMLParerConstants {
 		// setto l'id invio e inserisco in documenti collegati
 		if (null != documentiCollegati) {
 			for (DocumentiCollegati docCollegati : documentiCollegati) {
-				if (null != docCollegati && StringUtils.isNotBlank(docCollegati.getDOC_COLLEGATO_NUMERO())) {
+				if (null != docCollegati && docCollegati.getDOC_COLLEGATO_NUMERO()!=null && !"".equals(docCollegati.getDOC_COLLEGATO_NUMERO())) {
 					docCollegati.setID_INVIO(datiSpecifici.getID_INVIO());
 					DocumentiCollegatiLocalServiceUtil.updateDocumentiCollegati(docCollegati);
 				}

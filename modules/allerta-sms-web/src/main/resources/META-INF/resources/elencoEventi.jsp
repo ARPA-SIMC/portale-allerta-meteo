@@ -45,7 +45,18 @@ long dettaglioPlid = PortalUtil.getPlidFromPortletId( themeDisplay.getScopeGroup
 
 	<aui:form action="<%= portletURLString %>" method="post" name="smsService">
 
-	
+		<script type="text/javascript">
+			function esportaExcel() {
+				
+				var da = $('[name="<portlet:namespace/>dataInvioDa"]').val()
+				var a = $('[name="<portlet:namespace/>dataInvioA"]').val()
+				var filtro = $('[name="<portlet:namespace/>filtro"]').val()
+				da = da.split(" ")[0]
+				a = a.split(" ")[0]
+				window.open('/o/report/eventi?DATADA='+da+'&DATAA='+a+'&FILTRO='+filtro,'_blank')
+			}
+		</script>
+
 		<div class="row">
 			<div class="col-md-3">
 				<aui:input 
@@ -113,9 +124,16 @@ long dettaglioPlid = PortalUtil.getPlidFromPortletId( themeDisplay.getScopeGroup
 			</div>
 		
 			<div class="col-md-3" style='text-align: center;margin-top: 25px;'>
-				<button
+				<button class="btn btn-primary"
 					id='aggiorna'>
 					Aggiorna
+				</button>
+			</div>
+
+			<div class="col-md-3" style='text-align: center;margin-top: 25px;'>
+				<button class="btn btn-primary" onclick="esportaExcel();return false;"
+					>
+					Esporta Excel
 				</button>
 			</div>
 		
@@ -153,6 +171,10 @@ long dettaglioPlid = PortalUtil.getPlidFromPortletId( themeDisplay.getScopeGroup
 						<liferay-ui:search-container-column-text property="smsSpediti" name="SMS Spediti" />
 						<liferay-ui:search-container-column-text property="smsConsegnati" name="SMS Consegnati" />
 						<liferay-ui:search-container-column-text property="percSuccesso" name="Perc Successo" />
+						<liferay-ui:search-container-column-text property="gruppiRaggiunti" name="Gruppi Raggiunti" />
+						<liferay-ui:search-container-column-text property="gruppiTotali" name="Gruppi Totali" />
+						<liferay-ui:search-container-column-text property="tuttiRaggiunti" name="Tutti Raggiunti" />
+
 						<liferay-ui:search-container-column-text property="ultimoAggiornamento" name="Ultimo Aggiornamento" />
 						<liferay-ui:search-container-column-text>
 							<a class="nascondi" href='javascript:goToDetails("<%= evt.getId()%>", "<%=evt.getTipoEvento()%>")'>Vai</a>

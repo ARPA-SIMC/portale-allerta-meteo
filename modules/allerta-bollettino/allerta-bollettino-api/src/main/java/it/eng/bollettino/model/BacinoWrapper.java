@@ -1,30 +1,15 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.bollettino.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -35,21 +20,11 @@ import java.util.Objects;
  * @see Bacino
  * @generated
  */
-@ProviderType
-public class BacinoWrapper implements Bacino, ModelWrapper<Bacino> {
+public class BacinoWrapper
+	extends BaseModelWrapper<Bacino> implements Bacino, ModelWrapper<Bacino> {
 
 	public BacinoWrapper(Bacino bacino) {
-		_bacino = bacino;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return Bacino.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return Bacino.class.getName();
+		super(bacino);
 	}
 
 	@Override
@@ -92,18 +67,8 @@ public class BacinoWrapper implements Bacino, ModelWrapper<Bacino> {
 	}
 
 	@Override
-	public Object clone() {
-		return new BacinoWrapper((Bacino)_bacino.clone());
-	}
-
-	@Override
-	public int compareTo(it.eng.bollettino.model.Bacino bacino) {
-		return _bacino.compareTo(bacino);
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _bacino.getExpandoBridge();
+	public Bacino cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -113,7 +78,7 @@ public class BacinoWrapper implements Bacino, ModelWrapper<Bacino> {
 	 */
 	@Override
 	public String getId() {
-		return _bacino.getId();
+		return model.getId();
 	}
 
 	/**
@@ -123,7 +88,7 @@ public class BacinoWrapper implements Bacino, ModelWrapper<Bacino> {
 	 */
 	@Override
 	public String getNome() {
-		return _bacino.getNome();
+		return model.getNome();
 	}
 
 	/**
@@ -133,12 +98,7 @@ public class BacinoWrapper implements Bacino, ModelWrapper<Bacino> {
 	 */
 	@Override
 	public String getPrimaryKey() {
-		return _bacino.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _bacino.getPrimaryKeyObj();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -148,7 +108,7 @@ public class BacinoWrapper implements Bacino, ModelWrapper<Bacino> {
 	 */
 	@Override
 	public int getProgressivo() {
-		return _bacino.getProgressivo();
+		return model.getProgressivo();
 	}
 
 	/**
@@ -158,54 +118,12 @@ public class BacinoWrapper implements Bacino, ModelWrapper<Bacino> {
 	 */
 	@Override
 	public String getUuid() {
-		return _bacino.getUuid();
-	}
-
-	@Override
-	public int hashCode() {
-		return _bacino.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _bacino.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _bacino.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _bacino.isNew();
+		return model.getUuid();
 	}
 
 	@Override
 	public void persist() {
-		_bacino.persist();
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_bacino.setCachedModel(cachedModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_bacino.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_bacino.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_bacino.setExpandoBridgeAttributes(serviceContext);
+		model.persist();
 	}
 
 	/**
@@ -215,12 +133,7 @@ public class BacinoWrapper implements Bacino, ModelWrapper<Bacino> {
 	 */
 	@Override
 	public void setId(String id) {
-		_bacino.setId(id);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_bacino.setNew(n);
+		model.setId(id);
 	}
 
 	/**
@@ -230,7 +143,7 @@ public class BacinoWrapper implements Bacino, ModelWrapper<Bacino> {
 	 */
 	@Override
 	public void setNome(String nome) {
-		_bacino.setNome(nome);
+		model.setNome(nome);
 	}
 
 	/**
@@ -240,12 +153,7 @@ public class BacinoWrapper implements Bacino, ModelWrapper<Bacino> {
 	 */
 	@Override
 	public void setPrimaryKey(String primaryKey) {
-		_bacino.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_bacino.setPrimaryKeyObj(primaryKeyObj);
+		model.setPrimaryKey(primaryKey);
 	}
 
 	/**
@@ -255,7 +163,7 @@ public class BacinoWrapper implements Bacino, ModelWrapper<Bacino> {
 	 */
 	@Override
 	public void setProgressivo(int progressivo) {
-		_bacino.setProgressivo(progressivo);
+		model.setProgressivo(progressivo);
 	}
 
 	/**
@@ -265,75 +173,17 @@ public class BacinoWrapper implements Bacino, ModelWrapper<Bacino> {
 	 */
 	@Override
 	public void setUuid(String uuid) {
-		_bacino.setUuid(uuid);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<it.eng.bollettino.model.Bacino> toCacheModel() {
-
-		return _bacino.toCacheModel();
-	}
-
-	@Override
-	public it.eng.bollettino.model.Bacino toEscapedModel() {
-		return new BacinoWrapper(_bacino.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _bacino.toString();
-	}
-
-	@Override
-	public it.eng.bollettino.model.Bacino toUnescapedModel() {
-		return new BacinoWrapper(_bacino.toUnescapedModel());
+		model.setUuid(uuid);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _bacino.toXmlString();
+		return model.toXmlString();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-
-		if (!(obj instanceof BacinoWrapper)) {
-			return false;
-		}
-
-		BacinoWrapper bacinoWrapper = (BacinoWrapper)obj;
-
-		if (Objects.equals(_bacino, bacinoWrapper._bacino)) {
-			return true;
-		}
-
-		return false;
+	protected BacinoWrapper wrap(Bacino bacino) {
+		return new BacinoWrapper(bacino);
 	}
-
-	@Override
-	public Bacino getWrappedModel() {
-		return _bacino;
-	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _bacino.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _bacino.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_bacino.resetOriginalValues();
-	}
-
-	private final Bacino _bacino;
 
 }

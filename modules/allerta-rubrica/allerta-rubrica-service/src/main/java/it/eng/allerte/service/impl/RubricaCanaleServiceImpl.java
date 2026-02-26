@@ -1,19 +1,11 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerte.service.impl;
 
+import com.liferay.portal.aop.AopService;
 
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.jsonwebservice.JSONWebService;
@@ -30,20 +22,20 @@ import it.eng.allerte.service.RubricaUtenteSitoLocalServiceUtil;
 import it.eng.allerte.service.base.RubricaCanaleServiceBaseImpl;
 import it.eng.rubrica.service.util.GestioneRubricaCustomService;
 
+import org.osgi.service.component.annotations.Component;
+
 /**
- * The implementation of the rubrica canale remote service.
- *
- * <p>
- * All custom service methods should be put in this class. Whenever methods are added, rerun ServiceBuilder to copy their definitions into the <code>it.eng.allerte.service.RubricaCanaleService</code> interface.
- *
- * <p>
- * This is a remote service. Methods of this service are expected to have security checks based on the propagated JAAS credentials because this service can be accessed remotely.
- * </p>
- *
  * @author Pratola_L
- * @see RubricaCanaleServiceBaseImpl
  */
-public class RubricaCanaleServiceImpl extends RubricaCanaleServiceBaseImpl implements IRubricaRestConstants {
+@Component(
+	property = {
+		"json.web.service.context.name=rubrica",
+		"json.web.service.context.path=RubricaCanale"
+	},
+	service = AopService.class
+)
+public class RubricaCanaleServiceImpl extends RubricaCanaleServiceBaseImpl  implements IRubricaRestConstants  {
+
 
 	/*
 	 * NOTE FOR DEVELOPERS:
@@ -98,5 +90,6 @@ public class RubricaCanaleServiceImpl extends RubricaCanaleServiceBaseImpl imple
 		
 		return mappa;
 	}
-	
+
+
 }

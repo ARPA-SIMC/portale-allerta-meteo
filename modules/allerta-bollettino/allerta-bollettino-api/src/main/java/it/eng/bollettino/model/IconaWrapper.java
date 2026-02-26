@@ -1,30 +1,15 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.bollettino.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -35,21 +20,11 @@ import java.util.Objects;
  * @see Icona
  * @generated
  */
-@ProviderType
-public class IconaWrapper implements Icona, ModelWrapper<Icona> {
+public class IconaWrapper
+	extends BaseModelWrapper<Icona> implements Icona, ModelWrapper<Icona> {
 
 	public IconaWrapper(Icona icona) {
-		_icona = icona;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return Icona.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return Icona.class.getName();
+		super(icona);
 	}
 
 	@Override
@@ -92,13 +67,8 @@ public class IconaWrapper implements Icona, ModelWrapper<Icona> {
 	}
 
 	@Override
-	public Object clone() {
-		return new IconaWrapper((Icona)_icona.clone());
-	}
-
-	@Override
-	public int compareTo(it.eng.bollettino.model.Icona icona) {
-		return _icona.compareTo(icona);
+	public Icona cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -108,12 +78,7 @@ public class IconaWrapper implements Icona, ModelWrapper<Icona> {
 	 */
 	@Override
 	public String getDescrizione() {
-		return _icona.getDescrizione();
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _icona.getExpandoBridge();
+		return model.getDescrizione();
 	}
 
 	/**
@@ -123,7 +88,7 @@ public class IconaWrapper implements Icona, ModelWrapper<Icona> {
 	 */
 	@Override
 	public long getId() {
-		return _icona.getId();
+		return model.getId();
 	}
 
 	/**
@@ -133,7 +98,7 @@ public class IconaWrapper implements Icona, ModelWrapper<Icona> {
 	 */
 	@Override
 	public String getPath() {
-		return _icona.getPath();
+		return model.getPath();
 	}
 
 	/**
@@ -143,12 +108,7 @@ public class IconaWrapper implements Icona, ModelWrapper<Icona> {
 	 */
 	@Override
 	public long getPrimaryKey() {
-		return _icona.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _icona.getPrimaryKeyObj();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -158,37 +118,12 @@ public class IconaWrapper implements Icona, ModelWrapper<Icona> {
 	 */
 	@Override
 	public String getUuid() {
-		return _icona.getUuid();
-	}
-
-	@Override
-	public int hashCode() {
-		return _icona.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _icona.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _icona.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _icona.isNew();
+		return model.getUuid();
 	}
 
 	@Override
 	public void persist() {
-		_icona.persist();
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_icona.setCachedModel(cachedModel);
+		model.persist();
 	}
 
 	/**
@@ -198,24 +133,7 @@ public class IconaWrapper implements Icona, ModelWrapper<Icona> {
 	 */
 	@Override
 	public void setDescrizione(String descrizione) {
-		_icona.setDescrizione(descrizione);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_icona.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_icona.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_icona.setExpandoBridgeAttributes(serviceContext);
+		model.setDescrizione(descrizione);
 	}
 
 	/**
@@ -225,12 +143,7 @@ public class IconaWrapper implements Icona, ModelWrapper<Icona> {
 	 */
 	@Override
 	public void setId(long id) {
-		_icona.setId(id);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_icona.setNew(n);
+		model.setId(id);
 	}
 
 	/**
@@ -240,7 +153,7 @@ public class IconaWrapper implements Icona, ModelWrapper<Icona> {
 	 */
 	@Override
 	public void setPath(String path) {
-		_icona.setPath(path);
+		model.setPath(path);
 	}
 
 	/**
@@ -250,12 +163,7 @@ public class IconaWrapper implements Icona, ModelWrapper<Icona> {
 	 */
 	@Override
 	public void setPrimaryKey(long primaryKey) {
-		_icona.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_icona.setPrimaryKeyObj(primaryKeyObj);
+		model.setPrimaryKey(primaryKey);
 	}
 
 	/**
@@ -265,75 +173,17 @@ public class IconaWrapper implements Icona, ModelWrapper<Icona> {
 	 */
 	@Override
 	public void setUuid(String uuid) {
-		_icona.setUuid(uuid);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<it.eng.bollettino.model.Icona> toCacheModel() {
-
-		return _icona.toCacheModel();
-	}
-
-	@Override
-	public it.eng.bollettino.model.Icona toEscapedModel() {
-		return new IconaWrapper(_icona.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _icona.toString();
-	}
-
-	@Override
-	public it.eng.bollettino.model.Icona toUnescapedModel() {
-		return new IconaWrapper(_icona.toUnescapedModel());
+		model.setUuid(uuid);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _icona.toXmlString();
+		return model.toXmlString();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-
-		if (!(obj instanceof IconaWrapper)) {
-			return false;
-		}
-
-		IconaWrapper iconaWrapper = (IconaWrapper)obj;
-
-		if (Objects.equals(_icona, iconaWrapper._icona)) {
-			return true;
-		}
-
-		return false;
+	protected IconaWrapper wrap(Icona icona) {
+		return new IconaWrapper(icona);
 	}
-
-	@Override
-	public Icona getWrappedModel() {
-		return _icona;
-	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _icona.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _icona.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_icona.resetOriginalValues();
-	}
-
-	private final Icona _icona;
 
 }

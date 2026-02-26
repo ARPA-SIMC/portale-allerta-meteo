@@ -183,7 +183,7 @@
 								<a href="#" class="d-block" data-toggle="modal"
 									data-target="#modal--guida-mappa-dato-osservato"> <span
 									class="icon i-info-circle" title="Info"></span> <span>
-										Guida alla mappa </span>
+										<liferay-ui:message key="allertaanimazionemeteo_guidaallamappa" /> </span>
 								</a>
 							</div>
 						</div>

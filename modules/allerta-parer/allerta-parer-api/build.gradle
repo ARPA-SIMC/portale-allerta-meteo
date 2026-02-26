@@ -1,16 +1,18 @@
 dependencies {
-	compileOnly group: "com.liferay.portal", name: "com.liferay.portal.kernel"
+	compileOnly group: "com.liferay.portal", name: "release.dxp.api"
+	
 	compileOnly group: "org.osgi", name: "org.osgi.annotation.versioning", version: "1.0.0"
 	compileOnly group: "org.osgi", name: "org.osgi.core"
 	compileOnly group: "org.osgi", name: "org.osgi.service.component.annotations"
 	
 	compileOnly 'biz.aQute.bnd:biz.aQute.bnd.annotation:4.2.0'
-	compile group: 'commons-codec', name: 'commons-codec', version: '1.9'
-	compileOnly group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.2'
-	compile group: 'org.apache.httpcomponents', name: 'httpcore', version: '4.4.6'
-	compileInclude group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.5.2'
-    compileInclude group: 'org.apache.avalon.framework', name: 'avalon-framework-api', version: '4.3.1'
-	compileOnly group: 'commons-lang', name: 'commons-lang', version: '2.6'
-	
-	
+	compileOnly group: 'commons-codec', name: 'commons-codec'
+	//compileOnly group: 'org.apache.httpcomponents', name: 'httpclient'
+	//compileOnly group: 'org.apache.httpcomponents', name: 'httpcore'
+	//compileOnly group: 'org.apache.httpcomponents', name: 'httpmime'
+	compileInclude group: 'org.apache.httpcomponents', name: 'httpclient-osgi', version:"4.5.14"
+    compileInclude group: 'org.apache.httpcomponents', name: 'httpcore-osgi', version:"4.4.16"
+    compileOnly group: 'org.apache.avalon.framework', name: 'avalon-framework-api', version: '4.3.1'
+	compileInclude group: 'org.apache.commons', name: 'commons-text', version: "1.11.0"
+	compileOnly group: 'org.apache.commons', name: 'commons-lang3', version: "3.14.0"
 }

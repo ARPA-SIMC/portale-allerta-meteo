@@ -91,7 +91,7 @@ public class RadarBean implements Serializable {
 		
 		String variabile = m.group(1);
 		
-		_log.info("stazione e variabile grafico"+stazione + " " + variabile);
+		//_log.info("stazione e variabile grafico"+stazione + " " + variabile);
 		
 		return new Gson().toJson(ImgServiceUtil.getInfoSensore(stazione, variabile));
 	}
@@ -134,8 +134,8 @@ public class RadarBean implements Serializable {
 		try {
 			allImagesList = ImgLocalServiceUtil.getImgs(QueryUtil.ALL_POS, QueryUtil.ALL_POS);
 			
-			_log.info("First id " +allImagesList.get(0).getId());
-			_log.info("Last id " +allImagesList.get(allImagesList.size()-1).getId());
+			//_log.info("First id " +allImagesList.get(0).getId());
+			//_log.info("Last id " +allImagesList.get(allImagesList.size()-1).getId());
 			
 			for(Img current:allImagesList) {
 				

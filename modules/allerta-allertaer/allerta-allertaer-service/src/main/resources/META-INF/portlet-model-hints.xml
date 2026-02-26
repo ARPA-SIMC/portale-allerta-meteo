@@ -18,39 +18,27 @@
 		<field name="dataEmissione" type="Date" />
 		<field name="dataInizio" type="Date" />
 		<field name="dataFine" type="Date" />
-		<field name="descrizioneMeteo" type="String">
-			<hint name="max-length">5000</hint>
-		</field>
+		<field name="descrizioneMeteo" type="String" />
 		<field name="tendenza" type="int" />
-		<field name="note" type="String">
-			<hint name="max-length">5000</hint>
-		</field>
-		<field name="riferimenti" type="String">
-			<hint name="max-length">5000</hint>
-		</field>
+		<field name="note" type="String" />
+		<field name="riferimenti" type="String" />
 		<field name="utenteFirmaArpaId" type="long" />
 		<field name="dataFirmaArpa" type="Date" />
 		<field name="utenteFirmaProtId" type="long" />
 		<field name="dataFirmaProt" type="Date" />
 		<field name="parentId" type="long" />
-		<field name="sintesi" type="String">
-			<hint name="max-length">5000</hint>
-		</field>
-		<field name="link" type="String">
-			<hint name="max-length">256</hint>
-		</field>
-		<field name="titolo" type="String">
-			<hint name="max-length">5000</hint>
-		</field>
+		<field name="sintesi" type="String" />
+		<field name="sintesiEng" type="String" />
+		<field name="link" type="String" />
+		<field name="titolo" type="String" />
+		<field name="titoloEng" type="String" />
 		<field name="tipoAllerta" type="boolean" />
 		<field name="hash" type="String" />
 		<field name="sintesiBriefing" type="String" />
 	</model>
 	<model name="it.eng.allerter.model.AllertaParametro">
 		<field name="parametroId" type="String" />
-		<field name="valore" type="String">
-			<hint name="max-length">5000</hint>
-		</field>
+		<field name="valore" type="String" />
 	</model>
 	<model name="it.eng.allerter.model.AllertaStato">
 		<field name="uuid" type="String" />
@@ -141,67 +129,43 @@
 		<field name="sottotipo" type="String" />
 		<field name="param" type="long" />
 		<field name="destinatario" type="long" />
-		<field name="indirizzo" type="String">
-			<hint name="max-length">256</hint>
-		</field>
-		<field name="nomeDestinatario" type="String">
-			<hint name="max-length">200</hint>
-		</field>
+		<field name="indirizzo" type="String" />
+		<field name="nomeDestinatario" type="String" />
 		<field name="stato" type="long" />
 		<field name="dataInvio" type="Date" />
-		<field name="testo" type="String">
-			<hint name="max-length">5000</hint>
-		</field>
-		<field name="oggetto" type="String">
-			<hint name="max-length">5000</hint>
-		</field>
+		<field name="testo" type="String" />
+		<field name="oggetto" type="String" />
 	</model>
 	<model name="it.eng.allerter.model.Feed">
 		<field name="feedId" type="String" />
 		<field name="titolo" type="String" />
 		<field name="link" type="String" />
 		<field name="autore" type="String" />
-		<field name="query" type="String">
-			<hint name="max-length">5000</hint>
-		</field>
+		<field name="query" type="String" />
 	</model>
 	<model name="it.eng.allerter.model.Geografia">
 		<field name="geografiaId" type="String" />
 		<field name="tipo" type="String" />
 		<field name="area" type="String" />
 		<field name="complessita" type="String" />
-		<field name="geometria" type="String">
-			<hint name="max-length">5000</hint>
-		</field>
+		<field name="geometria" type="String" />
 	</model>
 	<model name="it.eng.allerter.model.LogInterno">
 		<field name="logId" type="long" />
 		<field name="timestamp" type="Date" />
-		<field name="thread" type="String">
-			<hint name="max-length">128</hint>
-		</field>
-		<field name="cosa" type="String">
-			<hint name="max-length">128</hint>
-		</field>
-		<field name="dettaglio" type="String">
-			<hint name="max-length">256</hint>
-		</field>
+		<field name="thread" type="String" />
+		<field name="cosa" type="String" />
+		<field name="dettaglio" type="String" />
 		<field name="utente" type="String" />
-		<field name="risultato" type="String">
-			<hint name="max-length">5000</hint>
-		</field>
-		<field name="eccezione" type="String">
-			<hint name="max-length">5000</hint>
-		</field>
+		<field name="risultato" type="String" />
+		<field name="eccezione" type="String" />
 	</model>
 	<model name="it.eng.allerter.model.SMS">
 		<field name="id" type="long" />
 		<field name="tipo" type="String" />
 		<field name="sottotipo" type="String" />
 		<field name="param" type="long" />
-		<field name="testo" type="String">
-			<hint name="max-length">160</hint>
-		</field>
+		<field name="testo" type="String" />
 		<field name="destinatario" type="long" />
 		<field name="numeroDa" type="String" />
 		<field name="numero" type="String" />
@@ -213,9 +177,7 @@
 		<field name="tentativi" type="long" />
 		<field name="prossimoInvio" type="Date" />
 		<field name="codiceErrore" type="String" />
-		<field name="descrizioneErrore" type="String">
-			<hint name="max-length">200</hint>
-		</field>
+		<field name="descrizioneErrore" type="String" />
 		<field name="timestamp" type="String" />
 	</model>
 	<model name="it.eng.allerter.model.StatoAllertamento">

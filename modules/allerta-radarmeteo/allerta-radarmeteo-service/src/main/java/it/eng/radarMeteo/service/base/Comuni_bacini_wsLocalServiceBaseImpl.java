@@ -1,26 +1,15 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.radarMeteo.service.base;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.portal.kernel.bean.BeanReference;
+import com.liferay.petra.sql.dsl.query.DSLQuery;
+import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.dao.db.DB;
 import com.liferay.portal.kernel.dao.db.DBManagerUtil;
-import com.liferay.portal.kernel.dao.jdbc.SqlUpdate;
-import com.liferay.portal.kernel.dao.jdbc.SqlUpdateFactoryUtil;
+import com.liferay.portal.kernel.dao.jdbc.CurrentConnectionUtil;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DefaultActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
@@ -29,18 +18,17 @@ import com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.Projection;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.PersistedModel;
 import com.liferay.portal.kernel.module.framework.service.IdentifiableOSGiService;
 import com.liferay.portal.kernel.search.Indexable;
 import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.service.BaseLocalServiceImpl;
-import com.liferay.portal.kernel.service.PersistedModelLocalServiceRegistry;
-import com.liferay.portal.kernel.service.persistence.ClassNamePersistence;
-import com.liferay.portal.kernel.service.persistence.UserPersistence;
+import com.liferay.portal.kernel.service.PersistedModelLocalService;
+import com.liferay.portal.kernel.service.persistence.BasePersistence;
 import com.liferay.portal.kernel.transaction.Transactional;
 import com.liferay.portal.kernel.util.OrderByComparator;
-import com.liferay.portal.kernel.util.PortalUtil;
-import com.liferay.portal.spring.extender.service.ServiceReference;
 
 import it.eng.radarMeteo.model.Comuni_bacini_ws;
 import it.eng.radarMeteo.service.Comuni_bacini_wsLocalService;
@@ -54,9 +42,14 @@ import it.eng.radarMeteo.service.persistence.JsonPersistence;
 
 import java.io.Serializable;
 
+import java.sql.Connection;
+
 import java.util.List;
 
 import javax.sql.DataSource;
+
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * Provides the base implementation for the comuni_bacini_ws local service.
@@ -69,10 +62,10 @@ import javax.sql.DataSource;
  * @see it.eng.radarMeteo.service.impl.Comuni_bacini_wsLocalServiceImpl
  * @generated
  */
-@ProviderType
 public abstract class Comuni_bacini_wsLocalServiceBaseImpl
 	extends BaseLocalServiceImpl
-	implements Comuni_bacini_wsLocalService, IdentifiableOSGiService {
+	implements AopService, Comuni_bacini_wsLocalService,
+			   IdentifiableOSGiService {
 
 	/*
 	 * NOTE FOR DEVELOPERS:
@@ -82,6 +75,10 @@ public abstract class Comuni_bacini_wsLocalServiceBaseImpl
 
 	/**
 	 * Adds the comuni_bacini_ws to the database. Also notifies the appropriate model listeners.
+	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect Comuni_bacini_wsLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
 	 *
 	 * @param comuni_bacini_ws the comuni_bacini_ws
 	 * @return the comuni_bacini_ws that was added
@@ -111,6 +108,10 @@ public abstract class Comuni_bacini_wsLocalServiceBaseImpl
 	/**
 	 * Deletes the comuni_bacini_ws with the primary key from the database. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect Comuni_bacini_wsLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param idBacini the primary key of the comuni_bacini_ws
 	 * @return the comuni_bacini_ws that was removed
 	 * @throws PortalException if a comuni_bacini_ws with the primary key could not be found
@@ -126,6 +127,10 @@ public abstract class Comuni_bacini_wsLocalServiceBaseImpl
 	/**
 	 * Deletes the comuni_bacini_ws from the database. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect Comuni_bacini_wsLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param comuni_bacini_ws the comuni_bacini_ws
 	 * @return the comuni_bacini_ws that was removed
 	 */
@@ -135,6 +140,18 @@ public abstract class Comuni_bacini_wsLocalServiceBaseImpl
 		Comuni_bacini_ws comuni_bacini_ws) {
 
 		return comuni_bacini_wsPersistence.remove(comuni_bacini_ws);
+	}
+
+	@Override
+	public <T> T dslQuery(DSLQuery dslQuery) {
+		return comuni_bacini_wsPersistence.dslQuery(dslQuery);
+	}
+
+	@Override
+	public int dslQueryCount(DSLQuery dslQuery) {
+		Long count = dslQuery(dslQuery);
+
+		return count.intValue();
 	}
 
 	@Override
@@ -160,7 +177,7 @@ public abstract class Comuni_bacini_wsLocalServiceBaseImpl
 	 * Performs a dynamic query on the database and returns a range of the matching rows.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>it.eng.radarMeteo.model.impl.Comuni_bacini_wsModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>it.eng.radarMeteo.model.impl.Comuni_bacini_wsModelImpl</code>.
 	 * </p>
 	 *
 	 * @param dynamicQuery the dynamic query
@@ -180,7 +197,7 @@ public abstract class Comuni_bacini_wsLocalServiceBaseImpl
 	 * Performs a dynamic query on the database and returns an ordered range of the matching rows.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>it.eng.radarMeteo.model.impl.Comuni_bacini_wsModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>it.eng.radarMeteo.model.impl.Comuni_bacini_wsModelImpl</code>.
 	 * </p>
 	 *
 	 * @param dynamicQuery the dynamic query
@@ -290,13 +307,37 @@ public abstract class Comuni_bacini_wsLocalServiceBaseImpl
 	 * @throws PortalException
 	 */
 	@Override
+	public PersistedModel createPersistedModel(Serializable primaryKeyObj)
+		throws PortalException {
+
+		return comuni_bacini_wsPersistence.create(
+			((Integer)primaryKeyObj).intValue());
+	}
+
+	/**
+	 * @throws PortalException
+	 */
+	@Override
 	public PersistedModel deletePersistedModel(PersistedModel persistedModel)
 		throws PortalException {
+
+		if (_log.isWarnEnabled()) {
+			_log.warn(
+				"Implement Comuni_bacini_wsLocalServiceImpl#deleteComuni_bacini_ws(Comuni_bacini_ws) to avoid orphaned data");
+		}
 
 		return comuni_bacini_wsLocalService.deleteComuni_bacini_ws(
 			(Comuni_bacini_ws)persistedModel);
 	}
 
+	@Override
+	public BasePersistence<Comuni_bacini_ws> getBasePersistence() {
+		return comuni_bacini_wsPersistence;
+	}
+
+	/**
+	 * @throws PortalException
+	 */
 	@Override
 	public PersistedModel getPersistedModel(Serializable primaryKeyObj)
 		throws PortalException {
@@ -308,7 +349,7 @@ public abstract class Comuni_bacini_wsLocalServiceBaseImpl
 	 * Returns a range of all the comuni_bacini_wses.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>it.eng.radarMeteo.model.impl.Comuni_bacini_wsModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>it.eng.radarMeteo.model.impl.Comuni_bacini_wsModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of comuni_bacini_wses
@@ -333,6 +374,10 @@ public abstract class Comuni_bacini_wsLocalServiceBaseImpl
 	/**
 	 * Updates the comuni_bacini_ws in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect Comuni_bacini_wsLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param comuni_bacini_ws the comuni_bacini_ws
 	 * @return the comuni_bacini_ws that was updated
 	 */
@@ -344,356 +389,21 @@ public abstract class Comuni_bacini_wsLocalServiceBaseImpl
 		return comuni_bacini_wsPersistence.update(comuni_bacini_ws);
 	}
 
-	/**
-	 * Returns the comuni_bacini_ws local service.
-	 *
-	 * @return the comuni_bacini_ws local service
-	 */
-	public Comuni_bacini_wsLocalService getComuni_bacini_wsLocalService() {
-		return comuni_bacini_wsLocalService;
+	@Deactivate
+	protected void deactivate() {
 	}
 
-	/**
-	 * Sets the comuni_bacini_ws local service.
-	 *
-	 * @param comuni_bacini_wsLocalService the comuni_bacini_ws local service
-	 */
-	public void setComuni_bacini_wsLocalService(
-		Comuni_bacini_wsLocalService comuni_bacini_wsLocalService) {
-
-		this.comuni_bacini_wsLocalService = comuni_bacini_wsLocalService;
+	@Override
+	public Class<?>[] getAopInterfaces() {
+		return new Class<?>[] {
+			Comuni_bacini_wsLocalService.class, IdentifiableOSGiService.class,
+			PersistedModelLocalService.class
+		};
 	}
 
-	/**
-	 * Returns the comuni_bacini_ws persistence.
-	 *
-	 * @return the comuni_bacini_ws persistence
-	 */
-	public Comuni_bacini_wsPersistence getComuni_bacini_wsPersistence() {
-		return comuni_bacini_wsPersistence;
-	}
-
-	/**
-	 * Sets the comuni_bacini_ws persistence.
-	 *
-	 * @param comuni_bacini_wsPersistence the comuni_bacini_ws persistence
-	 */
-	public void setComuni_bacini_wsPersistence(
-		Comuni_bacini_wsPersistence comuni_bacini_wsPersistence) {
-
-		this.comuni_bacini_wsPersistence = comuni_bacini_wsPersistence;
-	}
-
-	/**
-	 * Returns the comuni_ws local service.
-	 *
-	 * @return the comuni_ws local service
-	 */
-	public it.eng.radarMeteo.service.Comuni_wsLocalService
-		getComuni_wsLocalService() {
-
-		return comuni_wsLocalService;
-	}
-
-	/**
-	 * Sets the comuni_ws local service.
-	 *
-	 * @param comuni_wsLocalService the comuni_ws local service
-	 */
-	public void setComuni_wsLocalService(
-		it.eng.radarMeteo.service.Comuni_wsLocalService comuni_wsLocalService) {
-
-		this.comuni_wsLocalService = comuni_wsLocalService;
-	}
-
-	/**
-	 * Returns the comuni_ws persistence.
-	 *
-	 * @return the comuni_ws persistence
-	 */
-	public Comuni_wsPersistence getComuni_wsPersistence() {
-		return comuni_wsPersistence;
-	}
-
-	/**
-	 * Sets the comuni_ws persistence.
-	 *
-	 * @param comuni_wsPersistence the comuni_ws persistence
-	 */
-	public void setComuni_wsPersistence(
-		Comuni_wsPersistence comuni_wsPersistence) {
-
-		this.comuni_wsPersistence = comuni_wsPersistence;
-	}
-
-	/**
-	 * Returns the comuni_ws finder.
-	 *
-	 * @return the comuni_ws finder
-	 */
-	public Comuni_wsFinder getComuni_wsFinder() {
-		return comuni_wsFinder;
-	}
-
-	/**
-	 * Sets the comuni_ws finder.
-	 *
-	 * @param comuni_wsFinder the comuni_ws finder
-	 */
-	public void setComuni_wsFinder(Comuni_wsFinder comuni_wsFinder) {
-		this.comuni_wsFinder = comuni_wsFinder;
-	}
-
-	/**
-	 * Returns the img local service.
-	 *
-	 * @return the img local service
-	 */
-	public it.eng.radarMeteo.service.ImgLocalService getImgLocalService() {
-		return imgLocalService;
-	}
-
-	/**
-	 * Sets the img local service.
-	 *
-	 * @param imgLocalService the img local service
-	 */
-	public void setImgLocalService(
-		it.eng.radarMeteo.service.ImgLocalService imgLocalService) {
-
-		this.imgLocalService = imgLocalService;
-	}
-
-	/**
-	 * Returns the img persistence.
-	 *
-	 * @return the img persistence
-	 */
-	public ImgPersistence getImgPersistence() {
-		return imgPersistence;
-	}
-
-	/**
-	 * Sets the img persistence.
-	 *
-	 * @param imgPersistence the img persistence
-	 */
-	public void setImgPersistence(ImgPersistence imgPersistence) {
-		this.imgPersistence = imgPersistence;
-	}
-
-	/**
-	 * Returns the img finder.
-	 *
-	 * @return the img finder
-	 */
-	public ImgFinder getImgFinder() {
-		return imgFinder;
-	}
-
-	/**
-	 * Sets the img finder.
-	 *
-	 * @param imgFinder the img finder
-	 */
-	public void setImgFinder(ImgFinder imgFinder) {
-		this.imgFinder = imgFinder;
-	}
-
-	/**
-	 * Returns the json local service.
-	 *
-	 * @return the json local service
-	 */
-	public it.eng.radarMeteo.service.JsonLocalService getJsonLocalService() {
-		return jsonLocalService;
-	}
-
-	/**
-	 * Sets the json local service.
-	 *
-	 * @param jsonLocalService the json local service
-	 */
-	public void setJsonLocalService(
-		it.eng.radarMeteo.service.JsonLocalService jsonLocalService) {
-
-		this.jsonLocalService = jsonLocalService;
-	}
-
-	/**
-	 * Returns the json persistence.
-	 *
-	 * @return the json persistence
-	 */
-	public JsonPersistence getJsonPersistence() {
-		return jsonPersistence;
-	}
-
-	/**
-	 * Sets the json persistence.
-	 *
-	 * @param jsonPersistence the json persistence
-	 */
-	public void setJsonPersistence(JsonPersistence jsonPersistence) {
-		this.jsonPersistence = jsonPersistence;
-	}
-
-	/**
-	 * Returns the json finder.
-	 *
-	 * @return the json finder
-	 */
-	public JsonFinder getJsonFinder() {
-		return jsonFinder;
-	}
-
-	/**
-	 * Sets the json finder.
-	 *
-	 * @param jsonFinder the json finder
-	 */
-	public void setJsonFinder(JsonFinder jsonFinder) {
-		this.jsonFinder = jsonFinder;
-	}
-
-	/**
-	 * Returns the counter local service.
-	 *
-	 * @return the counter local service
-	 */
-	public com.liferay.counter.kernel.service.CounterLocalService
-		getCounterLocalService() {
-
-		return counterLocalService;
-	}
-
-	/**
-	 * Sets the counter local service.
-	 *
-	 * @param counterLocalService the counter local service
-	 */
-	public void setCounterLocalService(
-		com.liferay.counter.kernel.service.CounterLocalService
-			counterLocalService) {
-
-		this.counterLocalService = counterLocalService;
-	}
-
-	/**
-	 * Returns the class name local service.
-	 *
-	 * @return the class name local service
-	 */
-	public com.liferay.portal.kernel.service.ClassNameLocalService
-		getClassNameLocalService() {
-
-		return classNameLocalService;
-	}
-
-	/**
-	 * Sets the class name local service.
-	 *
-	 * @param classNameLocalService the class name local service
-	 */
-	public void setClassNameLocalService(
-		com.liferay.portal.kernel.service.ClassNameLocalService
-			classNameLocalService) {
-
-		this.classNameLocalService = classNameLocalService;
-	}
-
-	/**
-	 * Returns the class name persistence.
-	 *
-	 * @return the class name persistence
-	 */
-	public ClassNamePersistence getClassNamePersistence() {
-		return classNamePersistence;
-	}
-
-	/**
-	 * Sets the class name persistence.
-	 *
-	 * @param classNamePersistence the class name persistence
-	 */
-	public void setClassNamePersistence(
-		ClassNamePersistence classNamePersistence) {
-
-		this.classNamePersistence = classNamePersistence;
-	}
-
-	/**
-	 * Returns the resource local service.
-	 *
-	 * @return the resource local service
-	 */
-	public com.liferay.portal.kernel.service.ResourceLocalService
-		getResourceLocalService() {
-
-		return resourceLocalService;
-	}
-
-	/**
-	 * Sets the resource local service.
-	 *
-	 * @param resourceLocalService the resource local service
-	 */
-	public void setResourceLocalService(
-		com.liferay.portal.kernel.service.ResourceLocalService
-			resourceLocalService) {
-
-		this.resourceLocalService = resourceLocalService;
-	}
-
-	/**
-	 * Returns the user local service.
-	 *
-	 * @return the user local service
-	 */
-	public com.liferay.portal.kernel.service.UserLocalService
-		getUserLocalService() {
-
-		return userLocalService;
-	}
-
-	/**
-	 * Sets the user local service.
-	 *
-	 * @param userLocalService the user local service
-	 */
-	public void setUserLocalService(
-		com.liferay.portal.kernel.service.UserLocalService userLocalService) {
-
-		this.userLocalService = userLocalService;
-	}
-
-	/**
-	 * Returns the user persistence.
-	 *
-	 * @return the user persistence
-	 */
-	public UserPersistence getUserPersistence() {
-		return userPersistence;
-	}
-
-	/**
-	 * Sets the user persistence.
-	 *
-	 * @param userPersistence the user persistence
-	 */
-	public void setUserPersistence(UserPersistence userPersistence) {
-		this.userPersistence = userPersistence;
-	}
-
-	public void afterPropertiesSet() {
-		persistedModelLocalServiceRegistry.register(
-			"it.eng.radarMeteo.model.Comuni_bacini_ws",
-			comuni_bacini_wsLocalService);
-	}
-
-	public void destroy() {
-		persistedModelLocalServiceRegistry.unregister(
-			"it.eng.radarMeteo.model.Comuni_bacini_ws");
+	@Override
+	public void setAopProxy(Object aopProxy) {
+		comuni_bacini_wsLocalService = (Comuni_bacini_wsLocalService)aopProxy;
 	}
 
 	/**
@@ -720,90 +430,69 @@ public abstract class Comuni_bacini_wsLocalServiceBaseImpl
 	 * @param sql the sql query
 	 */
 	protected void runSQL(String sql) {
+		DataSource dataSource = comuni_bacini_wsPersistence.getDataSource();
+
+		DB db = DBManagerUtil.getDB();
+
+		Connection currentConnection = CurrentConnectionUtil.getConnection(
+			dataSource);
+
 		try {
-			DataSource dataSource = comuni_bacini_wsPersistence.getDataSource();
+			if (currentConnection != null) {
+				db.runSQL(currentConnection, new String[] {sql});
 
-			DB db = DBManagerUtil.getDB();
+				return;
+			}
 
-			sql = db.buildSQL(sql);
-			sql = PortalUtil.transformSQL(sql);
-
-			SqlUpdate sqlUpdate = SqlUpdateFactoryUtil.getSqlUpdate(
-				dataSource, sql);
-
-			sqlUpdate.update();
+			try (Connection connection = dataSource.getConnection()) {
+				db.runSQL(connection, new String[] {sql});
+			}
 		}
-		catch (Exception e) {
-			throw new SystemException(e);
+		catch (Exception exception) {
+			throw new SystemException(exception);
 		}
 	}
 
-	@BeanReference(type = Comuni_bacini_wsLocalService.class)
 	protected Comuni_bacini_wsLocalService comuni_bacini_wsLocalService;
 
-	@BeanReference(type = Comuni_bacini_wsPersistence.class)
+	@Reference
 	protected Comuni_bacini_wsPersistence comuni_bacini_wsPersistence;
 
-	@BeanReference(type = it.eng.radarMeteo.service.Comuni_wsLocalService.class)
-	protected it.eng.radarMeteo.service.Comuni_wsLocalService
-		comuni_wsLocalService;
-
-	@BeanReference(type = Comuni_wsPersistence.class)
+	@Reference
 	protected Comuni_wsPersistence comuni_wsPersistence;
 
-	@BeanReference(type = Comuni_wsFinder.class)
+	@Reference
 	protected Comuni_wsFinder comuni_wsFinder;
 
-	@BeanReference(type = it.eng.radarMeteo.service.ImgLocalService.class)
-	protected it.eng.radarMeteo.service.ImgLocalService imgLocalService;
-
-	@BeanReference(type = ImgPersistence.class)
+	@Reference
 	protected ImgPersistence imgPersistence;
 
-	@BeanReference(type = ImgFinder.class)
+	@Reference
 	protected ImgFinder imgFinder;
 
-	@BeanReference(type = it.eng.radarMeteo.service.JsonLocalService.class)
-	protected it.eng.radarMeteo.service.JsonLocalService jsonLocalService;
-
-	@BeanReference(type = JsonPersistence.class)
+	@Reference
 	protected JsonPersistence jsonPersistence;
 
-	@BeanReference(type = JsonFinder.class)
+	@Reference
 	protected JsonFinder jsonFinder;
 
-	@ServiceReference(
-		type = com.liferay.counter.kernel.service.CounterLocalService.class
-	)
+	@Reference
 	protected com.liferay.counter.kernel.service.CounterLocalService
 		counterLocalService;
 
-	@ServiceReference(
-		type = com.liferay.portal.kernel.service.ClassNameLocalService.class
-	)
+	@Reference
 	protected com.liferay.portal.kernel.service.ClassNameLocalService
 		classNameLocalService;
 
-	@ServiceReference(type = ClassNamePersistence.class)
-	protected ClassNamePersistence classNamePersistence;
-
-	@ServiceReference(
-		type = com.liferay.portal.kernel.service.ResourceLocalService.class
-	)
+	@Reference
 	protected com.liferay.portal.kernel.service.ResourceLocalService
 		resourceLocalService;
 
-	@ServiceReference(
-		type = com.liferay.portal.kernel.service.UserLocalService.class
-	)
+	@Reference
 	protected com.liferay.portal.kernel.service.UserLocalService
 		userLocalService;
 
-	@ServiceReference(type = UserPersistence.class)
-	protected UserPersistence userPersistence;
-
-	@ServiceReference(type = PersistedModelLocalServiceRegistry.class)
-	protected PersistedModelLocalServiceRegistry
-		persistedModelLocalServiceRegistry;
+	private static final Log _log = LogFactoryUtil.getLog(
+		Comuni_bacini_wsLocalServiceBaseImpl.class);
 
 }

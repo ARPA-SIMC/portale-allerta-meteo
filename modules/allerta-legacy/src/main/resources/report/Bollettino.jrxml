@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Autorizzazione" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="053b5bd2-37c7-4b31-b733-6cacc01d9380">
-	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
+	<property name="ireport.y" value="1267"/>
 	<parameter name="ID_RICHIESTA" class="java.math.BigDecimal">
 		<defaultValueExpression><![CDATA[new BigDecimal(0)]]></defaultValueExpression>
 	</parameter>
@@ -428,42 +428,32 @@ where idbollettino = $P{ID_RICHIESTA} and tendenza<>-100) as sensori from bollet
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "Bacini.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
-		<band height="80">
+		<band height="190">
 			<printWhenExpression><![CDATA[$F{sensori}]]></printWhenExpression>
-			<frame>
-				<reportElement x="2" y="38" width="551" height="40" uuid="9b32c6f3-84bb-4726-86c7-89f740ffecfe"/>
-				<box>
-					<pen lineWidth="0.5"/>
-					<topPen lineWidth="0.5"/>
-					<leftPen lineWidth="0.5"/>
-					<bottomPen lineWidth="0.5"/>
-					<rightPen lineWidth="0.5"/>
-				</box>
-			</frame>
 			<textField>
-				<reportElement x="2" y="58" width="184" height="20" uuid="5a7dd1f2-8aa9-48f8-8647-9c906c72e7e6"/>
+				<reportElement x="344" y="78" width="184" height="20" uuid="5a7dd1f2-8aa9-48f8-8647-9c906c72e7e6"/>
 				<textElement textAlignment="Center">
 					<font fontName="DejaVu Sans" isStrikeThrough="false" pdfFontName="DejaVu Sans" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA["\u25B2 in aumento"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="186" y="58" width="184" height="20" uuid="8d066b72-d1ed-442f-b0e0-e25436d73f9e"/>
+				<reportElement x="344" y="98" width="184" height="20" uuid="8d066b72-d1ed-442f-b0e0-e25436d73f9e"/>
 				<textElement textAlignment="Center">
 					<font fontName="DejaVu Sans" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA["= stazionaria"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="370" y="58" width="183" height="20" uuid="d3eade9b-3694-44d9-990d-587c4f119375"/>
+				<reportElement x="345" y="118" width="183" height="20" uuid="d3eade9b-3694-44d9-990d-587c4f119375"/>
 				<textElement textAlignment="Center">
 					<font fontName="DejaVu Sans" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA["\u25BC in diminuzione"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="12" y="38" width="109" height="20" uuid="e6bbfbca-3a09-435b-819b-8da33df414bd"/>
-				<textElement verticalAlignment="Middle">
+				<reportElement x="382" y="41" width="109" height="20" uuid="e6bbfbca-3a09-435b-819b-8da33df414bd"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="DejaVu Sans" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA["\u0394 - Tendenza"]]></textFieldExpression>
@@ -476,6 +466,191 @@ where idbollettino = $P{ID_RICHIESTA} and tendenza<>-100) as sensori from bollet
 				<text><![CDATA[Tutti gli orari sono riferiti all'ora locale.
 I dati indicati in grassetto si riferiscono ai livelli al colmo osservati.]]></text>
 			</staticText>
+			<textField>
+				<reportElement x="62" y="41" width="109" height="20" uuid="3851df9d-6e68-4fd6-bc3e-b532497aaa9e"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Fascia oraria"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="32" y="61" width="43" height="14" uuid="6bc3bafd-3335-4951-87c2-a84d411b81e3"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["0:00"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="75" y="61" width="43" height="14" uuid="3ed34dce-a160-4803-8681-5d86d729b073"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["6:00"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="134" y="61" width="70" height="14" uuid="6b3b7e00-91d7-4cf2-b228-586f8269a30e"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["notte"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="32" y="75" width="43" height="14" uuid="b703b2bd-be59-41b7-9069-a0fc3791c3c9"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["3:00"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="32" y="89" width="43" height="14" uuid="9e76c802-5da1-462f-af9b-f6350a250cc1"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["6:00"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="32" y="103" width="43" height="14" uuid="3037ce0e-7c59-4e01-8877-2d51e21cc32f"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["9:00"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="32" y="117" width="43" height="14" uuid="1f74f9ae-8b95-42b5-91c1-9314757c71d6"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["12:00"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="32" y="131" width="43" height="14" uuid="29a446eb-70bf-43f5-995c-2281698df7ab"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["15:00"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="32" y="145" width="43" height="14" uuid="34cf5691-7df4-4ea1-bcf7-e8bb5759e6ec"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["18:00"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="32" y="159" width="43" height="14" uuid="39641537-ed27-44aa-8d2b-e2aa221305a6"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["21:00"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="75" y="75" width="43" height="14" uuid="7b959d0c-006a-4095-8a30-862ff5314575"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["9:00"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="75" y="89" width="43" height="14" uuid="97afe352-6831-45d9-b159-bb0359eba02b"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["12:00"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="75" y="103" width="43" height="14" uuid="9d311304-65c1-4a6c-a17b-875dcc33715d"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["15:00"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="75" y="117" width="43" height="14" uuid="a6b72190-4365-4275-be58-48a9e6276acd"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["18:00"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="75" y="131" width="43" height="14" uuid="b4af7cb9-4872-44d3-8185-32ed35d58b5d"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["21:00"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="75" y="145" width="43" height="14" uuid="91d36b25-e493-45ab-9c3e-18d4e42e1176"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["0:00"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="75" y="159" width="43" height="14" uuid="6fcad94d-3de9-461f-8037-b838a0c87b72"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["3:00"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="134" y="75" width="70" height="14" uuid="24eb4f65-3939-4509-82ca-2e8a685acc64"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["notte/matt"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="134" y="89" width="70" height="14" uuid="2c43ea37-da16-4200-88cb-88f660420213"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["mattina"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="134" y="103" width="70" height="14" uuid="a03c9121-5534-437c-be43-445d53f88b98"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["matt/pom"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="134" y="117" width="70" height="14" uuid="44362365-c8f6-4b48-b067-3d8a43158a7c"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["pomeriggio"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="134" y="131" width="70" height="14" uuid="b8bc064c-ec55-4cf0-9ea3-fe10fd2cddea"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["pom/sera"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="134" y="145" width="70" height="14" uuid="baf17c2d-3b72-49b1-82e0-7b242c247257"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["sera"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="134" y="159" width="70" height="14" uuid="f0c8770b-6546-419e-b33b-c62150209656"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["sera/notte"]]></textFieldExpression>
+			</textField>
+			<frame>
+				<reportElement x="2" y="37" width="551" height="148" uuid="9b32c6f3-84bb-4726-86c7-89f740ffecfe"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+			</frame>
 		</band>
 		<band height="75">
 			<staticText>

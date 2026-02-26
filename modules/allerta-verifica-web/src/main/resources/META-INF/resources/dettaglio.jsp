@@ -11,7 +11,6 @@
 <%@page import="allerta.verifica.web.bean.GiornoPrecipitazioni"%>
 <%@page import="java.util.Date"%>
 <%@page import="com.liferay.portal.kernel.util.ParamUtil"%>
-<%@page import="com.liferay.portal.kernel.util.StringPool"%>
 <%@page import="java.text.SimpleDateFormat"%>
 <%@page import="allerta.verifica.web.bean.VerificaSearchHelper"%>
 <%@page import="allerta.verifica.web.bean.VerificaDisplayTerms"%>
@@ -116,9 +115,13 @@ SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
 	</portlet:actionURL>
 	<portlet:actionURL var="consolidaURL" name="/allertaer/verifica/consolida">
 		<portlet:param name="redirect" value="<%=themeDisplay.getURLCurrent() %>"/>		
+		<portlet:param name="id" value="<%=""+allertaId %>"/>		
+		<portlet:param name="home" value="0"/>	
 	</portlet:actionURL>
 	<portlet:actionURL var="sbloccaURL" name="/allertaer/verifica/sblocca">
 		<portlet:param name="redirect" value="<%=themeDisplay.getURLCurrent() %>"/>		
+		<portlet:param name="id" value="<%=""+allertaId %>"/>		
+		<portlet:param name="home" value="0"/>	
 	</portlet:actionURL>
 
 <div class="row">
@@ -530,7 +533,7 @@ Attivit&agrave; recente in lettura:
    		      if (window.location.href.lastIndexOf("verifica")!=-1) {
    		    	console.log("Mando heartbeat");
    		    	$.ajax({
-  			      url: '/o/api/heartbeat/'+new Date().getTime(),
+  			      url: '/o/heartbeat/'+new Date().getTime(),
   			      method: 'GET',
   			    }).then(function (resp) {
 			   

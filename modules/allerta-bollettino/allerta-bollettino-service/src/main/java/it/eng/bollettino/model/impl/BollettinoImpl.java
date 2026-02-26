@@ -1,20 +1,9 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.bollettino.model.impl;
-
-import java.util.List;
 
 import com.liferay.document.library.kernel.model.DLFolder;
 import com.liferay.document.library.kernel.model.DLFolderConstants;
@@ -26,10 +15,10 @@ import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.repository.model.Folder;
 import com.liferay.portal.kernel.service.CompanyLocalServiceUtil;
-import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.PortalUtil;
 
-import aQute.bnd.annotation.ProviderType;
+import java.util.List;
+
 import it.eng.allerta.utils.AllertaKeys;
 import it.eng.bollettino.model.BollettinoBacino;
 import it.eng.bollettino.model.BollettinoParametro;
@@ -37,16 +26,10 @@ import it.eng.bollettino.service.BollettinoBacinoLocalServiceUtil;
 import it.eng.bollettino.service.BollettinoParametroLocalServiceUtil;
 
 /**
- * The extended model implementation for the Bollettino service. Represents a row in the &quot;BOLLETTINO_Bollettino&quot; database table, with each column mapped to a property of this class.
- *
- * <p>
- * Helper methods and all application logic should be put in this class. Whenever methods are added, rerun ServiceBuilder to copy their definitions into the <code>it.eng.bollettino.model.Bollettino<code> interface.
- * </p>
- *
  * @author GFAVINI
  */
-@ProviderType
 public class BollettinoImpl extends BollettinoBaseImpl {
+	
 
 	/*
 	 * NOTE FOR DEVELOPERS:

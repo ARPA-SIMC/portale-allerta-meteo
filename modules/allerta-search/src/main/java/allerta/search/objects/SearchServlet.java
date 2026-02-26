@@ -19,11 +19,7 @@ import org.osgi.service.component.annotations.Component;
 import allerta.search.objects.searchables.SearchFactory;
 
 @Component(
-	    immediate = true,
-	    property = {
-	        "osgi.http.whiteboard.context.path=/",
-	        "osgi.http.whiteboard.servlet.pattern=/object-search"
-	    },
+	    property = "osgi.http.whiteboard.servlet.pattern=/object-search",
 	    service = Servlet.class
 	)
 public class SearchServlet extends HttpServlet {

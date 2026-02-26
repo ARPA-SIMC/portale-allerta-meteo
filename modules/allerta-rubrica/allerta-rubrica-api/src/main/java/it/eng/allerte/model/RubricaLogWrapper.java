@@ -1,31 +1,16 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerte.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -36,21 +21,12 @@ import java.util.Objects;
  * @see RubricaLog
  * @generated
  */
-@ProviderType
-public class RubricaLogWrapper implements RubricaLog, ModelWrapper<RubricaLog> {
+public class RubricaLogWrapper
+	extends BaseModelWrapper<RubricaLog>
+	implements ModelWrapper<RubricaLog>, RubricaLog {
 
 	public RubricaLogWrapper(RubricaLog rubricaLog) {
-		_rubricaLog = rubricaLog;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return RubricaLog.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return RubricaLog.class.getName();
+		super(rubricaLog);
 	}
 
 	@Override
@@ -122,13 +98,8 @@ public class RubricaLogWrapper implements RubricaLog, ModelWrapper<RubricaLog> {
 	}
 
 	@Override
-	public Object clone() {
-		return new RubricaLogWrapper((RubricaLog)_rubricaLog.clone());
-	}
-
-	@Override
-	public int compareTo(it.eng.allerte.model.RubricaLog rubricaLog) {
-		return _rubricaLog.compareTo(rubricaLog);
+	public RubricaLog cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -138,12 +109,7 @@ public class RubricaLogWrapper implements RubricaLog, ModelWrapper<RubricaLog> {
 	 */
 	@Override
 	public Date getDATA_MODIFICA() {
-		return _rubricaLog.getDATA_MODIFICA();
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _rubricaLog.getExpandoBridge();
+		return model.getDATA_MODIFICA();
 	}
 
 	/**
@@ -153,7 +119,7 @@ public class RubricaLogWrapper implements RubricaLog, ModelWrapper<RubricaLog> {
 	 */
 	@Override
 	public long getFK_SITO_PROPRIETARIO() {
-		return _rubricaLog.getFK_SITO_PROPRIETARIO();
+		return model.getFK_SITO_PROPRIETARIO();
 	}
 
 	/**
@@ -163,7 +129,7 @@ public class RubricaLogWrapper implements RubricaLog, ModelWrapper<RubricaLog> {
 	 */
 	@Override
 	public long getFK_UTENTE_MODIFICA() {
-		return _rubricaLog.getFK_UTENTE_MODIFICA();
+		return model.getFK_UTENTE_MODIFICA();
 	}
 
 	/**
@@ -173,7 +139,7 @@ public class RubricaLogWrapper implements RubricaLog, ModelWrapper<RubricaLog> {
 	 */
 	@Override
 	public long getID_LOG() {
-		return _rubricaLog.getID_LOG();
+		return model.getID_LOG();
 	}
 
 	/**
@@ -183,7 +149,7 @@ public class RubricaLogWrapper implements RubricaLog, ModelWrapper<RubricaLog> {
 	 */
 	@Override
 	public String getID_OGGETTO() {
-		return _rubricaLog.getID_OGGETTO();
+		return model.getID_OGGETTO();
 	}
 
 	/**
@@ -193,7 +159,7 @@ public class RubricaLogWrapper implements RubricaLog, ModelWrapper<RubricaLog> {
 	 */
 	@Override
 	public String getNUOVA_DESCRIZIONE() {
-		return _rubricaLog.getNUOVA_DESCRIZIONE();
+		return model.getNUOVA_DESCRIZIONE();
 	}
 
 	/**
@@ -203,12 +169,7 @@ public class RubricaLogWrapper implements RubricaLog, ModelWrapper<RubricaLog> {
 	 */
 	@Override
 	public long getPrimaryKey() {
-		return _rubricaLog.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _rubricaLog.getPrimaryKeyObj();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -218,7 +179,7 @@ public class RubricaLogWrapper implements RubricaLog, ModelWrapper<RubricaLog> {
 	 */
 	@Override
 	public String getTABELLA() {
-		return _rubricaLog.getTABELLA();
+		return model.getTABELLA();
 	}
 
 	/**
@@ -228,37 +189,12 @@ public class RubricaLogWrapper implements RubricaLog, ModelWrapper<RubricaLog> {
 	 */
 	@Override
 	public String getTIPO_OPERAZIONE() {
-		return _rubricaLog.getTIPO_OPERAZIONE();
-	}
-
-	@Override
-	public int hashCode() {
-		return _rubricaLog.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _rubricaLog.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _rubricaLog.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _rubricaLog.isNew();
+		return model.getTIPO_OPERAZIONE();
 	}
 
 	@Override
 	public void persist() {
-		_rubricaLog.persist();
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_rubricaLog.setCachedModel(cachedModel);
+		model.persist();
 	}
 
 	/**
@@ -268,24 +204,7 @@ public class RubricaLogWrapper implements RubricaLog, ModelWrapper<RubricaLog> {
 	 */
 	@Override
 	public void setDATA_MODIFICA(Date DATA_MODIFICA) {
-		_rubricaLog.setDATA_MODIFICA(DATA_MODIFICA);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_rubricaLog.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_rubricaLog.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_rubricaLog.setExpandoBridgeAttributes(serviceContext);
+		model.setDATA_MODIFICA(DATA_MODIFICA);
 	}
 
 	/**
@@ -295,7 +214,7 @@ public class RubricaLogWrapper implements RubricaLog, ModelWrapper<RubricaLog> {
 	 */
 	@Override
 	public void setFK_SITO_PROPRIETARIO(long FK_SITO_PROPRIETARIO) {
-		_rubricaLog.setFK_SITO_PROPRIETARIO(FK_SITO_PROPRIETARIO);
+		model.setFK_SITO_PROPRIETARIO(FK_SITO_PROPRIETARIO);
 	}
 
 	/**
@@ -305,7 +224,7 @@ public class RubricaLogWrapper implements RubricaLog, ModelWrapper<RubricaLog> {
 	 */
 	@Override
 	public void setFK_UTENTE_MODIFICA(long FK_UTENTE_MODIFICA) {
-		_rubricaLog.setFK_UTENTE_MODIFICA(FK_UTENTE_MODIFICA);
+		model.setFK_UTENTE_MODIFICA(FK_UTENTE_MODIFICA);
 	}
 
 	/**
@@ -315,7 +234,7 @@ public class RubricaLogWrapper implements RubricaLog, ModelWrapper<RubricaLog> {
 	 */
 	@Override
 	public void setID_LOG(long ID_LOG) {
-		_rubricaLog.setID_LOG(ID_LOG);
+		model.setID_LOG(ID_LOG);
 	}
 
 	/**
@@ -325,12 +244,7 @@ public class RubricaLogWrapper implements RubricaLog, ModelWrapper<RubricaLog> {
 	 */
 	@Override
 	public void setID_OGGETTO(String ID_OGGETTO) {
-		_rubricaLog.setID_OGGETTO(ID_OGGETTO);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_rubricaLog.setNew(n);
+		model.setID_OGGETTO(ID_OGGETTO);
 	}
 
 	/**
@@ -340,7 +254,7 @@ public class RubricaLogWrapper implements RubricaLog, ModelWrapper<RubricaLog> {
 	 */
 	@Override
 	public void setNUOVA_DESCRIZIONE(String NUOVA_DESCRIZIONE) {
-		_rubricaLog.setNUOVA_DESCRIZIONE(NUOVA_DESCRIZIONE);
+		model.setNUOVA_DESCRIZIONE(NUOVA_DESCRIZIONE);
 	}
 
 	/**
@@ -350,12 +264,7 @@ public class RubricaLogWrapper implements RubricaLog, ModelWrapper<RubricaLog> {
 	 */
 	@Override
 	public void setPrimaryKey(long primaryKey) {
-		_rubricaLog.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_rubricaLog.setPrimaryKeyObj(primaryKeyObj);
+		model.setPrimaryKey(primaryKey);
 	}
 
 	/**
@@ -365,7 +274,7 @@ public class RubricaLogWrapper implements RubricaLog, ModelWrapper<RubricaLog> {
 	 */
 	@Override
 	public void setTABELLA(String TABELLA) {
-		_rubricaLog.setTABELLA(TABELLA);
+		model.setTABELLA(TABELLA);
 	}
 
 	/**
@@ -375,75 +284,17 @@ public class RubricaLogWrapper implements RubricaLog, ModelWrapper<RubricaLog> {
 	 */
 	@Override
 	public void setTIPO_OPERAZIONE(String TIPO_OPERAZIONE) {
-		_rubricaLog.setTIPO_OPERAZIONE(TIPO_OPERAZIONE);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<it.eng.allerte.model.RubricaLog> toCacheModel() {
-
-		return _rubricaLog.toCacheModel();
-	}
-
-	@Override
-	public it.eng.allerte.model.RubricaLog toEscapedModel() {
-		return new RubricaLogWrapper(_rubricaLog.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _rubricaLog.toString();
-	}
-
-	@Override
-	public it.eng.allerte.model.RubricaLog toUnescapedModel() {
-		return new RubricaLogWrapper(_rubricaLog.toUnescapedModel());
+		model.setTIPO_OPERAZIONE(TIPO_OPERAZIONE);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _rubricaLog.toXmlString();
+		return model.toXmlString();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-
-		if (!(obj instanceof RubricaLogWrapper)) {
-			return false;
-		}
-
-		RubricaLogWrapper rubricaLogWrapper = (RubricaLogWrapper)obj;
-
-		if (Objects.equals(_rubricaLog, rubricaLogWrapper._rubricaLog)) {
-			return true;
-		}
-
-		return false;
+	protected RubricaLogWrapper wrap(RubricaLog rubricaLog) {
+		return new RubricaLogWrapper(rubricaLog);
 	}
-
-	@Override
-	public RubricaLog getWrappedModel() {
-		return _rubricaLog;
-	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _rubricaLog.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _rubricaLog.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_rubricaLog.resetOriginalValues();
-	}
-
-	private final RubricaLog _rubricaLog;
 
 }

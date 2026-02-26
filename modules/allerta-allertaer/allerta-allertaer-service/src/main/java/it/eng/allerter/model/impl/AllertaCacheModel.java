@@ -1,24 +1,13 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerter.model.impl;
 
-import aQute.bnd.annotation.ProviderType;
-
+import com.liferay.petra.lang.HashUtil;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.model.CacheModel;
-import com.liferay.portal.kernel.util.HashUtil;
-import com.liferay.portal.kernel.util.StringBundler;
 
 import it.eng.allerter.model.Allerta;
 
@@ -35,20 +24,19 @@ import java.util.Date;
  * @author GFAVINI
  * @generated
  */
-@ProviderType
 public class AllertaCacheModel implements CacheModel<Allerta>, Externalizable {
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
+	public boolean equals(Object object) {
+		if (this == object) {
 			return true;
 		}
 
-		if (!(obj instanceof AllertaCacheModel)) {
+		if (!(object instanceof AllertaCacheModel)) {
 			return false;
 		}
 
-		AllertaCacheModel allertaCacheModel = (AllertaCacheModel)obj;
+		AllertaCacheModel allertaCacheModel = (AllertaCacheModel)object;
 
 		if (allertaId == allertaCacheModel.allertaId) {
 			return true;
@@ -64,7 +52,7 @@ public class AllertaCacheModel implements CacheModel<Allerta>, Externalizable {
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(63);
+		StringBundler sb = new StringBundler(67);
 
 		sb.append("{uuid=");
 		sb.append(uuid);
@@ -118,10 +106,14 @@ public class AllertaCacheModel implements CacheModel<Allerta>, Externalizable {
 		sb.append(parentId);
 		sb.append(", sintesi=");
 		sb.append(sintesi);
+		sb.append(", sintesiEng=");
+		sb.append(sintesiEng);
 		sb.append(", link=");
 		sb.append(link);
 		sb.append(", titolo=");
 		sb.append(titolo);
+		sb.append(", titoloEng=");
+		sb.append(titoloEng);
 		sb.append(", tipoAllerta=");
 		sb.append(tipoAllerta);
 		sb.append(", hash=");
@@ -260,6 +252,13 @@ public class AllertaCacheModel implements CacheModel<Allerta>, Externalizable {
 			allertaImpl.setSintesi(sintesi);
 		}
 
+		if (sintesiEng == null) {
+			allertaImpl.setSintesiEng("");
+		}
+		else {
+			allertaImpl.setSintesiEng(sintesiEng);
+		}
+
 		if (link == null) {
 			allertaImpl.setLink("");
 		}
@@ -272,6 +271,13 @@ public class AllertaCacheModel implements CacheModel<Allerta>, Externalizable {
 		}
 		else {
 			allertaImpl.setTitolo(titolo);
+		}
+
+		if (titoloEng == null) {
+			allertaImpl.setTitoloEng("");
+		}
+		else {
+			allertaImpl.setTitoloEng(titoloEng);
 		}
 
 		allertaImpl.setTipoAllerta(tipoAllerta);
@@ -334,8 +340,10 @@ public class AllertaCacheModel implements CacheModel<Allerta>, Externalizable {
 
 		parentId = objectInput.readLong();
 		sintesi = objectInput.readUTF();
+		sintesiEng = objectInput.readUTF();
 		link = objectInput.readUTF();
 		titolo = objectInput.readUTF();
+		titoloEng = objectInput.readUTF();
 
 		tipoAllerta = objectInput.readBoolean();
 		hash = objectInput.readUTF();
@@ -430,6 +438,13 @@ public class AllertaCacheModel implements CacheModel<Allerta>, Externalizable {
 			objectOutput.writeUTF(sintesi);
 		}
 
+		if (sintesiEng == null) {
+			objectOutput.writeUTF("");
+		}
+		else {
+			objectOutput.writeUTF(sintesiEng);
+		}
+
 		if (link == null) {
 			objectOutput.writeUTF("");
 		}
@@ -442,6 +457,13 @@ public class AllertaCacheModel implements CacheModel<Allerta>, Externalizable {
 		}
 		else {
 			objectOutput.writeUTF(titolo);
+		}
+
+		if (titoloEng == null) {
+			objectOutput.writeUTF("");
+		}
+		else {
+			objectOutput.writeUTF(titoloEng);
 		}
 
 		objectOutput.writeBoolean(tipoAllerta);
@@ -487,8 +509,10 @@ public class AllertaCacheModel implements CacheModel<Allerta>, Externalizable {
 	public long dataFirmaProt;
 	public long parentId;
 	public String sintesi;
+	public String sintesiEng;
 	public String link;
 	public String titolo;
+	public String titoloEng;
 	public boolean tipoAllerta;
 	public String hash;
 	public String sintesiBriefing;

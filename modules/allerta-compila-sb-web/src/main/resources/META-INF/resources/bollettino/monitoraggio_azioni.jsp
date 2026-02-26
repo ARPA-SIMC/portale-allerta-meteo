@@ -1,5 +1,4 @@
 <%@page import="com.liferay.portal.kernel.portlet.LiferayWindowState"%>
-<%@page import="com.liferay.portal.kernel.util.StringPool"%>
 <%@page import="it.eng.allerter.allerta.BollettinoBean"%>
 <%@page import="com.liferay.portal.kernel.util.ParamUtil"%>
 <%@ include file="../init.jsp" %>
@@ -15,9 +14,9 @@ int canApprove = ParamUtil.getInteger(request,"canApprove");
 
 <liferay-ui:icon-menu
 	direction="left-side"
-	icon="<%= StringPool.BLANK %>"
+	icon=""
 	markupView="lexicon"
-	message="<%= StringPool.BLANK %>"
+	message=""
 	showWhenSingleIcon="<%= true %>">
 	
 	

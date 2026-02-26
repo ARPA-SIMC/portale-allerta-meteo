@@ -32,7 +32,7 @@ Il portale è online e raggiungibile su https://allertameteo.regione.emilia-roma
 
 
 # Requisiti
-Valgono i requisiti di Liferay 7.2. consultabili nel dettaglio https://www.liferay.com/it/product/tech-specs . In breve:
+Valgono i requisiti di Liferay 7.4.3. consultabili nel dettaglio https://www.liferay.com/it/product/tech-specs . In breve:
 - sistemi operativi Linux (tutte le distribuzioni con JVM) o Windows
 - web server 
     (JBoss EAP,
@@ -64,10 +64,10 @@ Il sistema non ha alcuna dipendenza da software che non siano *open source*.
 
 Il sistema è stato utilizzato con le seguenti specifiche:
 
-- web server Tomcat 9.0.17
-- database PostgreSQL 9.6.24
-- librerie OpenJDK 11
-- ElasticSearch 6
+- web server Tomcat 9
+- database PostgreSQL 16
+- librerie OpenJDK 18
+- ElasticSearch 7
 
 # Stato del progetto
 Il progetto è rilasciato come stabile.

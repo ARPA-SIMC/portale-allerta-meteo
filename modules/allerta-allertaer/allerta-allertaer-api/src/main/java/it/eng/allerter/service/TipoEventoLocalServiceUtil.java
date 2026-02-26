@@ -1,24 +1,22 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.allerter.service;
 
-import aQute.bnd.annotation.ProviderType;
+import com.liferay.petra.sql.dsl.query.DSLQuery;
+import com.liferay.portal.kernel.dao.orm.DynamicQuery;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.model.PersistedModel;
+import com.liferay.portal.kernel.module.service.Snapshot;
+import com.liferay.portal.kernel.util.OrderByComparator;
 
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.util.tracker.ServiceTracker;
+import it.eng.allerter.model.TipoEvento;
+
+import java.io.Serializable;
+
+import java.util.List;
 
 /**
  * Provides the local service utility for TipoEvento. This utility wraps
@@ -32,7 +30,6 @@ import org.osgi.util.tracker.ServiceTracker;
  * @see TipoEventoLocalService
  * @generated
  */
-@ProviderType
 public class TipoEventoLocalServiceUtil {
 
 	/*
@@ -44,13 +41,25 @@ public class TipoEventoLocalServiceUtil {
 	/**
 	 * Adds the tipo evento to the database. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect TipoEventoLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param tipoEvento the tipo evento
 	 * @return the tipo evento that was added
 	 */
-	public static it.eng.allerter.model.TipoEvento addTipoEvento(
-		it.eng.allerter.model.TipoEvento tipoEvento) {
-
+	public static TipoEvento addTipoEvento(TipoEvento tipoEvento) {
 		return getService().addTipoEvento(tipoEvento);
+	}
+
+	/**
+	 * @throws PortalException
+	 */
+	public static PersistedModel createPersistedModel(
+			Serializable primaryKeyObj)
+		throws PortalException {
+
+		return getService().createPersistedModel(primaryKeyObj);
 	}
 
 	/**
@@ -59,19 +68,16 @@ public class TipoEventoLocalServiceUtil {
 	 * @param eventoId the primary key for the new tipo evento
 	 * @return the new tipo evento
 	 */
-	public static it.eng.allerter.model.TipoEvento createTipoEvento(
-		long eventoId) {
-
+	public static TipoEvento createTipoEvento(long eventoId) {
 		return getService().createTipoEvento(eventoId);
 	}
 
 	/**
 	 * @throws PortalException
 	 */
-	public static com.liferay.portal.kernel.model.PersistedModel
-			deletePersistedModel(
-				com.liferay.portal.kernel.model.PersistedModel persistedModel)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	public static PersistedModel deletePersistedModel(
+			PersistedModel persistedModel)
+		throws PortalException {
 
 		return getService().deletePersistedModel(persistedModel);
 	}
@@ -79,13 +85,16 @@ public class TipoEventoLocalServiceUtil {
 	/**
 	 * Deletes the tipo evento with the primary key from the database. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect TipoEventoLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param eventoId the primary key of the tipo evento
 	 * @return the tipo evento that was removed
 	 * @throws PortalException if a tipo evento with the primary key could not be found
 	 */
-	public static it.eng.allerter.model.TipoEvento deleteTipoEvento(
-			long eventoId)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	public static TipoEvento deleteTipoEvento(long eventoId)
+		throws PortalException {
 
 		return getService().deleteTipoEvento(eventoId);
 	}
@@ -93,18 +102,26 @@ public class TipoEventoLocalServiceUtil {
 	/**
 	 * Deletes the tipo evento from the database. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect TipoEventoLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param tipoEvento the tipo evento
 	 * @return the tipo evento that was removed
 	 */
-	public static it.eng.allerter.model.TipoEvento deleteTipoEvento(
-		it.eng.allerter.model.TipoEvento tipoEvento) {
-
+	public static TipoEvento deleteTipoEvento(TipoEvento tipoEvento) {
 		return getService().deleteTipoEvento(tipoEvento);
 	}
 
-	public static com.liferay.portal.kernel.dao.orm.DynamicQuery
-		dynamicQuery() {
+	public static <T> T dslQuery(DSLQuery dslQuery) {
+		return getService().dslQuery(dslQuery);
+	}
 
+	public static int dslQueryCount(DSLQuery dslQuery) {
+		return getService().dslQueryCount(dslQuery);
+	}
+
+	public static DynamicQuery dynamicQuery() {
 		return getService().dynamicQuery();
 	}
 
@@ -114,9 +131,7 @@ public class TipoEventoLocalServiceUtil {
 	 * @param dynamicQuery the dynamic query
 	 * @return the matching rows
 	 */
-	public static <T> java.util.List<T> dynamicQuery(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery) {
-
+	public static <T> List<T> dynamicQuery(DynamicQuery dynamicQuery) {
 		return getService().dynamicQuery(dynamicQuery);
 	}
 
@@ -124,7 +139,7 @@ public class TipoEventoLocalServiceUtil {
 	 * Performs a dynamic query on the database and returns a range of the matching rows.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>it.eng.allerter.model.impl.TipoEventoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>it.eng.allerter.model.impl.TipoEventoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param dynamicQuery the dynamic query
@@ -132,9 +147,8 @@ public class TipoEventoLocalServiceUtil {
 	 * @param end the upper bound of the range of model instances (not inclusive)
 	 * @return the range of matching rows
 	 */
-	public static <T> java.util.List<T> dynamicQuery(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery, int start,
-		int end) {
+	public static <T> List<T> dynamicQuery(
+		DynamicQuery dynamicQuery, int start, int end) {
 
 		return getService().dynamicQuery(dynamicQuery, start, end);
 	}
@@ -143,7 +157,7 @@ public class TipoEventoLocalServiceUtil {
 	 * Performs a dynamic query on the database and returns an ordered range of the matching rows.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>it.eng.allerter.model.impl.TipoEventoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>it.eng.allerter.model.impl.TipoEventoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param dynamicQuery the dynamic query
@@ -152,10 +166,9 @@ public class TipoEventoLocalServiceUtil {
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching rows
 	 */
-	public static <T> java.util.List<T> dynamicQuery(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery, int start,
-		int end,
-		com.liferay.portal.kernel.util.OrderByComparator<T> orderByComparator) {
+	public static <T> List<T> dynamicQuery(
+		DynamicQuery dynamicQuery, int start, int end,
+		OrderByComparator<T> orderByComparator) {
 
 		return getService().dynamicQuery(
 			dynamicQuery, start, end, orderByComparator);
@@ -167,9 +180,7 @@ public class TipoEventoLocalServiceUtil {
 	 * @param dynamicQuery the dynamic query
 	 * @return the number of rows matching the dynamic query
 	 */
-	public static long dynamicQueryCount(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery) {
-
+	public static long dynamicQueryCount(DynamicQuery dynamicQuery) {
 		return getService().dynamicQueryCount(dynamicQuery);
 	}
 
@@ -181,15 +192,13 @@ public class TipoEventoLocalServiceUtil {
 	 * @return the number of rows matching the dynamic query
 	 */
 	public static long dynamicQueryCount(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery,
+		DynamicQuery dynamicQuery,
 		com.liferay.portal.kernel.dao.orm.Projection projection) {
 
 		return getService().dynamicQueryCount(dynamicQuery, projection);
 	}
 
-	public static it.eng.allerter.model.TipoEvento fetchTipoEvento(
-		long eventoId) {
-
+	public static TipoEvento fetchTipoEvento(long eventoId) {
 		return getService().fetchTipoEvento(eventoId);
 	}
 
@@ -200,8 +209,8 @@ public class TipoEventoLocalServiceUtil {
 	 * @param groupId the primary key of the group
 	 * @return the matching tipo evento, or <code>null</code> if a matching tipo evento could not be found
 	 */
-	public static it.eng.allerter.model.TipoEvento
-		fetchTipoEventoByUuidAndGroupId(String uuid, long groupId) {
+	public static TipoEvento fetchTipoEventoByUuidAndGroupId(
+		String uuid, long groupId) {
 
 		return getService().fetchTipoEventoByUuidAndGroupId(uuid, groupId);
 	}
@@ -236,9 +245,11 @@ public class TipoEventoLocalServiceUtil {
 		return getService().getOSGiServiceIdentifier();
 	}
 
-	public static com.liferay.portal.kernel.model.PersistedModel
-			getPersistedModel(java.io.Serializable primaryKeyObj)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	/**
+	 * @throws PortalException
+	 */
+	public static PersistedModel getPersistedModel(Serializable primaryKeyObj)
+		throws PortalException {
 
 		return getService().getPersistedModel(primaryKeyObj);
 	}
@@ -250,8 +261,8 @@ public class TipoEventoLocalServiceUtil {
 	 * @return the tipo evento
 	 * @throws PortalException if a tipo evento with the primary key could not be found
 	 */
-	public static it.eng.allerter.model.TipoEvento getTipoEvento(long eventoId)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	public static TipoEvento getTipoEvento(long eventoId)
+		throws PortalException {
 
 		return getService().getTipoEvento(eventoId);
 	}
@@ -264,9 +275,9 @@ public class TipoEventoLocalServiceUtil {
 	 * @return the matching tipo evento
 	 * @throws PortalException if a matching tipo evento could not be found
 	 */
-	public static it.eng.allerter.model.TipoEvento
-			getTipoEventoByUuidAndGroupId(String uuid, long groupId)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	public static TipoEvento getTipoEventoByUuidAndGroupId(
+			String uuid, long groupId)
+		throws PortalException {
 
 		return getService().getTipoEventoByUuidAndGroupId(uuid, groupId);
 	}
@@ -275,16 +286,14 @@ public class TipoEventoLocalServiceUtil {
 	 * Returns a range of all the tipo eventos.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code>), then the query will include the default ORDER BY logic from <code>it.eng.allerter.model.impl.TipoEventoModelImpl</code>. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>it.eng.allerter.model.impl.TipoEventoModelImpl</code>.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of tipo eventos
 	 * @param end the upper bound of the range of tipo eventos (not inclusive)
 	 * @return the range of tipo eventos
 	 */
-	public static java.util.List<it.eng.allerter.model.TipoEvento>
-		getTipoEventos(int start, int end) {
-
+	public static List<TipoEvento> getTipoEventos(int start, int end) {
 		return getService().getTipoEventos(start, end);
 	}
 
@@ -295,8 +304,8 @@ public class TipoEventoLocalServiceUtil {
 	 * @param companyId the primary key of the company
 	 * @return the matching tipo eventos, or an empty list if no matches were found
 	 */
-	public static java.util.List<it.eng.allerter.model.TipoEvento>
-		getTipoEventosByUuidAndCompanyId(String uuid, long companyId) {
+	public static List<TipoEvento> getTipoEventosByUuidAndCompanyId(
+		String uuid, long companyId) {
 
 		return getService().getTipoEventosByUuidAndCompanyId(uuid, companyId);
 	}
@@ -311,11 +320,9 @@ public class TipoEventoLocalServiceUtil {
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the range of matching tipo eventos, or an empty list if no matches were found
 	 */
-	public static java.util.List<it.eng.allerter.model.TipoEvento>
-		getTipoEventosByUuidAndCompanyId(
-			String uuid, long companyId, int start, int end,
-			com.liferay.portal.kernel.util.OrderByComparator
-				<it.eng.allerter.model.TipoEvento> orderByComparator) {
+	public static List<TipoEvento> getTipoEventosByUuidAndCompanyId(
+		String uuid, long companyId, int start, int end,
+		OrderByComparator<TipoEvento> orderByComparator) {
 
 		return getService().getTipoEventosByUuidAndCompanyId(
 			uuid, companyId, start, end, orderByComparator);
@@ -333,35 +340,23 @@ public class TipoEventoLocalServiceUtil {
 	/**
 	 * Updates the tipo evento in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
 	 *
+	 * <p>
+	 * <strong>Important:</strong> Inspect TipoEventoLocalServiceImpl for overloaded versions of the method. If provided, use these entry points to the API, as the implementation logic may require the additional parameters defined there.
+	 * </p>
+	 *
 	 * @param tipoEvento the tipo evento
 	 * @return the tipo evento that was updated
 	 */
-	public static it.eng.allerter.model.TipoEvento updateTipoEvento(
-		it.eng.allerter.model.TipoEvento tipoEvento) {
-
+	public static TipoEvento updateTipoEvento(TipoEvento tipoEvento) {
 		return getService().updateTipoEvento(tipoEvento);
 	}
 
 	public static TipoEventoLocalService getService() {
-		return _serviceTracker.getService();
+		return _serviceSnapshot.get();
 	}
 
-	private static ServiceTracker
-		<TipoEventoLocalService, TipoEventoLocalService> _serviceTracker;
-
-	static {
-		Bundle bundle = FrameworkUtil.getBundle(TipoEventoLocalService.class);
-
-		ServiceTracker<TipoEventoLocalService, TipoEventoLocalService>
-			serviceTracker =
-				new ServiceTracker
-					<TipoEventoLocalService, TipoEventoLocalService>(
-						bundle.getBundleContext(), TipoEventoLocalService.class,
-						null);
-
-		serviceTracker.open();
-
-		_serviceTracker = serviceTracker;
-	}
+	private static final Snapshot<TipoEventoLocalService> _serviceSnapshot =
+		new Snapshot<>(
+			TipoEventoLocalServiceUtil.class, TipoEventoLocalService.class);
 
 }

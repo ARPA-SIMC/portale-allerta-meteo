@@ -1,8 +1,16 @@
 package allerta.search.portlet;
 
+import com.liferay.portal.configuration.metatype.annotations.ExtendedObjectClassDefinition;
+
 import aQute.bnd.annotation.metatype.Meta;
 
-@Meta.OCD(id = "allerta.search.portlet.AllertaSearchPortlet")
+
+@ExtendedObjectClassDefinition(
+		category = "category.sample",
+		scope = ExtendedObjectClassDefinition.Scope.PORTLET_INSTANCE
+	)
+@Meta.OCD(id = "allerta.search.portlet.SearchPortletConfig",
+name="AllertaSearchPortlet")
 public interface SearchPortletConfig {
 	
 	@Meta.AD(required = false)

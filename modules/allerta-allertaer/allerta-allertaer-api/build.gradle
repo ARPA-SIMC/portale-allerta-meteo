@@ -1,4 +1,6 @@
 dependencies {
+	compileOnly group: "com.liferay.portal", name: "release.dxp.api"
+	
 	compileOnly group: "com.liferay", name: "com.liferay.petra.lang"
 	compileOnly group: "com.liferay", name: "com.liferay.petra.string"
 	compileOnly group: "com.liferay.portal", name: "com.liferay.portal.kernel"
@@ -9,5 +11,4 @@ dependencies {
 	compileOnly 'biz.aQute.bnd:biz.aQute.bnd.annotation:4.2.0'
 	compileOnly group: 'javax.mail', name: 'mail', version: '1.4.7'
 	compileOnly project(":modules:allerta-rubrica:allerta-rubrica-api")
-	
 }

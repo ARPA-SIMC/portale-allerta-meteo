@@ -9,11 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.osgi.service.component.annotations.Component;
 
 @Component(
-	    immediate = true,
-	    property = {
-	        "osgi.http.whiteboard.context.path=/",
-	        "osgi.http.whiteboard.servlet.pattern=/api/heartbeat/*"
-	    },
+	    property = "osgi.http.whiteboard.servlet.pattern=/heartbeat/*",
 	    service = Servlet.class
 	)
 public class HeartbeatServlet extends HttpServlet {
@@ -27,11 +23,12 @@ public class HeartbeatServlet extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException {
-
+		resp.setStatus(200);
+		resp.setContentLength(0);
 	}
 	
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException {
-
+		doGet(req,resp);
 	}
 }

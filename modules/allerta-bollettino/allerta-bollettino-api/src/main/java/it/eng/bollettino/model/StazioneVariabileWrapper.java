@@ -1,31 +1,16 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.bollettino.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -36,22 +21,12 @@ import java.util.Objects;
  * @see StazioneVariabile
  * @generated
  */
-@ProviderType
 public class StazioneVariabileWrapper
-	implements StazioneVariabile, ModelWrapper<StazioneVariabile> {
+	extends BaseModelWrapper<StazioneVariabile>
+	implements ModelWrapper<StazioneVariabile>, StazioneVariabile {
 
 	public StazioneVariabileWrapper(StazioneVariabile stazioneVariabile) {
-		_stazioneVariabile = stazioneVariabile;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return StazioneVariabile.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return StazioneVariabile.class.getName();
+		super(stazioneVariabile);
 	}
 
 	@Override
@@ -122,16 +97,8 @@ public class StazioneVariabileWrapper
 	}
 
 	@Override
-	public Object clone() {
-		return new StazioneVariabileWrapper(
-			(StazioneVariabile)_stazioneVariabile.clone());
-	}
-
-	@Override
-	public int compareTo(
-		it.eng.bollettino.model.StazioneVariabile stazioneVariabile) {
-
-		return _stazioneVariabile.compareTo(stazioneVariabile);
+	public StazioneVariabile cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -141,12 +108,7 @@ public class StazioneVariabileWrapper
 	 */
 	@Override
 	public Date getDataUltimoValore() {
-		return _stazioneVariabile.getDataUltimoValore();
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _stazioneVariabile.getExpandoBridge();
+		return model.getDataUltimoValore();
 	}
 
 	/**
@@ -156,7 +118,7 @@ public class StazioneVariabileWrapper
 	 */
 	@Override
 	public long getId() {
-		return _stazioneVariabile.getId();
+		return model.getId();
 	}
 
 	/**
@@ -166,7 +128,7 @@ public class StazioneVariabileWrapper
 	 */
 	@Override
 	public String getIdStazione() {
-		return _stazioneVariabile.getIdStazione();
+		return model.getIdStazione();
 	}
 
 	/**
@@ -176,7 +138,7 @@ public class StazioneVariabileWrapper
 	 */
 	@Override
 	public String getIdVariabile() {
-		return _stazioneVariabile.getIdVariabile();
+		return model.getIdVariabile();
 	}
 
 	/**
@@ -186,12 +148,7 @@ public class StazioneVariabileWrapper
 	 */
 	@Override
 	public long getPrimaryKey() {
-		return _stazioneVariabile.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _stazioneVariabile.getPrimaryKeyObj();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -201,7 +158,7 @@ public class StazioneVariabileWrapper
 	 */
 	@Override
 	public double getSoglia1() {
-		return _stazioneVariabile.getSoglia1();
+		return model.getSoglia1();
 	}
 
 	/**
@@ -211,7 +168,7 @@ public class StazioneVariabileWrapper
 	 */
 	@Override
 	public double getSoglia2() {
-		return _stazioneVariabile.getSoglia2();
+		return model.getSoglia2();
 	}
 
 	/**
@@ -221,7 +178,7 @@ public class StazioneVariabileWrapper
 	 */
 	@Override
 	public double getSoglia3() {
-		return _stazioneVariabile.getSoglia3();
+		return model.getSoglia3();
 	}
 
 	/**
@@ -231,37 +188,12 @@ public class StazioneVariabileWrapper
 	 */
 	@Override
 	public String getUuid() {
-		return _stazioneVariabile.getUuid();
-	}
-
-	@Override
-	public int hashCode() {
-		return _stazioneVariabile.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _stazioneVariabile.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _stazioneVariabile.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _stazioneVariabile.isNew();
+		return model.getUuid();
 	}
 
 	@Override
 	public void persist() {
-		_stazioneVariabile.persist();
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_stazioneVariabile.setCachedModel(cachedModel);
+		model.persist();
 	}
 
 	/**
@@ -271,24 +203,7 @@ public class StazioneVariabileWrapper
 	 */
 	@Override
 	public void setDataUltimoValore(Date dataUltimoValore) {
-		_stazioneVariabile.setDataUltimoValore(dataUltimoValore);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_stazioneVariabile.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_stazioneVariabile.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_stazioneVariabile.setExpandoBridgeAttributes(serviceContext);
+		model.setDataUltimoValore(dataUltimoValore);
 	}
 
 	/**
@@ -298,7 +213,7 @@ public class StazioneVariabileWrapper
 	 */
 	@Override
 	public void setId(long id) {
-		_stazioneVariabile.setId(id);
+		model.setId(id);
 	}
 
 	/**
@@ -308,7 +223,7 @@ public class StazioneVariabileWrapper
 	 */
 	@Override
 	public void setIdStazione(String idStazione) {
-		_stazioneVariabile.setIdStazione(idStazione);
+		model.setIdStazione(idStazione);
 	}
 
 	/**
@@ -318,12 +233,7 @@ public class StazioneVariabileWrapper
 	 */
 	@Override
 	public void setIdVariabile(String idVariabile) {
-		_stazioneVariabile.setIdVariabile(idVariabile);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_stazioneVariabile.setNew(n);
+		model.setIdVariabile(idVariabile);
 	}
 
 	/**
@@ -333,12 +243,7 @@ public class StazioneVariabileWrapper
 	 */
 	@Override
 	public void setPrimaryKey(long primaryKey) {
-		_stazioneVariabile.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_stazioneVariabile.setPrimaryKeyObj(primaryKeyObj);
+		model.setPrimaryKey(primaryKey);
 	}
 
 	/**
@@ -348,7 +253,7 @@ public class StazioneVariabileWrapper
 	 */
 	@Override
 	public void setSoglia1(double soglia1) {
-		_stazioneVariabile.setSoglia1(soglia1);
+		model.setSoglia1(soglia1);
 	}
 
 	/**
@@ -358,7 +263,7 @@ public class StazioneVariabileWrapper
 	 */
 	@Override
 	public void setSoglia2(double soglia2) {
-		_stazioneVariabile.setSoglia2(soglia2);
+		model.setSoglia2(soglia2);
 	}
 
 	/**
@@ -368,7 +273,7 @@ public class StazioneVariabileWrapper
 	 */
 	@Override
 	public void setSoglia3(double soglia3) {
-		_stazioneVariabile.setSoglia3(soglia3);
+		model.setSoglia3(soglia3);
 	}
 
 	/**
@@ -378,81 +283,19 @@ public class StazioneVariabileWrapper
 	 */
 	@Override
 	public void setUuid(String uuid) {
-		_stazioneVariabile.setUuid(uuid);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<it.eng.bollettino.model.StazioneVariabile> toCacheModel() {
-
-		return _stazioneVariabile.toCacheModel();
-	}
-
-	@Override
-	public it.eng.bollettino.model.StazioneVariabile toEscapedModel() {
-		return new StazioneVariabileWrapper(
-			_stazioneVariabile.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _stazioneVariabile.toString();
-	}
-
-	@Override
-	public it.eng.bollettino.model.StazioneVariabile toUnescapedModel() {
-		return new StazioneVariabileWrapper(
-			_stazioneVariabile.toUnescapedModel());
+		model.setUuid(uuid);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _stazioneVariabile.toXmlString();
+		return model.toXmlString();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
+	protected StazioneVariabileWrapper wrap(
+		StazioneVariabile stazioneVariabile) {
 
-		if (!(obj instanceof StazioneVariabileWrapper)) {
-			return false;
-		}
-
-		StazioneVariabileWrapper stazioneVariabileWrapper =
-			(StazioneVariabileWrapper)obj;
-
-		if (Objects.equals(
-				_stazioneVariabile,
-				stazioneVariabileWrapper._stazioneVariabile)) {
-
-			return true;
-		}
-
-		return false;
+		return new StazioneVariabileWrapper(stazioneVariabile);
 	}
-
-	@Override
-	public StazioneVariabile getWrappedModel() {
-		return _stazioneVariabile;
-	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _stazioneVariabile.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _stazioneVariabile.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_stazioneVariabile.resetOriginalValues();
-	}
-
-	private final StazioneVariabile _stazioneVariabile;
 
 }

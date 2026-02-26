@@ -47,7 +47,6 @@ import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.webcache.WebCachePoolUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
-import com.liferay.users.admin.kernel.util.UsersAdminUtil;
 
 import it.eng.allerta.utils.AllertaKeys;
 import it.eng.allerter.allerta.utils.MailUtils;
@@ -118,9 +117,10 @@ public class AllertaUserRegistrationService {
 
 			serviceContext.setAttribute(WebAllerteConstants.WF_PARAM_MAIL_USER.toString(), emailAddress);
 
-			user = userLocalService.addUser(creatorUserId, companyId, autoPassword, password1, password2,
-					autoScreenName, screenName, emailAddress, facebookId, openId, Locale.ITALY, firstName, middleName,
-					lastName, prefixId, suffixId, male, birthdayMonth, birthdayDay, birthdayYear, jobTitle, groupIds,
+			user = userLocalService.addUser 
+					(creatorUserId, companyId, autoPassword, password1, password2,
+					autoScreenName, screenName, emailAddress, /* facebookId, openId,*/ Locale.ITALY, firstName, middleName,
+					lastName, prefixId, suffixId, male, birthdayMonth, birthdayDay, birthdayYear, jobTitle, 1, groupIds,
 					organizationIds, roleIds, userGroupIds, true, serviceContext);
 
 			
@@ -331,7 +331,7 @@ public class AllertaUserRegistrationService {
 				phone.setCompanyId(companyId);
 				phone.setNumber(telefono);
 				phone.setPrimary(true);
-				phone.setTypeId(getMobilePhoneTypeId("mobile-phone"));
+				phone.setListTypeId(getMobilePhoneTypeId("mobile-phone"));
 				PhoneLocalServiceUtil.updatePhone(phone);
 				//phones.add(phone);
 
@@ -361,7 +361,7 @@ public class AllertaUserRegistrationService {
 	private long getMobilePhoneTypeId(String type) throws SystemException {
 		
 		List<ListType> phoneTypes = ListTypeServiceUtil
-				.getListTypes(ListTypeConstants.CONTACT_PHONE);
+				.getListTypes(20154L,ListTypeConstants.CONTACT_PHONE);
 
 		for (ListType phoneType : phoneTypes) {
 

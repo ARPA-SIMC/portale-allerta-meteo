@@ -17,6 +17,10 @@ import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 
+import com.liferay.dispatch.executor.BaseDispatchTaskExecutor;
+import com.liferay.dispatch.executor.DispatchTaskExecutor;
+import com.liferay.dispatch.executor.DispatchTaskExecutorOutput;
+import com.liferay.dispatch.model.DispatchTrigger;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
@@ -36,8 +40,6 @@ import com.liferay.portal.kernel.scheduler.TriggerFactory;
 import com.liferay.portal.kernel.util.Base64;
 import com.liferay.portal.kernel.util.StreamUtil;
 
-import it.eng.allerta.configuration.schedulers.AllertaBaseSchedulersConfiguration;
-import it.eng.allerta.utils.AllertaTracker;
 import it.eng.animazione.image.model.altezzaOnda;
 import it.eng.animazione.image.model.altezzaOndaAdriac;
 import it.eng.animazione.image.model.altezzaOndaSwanita;
@@ -49,15 +51,19 @@ import it.eng.animazione.image.service.elevazioneLocalService;
 //import it.eng.animazione.image.service.altezzaOndaLocalServiceUtil;
 
 @Component(
-	immediate = false,
-	service = MessageListener.class
-	)
-public class OndaAltScheduler extends BaseMessageListener {
+		  property = {
+			"dispatch.task.executor.name=Scarico onde",
+			"dispatch.task.executor.type=task-scarico-onde"
+		  },
+		  service = DispatchTaskExecutor.class
+		)
+public class OndaAltScheduler extends BaseDispatchTaskExecutor {
 	
 	private Log _log = LogFactoryUtil.getLog(OndaAltScheduler.class);
 
 	public final static String swanURL = "https://apps.arpae.it/REST/meteo_mappe_previsione_altezza_onda_swanemr?sort=-_id&max_results=1";
-	public final static String swanitaURL = "https://apps.arpae.it/REST/meteo_mappe_previsione_altezza_onda_swanita?sort=-_id&max_results=1";
+	//public final static String swanitaURL = "https://apps.arpae.it/REST/meteo_mappe_previsione_altezza_onda_swanita?sort=-_id&max_results=1";
+	public final static String swanitaURL = "https://apps.arpae.it/REST/meteo_mappe_previsione_altezza_onda_significativa_www3ita?sort=-_id&max_results=1";
 	public final static String adriacURL = "https://apps.arpae.it/REST/meteo_mappe_mare_previsione_livello_mare_adriac?sort=-_id&max_results=1";
 
 	//public final static String jsonURL = "https://www.arpae.it/sim/external/bollettino/mappe_mare.php";
@@ -79,13 +85,14 @@ public class OndaAltScheduler extends BaseMessageListener {
 	elevazioneLocalService elevazioneService;
 	
 	@Override
-	protected void doReceive(Message message) throws Exception {
+	public void doExecute(DispatchTrigger dispatchTrigger, DispatchTaskExecutorOutput output) {
 		
 		_log.info("OndaAlt Scheduler - START");
 
 		getAltezzaOndaImages();
 		getAltezzaOndaSwanitaImages();
 		getAltezzaOndaAdriacImages();
+		output.setOutput("Scarico onde terminato");
 		
 		_log.info("OndaAlt Scheduler - END");
 
@@ -279,33 +286,9 @@ public class OndaAltScheduler extends BaseMessageListener {
 		return null;
 	}
 
-	@Activate
-	@Modified
-	protected void activate(Map<String, Object> properties) {
-		
-		Class<?> clazz = getClass();
-
-		String className = clazz.getName();
-		
-		AllertaBaseSchedulersConfiguration configuration = AllertaTracker.getAllertaSchedulersConfiguration();
-		
-		_log.info("OndaAltScheduler scheduling at " + configuration.schedulerOndaAltMinutes());
-
-		if (configuration.schedulerOndaAltMinutes()<1) return;
-		
-		Trigger trigger = _triggerFactory.createTrigger(className, className, null, null, configuration.schedulerOndaAltMinutes(), TimeUnit.MINUTE);
-
-		SchedulerEntry schedulerEntry = new SchedulerEntryImpl(
-			className, trigger);
-
-		baseScheduler.register(
-			this, schedulerEntry, DestinationNames.SCHEDULER_DISPATCH);
-		
-	}
-
-	@Deactivate
-	protected void deactivate() {
-		baseScheduler.unregister(this);
+	@Override
+	public String getName() {
+		return "Scarico onde";
 	}
 	
 

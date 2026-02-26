@@ -1,9 +1,11 @@
 Bundle-Name: allerta-rubrica-web
-Bundle-SymbolicName: it.eng.rubrica
+Bundle-SymbolicName: allerta.rubrica.web
 Bundle-Version: 1.0.0
-Export-Package: it.eng.rubrica.constants
-
-
+Export-Package: allerta.rubrica.web.constants
+Provide-Capability:\
+	liferay.language.resources;\
+		resource.bundle.base.name="content.Language"
+-fixupmessages "Classes found in the wrong directory"; restrict:=error; is:=warning
 Import-Package: \
 !com.sun.*,\
 !junit.framework.*,\

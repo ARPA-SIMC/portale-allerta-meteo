@@ -28,11 +28,7 @@ import net.sf.jasperreports.engine.export.JRPdfExporterParameter;
 //import net.sf.jasperreports.engine.util.JRProperties;
 
 @Component(
-	    immediate = true,
-	    property = {
-	        "osgi.http.whiteboard.context.path=/",
-	        "osgi.http.whiteboard.servlet.pattern=/report/email"
-	    },
+	    property = "osgi.http.whiteboard.servlet.pattern=/report/email",
 	    service = Servlet.class
 	)
 public class EmailPDFServlet extends HttpServlet {

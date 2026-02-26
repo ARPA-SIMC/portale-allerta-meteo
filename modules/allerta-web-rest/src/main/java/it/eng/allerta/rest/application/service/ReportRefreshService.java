@@ -26,15 +26,20 @@ public class ReportRefreshService  {
 
 	private Log logger = LogFactoryUtil.getLog(ReportRefreshService.class);
 	
-	public void refreshPdf(String p, String oggetto, String id, String scope, 
+	public String refreshPdf(String p, String oggetto, String id, String scope, 
 			HttpServletRequest request) {
 
 		//logInternoLocalService.log("ReportRefreshServlet", "doGet", p, "");
+		boolean salva = false;
+		if (scope==null || "".equals(scope)) {
+			scope = "20154";
+			salva = true;
+		}
 
 		logger.info("OGGETTO " + oggetto + " ID " + id + " SCOPE " + scope);
 
 		if (oggetto == null || id == null || scope == null)
-			return;
+			return "";
 
 		Long l = Long.parseLong(id);
 		//Long s = Long.parseLong(scope);
@@ -42,56 +47,60 @@ public class ReportRefreshService  {
 		CacheRegistryUtil.clear();
 
 		if (oggetto.equals("allerta"))
-			refreshAllerta(l, request);
+			return refreshAllerta(l, request, salva);
 		if (oggetto.equals("valanghe"))
-			refreshAllertaValanghe(l, request);
+			return refreshAllertaValanghe(l, request, salva);
 		if (oggetto.equals("bollettino"))
-			refreshMonitoraggio(l, request);
+			return refreshMonitoraggio(l, request, salva);
 
+		return "";
 	}
 
-	private void refreshAllerta(long allertaId, HttpServletRequest request) {
+	private String refreshAllerta(long allertaId, HttpServletRequest request, boolean salva) {
 
 		try {
 
 			AllertaBean ab = new AllertaBean(allertaId, request);
 			ab.setThreadUserPermission();
 			
-			ab.creaReport();
+			return ab.creaReport(salva);
 
 		} catch (Exception e) {
 			//logInternoLocalService.log("ReportRefreshServlet", "refreshAllerta", e, "");
 			e.printStackTrace();
+			return "";
 		}
 	}
 	
-	private void refreshAllertaValanghe(long allertaId, HttpServletRequest request) {
+	private String refreshAllertaValanghe(long allertaId, HttpServletRequest request, boolean salva) {
 
 		try {
 
 			AllertaValangheBean ab = new AllertaValangheBean(allertaId, request);
 			ab.setThreadUserPermission();
 			
-			ab.creaReport();
+			return ab.creaReport(salva);
 
 		} catch (Exception e) {
 			//logInternoLocalService.log("ReportRefreshServlet", "refreshAllerta", e, "");
 			e.printStackTrace();
+			return "";
 		}
 	}
 
-	private void refreshMonitoraggio(long bollettinoId, HttpServletRequest request) {
+	private String refreshMonitoraggio(long bollettinoId, HttpServletRequest request, boolean salva) {
 
 		try {
 			
 			BollettinoBean ab = new BollettinoBean(bollettinoId, request);
 			// BollettinoBean.pathReports = p;
 			ab.setThreadUserPermission();
-			ab.creaReport(false);// myCarica(l, scopeGroup);
+			return ab.creaReport(false,salva);// myCarica(l, scopeGroup);
 
 		} catch (Exception e) {
 			//logInternoLocalService.log("ReportRefreshServlet", "refreshMonitoraggio", e, "");
 			e.printStackTrace();
+			return "";
 		}
 	}
 	

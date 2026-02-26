@@ -293,7 +293,11 @@ BollettinoBean bollettinoBean = (BollettinoBean) portletSession.getAttribute(All
 			
 				<div class="col-12">
 				
-					<h2 class="h2">Monitoraggio</h2>
+					<h2 class="h2">Monitoraggio <c:if test="<%=bollettinoBean.getUltimoCopiabile()!=null %>"> <button 
+								type="button" 
+								onclick="toggleVisForAll(baciniUltimoBollettino)"
+								class="btn btn-primary">Scegli bacini da ${bollettinoBean.ultimoCopiabile.numero}
+							</button></c:if></h2>
 					
 						<input
 							type="hidden"
@@ -304,17 +308,25 @@ BollettinoBean bollettinoBean = (BollettinoBean) portletSession.getAttribute(All
 					<c:forEach var="bacino" items="${bollettinoBean.bacini}">
 					
 						<div class="rf-cp rf-tgp bacini">
-							<div onclick="toggleVis('${bacino.bac.id}');"
+							<div
 								class="rf-cp-hdr rf-cp-hdr-exp">
 								<table class="rf-cp-gr">
 									<tbody>
 										<tr>
-											<td class="rf-cp-ico"><div
+											<td class="rf-cp-ico" style="display:none"><div
 													class="rf-cp-ico-colps rf-ico-chevron-up rf-ico-t-hdr"></div>
 												<div class="rf-cp-ico-exp rf-ico-chevron-down rf-ico-t-hdr"></div></td>
+											<td style="width:25px">
+											<input 
+													type="checkbox" ${bacino.selezionato ? 'checked' : ''}
+													id= "bacino_${bacino.bac.id}"
+													onchange="toggleVis('${bacino.bac.id}');"
+													name="<portlet:namespace/>bacino_${bacino.bac.id}"
+													class="stazionebbx" />
+											</td>
 											<td class="rf-cp-lbl"><div class="rf-cp-lbl-exp">BACINO
-													${bacino.bac.nome}</div>
-												<div class="rf-cp-lbl-colps">BACINO ${bacino.bac.nome}</div></td>
+													${bacino.bac.nome} <span style="color:red">${bacino.ultimoBollettino}</span></div>
+												<div class="rf-cp-lbl-colps">BACINO ${bacino.bac.nome} ${bacino.ultimoBollettino}</div></td>
 										</tr>
 									</tbody>
 								</table>
@@ -550,6 +562,8 @@ BollettinoBean bollettinoBean = (BollettinoBean) portletSession.getAttribute(All
 </main>	
 <script type="text/javascript">
 
+ const baciniUltimoBollettino = [<%=bollettinoBean.getBaciniUltimoBollettino() %>];
+
 (function($) {
 	   
 	
@@ -611,18 +625,18 @@ BollettinoBean bollettinoBean = (BollettinoBean) portletSession.getAttribute(All
 	function <portlet:namespace/>submitBollettinoForm(actionUrl, prevDef=false) {
 		
 		(function($) {
-		$('.stazionecbx:checkbox:checked').each(function(stazione) {
+		$('.stazionebbx:checkbox:checked').each(function(stazione) {
 			
-			var sid = $(this).attr('id');	
+			var sid = $(this).attr('id').substring(7);	//sottrai il prefisso "bacino_"
 			
-			console.log('stazione : ', sid);
+			console.log('bacino : ', sid);
 			
-			var bid = $('#bacino' + sid).val();
+			//var bid = $('#bacino' + sid).val();
 			
-			console.log('bacino : ', bid);
+			//console.log('bacino : ', bid);
 			
-			if( $('#bacini_selected').val().indexOf('_' + bid) < 0 )
-				$('#bacini_selected').val( $('#bacini_selected').val() + '_' + bid );
+			//if( $('#bacini_selected').val().indexOf('_' + bid) < 0 )
+				$('#bacini_selected').val( $('#bacini_selected').val() + '_' + sid );
 			
 		});
 		
@@ -673,6 +687,36 @@ BollettinoBean bollettinoBean = (BollettinoBean) portletSession.getAttribute(All
 		})(jQuery);	 
 	}
 	
+	function toggleVisForAll(selected) {
+
+		(function($) {
+		var table = $("input"); // document.getElementsByTagName("table");
+		var i;
+
+		var elems = table.get();
+		
+		for (i in elems) {
+			//if ((' ' + elems[i].className + ' ').indexOf(' ' + x + ' ') > -1) {
+				var trovato = false;
+				if (elems[i].id.startsWith("bacino_")) {
+					for (var k in selected) {
+						if (elems[i].id=="bacino_"+selected[k]) trovato = true;
+					}
+					if (trovato && !elems[i].checked) {
+						elems[i].checked = true;
+						toggleVis(elems[i].id.split('_')[1])
+					}
+					else if (!trovato && elems[i].checked) {
+						elems[i].checked = false;
+						toggleVis(elems[i].id.split('_')[1])
+					}
+				}
+				//return;
+			//}
+		} 
+		})(jQuery);	 
+	}
+	
 
 </script>
 
@@ -693,7 +737,7 @@ BollettinoBean bollettinoBean = (BollettinoBean) portletSession.getAttribute(All
    		    		}
    		    	}
    		    	/*$.ajax({
-  			      url: '/o/api/heartbeat/'+new Date().getTime(),
+  			      url: '/o/heartbeat/'+new Date().getTime(),
   			      method: 'GET',
   			    }).then(function (resp) {
 			   

@@ -1,30 +1,15 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.previsioni.meteo.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -35,21 +20,12 @@ import java.util.Objects;
  * @see Storico
  * @generated
  */
-@ProviderType
-public class StoricoWrapper implements Storico, ModelWrapper<Storico> {
+public class StoricoWrapper
+	extends BaseModelWrapper<Storico>
+	implements ModelWrapper<Storico>, Storico {
 
 	public StoricoWrapper(Storico storico) {
-		_storico = storico;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return Storico.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return Storico.class.getName();
+		super(storico);
 	}
 
 	@Override
@@ -106,18 +82,8 @@ public class StoricoWrapper implements Storico, ModelWrapper<Storico> {
 	}
 
 	@Override
-	public Object clone() {
-		return new StoricoWrapper((Storico)_storico.clone());
-	}
-
-	@Override
-	public int compareTo(it.eng.previsioni.meteo.model.Storico storico) {
-		return _storico.compareTo(storico);
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _storico.getExpandoBridge();
+	public Storico cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -127,7 +93,7 @@ public class StoricoWrapper implements Storico, ModelWrapper<Storico> {
 	 */
 	@Override
 	public long getId() {
-		return _storico.getId();
+		return model.getId();
 	}
 
 	/**
@@ -137,7 +103,7 @@ public class StoricoWrapper implements Storico, ModelWrapper<Storico> {
 	 */
 	@Override
 	public int getIdZona() {
-		return _storico.getIdZona();
+		return model.getIdZona();
 	}
 
 	/**
@@ -147,7 +113,7 @@ public class StoricoWrapper implements Storico, ModelWrapper<Storico> {
 	 */
 	@Override
 	public String getNome() {
-		return _storico.getNome();
+		return model.getNome();
 	}
 
 	/**
@@ -157,12 +123,7 @@ public class StoricoWrapper implements Storico, ModelWrapper<Storico> {
 	 */
 	@Override
 	public long getPrimaryKey() {
-		return _storico.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _storico.getPrimaryKeyObj();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -172,7 +133,7 @@ public class StoricoWrapper implements Storico, ModelWrapper<Storico> {
 	 */
 	@Override
 	public String getSigla() {
-		return _storico.getSigla();
+		return model.getSigla();
 	}
 
 	/**
@@ -182,7 +143,7 @@ public class StoricoWrapper implements Storico, ModelWrapper<Storico> {
 	 */
 	@Override
 	public String getTipo() {
-		return _storico.getTipo();
+		return model.getTipo();
 	}
 
 	/**
@@ -192,54 +153,12 @@ public class StoricoWrapper implements Storico, ModelWrapper<Storico> {
 	 */
 	@Override
 	public String getXml() {
-		return _storico.getXml();
-	}
-
-	@Override
-	public int hashCode() {
-		return _storico.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _storico.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _storico.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _storico.isNew();
+		return model.getXml();
 	}
 
 	@Override
 	public void persist() {
-		_storico.persist();
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_storico.setCachedModel(cachedModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_storico.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_storico.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_storico.setExpandoBridgeAttributes(serviceContext);
+		model.persist();
 	}
 
 	/**
@@ -249,7 +168,7 @@ public class StoricoWrapper implements Storico, ModelWrapper<Storico> {
 	 */
 	@Override
 	public void setId(long id) {
-		_storico.setId(id);
+		model.setId(id);
 	}
 
 	/**
@@ -259,12 +178,7 @@ public class StoricoWrapper implements Storico, ModelWrapper<Storico> {
 	 */
 	@Override
 	public void setIdZona(int idZona) {
-		_storico.setIdZona(idZona);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_storico.setNew(n);
+		model.setIdZona(idZona);
 	}
 
 	/**
@@ -274,7 +188,7 @@ public class StoricoWrapper implements Storico, ModelWrapper<Storico> {
 	 */
 	@Override
 	public void setNome(String nome) {
-		_storico.setNome(nome);
+		model.setNome(nome);
 	}
 
 	/**
@@ -284,12 +198,7 @@ public class StoricoWrapper implements Storico, ModelWrapper<Storico> {
 	 */
 	@Override
 	public void setPrimaryKey(long primaryKey) {
-		_storico.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_storico.setPrimaryKeyObj(primaryKeyObj);
+		model.setPrimaryKey(primaryKey);
 	}
 
 	/**
@@ -299,7 +208,7 @@ public class StoricoWrapper implements Storico, ModelWrapper<Storico> {
 	 */
 	@Override
 	public void setSigla(String sigla) {
-		_storico.setSigla(sigla);
+		model.setSigla(sigla);
 	}
 
 	/**
@@ -309,7 +218,7 @@ public class StoricoWrapper implements Storico, ModelWrapper<Storico> {
 	 */
 	@Override
 	public void setTipo(String tipo) {
-		_storico.setTipo(tipo);
+		model.setTipo(tipo);
 	}
 
 	/**
@@ -319,75 +228,17 @@ public class StoricoWrapper implements Storico, ModelWrapper<Storico> {
 	 */
 	@Override
 	public void setXml(String xml) {
-		_storico.setXml(xml);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<it.eng.previsioni.meteo.model.Storico> toCacheModel() {
-
-		return _storico.toCacheModel();
-	}
-
-	@Override
-	public it.eng.previsioni.meteo.model.Storico toEscapedModel() {
-		return new StoricoWrapper(_storico.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _storico.toString();
-	}
-
-	@Override
-	public it.eng.previsioni.meteo.model.Storico toUnescapedModel() {
-		return new StoricoWrapper(_storico.toUnescapedModel());
+		model.setXml(xml);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _storico.toXmlString();
+		return model.toXmlString();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-
-		if (!(obj instanceof StoricoWrapper)) {
-			return false;
-		}
-
-		StoricoWrapper storicoWrapper = (StoricoWrapper)obj;
-
-		if (Objects.equals(_storico, storicoWrapper._storico)) {
-			return true;
-		}
-
-		return false;
+	protected StoricoWrapper wrap(Storico storico) {
+		return new StoricoWrapper(storico);
 	}
-
-	@Override
-	public Storico getWrappedModel() {
-		return _storico;
-	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _storico.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _storico.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_storico.resetOriginalValues();
-	}
-
-	private final Storico _storico;
 
 }

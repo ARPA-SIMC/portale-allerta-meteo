@@ -26,12 +26,12 @@ import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.kernel.workflow.WorkflowInstance;
 import com.liferay.portal.kernel.workflow.WorkflowInstanceManagerUtil;
 import com.liferay.portal.kernel.workflow.WorkflowLog;
-import com.liferay.portal.kernel.workflow.WorkflowLogManagerUtil;
 import com.liferay.portal.kernel.workflow.WorkflowTask;
 import com.liferay.portal.kernel.workflow.WorkflowTaskManager;
 import com.liferay.portal.kernel.workflow.WorkflowTaskManagerUtil;
-import com.liferay.portal.kernel.workflow.comparator.WorkflowComparatorFactoryUtil;
+import com.liferay.portal.kernel.workflow.comparator.WorkflowLogCreateDateComparator;
 import com.liferay.portal.kernel.workflow.permission.WorkflowPermissionUtil;
+import com.liferay.portal.workflow.manager.WorkflowLogManager;
 
 import it.eng.allerta.utils.AllertaKeys;
 import it.eng.allerter.allerta.BollettinoBean;
@@ -99,7 +99,7 @@ public class BollettinoCompilaSbWebPortlet extends MVCPortlet {
 			
 			for (Bollettino b : bollettiniEntry) {
 				
-				_log.warn("Considero monitoraggio "+b.getBollettinoId());
+				//_log.warn("Considero monitoraggio "+b.getBollettinoId());
 				
 				boolean hasWfl = 
 						WorkflowInstanceLinkLocalServiceUtil.hasWorkflowInstanceLink(
@@ -110,7 +110,7 @@ public class BollettinoCompilaSbWebPortlet extends MVCPortlet {
 				
 				if( hasWfl) {
 					
-					_log.warn("Workflow link presente");
+					//_log.warn("Workflow link presente");
 				
 					WorkflowInstanceLink wil= null;
 					
@@ -128,24 +128,25 @@ public class BollettinoCompilaSbWebPortlet extends MVCPortlet {
 		           
 					if( wil != null) { 
 						
-						_log.warn("Workflow link ottenuto");
+						//_log.warn("Workflow link ottenuto");
 						
 			            List<Integer> logTypes_assign = new ArrayList<Integer>();
 			            
 			            logTypes_assign.add(WorkflowLog.TASK_ASSIGN);
 			            
 			            List<WorkflowLog> workflowLogs_assign = 
-			            		WorkflowLogManagerUtil.getWorkflowLogsByWorkflowInstance(
+			            		_workflowLogManager.getWorkflowLogsByWorkflowInstance(
 			            					themeDisplay.getCompanyId(), 
 			            					wil.getWorkflowInstanceId(), 
 			            					logTypes_assign, 
 			            					QueryUtil.ALL_POS, 
 			            					QueryUtil.ALL_POS, 
-			            					WorkflowComparatorFactoryUtil.getLogCreateDateComparator(true));
+			            					new WorkflowLogCreateDateComparator(true,null,null,null));
+			            					//WorkflowComparatorFactoryUtil.getLogCreateDateComparator(true));
 			            
 			            if(workflowLogs_assign.size() > 0){
 			            	
-			            	_log.warn("Workflow assign log ottenuto");
+			            	//_log.warn("Workflow assign log ottenuto");
 			            	
 			                long taskId = workflowLogs_assign.get(workflowLogs_assign.size()-1).getWorkflowTaskId();
 			                
@@ -161,7 +162,7 @@ public class BollettinoCompilaSbWebPortlet extends MVCPortlet {
 							                		task.getName());
 			                
 			                //WorkflowTask nextTask = WorkflowTaskManagerUtil.assignWorkflowTaskToUser(companyId, userId, task.getWorkflowTaskId(), userId, "auto assign", task.getDueDate(), workflowContext);
-			                _log.warn("task Permission: "+taskPerm);
+			                //_log.warn("task Permission: "+taskPerm);
 			                if( taskPerm && !task.getName().equals("update"))
 			                	taskIds.put(String.valueOf(b.getBollettinoId()), String.valueOf(taskId));
 			                else 
@@ -247,6 +248,8 @@ public class BollettinoCompilaSbWebPortlet extends MVCPortlet {
 		
 	}
 	
+	@Reference
+	private WorkflowLogManager _workflowLogManager;
 	
 	private Log _log = LogFactoryUtil.getLog(BollettinoCompilaSbWebPortlet.class);
 	

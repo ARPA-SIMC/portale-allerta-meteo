@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.osgi.service.component.annotations.Component;
+
 import com.liferay.portal.dao.orm.custom.sql.CustomSQLUtil;
 import com.liferay.portal.kernel.dao.orm.QueryPos;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
@@ -13,8 +15,10 @@ import com.liferay.portal.kernel.util.OrderByComparator;
 
 import it.eng.allerter.model.AllertaValanghe;
 import it.eng.allerter.model.impl.AllertaValangheImpl;
+import it.eng.allerter.service.persistence.AllertaFinder;
 import it.eng.allerter.service.persistence.AllertaValangheFinder;
 
+@Component(service = AllertaValangheFinder.class)
 public class AllertaValangheFinderImpl extends AllertaValangheFinderBaseImpl implements AllertaValangheFinder {
 	
 	private static final String FIND_ALL_ALLERTAVALANGHE_ORDERED = AllertaValangheFinder.class.getName() + ".getAllertaValanghesOrdered";

@@ -60,7 +60,8 @@ public class AllertaReportPostEventoPortlet extends MVCPortlet {
 		
 		ThemeDisplay themeDisplay = (ThemeDisplay) renderRequest.getAttribute(WebKeys.THEME_DISPLAY);
 		
-		String ddmStructureKey ="57635";
+		//String ddmStructureKey ="57635";
+		Long ddmStructureKey =57635L;
 
 		//OrderDateComparator odb = new OrderDateComparator(false);
 		

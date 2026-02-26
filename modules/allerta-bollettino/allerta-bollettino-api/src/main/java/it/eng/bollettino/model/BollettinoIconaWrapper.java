@@ -1,30 +1,15 @@
 /**
- * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
+ * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package it.eng.bollettino.model;
 
-import aQute.bnd.annotation.ProviderType;
-
-import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.portal.kernel.model.ModelWrapper;
-import com.liferay.portal.kernel.service.ServiceContext;
-
-import java.io.Serializable;
+import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <p>
@@ -35,22 +20,12 @@ import java.util.Objects;
  * @see BollettinoIcona
  * @generated
  */
-@ProviderType
 public class BollettinoIconaWrapper
+	extends BaseModelWrapper<BollettinoIcona>
 	implements BollettinoIcona, ModelWrapper<BollettinoIcona> {
 
 	public BollettinoIconaWrapper(BollettinoIcona bollettinoIcona) {
-		_bollettinoIcona = bollettinoIcona;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		return BollettinoIcona.class;
-	}
-
-	@Override
-	public String getModelClassName() {
-		return BollettinoIcona.class.getName();
+		super(bollettinoIcona);
 	}
 
 	@Override
@@ -107,21 +82,8 @@ public class BollettinoIconaWrapper
 	}
 
 	@Override
-	public Object clone() {
-		return new BollettinoIconaWrapper(
-			(BollettinoIcona)_bollettinoIcona.clone());
-	}
-
-	@Override
-	public int compareTo(
-		it.eng.bollettino.model.BollettinoIcona bollettinoIcona) {
-
-		return _bollettinoIcona.compareTo(bollettinoIcona);
-	}
-
-	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _bollettinoIcona.getExpandoBridge();
+	public BollettinoIcona cloneWithOriginalValues() {
+		return wrap(model.cloneWithOriginalValues());
 	}
 
 	/**
@@ -131,7 +93,7 @@ public class BollettinoIconaWrapper
 	 */
 	@Override
 	public long getId() {
-		return _bollettinoIcona.getId();
+		return model.getId();
 	}
 
 	/**
@@ -141,7 +103,7 @@ public class BollettinoIconaWrapper
 	 */
 	@Override
 	public long getIdBollettino() {
-		return _bollettinoIcona.getIdBollettino();
+		return model.getIdBollettino();
 	}
 
 	/**
@@ -151,7 +113,7 @@ public class BollettinoIconaWrapper
 	 */
 	@Override
 	public long getIdIcona() {
-		return _bollettinoIcona.getIdIcona();
+		return model.getIdIcona();
 	}
 
 	/**
@@ -161,12 +123,7 @@ public class BollettinoIconaWrapper
 	 */
 	@Override
 	public long getPrimaryKey() {
-		return _bollettinoIcona.getPrimaryKey();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _bollettinoIcona.getPrimaryKeyObj();
+		return model.getPrimaryKey();
 	}
 
 	/**
@@ -176,7 +133,7 @@ public class BollettinoIconaWrapper
 	 */
 	@Override
 	public String getUuid() {
-		return _bollettinoIcona.getUuid();
+		return model.getUuid();
 	}
 
 	/**
@@ -186,7 +143,7 @@ public class BollettinoIconaWrapper
 	 */
 	@Override
 	public double getX() {
-		return _bollettinoIcona.getX();
+		return model.getX();
 	}
 
 	/**
@@ -196,54 +153,12 @@ public class BollettinoIconaWrapper
 	 */
 	@Override
 	public double getY() {
-		return _bollettinoIcona.getY();
-	}
-
-	@Override
-	public int hashCode() {
-		return _bollettinoIcona.hashCode();
-	}
-
-	@Override
-	public boolean isCachedModel() {
-		return _bollettinoIcona.isCachedModel();
-	}
-
-	@Override
-	public boolean isEscapedModel() {
-		return _bollettinoIcona.isEscapedModel();
-	}
-
-	@Override
-	public boolean isNew() {
-		return _bollettinoIcona.isNew();
+		return model.getY();
 	}
 
 	@Override
 	public void persist() {
-		_bollettinoIcona.persist();
-	}
-
-	@Override
-	public void setCachedModel(boolean cachedModel) {
-		_bollettinoIcona.setCachedModel(cachedModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(
-		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
-
-		_bollettinoIcona.setExpandoBridgeAttributes(baseModel);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_bollettinoIcona.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
-	public void setExpandoBridgeAttributes(ServiceContext serviceContext) {
-		_bollettinoIcona.setExpandoBridgeAttributes(serviceContext);
+		model.persist();
 	}
 
 	/**
@@ -253,7 +168,7 @@ public class BollettinoIconaWrapper
 	 */
 	@Override
 	public void setId(long id) {
-		_bollettinoIcona.setId(id);
+		model.setId(id);
 	}
 
 	/**
@@ -263,7 +178,7 @@ public class BollettinoIconaWrapper
 	 */
 	@Override
 	public void setIdBollettino(long idBollettino) {
-		_bollettinoIcona.setIdBollettino(idBollettino);
+		model.setIdBollettino(idBollettino);
 	}
 
 	/**
@@ -273,12 +188,7 @@ public class BollettinoIconaWrapper
 	 */
 	@Override
 	public void setIdIcona(long idIcona) {
-		_bollettinoIcona.setIdIcona(idIcona);
-	}
-
-	@Override
-	public void setNew(boolean n) {
-		_bollettinoIcona.setNew(n);
+		model.setIdIcona(idIcona);
 	}
 
 	/**
@@ -288,12 +198,7 @@ public class BollettinoIconaWrapper
 	 */
 	@Override
 	public void setPrimaryKey(long primaryKey) {
-		_bollettinoIcona.setPrimaryKey(primaryKey);
-	}
-
-	@Override
-	public void setPrimaryKeyObj(Serializable primaryKeyObj) {
-		_bollettinoIcona.setPrimaryKeyObj(primaryKeyObj);
+		model.setPrimaryKey(primaryKey);
 	}
 
 	/**
@@ -303,7 +208,7 @@ public class BollettinoIconaWrapper
 	 */
 	@Override
 	public void setUuid(String uuid) {
-		_bollettinoIcona.setUuid(uuid);
+		model.setUuid(uuid);
 	}
 
 	/**
@@ -313,7 +218,7 @@ public class BollettinoIconaWrapper
 	 */
 	@Override
 	public void setX(double x) {
-		_bollettinoIcona.setX(x);
+		model.setX(x);
 	}
 
 	/**
@@ -323,78 +228,17 @@ public class BollettinoIconaWrapper
 	 */
 	@Override
 	public void setY(double y) {
-		_bollettinoIcona.setY(y);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel
-		<it.eng.bollettino.model.BollettinoIcona> toCacheModel() {
-
-		return _bollettinoIcona.toCacheModel();
-	}
-
-	@Override
-	public it.eng.bollettino.model.BollettinoIcona toEscapedModel() {
-		return new BollettinoIconaWrapper(_bollettinoIcona.toEscapedModel());
-	}
-
-	@Override
-	public String toString() {
-		return _bollettinoIcona.toString();
-	}
-
-	@Override
-	public it.eng.bollettino.model.BollettinoIcona toUnescapedModel() {
-		return new BollettinoIconaWrapper(_bollettinoIcona.toUnescapedModel());
+		model.setY(y);
 	}
 
 	@Override
 	public String toXmlString() {
-		return _bollettinoIcona.toXmlString();
+		return model.toXmlString();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-
-		if (!(obj instanceof BollettinoIconaWrapper)) {
-			return false;
-		}
-
-		BollettinoIconaWrapper bollettinoIconaWrapper =
-			(BollettinoIconaWrapper)obj;
-
-		if (Objects.equals(
-				_bollettinoIcona, bollettinoIconaWrapper._bollettinoIcona)) {
-
-			return true;
-		}
-
-		return false;
+	protected BollettinoIconaWrapper wrap(BollettinoIcona bollettinoIcona) {
+		return new BollettinoIconaWrapper(bollettinoIcona);
 	}
-
-	@Override
-	public BollettinoIcona getWrappedModel() {
-		return _bollettinoIcona;
-	}
-
-	@Override
-	public boolean isEntityCacheEnabled() {
-		return _bollettinoIcona.isEntityCacheEnabled();
-	}
-
-	@Override
-	public boolean isFinderCacheEnabled() {
-		return _bollettinoIcona.isFinderCacheEnabled();
-	}
-
-	@Override
-	public void resetOriginalValues() {
-		_bollettinoIcona.resetOriginalValues();
-	}
-
-	private final BollettinoIcona _bollettinoIcona;
 
 }

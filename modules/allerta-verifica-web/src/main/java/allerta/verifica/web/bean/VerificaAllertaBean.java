@@ -55,7 +55,7 @@ public class VerificaAllertaBean {
 	public VerificaAllertaBean(HttpServletRequest request) {
 		httpRequest = PortalUtil.getOriginalServletRequest( 
 				request); 
-		creaVerificheMancanti();
+		//creaVerificheMancanti();
 	}
 	
 	
@@ -204,7 +204,7 @@ public class VerificaAllertaBean {
 					
 		}
 		
-		if (out==null || out.size()==0) System.out.println("Non trovato "+giorno+" "+zona+" "+evento+" "+nomeDato);
+		//if (out==null || out.size()==0) System.out.println("Non trovato "+giorno+" "+zona+" "+evento+" "+nomeDato);
 		return out;
 	}
 
@@ -222,7 +222,7 @@ public class VerificaAllertaBean {
 					
 		}
 		
-		if (out==null || out.size()==0) System.out.println("Non trovato "+giorno+" "+zona+" "+evento+" "+nomeDato);
+		//if (out==null || out.size()==0) System.out.println("Non trovato "+giorno+" "+zona+" "+evento+" "+nomeDato);
 		return out;
 	}
 	
@@ -237,7 +237,7 @@ public class VerificaAllertaBean {
 				return v;
 					
 		}
-		System.out.println("Non trovato "+giorno+" "+zona+" "+evento+" "+nomeDato);
+		//System.out.println("Non trovato "+giorno+" "+zona+" "+evento+" "+nomeDato);
 		return null;
 	}
 	
@@ -253,7 +253,7 @@ public class VerificaAllertaBean {
 				return v;
 					
 		}
-		System.out.println("Non trovato "+giorno+" "+zona+" "+evento+" "+nomeDato);
+		//System.out.println("Non trovato "+giorno+" "+zona+" "+evento+" "+nomeDato);
 		return null;
 	}
 	
@@ -283,8 +283,9 @@ public class VerificaAllertaBean {
 		System.out.println("Salvati "+salvati+" verificadato");
 	}
 	
-	public void creaVerificheMancanti() {
-		List<Object[]> ll = BollettinoLocalServiceUtil.eseguiQueryGenericaLista("select a.allertaid, a.titolo from allerter_allerta a left join verifica_verifica v on v.id_ = a.allertaid where v.id_ is null and a.stato=0 and a.datafine<current_timestamp and a.datafine>'2021-12-31' order by a.datainizio desc limit 10");
+	public int creaVerificheMancanti() {
+		int out = 0;
+		List<Object[]> ll = BollettinoLocalServiceUtil.eseguiQueryGenericaLista("select a.allertaid, a.titolo from allerter_allerta a left join verifica_verifica v on v.id_ = a.allertaid where v.id_ is null and a.stato=0 and a.datafine<current_timestamp and a.datafine>'2020-12-12 10:00:00' order by a.datainizio desc limit 20");
 		if (ll!=null && ll.size()>0) {
 			for (Object[] o : ll) {
 				try {
@@ -308,6 +309,7 @@ public class VerificaAllertaBean {
 					}
 					
 					VerificaLocalServiceUtil.addVerifica(v);
+					out++;
 					
 				
 					VerificaDatoFactory.initializeVerifica(a, new ArrayList<VerificaDato>());
@@ -316,10 +318,15 @@ public class VerificaAllertaBean {
 				}
 			}
 		}
+		
+		return out;
 	}
 	
 	
 	public void salva() {
+		
+		Verifica v2 = VerificaLocalServiceUtil.fetchVerifica(verifica.getId());
+		if (v2!=null && v2.getStato()!=0) return;
 		
 		if (verifica.getStato()!=0) return;
 		

@@ -20,9 +20,9 @@ List<FolderToView> documents = docBean.getPianiTavoleDocuments(sitename);
 	aria-expanded="false"
 	aria-controls="rischio-alluvioni__sub"> 
 	
-	<span class="icon i-plus-square-o" title="Espandi/richiudi"></span> 
+	<span class="icon i-plus-square-o" title="<liferay-ui:message key="allertacomuneweb.d4" />"></span> 
 	<span class="nav-vertical__item-label">
-		Piano di protezione civile
+		<liferay-ui:message key="allertacomuneweb.d3" />
 	</span>
 </a>
 
@@ -30,7 +30,7 @@ List<FolderToView> documents = docBean.getPianiTavoleDocuments(sitename);
 	<% for( FolderToView file : documents) { %>
 		<li class="nav-item">
 			<a class="nav-link " href="<%=file.getUrl()%>" data-toggle="pdf-viewer"> 
-				<span class="icon i-file-pdf-o" title="File PDF"></span> 
+				<span class="icon i-file-pdf-o" title="<liferay-ui:message key="allertacomuneweb.d5" />"></span> 
 				<span class="nav-vertical__item-label"><%=file.getTitle() %></span>
 			</a>
 		</li>

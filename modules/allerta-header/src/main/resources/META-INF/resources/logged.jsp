@@ -1,3 +1,8 @@
+<%@page import="com.liferay.asset.kernel.model.AssetEntry"%>
+<%@page import="com.liferay.asset.kernel.service.AssetEntryLocalServiceUtil"%>
+<%@page import="it.eng.allerter.service.LogInternoLocalServiceUtil"%>
+<%@page import="com.liferay.portal.kernel.workflow.WorkflowInstance"%>
+<%@page import="com.liferay.portal.kernel.workflow.WorkflowInstanceManagerUtil"%>
 <%@page import="it.eng.allerter.model.AllertaValanghe"%>
 <%@page import="java.util.HashMap"%>
 <%@page import="com.liferay.document.library.kernel.model.DLFileEntry"%>
@@ -62,7 +67,7 @@
 
 <li class="nav-item dropdown"><a
 	class="nav-link dropdown-toggle header__notifications__toggle" href="#"
-	role="button" data-toggle="dropdown" data-container="body" id="notifications__toggle__label"
+	role="button" data-toggle="liferay-dropdown" data-container="body" id="notifications__toggle__label"
 	aria-haspopup="true" aria-expanded="false"> <span
 		class="icon i-bell-o" title="Icona delle notifiche"></span> <span
 		class="header__notifications__toggle__label"> <span
@@ -93,24 +98,56 @@
 				<%
 				String entryClassName = payload.getString("entryClassName");
 				Date date = new Date(n.getTimestamp());
+				String forceUrl = "";
+				if (entryClassName.equals(Allerta.class.getName())) {
+					forceUrl = "/allerte-e-bollettini";
+				}
+				if (entryClassName.equals(AllertaValanghe.class.getName())) {
+					forceUrl = "/allerte-e-bollettini-valanghe";
+				}
+				if (entryClassName.equals(Bollettino.class.getName())) {
+					forceUrl = "/monitoraggio-eventi";
+				}
+				
 				if (entryClassName.equals(Allerta.class.getName()) || 
 					entryClassName.equals(Bollettino.class.getName()) ||
 					entryClassName.equals(AllertaValanghe.class.getName()) ||
 					entryClassName.equals(DLFileEntry.class.getName()) ) {
 					
-					long workflowTaskId = payload.getLong("workflowTaskId");
+					try {
+						long workflowTaskId = payload.getLong("workflowTaskId");
 					
-					PortletURL workflowUrl = 
+						WorkflowTask wt = WorkflowTaskManagerUtil.getWorkflowTask(20154, workflowTaskId);
+						long inst = wt.getWorkflowInstanceId();
+						WorkflowInstance ii = WorkflowInstanceManagerUtil.getWorkflowInstance(20154, inst);
+						String entryClassPK = ii.getWorkflowContext().get("entryClassPK").toString();
+						AssetEntry ae = AssetEntryLocalServiceUtil.getEntry(entryClassName, new Long(entryClassPK));
+						if (entryClassName.equals(Allerta.class.getName())) {
+							forceUrl = "/web/guest/approvazione-allerta/-/asset_publisher/FZPQSb6AzKtJ/Allerta-Bollettino/id/"+ae.getEntryId();
+						}
+						if (entryClassName.equals(AllertaValanghe.class.getName())) {
+							forceUrl = "/web/guest/approvazione-valanghe/-/asset_publisher/3KQ7Ixh8YDd7/AllertaValanghe-Bollettino/id/"+ae.getEntryId();
+
+						}
+						if (entryClassName.equals(Bollettino.class.getName())) {
+							forceUrl = "/web/guest/approvazione-monitoraggio/-/asset_publisher/16LwXJHZXwfc/Bollettino/id/"+ae.getEntryId();
+
+						}
+						
+					} catch (Exception e ) {
+						LogInternoLocalServiceUtil.log("header", "notifica", e, "");
+					}
+					/*PortletURL workflowUrl = 
 							PortalUtil.getControlPanelPortletURL(request, 
 									PortletKeys.MY_WORKFLOW_TASK, PortletRequest.RENDER_PHASE);
 					
 					workflowUrl.setParameter("mvcPath", "/edit_workflow_task.jsp");
 					workflowUrl.setParameter("workflowTaskId", String.valueOf(workflowTaskId));
-					workflowUrl.setParameter("redirect", themeDisplay.getURLCurrent());
+					workflowUrl.setParameter("redirect", themeDisplay.getURLCurrent());*/
 					//workflowUrl.setWindowState(WindowState.MAXIMIZED);
 					
 				%>
-				<a href="#" onclick="<portlet:namespace/>readNotification('<%=workflowUrl %>', '<%=viewTaskURL%>')">
+				<a href="#" onclick="<portlet:namespace/>readNotification('', '<%=viewTaskURL%>','<%=forceUrl%>')">
 						<%=payload.getString("notificationMessage") %> - <%= dateFormat.format(date) %>
 					</a>
 				<%
@@ -163,6 +200,7 @@
 	boolean isCompilatorePC = false;
 	boolean isCompilatoreARPAE = false;
 	boolean isTecnicoPC = false;
+	boolean isCatasto = false;
 
 	long idSito = 0;
 	int numberSite = 0;
@@ -196,6 +234,11 @@
 	String compilatore_arpae_k = "Compilatore ARPAE";
 	String tecnico_pc_k = "Tecnico PC";
 	String verifica_k = "Compilatore Verifica Allerte";
+		
+	String consultazione_catasto_k = "Consultazione Catasto";
+	String consultazione_verifica_k = "Consultazione Verifica Allerte";
+	String catasto_k = "Compilatore Catasto";
+
 	//String webmaster_k = "webmaster";
 	Map<String,String> sindacoLinks = new HashMap<String,String>();
 
@@ -282,8 +325,19 @@
 			isCompilatoreARPAE = true;
 		if (name.equalsIgnoreCase(tecnico_pc_k))
 			isTecnicoPC = true;
-		if (name.equalsIgnoreCase(verifica_k))
+		if (name.equalsIgnoreCase(verifica_k)) {
 			isVerificaAllerte = true;
+			isCatasto = true;
+		}
+		if (name.equalsIgnoreCase(catasto_k)) {
+			isCatasto = true;
+		}
+		if (name.equalsIgnoreCase(consultazione_verifica_k)) {
+			isVerificaAllerte = true;
+		}
+		if (name.equalsIgnoreCase(consultazione_catasto_k)) {
+			isCatasto = true;
+		}
 		//if (name.equalsIgnoreCase(webmaster_k)) {
 		//	isWebmaster = true;
 		//}
@@ -302,7 +356,7 @@
 
 <li class="nav-item dropdown"><a
 	class="nav-link dropdown-toggle header__personal-nav__toggle" href="#"
-	role="button" data-toggle="dropdown" data-container="body" window
+	role="button" data-toggle="liferay-dropdown" data-container="body" window
 	aria-haspopup="true" aria-expanded="false"> <span
 		class="icon i-user-circle-o"
 		title="Icona che rappresenta il tuo menu personale"></span> <span
@@ -550,7 +604,7 @@
 				</c:if>
 				
 				<c:if
-					test="<%=isAdministrator || isAdminPortale || isVerificaAllerte %>">
+					test="<%=isAdministrator || isAdminPortale || isVerificaAllerte || isApprovatore_arpae %>">
 					
 					<li class="nav-item">
 						<a class="nav-link " href="/verifica"> <span
@@ -558,7 +612,12 @@
 							class="nav-vertical__item-label">Verifica allerte</span>
 						</a>
 					</li>
-					
+				</c:if>
+				
+				<c:if
+					test="<%=isAdministrator || isAdminPortale || isCatasto || isApprovatore_arpae %>">
+						
+
 					<li class="nav-item">
 						<a class="nav-link " href="/catasto-segnalazioni"> <span
 							class="icon i-files-o" title="Catasto segnalazioni"></span> <span
@@ -693,13 +752,13 @@ function <portlet:namespace/>openComunicazionePopup(renderUrl) {
 	
 }
 
-function <portlet:namespace/>readNotification(wflUrl, serviceUrl) {
+function <portlet:namespace/>readNotification(wflUrl, serviceUrl, forceUrl) {
 	jQuery.ajax({
 	      url: serviceUrl,
 	      method: 'GET',
 	      success: function(result) {
 	    		
-	    		location.href = wflUrl;
+	    		location.href = (forceUrl && forceUrl!=''?forceUrl:wflUrl);
 	    	}
 	     
 	    });

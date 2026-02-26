@@ -3,7 +3,8 @@ package it.eng.allerte.service.persistence.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.liferay.portal.dao.orm.custom.sql.CustomSQL;
+import org.osgi.service.component.annotations.Component;
+
 import com.liferay.portal.kernel.dao.orm.QueryPos;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.SQLQuery;
@@ -12,21 +13,25 @@ import com.liferay.portal.kernel.dao.orm.Type;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
-import com.liferay.portal.spring.extender.service.ServiceReference;
 
 import it.eng.allerte.custom.util.RubricaUtil;
-import it.eng.allerte.model.RubricaNominativo;
 import it.eng.allerte.service.persistence.RubricaNominativoFinder;
 
-
+@Component(service = RubricaNominativoFinder.class)
 public class RubricaNominativoFinderImpl extends RubricaNominativoFinderBaseImpl 
 	implements RubricaNominativoFinder{
 		
 	public static final Log _log = LogFactoryUtil.getLog(RubricaNominativoFinderImpl.class);
 		
-		private String GET_NOMINATIVO_BY_NAME = RubricaNominativoFinderImpl.class.getName()
-				+ ".getNominativiByName";
+		/*private String GET_NOMINATIVO_BY_NAME = RubricaNominativoFinderImpl.class.getName()
+				+ ".getNominativiByName";*/
+	
+	private String GET_NOMINATIVO_BY_NAME = "select distinct rn.ID_NOMINATIVO, rn.COGNOME, rn.NOME, rn.INDIRIZZO,rn.FK_SITO_PROPRIETARIO, rn.FK_UTENTE_PORTALE, \r\n"
+			+ "		rn.FK_UTENTE_CREAZIONE, rn.DATA_CREAZIONE, rn.FK_UTENTE_MODIFICA, rn.DATA_MODIFICA, rn.DISABLED\r\n"
+			+ "		from rubrica_rubricanominativo rn left join rubrica_rubricacontatto rc on rc.fk_nominativo = rn.id_nominativo\r\n"
+			+ "		where (upper(rn.cognome) like upper(?)	or upper(rn.nome) like upper(?) or upper(rc.contatto) like upper(?))\r\n"
+			+ "		       and not rn.disabled\r\n"
+			+ "	    order by rn.cognome, rn.nome";
 	
 
 		public ArrayList<Object[]> getNominativiByName(String name, Long limit, Long offset) {
@@ -36,7 +41,7 @@ public class RubricaNominativoFinderImpl extends RubricaNominativoFinderBaseImpl
 				int start = -1;
 				int end = -1;
 				
-				String sql = customSQL.get(this.getClass(), GET_NOMINATIVO_BY_NAME);
+				String sql = GET_NOMINATIVO_BY_NAME;
 				name = "%"+name+"%";
 				
 				SQLQuery query = session.createSQLQuery(sql);
@@ -85,8 +90,7 @@ public class RubricaNominativoFinderImpl extends RubricaNominativoFinderBaseImpl
 			return null;
 		}
 
-		@ServiceReference(type = CustomSQL.class)
-		private CustomSQL customSQL;
+
 
 }
 

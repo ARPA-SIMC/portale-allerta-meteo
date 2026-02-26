@@ -20,15 +20,12 @@ import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.servlet.SessionMessages;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
-import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.portal.kernel.xmlrpc.Success;
 
 import it.eng.allerta.utils.AllertaKeys;
 import it.eng.allerter.allerta.AllertaBean;
 import it.eng.allerter.service.AllertaLocalService;
-import it.eng.allerter.service.LogInternoLocalServiceUtil;
 
 @Component(
 		immediate = true,

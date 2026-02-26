@@ -2,7 +2,6 @@
 <%@page import="allerta.catasto.search.CatastoDisplayTerms"%>
 <%@page import="allerta.catasto.search.CatastoSearchContainer"%>
 <%@page import="allerta.catasto.bean.CatastoBean"%>
-<%@page import="com.liferay.portal.kernel.util.StringPool"%>
 <%@page import="java.text.SimpleDateFormat"%>
 <%@page import="com.liferay.portal.kernel.util.PortalUtil"%>
 <%@page import="javax.portlet.PortletURL"%>
@@ -203,9 +202,9 @@ SimpleDateFormat sdf2 = new SimpleDateFormat("dd/MM/yyyy");
 						<liferay-ui:search-container-column-text name="Azioni" >
 						<liferay-ui:icon-menu
 	direction="left-side"
-	icon="<%= StringPool.BLANK %>"
+	icon=""
 	markupView="lexicon"
-	message="<%= StringPool.BLANK %>"
+	message=""
 	showWhenSingleIcon="<%= true %>">
 	
 	
@@ -256,9 +255,12 @@ SimpleDateFormat sdf2 = new SimpleDateFormat("dd/MM/yyyy");
 			function esportaExcel(e) {
 				var da = $('[name="_allerta_catasto_web_AllertaCatastoWebPortlet_dataInvioDa"]').val()
 				var a = $('[name="_allerta_catasto_web_AllertaCatastoWebPortlet_dataInvioA"]').val()
+				var area = $('[name="_allerta_catasto_web_AllertaCatastoWebPortlet_areaFilter"]').val()
+				var comune = $('[name="_allerta_catasto_web_AllertaCatastoWebPortlet_comuneFilter"]').val()
+				var categoria = $('[name="_allerta_catasto_web_AllertaCatastoWebPortlet_categoriaFilter"]').val()
 				if (da && da.split(" ")[0]) da = da.split(" ")[0]
 				if (a && a.split(" ")[0]) a = a.split(" ")[0]
-				window.open('/o/report/catasto/excel?datada='+da+'&dataa='+a,'_blank')
+				window.open('/o/report/catasto/excel?datada='+da+'&dataa='+a+'&area='+area+'&comune='+comune+'&categoria='+categoria,'_blank')
 			}
 			
 			
