@@ -152,7 +152,23 @@
 							<div class="d-none d-md-flex d-print-flex flex-md-row">
 								<div class="map-legend--rtdata-legend">
 									<strong>Previsione livello del mare (m)</strong>
-									<div id="legenda" class="row"><div class="col s2 legendario truncate" style="background-color: #6600ff; color: #ffffff">-1.0--0.8</div><div class="col s2 legendario truncate" style="background-color: #0000ff; color: #ffffff">-0.8--0.6</div><div class="col s2 legendario truncate" style="background-color: #0078ff; color: #ffffff">-0.6--0.4</div><div class="col s2 legendario truncate" style="background-color: #00b4fa; color: #000000">-0.4--0.2</div><div class="col s2 legendario truncate" style="background-color: #00e6fa; color: #000000">-0.2--0.0</div><div class="col s2 legendario truncate" style="background-color: #00fcbe; color: #000000">0.0-0.2</div><div class="col s2 legendario truncate" style="background-color: #deff19; color: #000000">0.2-0.4</div><div class="col s2 legendario truncate" style="background-color: #ffff36; color: #000000">0.4-0.6</div><div class="col s2 legendario truncate" style="background-color: #ffe600; color: #000000">0.6-0.8</div><div class="col s2 legendario truncate" style="background-color: #ffb500; color: #000000">0.8-1.0</div><div class="col s2 legendario truncate" style="background-color: #ff7b00; color: #000000">1.0-1.2</div><div class="col s2 legendario truncate" style="background-color: #fe0000; color: #ffffff">1.2-1.4</div><div class="col s2 legendario truncate" style="background-color: #d70000; color: #ffffff">1.4-1.6</div><div class="col s2 legendario truncate" style="background-color: #b90000; color: #ffffff">1.6-1.8</div><div class="col s2 legendario truncate" style="background-color: #960000; color: #ffffff">1.8-2.0</div></div>								</div>
+									<div id="legenda" class="row"> 
+ <div class="col s2 legendario truncate" style="background-color: #423771 ; color: #ffffff">-1.0--0.8</div>
+ <div class="col s2 legendario truncate" style="background-color: #466eb1 ; color: #ffffff">-0.8--0.6</div>
+ <div class="col s2 legendario truncate" style="background-color: #54afad ; color: #ffffff">-0.6--0.4</div>
+ <div class="col s2 legendario truncate" style="background-color: #9cd7a4 ; color: #000000">-0.4--0.2</div>
+ <div class="col s2 legendario truncate" style="background-color: #deef97 ; color: #000000">-0.2--0.0</div>
+ <div class="col s2 legendario truncate" style="background-color: #fffebd ; color: #000000">0.0-0.2</div>
+ <div class="col s2 legendario truncate" style="background-color: #fee999 ; color: #000000">0.2-0.4</div>
+ <div class="col s2 legendario truncate" style="background-color: #ffcb78 ; color: #000000">0.4-0.6</div>
+ <div class="col s2 legendario truncate" style="background-color: #fca55c ; color: #000000">0.6-0.8</div>
+ <div class="col s2 legendario truncate" style="background-color: #f57446 ; color: #000000">0.8-1.0</div>
+ <div class="col s2 legendario truncate" style="background-color: #e35049 ; color: #000000">1.0-1.2</div>
+ <div class="col s2 legendario truncate" style="background-color: #c52c4a ; color: #ffffff">1.2-1.4</div>
+ <div class="col s2 legendario truncate" style="background-color: #9e0041 ; color: #ffffff">1.4-1.6</div>
+ <div class="col s2 legendario truncate" style="background-color: #6f012e ; color: #ffffff">1.6-1.8</div>
+ <div class="col s2 legendario truncate" style="background-color: #6f012e ; color: #ffffff">1.8-2.0</div>
+</div>								</div>
 							</div>
 						</div>
 					</div>
@@ -198,7 +214,7 @@
 					</div>
 					<div class="leaflet-control-attribution leaflet-control">
 						<a href="https://leafletjs.com"
-							title="A JS library for interactive maps">Leaflet</a> | © <a
+							title="A JS library for interactive maps">Leaflet</a> |   <a
 							href="https://openstreetmap.org">OpenStreetMap</a>
 					</div>
 				</div>

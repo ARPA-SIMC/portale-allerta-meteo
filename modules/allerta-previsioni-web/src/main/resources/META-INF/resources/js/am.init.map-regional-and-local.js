@@ -26,7 +26,7 @@
         // Init all map components
         var mapComponents = [];
         
-        $('[data-toggle="tab"]').on("click", function() {
+        $('[data-toggle="tab"]').on("click", function(ev) {
         	
         	var context = $(this).attr("href");
         	
@@ -132,6 +132,9 @@
                     renderScenarioOnLoad: true
                 });
             }*/
+            
+            ev.preventDefault();
+            //return false;
         	
         });
         
