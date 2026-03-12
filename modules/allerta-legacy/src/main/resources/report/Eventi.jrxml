@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Badge" pageWidth="1300" pageHeight="595" orientation="Landscape" columnWidth="1260" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isIgnorePagination="true" uuid="c946c046-f138-4a80-99d9-26c8780d760b">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Badge" pageWidth="1500" pageHeight="595" orientation="Landscape" columnWidth="1460" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isIgnorePagination="true" uuid="c946c046-f138-4a80-99d9-26c8780d760b">
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
@@ -37,7 +37,7 @@ or upper(tipo_evento) like concat('%',upper($P{FILTRO}),'%'))]]>
 	<pageHeader>
 		<band height="20" splitType="Stretch">
 			<staticText>
-				<reportElement x="0" y="0" width="142" height="20" uuid="357f6349-95e4-499f-a6bd-21ddf505f4cc"/>
+				<reportElement x="0" y="0" width="264" height="20" uuid="357f6349-95e4-499f-a6bd-21ddf505f4cc"/>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -51,7 +51,7 @@ or upper(tipo_evento) like concat('%',upper($P{FILTRO}),'%'))]]>
 				<text><![CDATA[Evento]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="142" y="0" width="137" height="20" uuid="9be34980-5d4e-401f-a9e9-483519b68b35"/>
+				<reportElement x="264" y="0" width="166" height="20" uuid="9be34980-5d4e-401f-a9e9-483519b68b35"/>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -65,7 +65,7 @@ or upper(tipo_evento) like concat('%',upper($P{FILTRO}),'%'))]]>
 				<text><![CDATA[Tipo Evento]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="279" y="0" width="122" height="20" uuid="9370b491-f6f6-4d16-ad42-3d3b86d96935"/>
+				<reportElement x="430" y="0" width="122" height="20" uuid="9370b491-f6f6-4d16-ad42-3d3b86d96935"/>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -79,7 +79,7 @@ or upper(tipo_evento) like concat('%',upper($P{FILTRO}),'%'))]]>
 				<text><![CDATA[Data Generazione]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="401" y="0" width="107" height="20" uuid="21616083-acd8-45bf-abb4-633f524c0af2"/>
+				<reportElement x="552" y="0" width="107" height="20" uuid="21616083-acd8-45bf-abb4-633f524c0af2"/>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -93,7 +93,7 @@ or upper(tipo_evento) like concat('%',upper($P{FILTRO}),'%'))]]>
 				<text><![CDATA[Generati]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="508" y="0" width="107" height="20" uuid="b1f82c2a-fc2c-48b7-a521-222129052c26"/>
+				<reportElement x="659" y="0" width="107" height="20" uuid="b1f82c2a-fc2c-48b7-a521-222129052c26"/>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -107,7 +107,7 @@ or upper(tipo_evento) like concat('%',upper($P{FILTRO}),'%'))]]>
 				<text><![CDATA[Spediti]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="615" y="0" width="107" height="20" uuid="fd34443e-c38d-4692-a944-6a33987700dd"/>
+				<reportElement x="766" y="0" width="107" height="20" uuid="fd34443e-c38d-4692-a944-6a33987700dd"/>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -121,7 +121,7 @@ or upper(tipo_evento) like concat('%',upper($P{FILTRO}),'%'))]]>
 				<text><![CDATA[Consegnati]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="722" y="0" width="82" height="20" uuid="26bef55e-bdbd-42e4-9b66-0a64d1daaa72"/>
+				<reportElement x="873" y="0" width="82" height="20" uuid="26bef55e-bdbd-42e4-9b66-0a64d1daaa72"/>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -135,7 +135,7 @@ or upper(tipo_evento) like concat('%',upper($P{FILTRO}),'%'))]]>
 				<text><![CDATA[% Successo]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="1119" y="0" width="138" height="20" uuid="b4983aba-b281-4bf2-b9da-6c7e43dc7af8"/>
+				<reportElement x="1270" y="0" width="138" height="20" uuid="b4983aba-b281-4bf2-b9da-6c7e43dc7af8"/>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -149,7 +149,7 @@ or upper(tipo_evento) like concat('%',upper($P{FILTRO}),'%'))]]>
 				<text><![CDATA[Ultimo Aggiornamento]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="804" y="0" width="105" height="20" uuid="1884582c-0946-4b1f-8023-d8292b35e869"/>
+				<reportElement x="955" y="0" width="105" height="20" uuid="1884582c-0946-4b1f-8023-d8292b35e869"/>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -163,7 +163,7 @@ or upper(tipo_evento) like concat('%',upper($P{FILTRO}),'%'))]]>
 				<text><![CDATA[Gruppi Raggiunti]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="909" y="0" width="105" height="20" uuid="b3893ff6-8f42-466f-84d8-72319e6ca103"/>
+				<reportElement x="1060" y="0" width="105" height="20" uuid="b3893ff6-8f42-466f-84d8-72319e6ca103"/>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -177,7 +177,7 @@ or upper(tipo_evento) like concat('%',upper($P{FILTRO}),'%'))]]>
 				<text><![CDATA[Gruppi Totali]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="1014" y="0" width="105" height="20" uuid="236a3c39-87bb-455d-a7a2-fc9d2c02e554"/>
+				<reportElement x="1165" y="0" width="105" height="20" uuid="236a3c39-87bb-455d-a7a2-fc9d2c02e554"/>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -195,57 +195,57 @@ or upper(tipo_evento) like concat('%',upper($P{FILTRO}),'%'))]]>
 	<detail>
 		<band height="20" splitType="Stretch">
 			<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy" isBlankWhenNull="true">
-				<reportElement x="0" y="0" width="142" height="20" uuid="cc19ff76-74f9-4a5d-92c0-5331cf94f58a"/>
+				<reportElement x="0" y="0" width="264" height="20" uuid="cc19ff76-74f9-4a5d-92c0-5331cf94f58a"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{evento}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="142" y="0" width="137" height="20" uuid="fe232dc2-2363-43dd-a126-f08dbd71122d"/>
+				<reportElement x="264" y="0" width="166" height="20" uuid="fe232dc2-2363-43dd-a126-f08dbd71122d"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{tipo_evento}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
-				<reportElement x="401" y="0" width="107" height="20" uuid="21c43d20-bd5e-4287-9083-d61b6b167254"/>
+				<reportElement x="552" y="0" width="107" height="20" uuid="21c43d20-bd5e-4287-9083-d61b6b167254"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{generati}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy HH:mm" isBlankWhenNull="true">
-				<reportElement x="279" y="0" width="122" height="20" uuid="5c998054-02cd-4d26-8b6d-4967dff604d6"/>
+				<reportElement x="430" y="0" width="122" height="20" uuid="5c998054-02cd-4d26-8b6d-4967dff604d6"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{creazione}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
-				<reportElement x="508" y="0" width="107" height="20" uuid="9c02ed2d-5ebc-4a25-b5c6-1fba79562507"/>
+				<reportElement x="659" y="0" width="107" height="20" uuid="9c02ed2d-5ebc-4a25-b5c6-1fba79562507"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{spediti}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
-				<reportElement x="615" y="0" width="107" height="20" uuid="53bf993f-fb8f-4833-8259-c95739b547ba"/>
+				<reportElement x="766" y="0" width="107" height="20" uuid="53bf993f-fb8f-4833-8259-c95739b547ba"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{consegnati}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
-				<reportElement x="804" y="0" width="105" height="20" uuid="cddc86ae-cce2-47cb-8036-3bddb6ba14d0"/>
+				<reportElement x="955" y="0" width="105" height="20" uuid="cddc86ae-cce2-47cb-8036-3bddb6ba14d0"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{gruppi_raggiunti}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
-				<reportElement x="909" y="0" width="105" height="20" uuid="79989930-0e4c-4b14-a503-e504e007f868"/>
+				<reportElement x="1060" y="0" width="105" height="20" uuid="79989930-0e4c-4b14-a503-e504e007f868"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{gruppi_totali}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy HH:mm" isBlankWhenNull="true">
-				<reportElement x="1119" y="0" width="138" height="20" uuid="d16744cf-20c9-4337-9bea-98bc595846aa"/>
+				<reportElement x="1270" y="0" width="138" height="20" uuid="d16744cf-20c9-4337-9bea-98bc595846aa"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{ultimo_aggiornamento}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy" isBlankWhenNull="true">
-				<reportElement x="1014" y="0" width="105" height="20" uuid="a117c0af-0f27-4fbf-ad9d-9ea7a6b7079a"/>
+				<reportElement x="1165" y="0" width="105" height="20" uuid="a117c0af-0f27-4fbf-ad9d-9ea7a6b7079a"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{tutti_raggiunti}?"SI":"NO"]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="###0.00" isBlankWhenNull="true">
-				<reportElement x="722" y="0" width="82" height="20" uuid="2cf81c47-0e6e-42b1-8a45-d0ce7a9dcb49"/>
+				<reportElement x="873" y="0" width="82" height="20" uuid="2cf81c47-0e6e-42b1-8a45-d0ce7a9dcb49"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{successo}]]></textFieldExpression>
 			</textField>

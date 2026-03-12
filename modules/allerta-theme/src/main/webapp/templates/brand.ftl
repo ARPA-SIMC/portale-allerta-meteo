@@ -26,7 +26,10 @@
                 <a style="text-decoration:none" target="_blank" title="<#if w3c_language_id == 'en-GB'>Follow Allerta Meteo Emilia-Romagna on X<#else>Segui Allerta Meteo Emilia-Romagna su X</#if>" href="https://x.com/AllertaMeteoRER"><img src="/o/allerta-theme/img/social/x.svg" style="font-size:1.5rem;margin-right:0.5rem;height:1.5rem;color:#2596be"/></a>
             </div>
             <div>
-                <a style="text-decoration:none" target="_blank" title="<#if w3c_language_id == 'en-GB'>Follow Allerta Meteo Emilia-Romagna on Telegram<#else>Segui Allerta Meteo Emilia-Romagna su Telegram</#if>" href="https://t.me/AllertaMeteoEMR"><span class="icon i-telegram" style="font-size:1.5rem"/></a>
+                <a style="text-decoration:none" target="_blank" title="<#if w3c_language_id == 'en-GB'>Follow Allerta Meteo Emilia-Romagna on Telegram<#else>Segui Allerta Meteo Emilia-Romagna su Telegram</#if>" href="https://t.me/AllertaMeteoEMR"><span class="icon i-telegram" style="font-size:1.5rem;margin-right:0.8rem;"/></a>
+            </div>
+            <div>
+                <a style="text-decoration:none" target="_blank" title="<#if w3c_language_id == 'en-GB'>Follow Allerta Meteo Emilia-Romagna on WhatsApp<#else>Segui Allerta Meteo Emilia-Romagna su WhatsApp</#if>" href="https://whatsapp.com/channel/0029Vb7unKRLSmbS47kGVv3c"><span class="icon i-whatsapp" style="font-size:1.7rem"/></a>
             </div>
             
     </div>
