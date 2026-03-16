@@ -70,7 +70,7 @@ public class DownloaderDati {
 	
 	public static String download(String service) {
 		
-		String base = "https://portaleallerte:Phu9ka@simc.arpae.it/";
+		String base = "";
 		
 		BollettinoParametro bp = BollettinoParametroLocalServiceUtil.fetchBollettinoParametro("ARPAE_SENSORI_URL");
 		if (bp!=null && bp.getValore()!=null) base = bp.getValore();
