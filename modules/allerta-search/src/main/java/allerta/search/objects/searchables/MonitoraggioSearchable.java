@@ -119,11 +119,11 @@ public class MonitoraggioSearchable extends Searchable {
 		
 			
 			if ("bacino".equals(key)) {
-				query += " and exists (select * from bollettino_bollettinosensore y join bollettino_bollettinobacino b on y.idbollettinobacino=b.id_ where y.idbollettino=x.bollettinoid and b.idbacino='"+value+"' and y.tendenza<>-100) ";
+				query += " and exists (select * from bollettino_bacinoincluso y where y.idbollettino=x.bollettinoid and y.idbacino='"+value+"') ";
 			}
 			
 			if ("stazione".equals(key)) {
-				query += " and exists (select * from bollettino_bollettinosensore y where y.idbollettino=x.bollettinoid and upper(y.nomestazione) like '%"+value.toUpperCase()+"%' and y.tendenza<>-100) ";
+				query += " and exists (select * from bollettino_stazioneinclusa y join bollettino_stazione st on st.id_=y.idstazione join bollettino_bacinoincluso bi on bi.idbollettino=x.bollettinoid and bi.nomebacino=st.namebasin where y.idbollettino=x.bollettinoid and upper(st.name) like '%"+value.toUpperCase()+"%') ";
 			}
 
 		}
