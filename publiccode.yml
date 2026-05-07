@@ -1,8 +1,8 @@
-publiccodeYmlVersion: "0.2"
+publiccodeYmlVersion: "0"
 
 name: "Portale Allerta Meteo"
 url: "https://github.com/ARPA-SIMC/portale-allerta-meteo.git"
-softwareVersion: "1.1" 
+softwareVersion: "1.1"
 releaseDate: "2026-02-26"
 platforms:
   - web
@@ -14,7 +14,7 @@ categories:
   - document-management
   - data-collection
   - data-visualization
-  
+
 developmentStatus: stable
 
 softwareType: "standalone/web"
@@ -22,7 +22,6 @@ softwareType: "standalone/web"
 description:
   it:
     localisedName: "Portale Allerta Meteo"
-    genericName: "Portale Pubblica Amministrazione"
     shortDescription: >
           Portale di Pubblica Amministrazione per le funzioni di allertamento meteo
     longDescription: >
@@ -39,7 +38,7 @@ description:
        - stabilire regole anche complesse per allertare gruppi di rubrica sulla base dei dati dei sensori
        - importare dati previsionali forniti secondo opportuni protocolli
        - creare e mantenere siti comunali, dando ai sindaci e loro delegati la facoltà di postare news
-       - caricare file e spedire comunicazioni agli iscritti 
+       - caricare file e spedire comunicazioni agli iscritti
        - funzionalità complete di Content Management System
 
 legal:
@@ -57,13 +56,13 @@ maintenance:
         until: "2026-12-31"
 
 localisation:
-  localisationReady: yes
+  localisationReady: true
   availableLanguages:
     - it
-    
-it:
-  riuso:
-    codiceIPA: arpa
+
+organisation:
+  uri: "urn:x-italian-pa:arpa"
+
 usedBy:
   - Regione Umbria
   - Regione Marche
